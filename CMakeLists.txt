@@ -46,10 +46,26 @@ target_link_libraries(MolSim
 # depending on the compiler different flags are used
 target_compile_options(MolSim
         PRIVATE
-            $<$<CXX_COMPILER_ID:GNU>:-Wall>
-            # disable some spam warnings for icpc...
-            $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>
+        $<$<CXX_COMPILER_ID:GNU>:-Wall>
+        # disable some spam warnings for icpc...
+        $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>
+        $<$<CXX_COMPILER_ID:Clang>:-Wall>
 )
+
+
+if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+    # TODO add options for sanitizers
+    target_compile_options(MolSim
+            PRIVATE
+            $<$<CXX_COMPILER_ID:Clang>: -g -O1 -fno-omit-frame-pointer>
+    )
+elseif (CMAKE_BUILD_TYPE EQUAL "RELEASE")
+    target_compile_options(MolSim
+            PRIVATE
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize >
+    )
+endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
