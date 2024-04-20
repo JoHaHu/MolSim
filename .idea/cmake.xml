@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeSharedSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Release-System" ENABLED="true" GENERATION_DIR="build-release" CONFIG_NAME="Release" TOOLCHAIN_NAME="System" GENERATION_OPTIONS="-G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON" BUILD_OPTIONS="-j 13">
+        <ADDITIONAL_GENERATION_ENVIRONMENT>
+          <envs>
+            <env name="-CC" value="clang -CXX=clang++" />
+          </envs>
+        </ADDITIONAL_GENERATION_ENVIRONMENT>
+      </configuration>
+      <configuration PROFILE_NAME="Debug-System" ENABLED="true" GENERATION_DIR="build-debug" CONFIG_NAME="Debug" TOOLCHAIN_NAME="System" GENERATION_OPTIONS="-G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON" BUILD_OPTIONS="-j 13">
+        <ADDITIONAL_GENERATION_ENVIRONMENT>
+          <envs>
+            <env name="-CC" value="clang -CXX=clang++" />
+          </envs>
+        </ADDITIONAL_GENERATION_ENVIRONMENT>
+      </configuration>
+    </configurations>
+  </component>
+</project>
