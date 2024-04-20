@@ -13,7 +13,7 @@
 
 class FileReader {
 
-public:
+ public:
   FileReader();
   virtual ~FileReader();
 
