@@ -28,7 +28,7 @@ Particle::Particle(const Particle &other) {
 }
 
 // Todo: maybe use initializater list instead of copy?
-Particle::Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg, int type_arg) {
+Particle::Particle(std::array<double,3> x_arg, std::array<double,3> v_arg, double m_arg, int type_arg) {
   x = x_arg;
   v = v_arg;
   m = m_arg;
@@ -46,7 +46,15 @@ const std::array<double, 3> &Particle::getV() const { return v; }
 
 const std::array<double, 3> &Particle::getF() const { return f; }
 
+void Particle::setF(std::array<double, 3> new_force) {
+  f = new_force;
+}
+
 const std::array<double, 3> &Particle::getOldF() const { return old_f; }
+
+void Particle::setOldF(std::array<double, 3> new_f)  {
+  old_f = new_f;
+}
 
 double Particle::getM() const { return m; }
 
@@ -62,6 +70,7 @@ bool Particle::operator==(Particle &other) {
   return (x == other.x) and (v == other.v) and (f == other.f) and (type == other.type) and (m == other.m)
       and (old_f == other.old_f);
 }
+
 
 std::ostream &operator<<(std::ostream &stream, Particle &p) {
   stream << p.toString();

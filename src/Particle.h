@@ -63,7 +63,11 @@ class Particle {
 
   const std::array<double, 3> &getF() const;
 
+  void setF(std::array<double, 3>);
+
   const std::array<double, 3> &getOldF() const;
+
+  void setOldF(std::array<double, 3> old_f);
 
   double getM() const;
 
