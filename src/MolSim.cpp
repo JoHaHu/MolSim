@@ -32,7 +32,6 @@ constexpr double start_time = 0;
 constexpr double end_time = 1000;
 constexpr double delta_t = 0.014;
 
-// TODO: what data structure to pick?
 std::vector<Particle> particles;
 
 int main(int argc, char *argsv[]) {
@@ -75,31 +74,32 @@ int main(int argc, char *argsv[]) {
 void calculateF() {
 
   for (auto &p : particles) {
-    p.setOldF(p.getF());
-    p.setF({0., 0., 0.});
+    p.old_f = p.f;
+    p.f = {0, 0, 0};
   }
 
   for (long unsigned int i = 1; i <= particles.size(); i++) {
     for (long unsigned int j = 0; j < i; j++) {
       auto &p1 = particles[i];
       auto &p2 = particles[j];
-      auto x_diff = p1.getX() - p2.getX();
+      auto x_diff = p1.x - p2.x;
 
-      auto f = ArrayUtils::elementWiseScalarOp(p1.getM() * p2.getM() / pow(ArrayUtils::L2Norm(x_diff), 3), x_diff, std::multiplies());
-      p1.setF(ArrayUtils::elementWisePairOp(p1.getF(), f, std::plus()));
-      p2.setF(ArrayUtils::elementWisePairOp(p2.getF(), f, std::plus()));
+      auto f = p1.m * p2.m / pow(ArrayUtils::L2Norm(x_diff), 3) * x_diff;
+      p1.f = p1.f + f;
+      p2.f = p2.f + f;
     }
   }
 }
 
 void calculateX() {
   for (auto &p : particles) {
+    p.x = p.x + delta_t * p.v + pow(delta_t, 2) * (1 / (2 * p.m)) * p.old_f;
   }
 }
 
 void calculateV() {
   for (auto &p : particles) {
-    // @TODO: insert calculation of veclocity updates here!
+    p.v = p.v + delta_t * (1 / (2 * p.m)) * (p.old_f + p.f);
   }
 }
 
