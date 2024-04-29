@@ -85,8 +85,8 @@ void calculateF() {
       auto &p2 = particles[j];
       auto x_diff = p1.x - p2.x;
 
-      auto f = p1.m * p2.m / pow(ArrayUtils::L2Norm(x_diff), 3) * x_diff;
-      p1.f = p1.f + f;
+      auto f = (p1.m * p2.m) / pow(ArrayUtils::L2Norm(x_diff), 3) * x_diff;
+      p1.f = p1.f - f;
       p2.f = p2.f + f;
     }
   }
