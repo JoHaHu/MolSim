@@ -28,7 +28,7 @@ void XYZWriter::plotParticles(std::vector<Particle>& particles,
        << std::endl;
 
   for (auto &p : particles) {
-    std::array<double, 3> x = p.getX();
+    std::array<double, 3> x = p.x;
     file << "Ar ";
     file.setf(std::ios_base::showpoint);
 
