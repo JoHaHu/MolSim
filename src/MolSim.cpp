@@ -8,26 +8,36 @@
 
 /**** forward declaration of the calculation functions ****/
 
-/**
- * calculates the force for all particles
- */
+//! Function for force calculation
+/*!
+  calculates the force for all particles, takes no arguments and has no return value
+*/
 void calculateF();
 
-/**
- * calculates the position for all particles
- */
+
+//! Function for position calculation
+/*!
+  calculates the position for all particles, takes no arguments and has no return value
+*/
 void calculateX();
 
-/**
- * calculates the position for all particles
- */
+
+//! Function for velocity calculation
+/*!
+  calculates the velocity for all particles, takes no arguments and has no return value
+*/
 void calculateV();
 
-//! plotting function that takes an integer value and has no return value
+
+//! Function for plotting particles
 /*!
+  plots the particles of the particle array, takes an integer value and has no return value
   \param iteration an integer argument that sets the number of iterations
 */
 void plotParticles(int iteration);
+
+
+/**** declaration of the constants ****/
 
 constexpr double start_time = 0; /**< initialisation of the start time of the simulation with 0 */
 constexpr double end_time = 1000; /**< initialisation of the end time of the simulation with 1000 according to the worksheet task 4.1 */
