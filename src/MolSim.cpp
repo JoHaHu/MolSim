@@ -83,11 +83,12 @@ void calculateF() {
     for (long unsigned int j = 0; j < i; j++) {
       auto &p1 = particles[i];
       auto &p2 = particles[j];
-      auto x_diff = p1.x - p2.x;
+      auto x_diff = p2.x - p1.x;
 
-      auto f = (p1.m * p2.m) / pow(ArrayUtils::L2Norm(x_diff), 3) * x_diff;
-      p1.f = p1.f - f;
-      p2.f = p2.f + f;
+      auto norm = ArrayUtils::L2Norm(x_diff);
+      auto f = (p1.m * p2.m) / pow(norm, 3) * x_diff;
+      p1.f = p1.f + f;
+      p2.f = p2.f - f;
     }
   }
 }
