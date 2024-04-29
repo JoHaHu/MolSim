@@ -1,5 +1,6 @@
 
 #include "FileReader.h"
+#include "outputWriter/VTKWriter.h"
 #include "outputWriter/XYZWriter.h"
 #include "utils/ArrayUtils.h"
 
@@ -78,7 +79,7 @@ void calculateF() {
     p.f = {0, 0, 0};
   }
 
-  for (long unsigned int i = 1; i <= particles.size(); i++) {
+  for (long unsigned int i = 0; i < particles.size(); i++) {
     for (long unsigned int j = 0; j < i; j++) {
       auto &p1 = particles[i];
       auto &p2 = particles[j];
