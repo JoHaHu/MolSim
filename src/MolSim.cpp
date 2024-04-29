@@ -9,31 +9,38 @@
 /**** forward declaration of the calculation functions ****/
 
 /**
- * calculate the force for all particles
+ * calculates the force for all particles
  */
 void calculateF();
 
 /**
- * calculate the position for all particles
+ * calculates the position for all particles
  */
 void calculateX();
 
 /**
- * calculate the position for all particles
+ * calculates the position for all particles
  */
 void calculateV();
 
-/**
- * plot the particles to a xyz-file
- */
+//! plotting function that takes an integer value and has no return value
+/*!
+  \param iteration an integer argument that sets the number of iterations
+*/
 void plotParticles(int iteration);
 
-constexpr double start_time = 0;
-constexpr double end_time = 1000;
-constexpr double delta_t = 0.014;
+constexpr double start_time = 0; /**< initialisation of the start time of the simulation with 0 */
+constexpr double end_time = 1000; /**< initialisation of the end time of the simulation with 1000 according to the worksheet task 4.1 */
+constexpr double delta_t = 0.014; /**< time delta of 0.014 according to the worksheet task 4.1 */
 
 std::vector<Particle> particles;
 
+//! main function for execution
+/*!
+  \param argc an integer argument, standard for main function
+  \param argsv a char array argument, standard for main function
+  \return the return code
+*/
 int main(int argc, char *argsv[]) {
 
   std::cout << "Hello from MolSim for PSE!" << std::endl;
