@@ -5,7 +5,6 @@
 #include "utils/ArrayUtils.h"
 
 #include <iostream>
-#include <list>
 
 /**** forward declaration of the calculation functions ****/
 
@@ -63,6 +62,7 @@ int main(int argc, char *argsv[]) {
     if (iteration % 10 == 0) {
       plotParticles(iteration);
     }
+
     std::cout << "Iteration " << iteration << " finished." << std::endl;
 
     current_time += delta_t;
@@ -110,4 +110,13 @@ void plotParticles(int iteration) {
 
   outputWriter::XYZWriter writer;
   writer.plotParticles(particles, out_name, iteration);
+
+  outputWriter::VTKWriter vtk_writer;
+  assert(particles.size() <= INT_MAX);
+  vtk_writer.initializeOutput(static_cast<int>(particles.size()));
+
+  for (auto &p: particles) {
+    vtk_writer.plotParticle(p);
+  }
+  vtk_writer.writeFile(out_name, iteration);
 }
