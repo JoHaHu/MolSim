@@ -5,6 +5,9 @@
 #include "utils/ArrayUtils.h"
 
 #include <iostream>
+#include <filesystem>
+#include <vector>
+#include <cstdlib>
 
 /**** forward declaration of the calculation functions ****/
 
@@ -40,30 +43,37 @@ void plotParticles(int iteration);
 /**** declaration of the constants ****/
 
 constexpr double start_time = 0; /**< initialisation of the start time of the simulation with 0 */
-constexpr double end_time = 1000; /**< initialisation of the end time of the simulation with 1000 according to the worksheet task 4.1 */
-constexpr double delta_t = 0.014; /**< time delta of 0.014 according to the worksheet task 4.1 */
+static double end_time = 0; /**< initialisation of the end time of the simulation (default 1000)*/
+static double delta_t = 0; /**< initialisation of time delta (defaul 0.014)*/
 
 std::vector<Particle> particles;
+
+namespace fs = std::filesystem;
 
 //! main function for execution
 /*!
   \param argc an integer argument, standard for main function
-  \param argsv a char array argument, standard for main function
+  \param argv a char array argument, standard for main function
   \return the return code
 */
-int main(int argc, char *argsv[]) {
+int main(int argc, char *argv[]) {
 
   std::cout << "Hello from MolSim for PSE!" << std::endl;
-  if (argc != 2) {
-    std::cout << "Erroneous programme call! " << std::endl;
-    std::cout << "./molsym filename" << std::endl;
+  if (argc < 4) {
+    std::cout << "Erroneous program call!" << std::endl;
+    std::cout << "Usage: ./molsim filename end_time delta_t" << std::endl;
+    return 1;
   }
 
+  char *filename = argv[1];
+  // Get end_time and delta_t
+  end_time = std::strtod(argv[2], nullptr);
+  delta_t = std::strtod(argv[3], nullptr);
+
   FileReader fileReader;
-  fileReader.readFile(particles, argsv[1]);
+  fileReader.readFile(particles, filename);
 
-  double current_time = start_time;
-
+  double current_time = 0.0;
   int iteration = 0;
 
   // for this loop, we assume: current x, current f and current v are known
@@ -85,7 +95,8 @@ int main(int argc, char *argsv[]) {
     current_time += delta_t;
   }
 
-  std::cout << "output written. Terminating..." << std::endl;
+  std::cout << "Output written. Terminating..." << std::endl;
+
   return 0;
 }
 
