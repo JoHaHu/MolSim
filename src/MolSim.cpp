@@ -9,6 +9,8 @@
 #include <vector>
 #include <cstdlib>
 
+#include "ParticleContainer.h"
+
 /**** forward declaration of the calculation functions ****/
 
 //! Function for force calculation
@@ -47,6 +49,7 @@ static double end_time = 0; /**< initialisation of the end time of the simulatio
 static double delta_t = 0; /**< initialisation of time delta (defaul 0.014)*/
 
 std::vector<Particle> particles;
+//ParticleContainer particles;
 
 namespace fs = std::filesystem;
 
