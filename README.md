@@ -1,6 +1,13 @@
 MolSim2024 - Group D
 ===
 
+## Team members
+
+- Johannes Hupe
+- Julius Kramer
+- Tim Scholl
+
+
 ## Prerequisites
 
 Developed and tested with these versions, other versions might work
