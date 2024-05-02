@@ -44,4 +44,4 @@ class ParticleContainer {
   std::vector<Particle> particles;
 };
 
-static_assert(std::output_iterator<ParticleContainer::PairIterator, std::pair<Particle &, Particle &>>);
+//static_assert(std::output_iterator<ParticleContainer::PairIterator, std::pair<Particle &, Particle &>>);

@@ -7,17 +7,13 @@ std::pair<Particle &, Particle &> ParticleContainer::PairIterator::operator*() {
 }
 
 ParticleContainer::PairIterator &ParticleContainer::PairIterator::operator++() {
-
-  if (++i2 <= end && i1 <= end) {
-    return *this;
-  } else if (++i1 <= end) {
-    i2 = std::next(i1);
-    return *this;
-  } else {
-    i1 = end;
-    i2 = end;
-    return *this;
+  if (i2 != end) ++i2;
+  if (i2 == end && i1 != end) {
+    ++i1;
+    if (i1 != end) i2 = std::next(i1);
   }
+  if (i1 == end) i2 = end;
+  return *this;
 }
 
 ParticleContainer::PairIterator ParticleContainer::PairIterator::operator++(int) {
