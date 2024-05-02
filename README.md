@@ -53,7 +53,7 @@ ninja doc_doxygen
 ```shell
 cd ${BUILD_DIR}
 ninja
-./MolSim
+./MolSim input t_end delta_t
 ```
 
 ## Clean
