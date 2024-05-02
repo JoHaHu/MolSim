@@ -37,3 +37,4 @@ PR: https://github.com/JoHaHu/MolSim/pull/1
 - While implementing we encountered some compiling issues e.g. when using const iterators and some issues that we broke down to local setup differences
 - The strategy pattern can be used to abstract over the different kinds of force calculations
 - We have switched to using a vector for now to store particles.
+- We also added the UML class diagram generation to the Doxyfile which creates a class diagram according to the project, this works by using Graphviz and Doxygen
