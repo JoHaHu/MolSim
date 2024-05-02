@@ -10,33 +10,31 @@
 #include <array>
 #include <string>
 
-class Particle {
-
- private:
+struct Particle {
   /**
    * Position of the particle
    */
-  std::array<double, 3> x;
+  std::array<double, 3> x{};
 
   /**
    * Velocity of the particle
    */
-  std::array<double, 3> v;
+  std::array<double, 3> v{};
 
   /**
    * Force effective on this particle
    */
-  std::array<double, 3> f;
+  std::array<double, 3> f{};
 
   /**
    * Force which was effective on this particle
    */
-  std::array<double, 3> old_f;
+  std::array<double, 3> old_f{};
 
   /**
    * Mass of this particle
    */
-  double m;
+  double m{};
 
   /**
    * Type of the particle. Use it for whatever you want (e.g. to separate
@@ -47,7 +45,8 @@ class Particle {
  public:
   explicit Particle(int type = 0);
 
-  Particle(const Particle &other);
+  Particle(const Particle& other);
+
 
   Particle(
       // for visualization, we need always 3 coordinates
@@ -55,21 +54,9 @@ class Particle {
       std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg,
       int type = 0);
 
-  virtual ~Particle();
+  ~Particle() ;
 
-  const std::array<double, 3> &getX() const;
-
-  const std::array<double, 3> &getV() const;
-
-  const std::array<double, 3> &getF() const;
-
-  const std::array<double, 3> &getOldF() const;
-
-  double getM() const;
-
-  int getType() const;
-
-  bool operator==(Particle &other);
+  bool operator==(Particle &other) const;
 
   std::string toString() const;
 };

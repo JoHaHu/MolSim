@@ -1,6 +1,13 @@
 MolSim2024 - Group D
 ===
 
+## Team members
+
+- Johannes Hupe
+- Julius Kramer
+- Tim Scholl
+
+
 ## Prerequisites
 
 Developed and tested with these versions, other versions might work
@@ -10,13 +17,14 @@ Developed and tested with these versions, other versions might work
 - cmake 3.27.7
 - ninja 1.11.1
 
-These environment variables are assumed to be always set
+These environment variables are assumed to be always set. They are used to select which environment should be build. 
+There purpose is simplifying the documentation only.
 
 ```shell
-export RELEASE_BUILD_DIR=build-release
-export DEBUG_BUILD_DIR=build-debug
+RELEASE_BUILD_DIR=build-release
+DEBUG_BUILD_DIR=build-debug
 
-export BUILD_DIR=RELEASE_BUILD_DIR # or DEBUG_BUILD_DIR if debugging
+BUILD_DIR=RELEASE_BUILD_DIR # or DEBUG_BUILD_DIR if debugging
 ```
 
 Run this in the root folder of this repository
