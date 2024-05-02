@@ -58,7 +58,6 @@ namespace fs = std::filesystem;
   \return the return code
 */
 int main(int argc, char *argv[]) {
-
   std::cout << "Hello from MolSim for PSE!" << std::endl;
   if (argc < 4) {
     std::cout << "Erroneous program call!" << std::endl;
@@ -104,14 +103,12 @@ int main(int argc, char *argv[]) {
 }
 
 void calculateF() {
-
-  for (auto &p : particles) {
+  for (auto &p: particles) {
     p.old_f = p.f;
     p.f = {0, 0, 0};
   }
 
   for (auto pair = particles.begin_pair(); pair != particles.end_pair(); pair++) {
-
     auto [p1, p2] = *pair;
 
     auto x_diff = p2.x - p1.x;
@@ -124,19 +121,18 @@ void calculateF() {
 }
 
 void calculateX() {
-  for (auto &p : particles) {
+  for (auto &p: particles) {
     p.x = p.x + delta_t * p.v + pow(delta_t, 2) * (1 / (2 * p.m)) * p.old_f;
   }
 }
 
 void calculateV() {
-  for (auto &p : particles) {
+  for (auto &p: particles) {
     p.v = p.v + delta_t * (1 / (2 * p.m)) * (p.old_f + p.f);
   }
 }
 
 void plotParticles(int iteration) {
-
   std::string out_name("MD_vtk");
 
   outputWriter::XYZWriter writer;
@@ -146,7 +142,7 @@ void plotParticles(int iteration) {
   assert(particles.size() <= INT_MAX);
   vtk_writer.initializeOutput(static_cast<int>(particles.size()));
 
-  for (auto &p : particles) {
+  for (auto &p: particles) {
     vtk_writer.plotParticle(p);
   }
   vtk_writer.writeFile(out_name, iteration);
