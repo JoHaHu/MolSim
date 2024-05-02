@@ -11,7 +11,7 @@ PR: https://github.com/JoHaHu/MolSim/pull/1
 ### Task 1
 
 - followed instructions
-- decide on using suggested code sanitizer, static analysis and debugging tools
+- decided on using suggested code sanitizer, static analysis and debugging tools as well as .py script for ParaView
 
 ### Task 2
 
