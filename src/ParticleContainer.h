@@ -11,16 +11,22 @@ class ParticleContainer {
 
   class Iterator {
    public:
-    explicit Iterator(std::vector<Particle>::iterator iterator);
-    using difference_type = int;
-    std::pair<Particle &, Particle &> operator*() const;
+    Iterator(
+        std::vector<Particle>::iterator i1,
+        std::vector<Particle>::iterator i2,
+        std::vector<Particle>::iterator end
+    );
 
-    Iterator &operator++() const;
-    Iterator operator++(int) const;
+    using difference_type = int;
+    std::pair<Particle &, Particle &> operator*();
+
+    Iterator &operator++();
+    Iterator operator++(int);
+    bool operator==(Iterator &);
    private:
     std::vector<Particle>::iterator i1;
     std::vector<Particle>::iterator i2;
-
+    std::vector<Particle>::iterator end;
   };
 
   Iterator begin();
