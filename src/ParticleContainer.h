@@ -1,24 +1,33 @@
-#ifndef PARTICLECONTAINER_H
-#define PARTICLECONTAINER_H
-
 #include "Particle.h"
 #include <vector>
 
 class ParticleContainer {
-public:
-    void addParticle(const Particle& particle);
-    void printPairs() const;
+  /***
+   * @param capacity Indicates the capacity of the underlying backing storage
+   * */
+  explicit ParticleContainer(int capacity);
 
-    using Iterator = std::vector<Particle>::iterator;
-    using ConstIterator = std::vector<Particle>::const_iterator;
+ public:
 
-    Iterator begin();
-    Iterator end();
-    [[nodiscard]] ConstIterator begin() const;
-    [[nodiscard]] ConstIterator end() const;
+  class Iterator {
+   public:
+    explicit Iterator(std::vector<Particle>::iterator iterator);
+    using difference_type = int;
+    std::pair<Particle &, Particle &> operator*() const;
 
-private:
-    std::vector<Particle> particles;
+    Iterator &operator++() const;
+    Iterator operator++(int) const;
+   private:
+    std::vector<Particle>::iterator i1;
+    std::vector<Particle>::iterator i2;
+
+  };
+
+  Iterator begin();
+  Iterator end();
+
+ private:
+  std::vector<Particle> particles;
 };
 
-#endif // PARTICLECONTAINER_H
+static_assert(std::output_iterator<ParticleContainer::Iterator, std::pair<Particle &, Particle &>>);
