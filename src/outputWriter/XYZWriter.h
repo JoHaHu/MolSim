@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Particle.h"
+#include "ParticleContainer.h"
 
 #include <fstream>
 #include <vector>
@@ -16,12 +17,12 @@ namespace outputWriter {
 
 class XYZWriter {
 
-public:
+ public:
   XYZWriter();
 
   virtual ~XYZWriter();
 
-  void plotParticles(std::vector<Particle>& particles, const std::string &filename,
+  void plotParticles(ParticleContainer &particles, const std::string &filename,
                      int iteration);
 };
 

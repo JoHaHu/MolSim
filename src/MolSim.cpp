@@ -41,15 +41,13 @@ void calculateV();
 */
 void plotParticles(int iteration);
 
-
 /**** declaration of the constants ****/
 
 constexpr double start_time = 0; /**< initialisation of the start time of the simulation with 0 */
 static double end_time = 0; /**< initialisation of the end time of the simulation (default 1000)*/
 static double delta_t = 0; /**< initialisation of time delta (defaul 0.014)*/
 
-std::vector<Particle> particles;
-//ParticleContainer particles;
+ParticleContainer particles = ParticleContainer(4);
 
 namespace fs = std::filesystem;
 
@@ -73,10 +71,12 @@ int main(int argc, char *argv[]) {
   end_time = std::strtod(argv[2], nullptr);
   delta_t = std::strtod(argv[3], nullptr);
 
+  auto p = std::vector<Particle>();
   FileReader fileReader;
-  fileReader.readFile(particles, filename);
+  fileReader.readFile(p, filename);
+  particles = ParticleContainer(p);
 
-  double current_time = 0.0;
+  double current_time = start_time;
   int iteration = 0;
 
   // for this loop, we assume: current x, current f and current v are known
@@ -110,17 +110,16 @@ void calculateF() {
     p.f = {0, 0, 0};
   }
 
-  for (long unsigned int i = 0; i < particles.size(); i++) {
-    for (long unsigned int j = 0; j < i; j++) {
-      auto &p1 = particles[i];
-      auto &p2 = particles[j];
-      auto x_diff = p2.x - p1.x;
+  for (auto pair = particles.begin_pair(); pair != particles.end_pair(); pair++) {
 
-      auto norm = ArrayUtils::L2Norm(x_diff);
-      auto f = (p1.m * p2.m) / pow(norm, 3) * x_diff;
-      p1.f = p1.f + f;
-      p2.f = p2.f - f;
-    }
+    auto [p1, p2] = *pair;
+
+    auto x_diff = p2.x - p1.x;
+
+    auto norm = ArrayUtils::L2Norm(x_diff);
+    auto f = (p1.m * p2.m) / pow(norm, 3) * x_diff;
+    p1.f = p1.f + f;
+    p2.f = p2.f - f;
   }
 }
 
@@ -147,7 +146,7 @@ void plotParticles(int iteration) {
   assert(particles.size() <= INT_MAX);
   vtk_writer.initializeOutput(static_cast<int>(particles.size()));
 
-  for (auto &p: particles) {
+  for (auto &p : particles) {
     vtk_writer.plotParticle(p);
   }
   vtk_writer.writeFile(out_name, iteration);

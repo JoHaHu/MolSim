@@ -1,17 +1,17 @@
+#pragma once
+
 #include "Particle.h"
 #include <vector>
 
 class ParticleContainer {
-  /***
-   * @param capacity Indicates the capacity of the underlying backing storage
-   * */
-  explicit ParticleContainer(int capacity);
 
  public:
 
-  class Iterator {
+  using Iterator = std::vector<Particle>::iterator;
+
+  class PairIterator {
    public:
-    Iterator(
+    PairIterator(
         std::vector<Particle>::iterator i1,
         std::vector<Particle>::iterator i2,
         std::vector<Particle>::iterator end
@@ -19,10 +19,9 @@ class ParticleContainer {
 
     using difference_type = int;
     std::pair<Particle &, Particle &> operator*();
-
-    Iterator &operator++();
-    Iterator operator++(int);
-    bool operator==(Iterator &);
+    PairIterator &operator++();
+    PairIterator operator++(int);
+    bool operator==(PairIterator &);
    private:
     std::vector<Particle>::iterator i1;
     std::vector<Particle>::iterator i2;
@@ -31,9 +30,18 @@ class ParticleContainer {
 
   Iterator begin();
   Iterator end();
+  unsigned long size();
 
+  PairIterator begin_pair();
+  PairIterator end_pair();
+
+  /***
+    * @param capacity Indicates the capacity of the underlying backing storage
+    * */
+  explicit ParticleContainer(int capacity);
+  explicit ParticleContainer(std::vector<Particle> particles);
  private:
   std::vector<Particle> particles;
 };
 
-static_assert(std::output_iterator<ParticleContainer::Iterator, std::pair<Particle &, Particle &>>);
+static_assert(std::output_iterator<ParticleContainer::PairIterator, std::pair<Particle &, Particle &>>);

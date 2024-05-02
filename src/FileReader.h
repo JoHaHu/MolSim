@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Particle.h"
+#include "ParticleContainer.h"
 
 #include <vector>
 
