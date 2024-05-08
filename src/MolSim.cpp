@@ -1,149 +1,260 @@
-
 #include "FileReader.h"
 #include "outputWriter/VTKWriter.h"
 #include "outputWriter/XYZWriter.h"
 #include "utils/ArrayUtils.h"
-
 #include <iostream>
 #include <filesystem>
 #include <vector>
-#include <cstdlib>
-
+#include <boost/program_options.hpp>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include "ParticleContainer.h"
+#include "utils/LoggerManager.h"
+
+constexpr double start_time = 0;
+ParticleContainer particles = ParticleContainer(4);
+namespace po = boost::program_options;
+namespace fs = std::filesystem;
 
 /**** forward declaration of the calculation functions ****/
 
-//! Function for force calculation
-/*!
-  calculates the force for all particles, takes no arguments and has no return value
-*/
+/**
+ * calculate the force for all particles
+ */
 void calculateF();
 
+/**
+ * calculate the position for all particles
+ */
+void calculateX(double delta_t);
 
-//! Function for position calculation
-/*!
-  calculates the position for all particles, takes no arguments and has no return value
-*/
-void calculateX();
+/**
+ * calculate the position for all particles
+ */
+void calculateV(double delta_t);
 
-
-//! Function for velocity calculation
-/*!
-  calculates the velocity for all particles, takes no arguments and has no return value
-*/
-void calculateV();
-
-
-//! Function for plotting particles
-/*!
-  plots the particles of the particle array, takes an integer value and has no return value
-  \param iteration an integer argument that sets the number of iterations
-*/
+/**
+ * plot the particles to a xyz-file
+ */
 void plotParticles(int iteration);
 
-/**** declaration of the constants ****/
+/**
+ * Parses command-line options.
+ *
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line arguments.
+ * @param vm Stores parsed options.
+ * @return True if parsing succeeds and it's okay to proceed, False if help is displayed or parsing fails.
+ */
+bool InitializeOptions(int argc, char *argv[], po::variables_map &vm) {
+    po::options_description desc("Allowed options");
+    desc.add_options()
+            ("help,h", "produce help message")
+            ("filename,f", po::value<std::string>(), "input filename")
+            ("end_time,e", po::value<double>(), "simulation end time")
+            ("delta_t,d", po::value<double>(), "time step size")
+            ("log_level,l", po::value<std::string>()->default_value("info"),
+             "log level (trace, debug, info, warn, error, critical)");
 
-constexpr double start_time = 0; /**< initialisation of the start time of the simulation with 0 */
-static double end_time = 0; /**< initialisation of the end time of the simulation (default 1000)*/
-static double delta_t = 0; /**< initialisation of time delta (defaul 0.014)*/
-
-ParticleContainer particles = ParticleContainer(4);
-
-namespace fs = std::filesystem;
-
-//! main function for execution
-/*!
-  \param argc an integer argument, standard for main function
-  \param argv a char array argument, standard for main function
-  \return the return code
-*/
-int main(int argc, char *argv[]) {
-  std::cout << "Hello from MolSim for PSE!" << std::endl;
-  if (argc < 4) {
-    std::cout << "Erroneous program call!" << std::endl;
-    std::cout << "Usage: ./molsim filename end_time delta_t" << std::endl;
-    return 1;
-  }
-
-  char *filename = argv[1];
-  // Get end_time and delta_t
-  end_time = std::strtod(argv[2], nullptr);
-  delta_t = std::strtod(argv[3], nullptr);
-
-  auto p = std::vector<Particle>();
-  FileReader fileReader;
-  fileReader.readFile(p, filename);
-  particles = ParticleContainer(p);
-
-  double current_time = start_time;
-  int iteration = 0;
-
-  // for this loop, we assume: current x, current f and current v are known
-  while (current_time < end_time) {
-    // calculate new x
-    calculateX();
-    // calculate new f
-    calculateF();
-    // calculate new v
-    calculateV();
-
-    iteration++;
-    if (iteration % 10 == 0) {
-      plotParticles(iteration);
+    try {
+        po::store(po::parse_command_line(argc, argv, desc), vm);
+        po::notify(vm);
+    } catch (po::error &e) {
+        std::cerr << "ERROR: " << e.what() << std::endl;
+        std::cerr << desc << std::endl;
+        return false;
     }
 
-    std::cout << "Iteration " << iteration << " finished." << std::endl;
+    if (vm.count("help")) {
+        std::cout << desc << std::endl;
+        return false;
+    }
 
-    current_time += delta_t;
-  }
+    // Check input validity
+    if (!vm.count("filename") || !vm.count("end_time") || !vm.count("delta_t")) {
+        auto logger = LoggerManager::getLogger();
+        logger->error("Erroneous program call!\nUsage: ./MolSim -f filename -e end_time -d delta_t -l log_level (trace, debug, info, warn, error, critical)");
+        return false;
+    }
 
-  std::cout << "Output written. Terminating..." << std::endl;
+    return true;
+}
 
-  return 0;
+/**
+ * Sets the logger's level based on input.
+ *
+ * @param level Log level as a string.
+ */
+void SetupLogger(const std::string &level) {
+    spdlog::level::level_enum log_level = spdlog::level::from_str(level);
+    LoggerManager::setLogLevel(log_level);
+}
+
+/**
+ * Runs the simulation for given particles and parameters.
+ *
+ * @param particles List of particles.
+ * @param start_time Start time of the simulation.
+ * @param end_time End time of the simulation.
+ * @param delta_t Time step size.
+ *
+ * Updates particle states and logs progress every X iterations.
+ */
+void RunSimulation(double start_time, double end_time, double delta_t) {
+    auto logger = LoggerManager::getLogger();
+    logger->info("Running simulation...");
+    int iteration = 0;
+    double current_time = start_time;
+
+    while (current_time < end_time) {
+        calculateX(delta_t);
+        calculateF();
+        calculateV(delta_t);
+
+        iteration++;
+        if (iteration % 10 == 0) {
+            plotParticles(iteration);
+            logger->debug("Iteration {} plotted.", iteration);
+        }
+
+        logger->debug("Iteration {} finished.", iteration);
+        current_time += delta_t;
+    }
+}
+
+/**
+ * Main entry point of the MolSim particle simulation program.
+ *
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line arguments.
+ * @return 0 if successful, 1 on error.
+ *
+ * Orchestrates initialization, input validation, and simulation. Logs final output or errors.
+ */
+int main(int argc, char *argv[]) {
+    po::variables_map vm;
+    if (!InitializeOptions(argc, argv, vm)) {
+        return 1;
+    }
+
+    SetupLogger(vm["log_level"].as<std::string>());
+    auto logger = LoggerManager::getLogger();
+    logger->info("Hello from MolSim for PSE!");
+
+    std::string filename = vm["filename"].as<std::string>();
+    double end_time = vm["end_time"].as<double>();
+    double delta_t = vm["delta_t"].as<double>();
+    std::string log_level = vm["log_level"].as<std::string>();
+
+    logger->debug("Filename: {}", filename);
+    logger->debug("End Time: {}", end_time);
+    logger->debug("Delta T: {}", delta_t);
+    logger->debug("Log Level: {}", log_level);
+
+    std::vector<Particle> particles;
+    FileReader fileReader;
+    try {
+        logger->info("Reading file: " + filename);
+        fileReader.readFile(particles, filename);
+    } catch (const std::exception &e) {
+        logger->error("Failed to read file: {}", e.what());
+        return 1;
+    }
+
+    ParticleContainer particleContainer(particles);
+    RunSimulation(start_time, end_time, delta_t);
+
+    logger->info("Output written. Terminating...");
+
+    return 0;
 }
 
 void calculateF() {
-  for (auto &p: particles) {
-    p.old_f = p.f;
-    p.f = {0, 0, 0};
-  }
+    auto logger = LoggerManager::getLogger();
+    logger->debug("Starting force calculation for {} particles.", particles.size());
+    for (auto &p: particles) {
+        p.old_f = p.f;
+        p.f = {0, 0, 0};
+    }
 
-  for (auto pair = particles.begin_pair(); pair != particles.end_pair(); pair++) {
-    auto [p1, p2] = *pair;
+    try {
+        for (auto pair = particles.begin_pair(); pair != particles.end_pair(); pair++) {
+            auto [p1, p2] = *pair;
 
-    auto x_diff = p2.x - p1.x;
+            auto x_diff = p2.x - p1.x;
 
-    auto norm = ArrayUtils::L2Norm(x_diff);
-    auto f = (p1.m * p2.m) / pow(norm, 3) * x_diff;
-    p1.f = p1.f + f;
-    p2.f = p2.f - f;
-  }
+            auto norm = ArrayUtils::L2Norm(x_diff);
+            if (norm == 0) {
+                logger->warn("Zero distance between particles encountered, skipping force calculation for a pair.");
+                continue;
+            }
+            auto f = (p1.m * p2.m) / pow(norm, 3) * x_diff;
+            p1.f = p1.f + f;
+            p2.f = p2.f - f;
+            logger->trace("Force calculation completed.");
+        }
+    } catch (const std::exception &e) {
+        logger->error("Error during force calculation: {}", e.what());
+    }
 }
 
-void calculateX() {
-  for (auto &p: particles) {
-    p.x = p.x + delta_t * p.v + pow(delta_t, 2) * (1 / (2 * p.m)) * p.old_f;
-  }
+
+void calculateX(double delta_t) {
+    auto logger = LoggerManager::getLogger();
+    logger->debug("Updating positions for {} particles.", particles.size());
+
+    try {
+        for (auto &p: particles) {
+            p.x = p.x + delta_t * p.v + (pow(delta_t, 2) / (2 * p.m)) * p.old_f;
+
+            logger->trace("Particle updated.");
+        }
+        logger->trace("Position updates completed.");
+    } catch (const std::exception &e) {
+        logger->error("Error during position update: {}", e.what());
+    }
 }
 
-void calculateV() {
-  for (auto &p: particles) {
-    p.v = p.v + delta_t * (1 / (2 * p.m)) * (p.old_f + p.f);
-  }
+void calculateV(double delta_t) {
+    auto logger = LoggerManager::getLogger();
+    logger->debug("Updating velocities for {} particles.", particles.size());
+
+    try {
+        for (auto &p: particles) {
+            p.v = p.v + delta_t * (1 / (2 * p.m)) * (p.old_f + p.f);
+
+            logger->trace("Particle velocity updated.");
+        }
+        logger->trace("Velocity updates completed.");
+    } catch (const std::exception &e) {
+        logger->error("Error during velocity update: {}", e.what());
+    }
 }
 
 void plotParticles(int iteration) {
-  std::string out_name("MD_vtk");
+    auto logger = LoggerManager::getLogger();
+    logger->debug("Starting particle plotting for iteration {}", iteration);
 
-  outputWriter::XYZWriter writer;
-  writer.plotParticles(particles, out_name, iteration);
+    std::string out_name("MD_vtk");
 
-  outputWriter::VTKWriter vtk_writer;
-  assert(particles.size() <= INT_MAX);
-  vtk_writer.initializeOutput(static_cast<int>(particles.size()));
+    try {
+        outputWriter::XYZWriter writer;
+        writer.plotParticles(particles, out_name, iteration);
+        logger->debug("XYZ particle plotting completed for iteration {}", iteration);
 
-  for (auto &p: particles) {
-    vtk_writer.plotParticle(p);
-  }
-  vtk_writer.writeFile(out_name, iteration);
+        outputWriter::VTKWriter vtk_writer;
+        if (particles.size() > INT_MAX) {
+            logger->error("Particle size > INT_MAX! Abort.");
+            throw std::runtime_error("Particle size exceeds maximum allowable value (INT_MAX), cannot proceed!");
+        }
+        vtk_writer.initializeOutput(static_cast<int>(particles.size()));
+
+        for (auto &p: particles) {
+            vtk_writer.plotParticle(p);
+        }
+        vtk_writer.writeFile(out_name, iteration);
+        logger->debug("VTK particle plotting and file writing completed for iteration {}", iteration);
+    } catch (const std::exception &e) {
+        logger->error("Error during particle plotting for iteration {}: {}", iteration, e.what());
+    }
 }
