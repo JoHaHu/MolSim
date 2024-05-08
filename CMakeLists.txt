@@ -12,7 +12,6 @@ if (NOT CMAKE_BUILD_TYPE)
             "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif (NOT CMAKE_BUILD_TYPE)
 
-
 # collect all cpp files
 file(GLOB_RECURSE MY_SRC
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
@@ -37,7 +36,6 @@ target_include_directories(MolSim
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-
 target_link_libraries(MolSim
         # stuff that is used in headers and source files
         PUBLIC
@@ -54,20 +52,31 @@ target_compile_options(MolSim
         $<$<CXX_COMPILER_ID:Clang>:-Wall>
 )
 
+# Boost configuration
+find_package(Boost REQUIRED COMPONENTS system filesystem program_options)
+if (Boost_FOUND)
+    target_include_directories(MolSim PRIVATE ${Boost_INCLUDE_DIRS})
+    target_link_libraries(MolSim PRIVATE ${Boost_LIBRARIES})
+endif ()
 
-if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
-    # TODO add options for sanitizers
+# Spdlog configuration
+find_package(spdlog REQUIRED)
+if (spdlog_FOUND)
+    target_link_libraries(MolSim PRIVATE spdlog::spdlog)
+endif ()
+
+# Configure Debug and Release specific options
+if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     target_compile_options(MolSim
             PRIVATE
             $<$<CXX_COMPILER_ID:Clang>: -g -O1 -fno-omit-frame-pointer>
     )
-elseif (CMAKE_BUILD_TYPE EQUAL "RELEASE")
+elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
     target_compile_options(MolSim
             PRIVATE
             $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize >
     )
-endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
-
+endif ()
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
