@@ -33,7 +33,7 @@
 
 /**
  * @file
- * @brief Generated from vtk-unstructured.xsd.
+ * @brief Generated from VTKUnstructured.xsd.
  */
 
 #ifndef VTK_UNSTRUCTURED_H
