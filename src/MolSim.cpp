@@ -73,7 +73,8 @@ bool InitializeOptions(int argc, char *argv[], po::variables_map &vm) {
     // Check input validity
     if (!vm.count("filename") || !vm.count("end_time") || !vm.count("delta_t")) {
         auto logger = LoggerManager::getLogger();
-        logger->error("Erroneous program call!\nUsage: ./MolSim -f filename -e end_time -d delta_t -l log_level (trace, debug, info, warn, error, critical)");
+        logger->error(
+            "Erroneous program call!\nUsage: ./MolSim -f filename -e end_time -d delta_t -l log_level (trace, debug, info, warn, error, critical)");
         return false;
     }
 
