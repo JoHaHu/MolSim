@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include "utils/LoggerManager.h"
 
 namespace outputWriter {
 
@@ -62,10 +63,11 @@ void VTKWriter::writeFile(const std::string &filename, int iteration) {
 }
 
 void VTKWriter::plotParticle(Particle &p) {
+  auto logger = LoggerManager::getLogger();
   if (vtkFile->UnstructuredGrid().present()) {
-    std::cout << "UnstructuredGrid is present" << std::endl;
+    logger->trace("UnstructuredGrid is present");
   } else {
-    std::cout << "ERROR: No UnstructuredGrid present" << std::endl;
+    logger->warn("ERROR: No UnstructuredGrid present");
   }
 
   PointData::DataArray_sequence &pointDataSequence =
