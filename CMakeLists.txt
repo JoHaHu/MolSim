@@ -12,6 +12,7 @@ if (NOT CMAKE_BUILD_TYPE)
             "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif (NOT CMAKE_BUILD_TYPE)
 
+
 # collect all cpp files
 file(GLOB_RECURSE MY_SRC
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
@@ -35,6 +36,7 @@ target_include_directories(MolSim
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
+
 
 target_link_libraries(MolSim
         # stuff that is used in headers and source files
@@ -70,3 +72,8 @@ endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
 include(doxygen)
+
+# for Googletest Suite
+enable_testing()
+add_subdirectory(test)
+
