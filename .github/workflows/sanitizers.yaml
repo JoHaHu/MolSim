@@ -12,7 +12,6 @@ jobs:
           - gcc
           - clang
         build_type:
-          - Release
           - Debug
     runs-on: "ubuntu-latest"
     steps:
@@ -27,7 +26,6 @@ jobs:
           - gcc
           - clang
         build_type:
-          - Release
           - Debug
     runs-on: "ubuntu-latest"
     steps:
