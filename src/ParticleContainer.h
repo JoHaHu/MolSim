@@ -18,8 +18,7 @@ class ParticleContainer {
     PairIterator(
         std::vector<Particle>::iterator i1,
         std::vector<Particle>::iterator i2,
-        std::vector<Particle>::iterator end
-    );
+        std::vector<Particle>::iterator end);
 
     using difference_type = int;
 
