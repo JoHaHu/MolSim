@@ -1,5 +1,5 @@
 find_package(Doxygen
-        REQUIRED dot)
+        COMPONENTS dot)
 
 if (DOXYGEN_FOUND)
     doxygen_add_docs(doc_doxygen
