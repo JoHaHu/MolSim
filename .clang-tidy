@@ -1,2 +1,4 @@
 Checks: "cppcoreguidelines-*,modernize-*"
 #WarningsAsErrors: "cppcoreguidelines-*,modernize-*"
+SystemHeaders: false
+FormatStyle: file
