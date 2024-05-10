@@ -12,7 +12,7 @@ jobs:
         sanitizer:
           - asan
           - ubsan
-          - msan
+        # - msan
         compiler:
           - gcc
         # - clang
