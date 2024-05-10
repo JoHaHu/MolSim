@@ -86,7 +86,6 @@ endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
 
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
-
 include(doxygen)
 
 # for Googletest Suite
