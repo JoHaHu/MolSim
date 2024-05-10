@@ -56,9 +56,9 @@ class Particle {
 
   ~Particle();
 
-  bool operator==(Particle &other) const;
+  auto operator==(Particle &other) const -> bool;
 
-  std::string toString() const;
+  [[nodiscard]] auto toString() const -> std::string;
 };
 
-std::ostream &operator<<(std::ostream &stream, Particle &p);
+auto operator<<(std::ostream &stream, Particle &p) -> std::ostream &;
