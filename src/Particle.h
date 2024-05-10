@@ -11,7 +11,7 @@
 #include <string>
 
 class Particle {
-public:
+ public:
   /**
    * Position of the particle
    */
