@@ -1,0 +1,24 @@
+name: code-quality
+on:
+  pull_request:
+    branches:
+      - master
+      - ws*
+jobs:
+  check-format:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - run: find src  -iname "*.h" -o -iname "*.cpp" | xargs clang-format --dry-run --Werror
+
+  check-clang-tidy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - run: cmake -DCMAKE_TOOLCHAIN_FILE=./toolchains/test.cmake -G 'Unix Makefiles' -S $(pwd) -B $(pwd)/build
+      - run: cd ./build && make build
+      - run: find src  -iname "*.h" -o -iname "*.cpp" | xargs clang-format --dry-run --Werror

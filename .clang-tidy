@@ -1,0 +1,2 @@
+Checks: "cppcoreguidelines-*,modernize-*"
+#WarningsAsErrors: "cppcoreguidelines-*,modernize-*"
