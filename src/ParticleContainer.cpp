@@ -48,18 +48,19 @@ ParticleContainer::PairIterator::PairIterator(std::vector<Particle>::iterator i1
 
 ParticleContainer::PairIterator ParticleContainer::begin_pair() {
   return {
-    particles.begin(), std::next(particles.begin()), particles.end()
+      particles.begin(), std::next(particles.begin()), particles.end()
   };
 }
 
 ParticleContainer::PairIterator ParticleContainer::end_pair() {
   return {
-    particles.end(), particles.end(), particles.end()
+      particles.end(), particles.end(), particles.end()
   };
 }
 
 ParticleContainer::ParticleContainer(int capacity) {
-  particles = std::vector<Particle>(capacity);
+  particles = std::vector<Particle>();
+  particles.reserve(capacity);
 }
 
 ParticleContainer::Iterator ParticleContainer::begin() {
