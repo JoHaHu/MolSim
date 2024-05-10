@@ -22,4 +22,4 @@ jobs:
       - run: sudo apt-get install libxerces-c-dev
       - run: cmake -DCMAKE_TOOLCHAIN_FILE=./toolchains/test.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -G 'Unix Makefiles' -S $(pwd) -B $(pwd)/build
       - run: cd ./build && make VERBOSE=1
-      - run: clang-tidy src/*.{cpp,h} -p ./build/compile_commands.json
+      - run: clang-tidy src/**/*.{cpp,h} -p ./build/compile_commands.json
