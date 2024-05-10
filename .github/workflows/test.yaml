@@ -1,0 +1,15 @@
+name: run tests
+run-name: run test
+on:
+  pull_request:
+    branches:
+      - master
+      - ws*
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install libxerces-c-dev
+      - run: cmake -DCMAKE_TOOLCHAIN_FILE=./toolchains/${{ matrix.compiler }}-${{ matrix.sanitizer}}.cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -G 'Unix Makefiles' -S $(pwd) -B $(pwd)/build
+      - run: cd ./build && make test
