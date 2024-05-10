@@ -11,5 +11,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get install libxerces-c-dev
-      - run: cmake -DCMAKE_TOOLCHAIN_FILE=./toolchains/${{ matrix.compiler }}-${{ matrix.sanitizer}}.cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -G 'Unix Makefiles' -S $(pwd) -B $(pwd)/build
+      - run: cmake -DCMAKE_TOOLCHAIN_FILE=./toolchains/test.cmake -G 'Unix Makefiles' -S $(pwd) -B $(pwd)/build
       - run: cd ./build && make test
