@@ -7,7 +7,6 @@ MolSim2024 - Group D
 - Julius Kramer
 - Tim Scholl
 
-
 ## Prerequisites
 
 Developed and tested with these versions, other versions might work
@@ -17,7 +16,7 @@ Developed and tested with these versions, other versions might work
 - cmake 3.27.7
 - ninja 1.11.1
 
-These environment variables are assumed to be always set. They are used to select which environment should be build. 
+These environment variables are assumed to be always set. They are used to select which environment should be build.
 There purpose is simplifying the documentation only.
 
 ```shell
@@ -50,7 +49,7 @@ Run this in the root folder of this repository
                 -B $(pwd)/${BUILD_DIR}
 ```
 
-`-G 'Unix Makefile'` would generate make files if required
+`-G 'Unix Makefiles'` would generate make files if required
 
 ## Building documentation
 
