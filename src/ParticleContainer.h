@@ -22,13 +22,13 @@ class ParticleContainer {
 
     using difference_type = int;
 
-    std::pair<Particle &, Particle &> operator*();
+    auto operator*() -> std::pair<Particle &, Particle &>;
 
-    PairIterator &operator++();
+    auto operator++() -> PairIterator &;
 
-    PairIterator operator++(int);
+    auto operator++(int) -> PairIterator;
 
-    bool operator==(PairIterator &);
+    auto operator==(PairIterator &) -> bool;
 
    private:
     std::vector<Particle>::iterator i1;
@@ -36,15 +36,15 @@ class ParticleContainer {
     std::vector<Particle>::iterator end;
   };
 
-  Iterator begin();
+  auto begin() -> Iterator;
 
-  Iterator end();
+  auto end() -> Iterator;
 
-  unsigned long size();
+  auto size() -> unsigned long;
 
-  PairIterator begin_pair();
+  auto begin_pair() -> PairIterator;
 
-  PairIterator end_pair();
+  auto end_pair() -> PairIterator;
 
   /**
    * Constructor that reserves space for a specific number of particles.

@@ -4,6 +4,7 @@
 #include "outputWriter/XYZWriter.h"
 #include "utils/ArrayUtils.h"
 
+#include <cstdlib>
 #include <iostream>
 #include <filesystem>
 #include <vector>

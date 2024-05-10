@@ -6,6 +6,9 @@
  */
 
 #include "FileReader.h"
+
+#include <math.h>
+
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -18,11 +21,11 @@ FileReader::FileReader() = default;
 
 FileReader::~FileReader() = default;
 
-void FileReader::readFile(std::vector<Particle> &particles, const std::string &filename) {
-    std::array<double, 3> x;
-    std::array<double, 3> v;
-    double m;
-    int num_particles = 0;
+void FileReader::readFile(std::vector<Particle> &particles, char *filename) {
+  std::array<double, 3> x{};
+  std::array<double, 3> v{};
+  double m = NAN;
+  int num_particles = 0;
 
     std::ifstream input_file(filename);
     std::string tmp_string;
