@@ -10,7 +10,7 @@
 #include <array>
 #include <string>
 
-struct Particle {
+class Particle {
   /**
    * Position of the particle
    */
