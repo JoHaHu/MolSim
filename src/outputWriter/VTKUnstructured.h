@@ -66,8 +66,8 @@
 
 #include <xsd/cxx/xml/char-utf8.hxx>
 
-#include <xsd/cxx/tree/exceptions.hxx>
 #include <xsd/cxx/tree/elements.hxx>
+#include <xsd/cxx/tree/exceptions.hxx>
 #include <xsd/cxx/tree/types.hxx>
 
 #include <xsd/cxx/xml/error-handler.hxx>
@@ -75,544 +75,526 @@
 #include <xsd/cxx/xml/dom/auto-ptr.hxx>
 
 #include <xsd/cxx/tree/parsing.hxx>
-#include <xsd/cxx/tree/parsing/byte.hxx>
-#include <xsd/cxx/tree/parsing/unsigned-byte.hxx>
-#include <xsd/cxx/tree/parsing/short.hxx>
-#include <xsd/cxx/tree/parsing/unsigned-short.hxx>
-#include <xsd/cxx/tree/parsing/int.hxx>
-#include <xsd/cxx/tree/parsing/unsigned-int.hxx>
-#include <xsd/cxx/tree/parsing/long.hxx>
-#include <xsd/cxx/tree/parsing/unsigned-long.hxx>
 #include <xsd/cxx/tree/parsing/boolean.hxx>
-#include <xsd/cxx/tree/parsing/float.hxx>
-#include <xsd/cxx/tree/parsing/double.hxx>
+#include <xsd/cxx/tree/parsing/byte.hxx>
 #include <xsd/cxx/tree/parsing/decimal.hxx>
+#include <xsd/cxx/tree/parsing/double.hxx>
+#include <xsd/cxx/tree/parsing/float.hxx>
+#include <xsd/cxx/tree/parsing/int.hxx>
+#include <xsd/cxx/tree/parsing/long.hxx>
+#include <xsd/cxx/tree/parsing/short.hxx>
+#include <xsd/cxx/tree/parsing/unsigned-byte.hxx>
+#include <xsd/cxx/tree/parsing/unsigned-int.hxx>
+#include <xsd/cxx/tree/parsing/unsigned-long.hxx>
+#include <xsd/cxx/tree/parsing/unsigned-short.hxx>
 
-#include <xsd/cxx/xml/dom/serialization-header.hxx>
 #include <xsd/cxx/tree/serialization.hxx>
-#include <xsd/cxx/tree/serialization/byte.hxx>
-#include <xsd/cxx/tree/serialization/unsigned-byte.hxx>
-#include <xsd/cxx/tree/serialization/short.hxx>
-#include <xsd/cxx/tree/serialization/unsigned-short.hxx>
-#include <xsd/cxx/tree/serialization/int.hxx>
-#include <xsd/cxx/tree/serialization/unsigned-int.hxx>
-#include <xsd/cxx/tree/serialization/long.hxx>
-#include <xsd/cxx/tree/serialization/unsigned-long.hxx>
 #include <xsd/cxx/tree/serialization/boolean.hxx>
-#include <xsd/cxx/tree/serialization/float.hxx>
-#include <xsd/cxx/tree/serialization/double.hxx>
+#include <xsd/cxx/tree/serialization/byte.hxx>
 #include <xsd/cxx/tree/serialization/decimal.hxx>
+#include <xsd/cxx/tree/serialization/double.hxx>
+#include <xsd/cxx/tree/serialization/float.hxx>
+#include <xsd/cxx/tree/serialization/int.hxx>
+#include <xsd/cxx/tree/serialization/long.hxx>
+#include <xsd/cxx/tree/serialization/short.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-byte.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-int.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-long.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-short.hxx>
+#include <xsd/cxx/xml/dom/serialization-header.hxx>
 
 /**
  * @brief C++ namespace for the %http://www.w3.org/2001/XMLSchema
  * schema namespace.
  */
-namespace xml_schema
-{
-  // anyType and anySimpleType.
-  //
+namespace xml_schema {
+// anyType and anySimpleType.
+//
 
-  /**
+/**
    * @brief C++ type corresponding to the anyType XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::type type;
+typedef ::xsd::cxx::tree::type type;
 
-  /**
+/**
    * @brief C++ type corresponding to the anySimpleType XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::simple_type< char, type > simple_type;
+typedef ::xsd::cxx::tree::simple_type<char, type> simple_type;
 
-  /**
+/**
    * @brief Alias for the anyType type.
    */
-  typedef ::xsd::cxx::tree::type container;
+typedef ::xsd::cxx::tree::type container;
 
+// 8-bit
+//
 
-  // 8-bit
-  //
-
-  /**
+/**
    * @brief C++ type corresponding to the byte XML Schema
    * built-in type.
    */
-  typedef signed char byte;
+typedef signed char byte;
 
-  /**
+/**
    * @brief C++ type corresponding to the unsignedByte XML Schema
    * built-in type.
    */
-  typedef unsigned char unsigned_byte;
+typedef unsigned char unsigned_byte;
 
+// 16-bit
+//
 
-  // 16-bit
-  //
-
-  /**
+/**
    * @brief C++ type corresponding to the short XML Schema
    * built-in type.
    */
-  typedef short short_;
+typedef short short_;
 
-  /**
+/**
    * @brief C++ type corresponding to the unsignedShort XML Schema
    * built-in type.
    */
-  typedef unsigned short unsigned_short;
+typedef unsigned short unsigned_short;
 
+// 32-bit
+//
 
-  // 32-bit
-  //
-
-  /**
+/**
    * @brief C++ type corresponding to the int XML Schema
    * built-in type.
    */
-  typedef int int_;
+typedef int int_;
 
-  /**
+/**
    * @brief C++ type corresponding to the unsignedInt XML Schema
    * built-in type.
    */
-  typedef unsigned int unsigned_int;
+typedef unsigned int unsigned_int;
 
+// 64-bit
+//
 
-  // 64-bit
-  //
-
-  /**
+/**
    * @brief C++ type corresponding to the long XML Schema
    * built-in type.
    */
-  typedef long long long_;
+typedef long long long_;
 
-  /**
+/**
    * @brief C++ type corresponding to the unsignedLong XML Schema
    * built-in type.
    */
-  typedef unsigned long long unsigned_long;
+typedef unsigned long long unsigned_long;
 
+// Supposed to be arbitrary-length integral types.
+//
 
-  // Supposed to be arbitrary-length integral types.
-  //
-
-  /**
+/**
    * @brief C++ type corresponding to the integer XML Schema
    * built-in type.
    */
-  typedef long long integer;
+typedef long long integer;
 
-  /**
+/**
    * @brief C++ type corresponding to the nonPositiveInteger XML Schema
    * built-in type.
    */
-  typedef long long non_positive_integer;
+typedef long long non_positive_integer;
 
-  /**
+/**
    * @brief C++ type corresponding to the nonNegativeInteger XML Schema
    * built-in type.
    */
-  typedef unsigned long long non_negative_integer;
+typedef unsigned long long non_negative_integer;
 
-  /**
+/**
    * @brief C++ type corresponding to the positiveInteger XML Schema
    * built-in type.
    */
-  typedef unsigned long long positive_integer;
+typedef unsigned long long positive_integer;
 
-  /**
+/**
    * @brief C++ type corresponding to the negativeInteger XML Schema
    * built-in type.
    */
-  typedef long long negative_integer;
+typedef long long negative_integer;
 
+// Boolean.
+//
 
-  // Boolean.
-  //
-
-  /**
+/**
    * @brief C++ type corresponding to the boolean XML Schema
    * built-in type.
    */
-  typedef bool boolean;
+typedef bool boolean;
 
+// Floating-point types.
+//
 
-  // Floating-point types.
-  //
-
-  /**
+/**
    * @brief C++ type corresponding to the float XML Schema
    * built-in type.
    */
-  typedef float float_;
+typedef float float_;
 
-  /**
+/**
    * @brief C++ type corresponding to the double XML Schema
    * built-in type.
    */
-  typedef double double_;
+typedef double double_;
 
-  /**
+/**
    * @brief C++ type corresponding to the decimal XML Schema
    * built-in type.
    */
-  typedef double decimal;
+typedef double decimal;
 
+// String types.
+//
 
-  // String types.
-  //
-
-  /**
+/**
    * @brief C++ type corresponding to the string XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::string< char, simple_type > string;
+typedef ::xsd::cxx::tree::string<char, simple_type> string;
 
-  /**
+/**
    * @brief C++ type corresponding to the normalizedString XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::normalized_string< char, string > normalized_string;
+typedef ::xsd::cxx::tree::normalized_string<char, string> normalized_string;
 
-  /**
+/**
    * @brief C++ type corresponding to the token XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::token< char, normalized_string > token;
+typedef ::xsd::cxx::tree::token<char, normalized_string> token;
 
-  /**
+/**
    * @brief C++ type corresponding to the Name XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::name< char, token > name;
+typedef ::xsd::cxx::tree::name<char, token> name;
 
-  /**
+/**
    * @brief C++ type corresponding to the NMTOKEN XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::nmtoken< char, token > nmtoken;
+typedef ::xsd::cxx::tree::nmtoken<char, token> nmtoken;
 
-  /**
+/**
    * @brief C++ type corresponding to the NMTOKENS XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::nmtokens< char, simple_type, nmtoken > nmtokens;
+typedef ::xsd::cxx::tree::nmtokens<char, simple_type, nmtoken> nmtokens;
 
-  /**
+/**
    * @brief C++ type corresponding to the NCName XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::ncname< char, name > ncname;
+typedef ::xsd::cxx::tree::ncname<char, name> ncname;
 
-  /**
+/**
    * @brief C++ type corresponding to the language XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::language< char, token > language;
+typedef ::xsd::cxx::tree::language<char, token> language;
 
+// ID/IDREF.
+//
 
-  // ID/IDREF.
-  //
-
-  /**
+/**
    * @brief C++ type corresponding to the ID XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::id< char, ncname > id;
+typedef ::xsd::cxx::tree::id<char, ncname> id;
 
-  /**
+/**
    * @brief C++ type corresponding to the IDREF XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::idref< char, ncname, type > idref;
+typedef ::xsd::cxx::tree::idref<char, ncname, type> idref;
 
-  /**
+/**
    * @brief C++ type corresponding to the IDREFS XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::idrefs< char, simple_type, idref > idrefs;
+typedef ::xsd::cxx::tree::idrefs<char, simple_type, idref> idrefs;
 
+// URI.
+//
 
-  // URI.
-  //
-
-  /**
+/**
    * @brief C++ type corresponding to the anyURI XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::uri< char, simple_type > uri;
+typedef ::xsd::cxx::tree::uri<char, simple_type> uri;
 
+// Qualified name.
+//
 
-  // Qualified name.
-  //
-
-  /**
+/**
    * @brief C++ type corresponding to the QName XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::qname< char, simple_type, uri, ncname > qname;
+typedef ::xsd::cxx::tree::qname<char, simple_type, uri, ncname> qname;
 
+// Binary.
+//
 
-  // Binary.
-  //
-
-  /**
+/**
    * @brief Binary buffer type.
    */
-  typedef ::xsd::cxx::tree::buffer< char > buffer;
+typedef ::xsd::cxx::tree::buffer<char> buffer;
 
-  /**
+/**
    * @brief C++ type corresponding to the base64Binary XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::base64_binary< char, simple_type > base64_binary;
+typedef ::xsd::cxx::tree::base64_binary<char, simple_type> base64_binary;
 
-  /**
+/**
    * @brief C++ type corresponding to the hexBinary XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::hex_binary< char, simple_type > hex_binary;
+typedef ::xsd::cxx::tree::hex_binary<char, simple_type> hex_binary;
 
+// Date/time.
+//
 
-  // Date/time.
-  //
-
-  /**
+/**
    * @brief Time zone type.
    */
-  typedef ::xsd::cxx::tree::time_zone time_zone;
+typedef ::xsd::cxx::tree::time_zone time_zone;
 
-  /**
+/**
    * @brief C++ type corresponding to the date XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::date< char, simple_type > date;
+typedef ::xsd::cxx::tree::date<char, simple_type> date;
 
-  /**
+/**
    * @brief C++ type corresponding to the dateTime XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::date_time< char, simple_type > date_time;
+typedef ::xsd::cxx::tree::date_time<char, simple_type> date_time;
 
-  /**
+/**
    * @brief C++ type corresponding to the duration XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::duration< char, simple_type > duration;
+typedef ::xsd::cxx::tree::duration<char, simple_type> duration;
 
-  /**
+/**
    * @brief C++ type corresponding to the gDay XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::gday< char, simple_type > gday;
+typedef ::xsd::cxx::tree::gday<char, simple_type> gday;
 
-  /**
+/**
    * @brief C++ type corresponding to the gMonth XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::gmonth< char, simple_type > gmonth;
+typedef ::xsd::cxx::tree::gmonth<char, simple_type> gmonth;
 
-  /**
+/**
    * @brief C++ type corresponding to the gMonthDay XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::gmonth_day< char, simple_type > gmonth_day;
+typedef ::xsd::cxx::tree::gmonth_day<char, simple_type> gmonth_day;
 
-  /**
+/**
    * @brief C++ type corresponding to the gYear XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::gyear< char, simple_type > gyear;
+typedef ::xsd::cxx::tree::gyear<char, simple_type> gyear;
 
-  /**
+/**
    * @brief C++ type corresponding to the gYearMonth XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::gyear_month< char, simple_type > gyear_month;
+typedef ::xsd::cxx::tree::gyear_month<char, simple_type> gyear_month;
 
-  /**
+/**
    * @brief C++ type corresponding to the time XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::time< char, simple_type > time;
+typedef ::xsd::cxx::tree::time<char, simple_type> time;
 
+// Entity.
+//
 
-  // Entity.
-  //
-
-  /**
+/**
    * @brief C++ type corresponding to the ENTITY XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::entity< char, ncname > entity;
+typedef ::xsd::cxx::tree::entity<char, ncname> entity;
 
-  /**
+/**
    * @brief C++ type corresponding to the ENTITIES XML Schema
    * built-in type.
    */
-  typedef ::xsd::cxx::tree::entities< char, simple_type, entity > entities;
+typedef ::xsd::cxx::tree::entities<char, simple_type, entity> entities;
 
-
-
-  /**
+/**
    * @brief Content order sequence entry.
    */
-  typedef ::xsd::cxx::tree::content_order content_order;
-  // Namespace information and list stream. Used in
-  // serialization functions.
-  //
-  /**
+typedef ::xsd::cxx::tree::content_order content_order;
+// Namespace information and list stream. Used in
+// serialization functions.
+//
+/**
    * @brief Namespace serialization information.
    */
-  typedef ::xsd::cxx::xml::dom::namespace_info< char > namespace_info;
+typedef ::xsd::cxx::xml::dom::namespace_info<char> namespace_info;
 
-  /**
+/**
    * @brief Namespace serialization information map.
    */
-  typedef ::xsd::cxx::xml::dom::namespace_infomap< char > namespace_infomap;
+typedef ::xsd::cxx::xml::dom::namespace_infomap<char> namespace_infomap;
 
-  /**
+/**
    * @brief List serialization stream.
    */
-  typedef ::xsd::cxx::tree::list_stream< char > list_stream;
+typedef ::xsd::cxx::tree::list_stream<char> list_stream;
 
-  /**
+/**
    * @brief Serialization wrapper for the %double type.
    */
-  typedef ::xsd::cxx::tree::as_double< double_ > as_double;
+typedef ::xsd::cxx::tree::as_double<double_> as_double;
 
-  /**
+/**
    * @brief Serialization wrapper for the %decimal type.
    */
-  typedef ::xsd::cxx::tree::as_decimal< decimal > as_decimal;
+typedef ::xsd::cxx::tree::as_decimal<decimal> as_decimal;
 
-  /**
+/**
    * @brief Simple type facet.
    */
-  typedef ::xsd::cxx::tree::facet facet;
+typedef ::xsd::cxx::tree::facet facet;
 
-  // Flags and properties.
-  //
+// Flags and properties.
+//
 
-  /**
+/**
    * @brief Parsing and serialization flags.
    */
-  typedef ::xsd::cxx::tree::flags flags;
+typedef ::xsd::cxx::tree::flags flags;
 
-  /**
+/**
    * @brief Parsing properties.
    */
-  typedef ::xsd::cxx::tree::properties< char > properties;
+typedef ::xsd::cxx::tree::properties<char> properties;
 
-  // Parsing/serialization diagnostics.
-  //
+// Parsing/serialization diagnostics.
+//
 
-  /**
+/**
    * @brief Error severity.
    */
-  typedef ::xsd::cxx::tree::severity severity;
+typedef ::xsd::cxx::tree::severity severity;
 
-  /**
+/**
    * @brief Error condition.
    */
-  typedef ::xsd::cxx::tree::error< char > error;
+typedef ::xsd::cxx::tree::error<char> error;
 
-  /**
+/**
    * @brief List of %error conditions.
    */
-  typedef ::xsd::cxx::tree::diagnostics< char > diagnostics;
+typedef ::xsd::cxx::tree::diagnostics<char> diagnostics;
 
-  // Exceptions.
-  //
+// Exceptions.
+//
 
-  /**
+/**
    * @brief Root of the C++/Tree %exception hierarchy.
    */
-  typedef ::xsd::cxx::tree::exception< char > exception;
+typedef ::xsd::cxx::tree::exception<char> exception;
 
-  /**
+/**
    * @brief Exception indicating that the size argument exceeds
    * the capacity argument.
    */
-  typedef ::xsd::cxx::tree::bounds< char > bounds;
+typedef ::xsd::cxx::tree::bounds<char> bounds;
 
-  /**
+/**
    * @brief Exception indicating that a duplicate ID value
    * was encountered in the object model.
    */
-  typedef ::xsd::cxx::tree::duplicate_id< char > duplicate_id;
+typedef ::xsd::cxx::tree::duplicate_id<char> duplicate_id;
 
-  /**
+/**
    * @brief Exception indicating a parsing failure.
    */
-  typedef ::xsd::cxx::tree::parsing< char > parsing;
+typedef ::xsd::cxx::tree::parsing<char> parsing;
 
-  /**
+/**
    * @brief Exception indicating that an expected element
    * was not encountered.
    */
-  typedef ::xsd::cxx::tree::expected_element< char > expected_element;
+typedef ::xsd::cxx::tree::expected_element<char> expected_element;
 
-  /**
+/**
    * @brief Exception indicating that an unexpected element
    * was encountered.
    */
-  typedef ::xsd::cxx::tree::unexpected_element< char > unexpected_element;
+typedef ::xsd::cxx::tree::unexpected_element<char> unexpected_element;
 
-  /**
+/**
    * @brief Exception indicating that an expected attribute
    * was not encountered.
    */
-  typedef ::xsd::cxx::tree::expected_attribute< char > expected_attribute;
+typedef ::xsd::cxx::tree::expected_attribute<char> expected_attribute;
 
-  /**
+/**
    * @brief Exception indicating that an unexpected enumerator
    * was encountered.
    */
-  typedef ::xsd::cxx::tree::unexpected_enumerator< char > unexpected_enumerator;
+typedef ::xsd::cxx::tree::unexpected_enumerator<char> unexpected_enumerator;
 
-  /**
+/**
    * @brief Exception indicating that the text content was
    * expected for an element.
    */
-  typedef ::xsd::cxx::tree::expected_text_content< char > expected_text_content;
+typedef ::xsd::cxx::tree::expected_text_content<char> expected_text_content;
 
-  /**
+/**
    * @brief Exception indicating that a prefix-namespace
    * mapping was not provided.
    */
-  typedef ::xsd::cxx::tree::no_prefix_mapping< char > no_prefix_mapping;
+typedef ::xsd::cxx::tree::no_prefix_mapping<char> no_prefix_mapping;
 
-  /**
+/**
    * @brief Exception indicating a serialization failure.
    */
-  typedef ::xsd::cxx::tree::serialization< char > serialization;
+typedef ::xsd::cxx::tree::serialization<char> serialization;
 
-  /**
+/**
    * @brief Error handler callback interface.
    */
-  typedef ::xsd::cxx::xml::error_handler< char > error_handler;
+typedef ::xsd::cxx::xml::error_handler<char> error_handler;
 
-  /**
+/**
    * @brief DOM interaction.
    */
-  namespace dom
-  {
-    /**
+namespace dom {
+/**
      * @brief Automatic pointer for DOMDocument.
      */
-    using ::xsd::cxx::xml::dom::unique_ptr;
+using ::xsd::cxx::xml::dom::unique_ptr;
 
 #ifndef XSD_CXX_TREE_TREE_NODE_KEY__XML_SCHEMA
 #define XSD_CXX_TREE_TREE_NODE_KEY__XML_SCHEMA
-    /**
+/**
      * @brief DOM user data key for back pointers to tree nodes.
      */
-    const XMLCh* const tree_node_key = ::xsd::cxx::tree::user_data_keys::node;
+const XMLCh *const tree_node_key = ::xsd::cxx::tree::user_data_keys::node;
 #endif
-  }
-}
+}// namespace dom
+}// namespace xml_schema
 
 // Forward declarations.
 //
@@ -628,16 +610,16 @@ class CellData;
 class Points;
 class Cells;
 
-#include <memory>    // ::std::unique_ptr
-#include <limits>    // std::numeric_limits
-#include <algorithm> // std::binary_search
-#include <utility>   // std::move
+#include <algorithm>// std::binary_search
+#include <limits>   // std::numeric_limits
+#include <memory>   // ::std::unique_ptr
+#include <utility>  // std::move
 
 #include <xsd/cxx/xml/char-utf8.hxx>
 
-#include <xsd/cxx/tree/exceptions.hxx>
-#include <xsd/cxx/tree/elements.hxx>
 #include <xsd/cxx/tree/containers.hxx>
+#include <xsd/cxx/tree/elements.hxx>
+#include <xsd/cxx/tree/exceptions.hxx>
 #include <xsd/cxx/tree/list.hxx>
 
 #include <xsd/cxx/xml/dom/parsing-header.hxx>
@@ -649,16 +631,15 @@ class Cells;
  * This class has an interface of a standard C++ sequence (e.g.,
  * std::vector).
  */
-class DataArrayList_t: public ::xml_schema::simple_type,
-  public ::xsd::cxx::tree::list< ::xml_schema::decimal, char, ::xsd::cxx::tree::schema_type::decimal >
-{
-  public:
+class DataArrayList_t : public ::xml_schema::simple_type,
+                        public ::xsd::cxx::tree::list<::xml_schema::decimal, char, ::xsd::cxx::tree::schema_type::decimal> {
+ public:
   /**
    * @brief Default constructor.
    *
    * Creates an empty list.
    */
-  DataArrayList_t ();
+  DataArrayList_t();
 
   /**
    * @brief Create a list with copies of the specified element.
@@ -668,7 +649,7 @@ class DataArrayList_t: public ::xml_schema::simple_type,
    *
    * This constructor creates a list with @a n copies of @a x.
    */
-  DataArrayList_t (size_type n, const ::xml_schema::decimal& x);
+  DataArrayList_t(size_type n, const ::xml_schema::decimal &x);
 
   /**
    * @brief Create a list from an iterator range.
@@ -679,10 +660,9 @@ class DataArrayList_t: public ::xml_schema::simple_type,
    * This constructor creates a list consisting of copies of the
    * elements in the range [begin,end).
    */
-  template < typename I >
-  DataArrayList_t (const I& begin, const I& end)
-  : ::xsd::cxx::tree::list< ::xml_schema::decimal, char, ::xsd::cxx::tree::schema_type::decimal > (begin, end, this)
-  {
+  template<typename I>
+  DataArrayList_t(const I &begin, const I &end)
+      : ::xsd::cxx::tree::list<::xml_schema::decimal, char, ::xsd::cxx::tree::schema_type::decimal>(begin, end, this) {
   }
 
   /**
@@ -693,9 +673,9 @@ class DataArrayList_t: public ::xml_schema::simple_type,
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  DataArrayList_t (const ::xercesc::DOMElement& e,
-                   ::xml_schema::flags f = 0,
-                   ::xml_schema::container* c = 0);
+  DataArrayList_t(const ::xercesc::DOMElement &e,
+                  ::xml_schema::flags f = 0,
+                  ::xml_schema::container *c = 0);
 
   /**
    * @brief Create an instance from a DOM attribute.
@@ -705,9 +685,9 @@ class DataArrayList_t: public ::xml_schema::simple_type,
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  DataArrayList_t (const ::xercesc::DOMAttr& a,
-                   ::xml_schema::flags f = 0,
-                   ::xml_schema::container* c = 0);
+  DataArrayList_t(const ::xercesc::DOMAttr &a,
+                  ::xml_schema::flags f = 0,
+                  ::xml_schema::container *c = 0);
 
   /**
    * @brief Create an instance from a string fragment.
@@ -718,10 +698,10 @@ class DataArrayList_t: public ::xml_schema::simple_type,
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  DataArrayList_t (const ::std::string& s,
-                   const ::xercesc::DOMElement* e,
-                   ::xml_schema::flags f = 0,
-                   ::xml_schema::container* c = 0);
+  DataArrayList_t(const ::std::string &s,
+                  const ::xercesc::DOMElement *e,
+                  ::xml_schema::flags f = 0,
+                  ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy constructor.
@@ -732,9 +712,9 @@ class DataArrayList_t: public ::xml_schema::simple_type,
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  DataArrayList_t (const DataArrayList_t& x,
-                   ::xml_schema::flags f = 0,
-                   ::xml_schema::container* c = 0);
+  DataArrayList_t(const DataArrayList_t &x,
+                  ::xml_schema::flags f = 0,
+                  ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy the instance polymorphically.
@@ -747,15 +727,14 @@ class DataArrayList_t: public ::xml_schema::simple_type,
    * used for copying and should be used for polymorphic object
    * models instead of the copy constructor.
    */
-  virtual DataArrayList_t*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
+  virtual DataArrayList_t *
+  _clone(::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0) const;
 
   /**
    * @brief Destructor.
    */
-  virtual 
-  ~DataArrayList_t ();
+  virtual ~DataArrayList_t();
 };
 
 /**
@@ -763,9 +742,8 @@ class DataArrayList_t: public ::xml_schema::simple_type,
  *
  * @nosubgrouping
  */
-class DataArray_t: public ::DataArrayList_t
-{
-  public:
+class DataArray_t : public ::DataArrayList_t {
+ public:
   /**
    * @name type
    *
@@ -782,23 +760,23 @@ class DataArray_t: public ::DataArrayList_t
   /**
    * @brief Attribute traits type.
    */
-  typedef ::xsd::cxx::tree::traits< type_type, char > type_traits;
+  typedef ::xsd::cxx::tree::traits<type_type, char> type_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the attribute.
    *
    * @return A constant reference to the attribute.
    */
-  const type_type&
-  type () const;
+  const type_type &
+  type() const;
 
   /**
    * @brief Return a read-write reference to the attribute.
    *
    * @return A reference to the attribute.
    */
-  type_type&
-  type ();
+  type_type &
+  type();
 
   /**
    * @brief Set the attribute value.
@@ -809,7 +787,7 @@ class DataArray_t: public ::DataArrayList_t
    * the new value of the attribute.
    */
   void
-  type (const type_type& x);
+  type(const type_type &x);
 
   /**
    * @brief Set the attribute value without copying.
@@ -820,7 +798,7 @@ class DataArray_t: public ::DataArrayList_t
    * instead of making a copy.
    */
   void
-  type (::std::unique_ptr< type_type > p);
+  type(::std::unique_ptr<type_type> p);
 
   //@}
 
@@ -840,23 +818,23 @@ class DataArray_t: public ::DataArrayList_t
   /**
    * @brief Attribute traits type.
    */
-  typedef ::xsd::cxx::tree::traits< Name_type, char > Name_traits;
+  typedef ::xsd::cxx::tree::traits<Name_type, char> Name_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the attribute.
    *
    * @return A constant reference to the attribute.
    */
-  const Name_type&
-  Name () const;
+  const Name_type &
+  Name() const;
 
   /**
    * @brief Return a read-write reference to the attribute.
    *
    * @return A reference to the attribute.
    */
-  Name_type&
-  Name ();
+  Name_type &
+  Name();
 
   /**
    * @brief Set the attribute value.
@@ -867,7 +845,7 @@ class DataArray_t: public ::DataArrayList_t
    * the new value of the attribute.
    */
   void
-  Name (const Name_type& x);
+  Name(const Name_type &x);
 
   /**
    * @brief Set the attribute value without copying.
@@ -878,7 +856,7 @@ class DataArray_t: public ::DataArrayList_t
    * instead of making a copy.
    */
   void
-  Name (::std::unique_ptr< Name_type > p);
+  Name(::std::unique_ptr<Name_type> p);
 
   //@}
 
@@ -898,23 +876,23 @@ class DataArray_t: public ::DataArrayList_t
   /**
    * @brief Attribute traits type.
    */
-  typedef ::xsd::cxx::tree::traits< NumberOfComponents_type, char > NumberOfComponents_traits;
+  typedef ::xsd::cxx::tree::traits<NumberOfComponents_type, char> NumberOfComponents_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the attribute.
    *
    * @return A constant reference to the attribute.
    */
-  const NumberOfComponents_type&
-  NumberOfComponents () const;
+  const NumberOfComponents_type &
+  NumberOfComponents() const;
 
   /**
    * @brief Return a read-write reference to the attribute.
    *
    * @return A reference to the attribute.
    */
-  NumberOfComponents_type&
-  NumberOfComponents ();
+  NumberOfComponents_type &
+  NumberOfComponents();
 
   /**
    * @brief Set the attribute value.
@@ -925,7 +903,7 @@ class DataArray_t: public ::DataArrayList_t
    * the new value of the attribute.
    */
   void
-  NumberOfComponents (const NumberOfComponents_type& x);
+  NumberOfComponents(const NumberOfComponents_type &x);
 
   //@}
 
@@ -945,15 +923,15 @@ class DataArray_t: public ::DataArrayList_t
   /**
    * @brief Attribute traits type.
    */
-  typedef ::xsd::cxx::tree::traits< format_type, char > format_traits;
+  typedef ::xsd::cxx::tree::traits<format_type, char> format_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the attribute.
    *
    * @return A constant reference to the attribute.
    */
-  const format_type&
-  format () const;
+  const format_type &
+  format() const;
 
   /**
    * @brief Return the default value for the attribute.
@@ -961,8 +939,8 @@ class DataArray_t: public ::DataArrayList_t
    * @return A read-only (constant) reference to the attribute's
    * default value.
    */
-  static const format_type&
-  format_default_value ();
+  static const format_type &
+  format_default_value();
 
   //@}
 
@@ -982,12 +960,12 @@ class DataArray_t: public ::DataArrayList_t
   /**
    * @brief Attribute optional container type.
    */
-  typedef ::xsd::cxx::tree::optional< offset_type > offset_optional;
+  typedef ::xsd::cxx::tree::optional<offset_type> offset_optional;
 
   /**
    * @brief Attribute traits type.
    */
-  typedef ::xsd::cxx::tree::traits< offset_type, char > offset_traits;
+  typedef ::xsd::cxx::tree::traits<offset_type, char> offset_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the attribute
@@ -995,16 +973,16 @@ class DataArray_t: public ::DataArrayList_t
    *
    * @return A constant reference to the optional container.
    */
-  const offset_optional&
-  offset () const;
+  const offset_optional &
+  offset() const;
 
   /**
    * @brief Return a read-write reference to the attribute container.
    *
    * @return A reference to the optional container.
    */
-  offset_optional&
-  offset ();
+  offset_optional &
+  offset();
 
   /**
    * @brief Set the attribute value.
@@ -1015,7 +993,7 @@ class DataArray_t: public ::DataArrayList_t
    * the new value of the attribute.
    */
   void
-  offset (const offset_type& x);
+  offset(const offset_type &x);
 
   /**
    * @brief Set the attribute value.
@@ -1027,7 +1005,7 @@ class DataArray_t: public ::DataArrayList_t
    * Otherwise the attribute container is set the 'not present' state.
    */
   void
-  offset (const offset_optional& x);
+  offset(const offset_optional &x);
 
   //@}
 
@@ -1040,18 +1018,18 @@ class DataArray_t: public ::DataArrayList_t
    * @brief Create an instance from initializers for required 
    * elements and attributes.
    */
-  DataArray_t (const type_type&,
-               const Name_type&,
-               const NumberOfComponents_type&);
+  DataArray_t(const type_type &,
+              const Name_type &,
+              const NumberOfComponents_type &);
 
   /**
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  DataArray_t (const ::DataArrayList_t&,
-               const type_type&,
-               const Name_type&,
-               const NumberOfComponents_type&);
+  DataArray_t(const ::DataArrayList_t &,
+              const type_type &,
+              const Name_type &,
+              const NumberOfComponents_type &);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -1061,9 +1039,9 @@ class DataArray_t: public ::DataArrayList_t
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  DataArray_t (const ::xercesc::DOMElement& e,
-               ::xml_schema::flags f = 0,
-               ::xml_schema::container* c = 0);
+  DataArray_t(const ::xercesc::DOMElement &e,
+              ::xml_schema::flags f = 0,
+              ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy constructor.
@@ -1074,9 +1052,9 @@ class DataArray_t: public ::DataArrayList_t
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  DataArray_t (const DataArray_t& x,
-               ::xml_schema::flags f = 0,
-               ::xml_schema::container* c = 0);
+  DataArray_t(const DataArray_t &x,
+              ::xml_schema::flags f = 0,
+              ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy the instance polymorphically.
@@ -1089,9 +1067,9 @@ class DataArray_t: public ::DataArrayList_t
    * used for copying and should be used for polymorphic object
    * models instead of the copy constructor.
    */
-  virtual DataArray_t*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
+  virtual DataArray_t *
+  _clone(::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0) const;
 
   /**
    * @brief Copy assignment operator.
@@ -1101,32 +1079,31 @@ class DataArray_t: public ::DataArrayList_t
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  DataArray_t&
-  operator= (const DataArray_t& x);
+  DataArray_t &
+  operator=(const DataArray_t &x);
 
   //@}
 
   /**
    * @brief Destructor.
    */
-  virtual 
-  ~DataArray_t ();
+  virtual ~DataArray_t();
 
   // Implementation.
   //
 
   //@cond
 
-  protected:
+ protected:
   void
-  parse (::xsd::cxx::xml::dom::parser< char >&,
-         ::xml_schema::flags);
+  parse(::xsd::cxx::xml::dom::parser<char> &,
+        ::xml_schema::flags);
 
-  protected:
-  ::xsd::cxx::tree::one< type_type > type_;
-  ::xsd::cxx::tree::one< Name_type > Name_;
-  ::xsd::cxx::tree::one< NumberOfComponents_type > NumberOfComponents_;
-  ::xsd::cxx::tree::one< format_type > format_;
+ protected:
+  ::xsd::cxx::tree::one<type_type> type_;
+  ::xsd::cxx::tree::one<Name_type> Name_;
+  ::xsd::cxx::tree::one<NumberOfComponents_type> NumberOfComponents_;
+  ::xsd::cxx::tree::one<format_type> format_;
   static const format_type format_default_value_;
   offset_optional offset_;
 
@@ -1138,9 +1115,8 @@ class DataArray_t: public ::DataArrayList_t
  *
  * @nosubgrouping
  */
-class PieceUnstructuredGrid_t: public ::xml_schema::type
-{
-  public:
+class PieceUnstructuredGrid_t : public ::xml_schema::type {
+ public:
   /**
    * @name PointData
    *
@@ -1157,23 +1133,23 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< PointData_type, char > PointData_traits;
+  typedef ::xsd::cxx::tree::traits<PointData_type, char> PointData_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element.
    *
    * @return A constant reference to the element.
    */
-  const PointData_type&
-  PointData () const;
+  const PointData_type &
+  PointData() const;
 
   /**
    * @brief Return a read-write reference to the element.
    *
    * @return A reference to the element.
    */
-  PointData_type&
-  PointData ();
+  PointData_type &
+  PointData();
 
   /**
    * @brief Set the element value.
@@ -1184,7 +1160,7 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * the new value of the element.
    */
   void
-  PointData (const PointData_type& x);
+  PointData(const PointData_type &x);
 
   /**
    * @brief Set the element value without copying.
@@ -1195,7 +1171,7 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * instead of making a copy.
    */
   void
-  PointData (::std::unique_ptr< PointData_type > p);
+  PointData(::std::unique_ptr<PointData_type> p);
 
   //@}
 
@@ -1215,23 +1191,23 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< CellData_type, char > CellData_traits;
+  typedef ::xsd::cxx::tree::traits<CellData_type, char> CellData_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element.
    *
    * @return A constant reference to the element.
    */
-  const CellData_type&
-  CellData () const;
+  const CellData_type &
+  CellData() const;
 
   /**
    * @brief Return a read-write reference to the element.
    *
    * @return A reference to the element.
    */
-  CellData_type&
-  CellData ();
+  CellData_type &
+  CellData();
 
   /**
    * @brief Set the element value.
@@ -1242,7 +1218,7 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * the new value of the element.
    */
   void
-  CellData (const CellData_type& x);
+  CellData(const CellData_type &x);
 
   /**
    * @brief Set the element value without copying.
@@ -1253,7 +1229,7 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * instead of making a copy.
    */
   void
-  CellData (::std::unique_ptr< CellData_type > p);
+  CellData(::std::unique_ptr<CellData_type> p);
 
   //@}
 
@@ -1273,23 +1249,23 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< Points_type, char > Points_traits;
+  typedef ::xsd::cxx::tree::traits<Points_type, char> Points_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element.
    *
    * @return A constant reference to the element.
    */
-  const Points_type&
-  Points () const;
+  const Points_type &
+  Points() const;
 
   /**
    * @brief Return a read-write reference to the element.
    *
    * @return A reference to the element.
    */
-  Points_type&
-  Points ();
+  Points_type &
+  Points();
 
   /**
    * @brief Set the element value.
@@ -1300,7 +1276,7 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * the new value of the element.
    */
   void
-  Points (const Points_type& x);
+  Points(const Points_type &x);
 
   /**
    * @brief Set the element value without copying.
@@ -1311,7 +1287,7 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * instead of making a copy.
    */
   void
-  Points (::std::unique_ptr< Points_type > p);
+  Points(::std::unique_ptr<Points_type> p);
 
   //@}
 
@@ -1331,23 +1307,23 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< Cells_type, char > Cells_traits;
+  typedef ::xsd::cxx::tree::traits<Cells_type, char> Cells_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element.
    *
    * @return A constant reference to the element.
    */
-  const Cells_type&
-  Cells () const;
+  const Cells_type &
+  Cells() const;
 
   /**
    * @brief Return a read-write reference to the element.
    *
    * @return A reference to the element.
    */
-  Cells_type&
-  Cells ();
+  Cells_type &
+  Cells();
 
   /**
    * @brief Set the element value.
@@ -1358,7 +1334,7 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * the new value of the element.
    */
   void
-  Cells (const Cells_type& x);
+  Cells(const Cells_type &x);
 
   /**
    * @brief Set the element value without copying.
@@ -1369,7 +1345,7 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * instead of making a copy.
    */
   void
-  Cells (::std::unique_ptr< Cells_type > p);
+  Cells(::std::unique_ptr<Cells_type> p);
 
   //@}
 
@@ -1389,23 +1365,23 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
   /**
    * @brief Attribute traits type.
    */
-  typedef ::xsd::cxx::tree::traits< NumberOfPoints_type, char > NumberOfPoints_traits;
+  typedef ::xsd::cxx::tree::traits<NumberOfPoints_type, char> NumberOfPoints_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the attribute.
    *
    * @return A constant reference to the attribute.
    */
-  const NumberOfPoints_type&
-  NumberOfPoints () const;
+  const NumberOfPoints_type &
+  NumberOfPoints() const;
 
   /**
    * @brief Return a read-write reference to the attribute.
    *
    * @return A reference to the attribute.
    */
-  NumberOfPoints_type&
-  NumberOfPoints ();
+  NumberOfPoints_type &
+  NumberOfPoints();
 
   /**
    * @brief Set the attribute value.
@@ -1416,7 +1392,7 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * the new value of the attribute.
    */
   void
-  NumberOfPoints (const NumberOfPoints_type& x);
+  NumberOfPoints(const NumberOfPoints_type &x);
 
   //@}
 
@@ -1436,23 +1412,23 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
   /**
    * @brief Attribute traits type.
    */
-  typedef ::xsd::cxx::tree::traits< NumberOfCells_type, char > NumberOfCells_traits;
+  typedef ::xsd::cxx::tree::traits<NumberOfCells_type, char> NumberOfCells_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the attribute.
    *
    * @return A constant reference to the attribute.
    */
-  const NumberOfCells_type&
-  NumberOfCells () const;
+  const NumberOfCells_type &
+  NumberOfCells() const;
 
   /**
    * @brief Return a read-write reference to the attribute.
    *
    * @return A reference to the attribute.
    */
-  NumberOfCells_type&
-  NumberOfCells ();
+  NumberOfCells_type &
+  NumberOfCells();
 
   /**
    * @brief Set the attribute value.
@@ -1463,7 +1439,7 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * the new value of the attribute.
    */
   void
-  NumberOfCells (const NumberOfCells_type& x);
+  NumberOfCells(const NumberOfCells_type &x);
 
   //@}
 
@@ -1476,12 +1452,12 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  PieceUnstructuredGrid_t (const PointData_type&,
-                           const CellData_type&,
-                           const Points_type&,
-                           const Cells_type&,
-                           const NumberOfPoints_type&,
-                           const NumberOfCells_type&);
+  PieceUnstructuredGrid_t(const PointData_type &,
+                          const CellData_type &,
+                          const Points_type &,
+                          const Cells_type &,
+                          const NumberOfPoints_type &,
+                          const NumberOfCells_type &);
 
   /**
    * @brief Create an instance from the ultimate base and
@@ -1491,12 +1467,12 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * This constructor will try to use the passed values directly
    * instead of making copies.
    */
-  PieceUnstructuredGrid_t (::std::unique_ptr< PointData_type >,
-                           ::std::unique_ptr< CellData_type >,
-                           ::std::unique_ptr< Points_type >,
-                           ::std::unique_ptr< Cells_type >,
-                           const NumberOfPoints_type&,
-                           const NumberOfCells_type&);
+  PieceUnstructuredGrid_t(::std::unique_ptr<PointData_type>,
+                          ::std::unique_ptr<CellData_type>,
+                          ::std::unique_ptr<Points_type>,
+                          ::std::unique_ptr<Cells_type>,
+                          const NumberOfPoints_type &,
+                          const NumberOfCells_type &);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -1506,9 +1482,9 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  PieceUnstructuredGrid_t (const ::xercesc::DOMElement& e,
-                           ::xml_schema::flags f = 0,
-                           ::xml_schema::container* c = 0);
+  PieceUnstructuredGrid_t(const ::xercesc::DOMElement &e,
+                          ::xml_schema::flags f = 0,
+                          ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy constructor.
@@ -1519,9 +1495,9 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  PieceUnstructuredGrid_t (const PieceUnstructuredGrid_t& x,
-                           ::xml_schema::flags f = 0,
-                           ::xml_schema::container* c = 0);
+  PieceUnstructuredGrid_t(const PieceUnstructuredGrid_t &x,
+                          ::xml_schema::flags f = 0,
+                          ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy the instance polymorphically.
@@ -1534,9 +1510,9 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    * used for copying and should be used for polymorphic object
    * models instead of the copy constructor.
    */
-  virtual PieceUnstructuredGrid_t*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
+  virtual PieceUnstructuredGrid_t *
+  _clone(::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0) const;
 
   /**
    * @brief Copy assignment operator.
@@ -1546,34 +1522,33 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  PieceUnstructuredGrid_t&
-  operator= (const PieceUnstructuredGrid_t& x);
+  PieceUnstructuredGrid_t &
+  operator=(const PieceUnstructuredGrid_t &x);
 
   //@}
 
   /**
    * @brief Destructor.
    */
-  virtual 
-  ~PieceUnstructuredGrid_t ();
+  virtual ~PieceUnstructuredGrid_t();
 
   // Implementation.
   //
 
   //@cond
 
-  protected:
+ protected:
   void
-  parse (::xsd::cxx::xml::dom::parser< char >&,
-         ::xml_schema::flags);
+  parse(::xsd::cxx::xml::dom::parser<char> &,
+        ::xml_schema::flags);
 
-  protected:
-  ::xsd::cxx::tree::one< PointData_type > PointData_;
-  ::xsd::cxx::tree::one< CellData_type > CellData_;
-  ::xsd::cxx::tree::one< Points_type > Points_;
-  ::xsd::cxx::tree::one< Cells_type > Cells_;
-  ::xsd::cxx::tree::one< NumberOfPoints_type > NumberOfPoints_;
-  ::xsd::cxx::tree::one< NumberOfCells_type > NumberOfCells_;
+ protected:
+  ::xsd::cxx::tree::one<PointData_type> PointData_;
+  ::xsd::cxx::tree::one<CellData_type> CellData_;
+  ::xsd::cxx::tree::one<Points_type> Points_;
+  ::xsd::cxx::tree::one<Cells_type> Cells_;
+  ::xsd::cxx::tree::one<NumberOfPoints_type> NumberOfPoints_;
+  ::xsd::cxx::tree::one<NumberOfCells_type> NumberOfCells_;
 
   //@endcond
 };
@@ -1583,9 +1558,8 @@ class PieceUnstructuredGrid_t: public ::xml_schema::type
  *
  * @nosubgrouping
  */
-class UnstructuredGrid_t: public ::xml_schema::type
-{
-  public:
+class UnstructuredGrid_t : public ::xml_schema::type {
+ public:
   /**
    * @name Piece
    *
@@ -1602,23 +1576,23 @@ class UnstructuredGrid_t: public ::xml_schema::type
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< Piece_type, char > Piece_traits;
+  typedef ::xsd::cxx::tree::traits<Piece_type, char> Piece_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element.
    *
    * @return A constant reference to the element.
    */
-  const Piece_type&
-  Piece () const;
+  const Piece_type &
+  Piece() const;
 
   /**
    * @brief Return a read-write reference to the element.
    *
    * @return A reference to the element.
    */
-  Piece_type&
-  Piece ();
+  Piece_type &
+  Piece();
 
   /**
    * @brief Set the element value.
@@ -1629,7 +1603,7 @@ class UnstructuredGrid_t: public ::xml_schema::type
    * the new value of the element.
    */
   void
-  Piece (const Piece_type& x);
+  Piece(const Piece_type &x);
 
   /**
    * @brief Set the element value without copying.
@@ -1640,7 +1614,7 @@ class UnstructuredGrid_t: public ::xml_schema::type
    * instead of making a copy.
    */
   void
-  Piece (::std::unique_ptr< Piece_type > p);
+  Piece(::std::unique_ptr<Piece_type> p);
 
   //@}
 
@@ -1653,7 +1627,7 @@ class UnstructuredGrid_t: public ::xml_schema::type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  UnstructuredGrid_t (const Piece_type&);
+  UnstructuredGrid_t(const Piece_type &);
 
   /**
    * @brief Create an instance from the ultimate base and
@@ -1663,7 +1637,7 @@ class UnstructuredGrid_t: public ::xml_schema::type
    * This constructor will try to use the passed values directly
    * instead of making copies.
    */
-  UnstructuredGrid_t (::std::unique_ptr< Piece_type >);
+  UnstructuredGrid_t(::std::unique_ptr<Piece_type>);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -1673,9 +1647,9 @@ class UnstructuredGrid_t: public ::xml_schema::type
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  UnstructuredGrid_t (const ::xercesc::DOMElement& e,
-                      ::xml_schema::flags f = 0,
-                      ::xml_schema::container* c = 0);
+  UnstructuredGrid_t(const ::xercesc::DOMElement &e,
+                     ::xml_schema::flags f = 0,
+                     ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy constructor.
@@ -1686,9 +1660,9 @@ class UnstructuredGrid_t: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  UnstructuredGrid_t (const UnstructuredGrid_t& x,
-                      ::xml_schema::flags f = 0,
-                      ::xml_schema::container* c = 0);
+  UnstructuredGrid_t(const UnstructuredGrid_t &x,
+                     ::xml_schema::flags f = 0,
+                     ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy the instance polymorphically.
@@ -1701,9 +1675,9 @@ class UnstructuredGrid_t: public ::xml_schema::type
    * used for copying and should be used for polymorphic object
    * models instead of the copy constructor.
    */
-  virtual UnstructuredGrid_t*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
+  virtual UnstructuredGrid_t *
+  _clone(::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0) const;
 
   /**
    * @brief Copy assignment operator.
@@ -1713,29 +1687,28 @@ class UnstructuredGrid_t: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  UnstructuredGrid_t&
-  operator= (const UnstructuredGrid_t& x);
+  UnstructuredGrid_t &
+  operator=(const UnstructuredGrid_t &x);
 
   //@}
 
   /**
    * @brief Destructor.
    */
-  virtual 
-  ~UnstructuredGrid_t ();
+  virtual ~UnstructuredGrid_t();
 
   // Implementation.
   //
 
   //@cond
 
-  protected:
+ protected:
   void
-  parse (::xsd::cxx::xml::dom::parser< char >&,
-         ::xml_schema::flags);
+  parse(::xsd::cxx::xml::dom::parser<char> &,
+        ::xml_schema::flags);
 
-  protected:
-  ::xsd::cxx::tree::one< Piece_type > Piece_;
+ protected:
+  ::xsd::cxx::tree::one<Piece_type> Piece_;
 
   //@endcond
 };
@@ -1745,9 +1718,8 @@ class UnstructuredGrid_t: public ::xml_schema::type
  *
  * @nosubgrouping
  */
-class PolyData_t: public ::xml_schema::type
-{
-  public:
+class PolyData_t : public ::xml_schema::type {
+ public:
   /**
    * @name greeting
    *
@@ -1764,23 +1736,23 @@ class PolyData_t: public ::xml_schema::type
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< greeting_type, char > greeting_traits;
+  typedef ::xsd::cxx::tree::traits<greeting_type, char> greeting_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element.
    *
    * @return A constant reference to the element.
    */
-  const greeting_type&
-  greeting () const;
+  const greeting_type &
+  greeting() const;
 
   /**
    * @brief Return a read-write reference to the element.
    *
    * @return A reference to the element.
    */
-  greeting_type&
-  greeting ();
+  greeting_type &
+  greeting();
 
   /**
    * @brief Set the element value.
@@ -1791,7 +1763,7 @@ class PolyData_t: public ::xml_schema::type
    * the new value of the element.
    */
   void
-  greeting (const greeting_type& x);
+  greeting(const greeting_type &x);
 
   /**
    * @brief Set the element value without copying.
@@ -1802,7 +1774,7 @@ class PolyData_t: public ::xml_schema::type
    * instead of making a copy.
    */
   void
-  greeting (::std::unique_ptr< greeting_type > p);
+  greeting(::std::unique_ptr<greeting_type> p);
 
   //@}
 
@@ -1815,7 +1787,7 @@ class PolyData_t: public ::xml_schema::type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  PolyData_t (const greeting_type&);
+  PolyData_t(const greeting_type &);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -1825,9 +1797,9 @@ class PolyData_t: public ::xml_schema::type
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  PolyData_t (const ::xercesc::DOMElement& e,
-              ::xml_schema::flags f = 0,
-              ::xml_schema::container* c = 0);
+  PolyData_t(const ::xercesc::DOMElement &e,
+             ::xml_schema::flags f = 0,
+             ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy constructor.
@@ -1838,9 +1810,9 @@ class PolyData_t: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  PolyData_t (const PolyData_t& x,
-              ::xml_schema::flags f = 0,
-              ::xml_schema::container* c = 0);
+  PolyData_t(const PolyData_t &x,
+             ::xml_schema::flags f = 0,
+             ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy the instance polymorphically.
@@ -1853,9 +1825,9 @@ class PolyData_t: public ::xml_schema::type
    * used for copying and should be used for polymorphic object
    * models instead of the copy constructor.
    */
-  virtual PolyData_t*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
+  virtual PolyData_t *
+  _clone(::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0) const;
 
   /**
    * @brief Copy assignment operator.
@@ -1865,29 +1837,28 @@ class PolyData_t: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  PolyData_t&
-  operator= (const PolyData_t& x);
+  PolyData_t &
+  operator=(const PolyData_t &x);
 
   //@}
 
   /**
    * @brief Destructor.
    */
-  virtual 
-  ~PolyData_t ();
+  virtual ~PolyData_t();
 
   // Implementation.
   //
 
   //@cond
 
-  protected:
+ protected:
   void
-  parse (::xsd::cxx::xml::dom::parser< char >&,
-         ::xml_schema::flags);
+  parse(::xsd::cxx::xml::dom::parser<char> &,
+        ::xml_schema::flags);
 
-  protected:
-  ::xsd::cxx::tree::one< greeting_type > greeting_;
+ protected:
+  ::xsd::cxx::tree::one<greeting_type> greeting_;
 
   //@endcond
 };
@@ -1900,9 +1871,8 @@ class PolyData_t: public ::xml_schema::type
  *
  * @nosubgrouping
  */
-class VTKFile_t: public ::xml_schema::type
-{
-  public:
+class VTKFile_t : public ::xml_schema::type {
+ public:
   /**
    * @name UnstructuredGrid
    *
@@ -1919,12 +1889,12 @@ class VTKFile_t: public ::xml_schema::type
   /**
    * @brief Element optional container type.
    */
-  typedef ::xsd::cxx::tree::optional< UnstructuredGrid_type > UnstructuredGrid_optional;
+  typedef ::xsd::cxx::tree::optional<UnstructuredGrid_type> UnstructuredGrid_optional;
 
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< UnstructuredGrid_type, char > UnstructuredGrid_traits;
+  typedef ::xsd::cxx::tree::traits<UnstructuredGrid_type, char> UnstructuredGrid_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element
@@ -1932,16 +1902,16 @@ class VTKFile_t: public ::xml_schema::type
    *
    * @return A constant reference to the optional container.
    */
-  const UnstructuredGrid_optional&
-  UnstructuredGrid () const;
+  const UnstructuredGrid_optional &
+  UnstructuredGrid() const;
 
   /**
    * @brief Return a read-write reference to the element container.
    *
    * @return A reference to the optional container.
    */
-  UnstructuredGrid_optional&
-  UnstructuredGrid ();
+  UnstructuredGrid_optional &
+  UnstructuredGrid();
 
   /**
    * @brief Set the element value.
@@ -1952,7 +1922,7 @@ class VTKFile_t: public ::xml_schema::type
    * the new value of the element.
    */
   void
-  UnstructuredGrid (const UnstructuredGrid_type& x);
+  UnstructuredGrid(const UnstructuredGrid_type &x);
 
   /**
    * @brief Set the element value.
@@ -1964,7 +1934,7 @@ class VTKFile_t: public ::xml_schema::type
    * Otherwise the element container is set the 'not present' state.
    */
   void
-  UnstructuredGrid (const UnstructuredGrid_optional& x);
+  UnstructuredGrid(const UnstructuredGrid_optional &x);
 
   /**
    * @brief Set the element value without copying.
@@ -1975,7 +1945,7 @@ class VTKFile_t: public ::xml_schema::type
    * of making a copy.
    */
   void
-  UnstructuredGrid (::std::unique_ptr< UnstructuredGrid_type > p);
+  UnstructuredGrid(::std::unique_ptr<UnstructuredGrid_type> p);
 
   //@}
 
@@ -1995,12 +1965,12 @@ class VTKFile_t: public ::xml_schema::type
   /**
    * @brief Element optional container type.
    */
-  typedef ::xsd::cxx::tree::optional< PolyData_type > PolyData_optional;
+  typedef ::xsd::cxx::tree::optional<PolyData_type> PolyData_optional;
 
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< PolyData_type, char > PolyData_traits;
+  typedef ::xsd::cxx::tree::traits<PolyData_type, char> PolyData_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element
@@ -2008,16 +1978,16 @@ class VTKFile_t: public ::xml_schema::type
    *
    * @return A constant reference to the optional container.
    */
-  const PolyData_optional&
-  PolyData () const;
+  const PolyData_optional &
+  PolyData() const;
 
   /**
    * @brief Return a read-write reference to the element container.
    *
    * @return A reference to the optional container.
    */
-  PolyData_optional&
-  PolyData ();
+  PolyData_optional &
+  PolyData();
 
   /**
    * @brief Set the element value.
@@ -2028,7 +1998,7 @@ class VTKFile_t: public ::xml_schema::type
    * the new value of the element.
    */
   void
-  PolyData (const PolyData_type& x);
+  PolyData(const PolyData_type &x);
 
   /**
    * @brief Set the element value.
@@ -2040,7 +2010,7 @@ class VTKFile_t: public ::xml_schema::type
    * Otherwise the element container is set the 'not present' state.
    */
   void
-  PolyData (const PolyData_optional& x);
+  PolyData(const PolyData_optional &x);
 
   /**
    * @brief Set the element value without copying.
@@ -2051,7 +2021,7 @@ class VTKFile_t: public ::xml_schema::type
    * of making a copy.
    */
   void
-  PolyData (::std::unique_ptr< PolyData_type > p);
+  PolyData(::std::unique_ptr<PolyData_type> p);
 
   //@}
 
@@ -2071,23 +2041,23 @@ class VTKFile_t: public ::xml_schema::type
   /**
    * @brief Attribute traits type.
    */
-  typedef ::xsd::cxx::tree::traits< type_type, char > type_traits;
+  typedef ::xsd::cxx::tree::traits<type_type, char> type_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the attribute.
    *
    * @return A constant reference to the attribute.
    */
-  const type_type&
-  type () const;
+  const type_type &
+  type() const;
 
   /**
    * @brief Return a read-write reference to the attribute.
    *
    * @return A reference to the attribute.
    */
-  type_type&
-  type ();
+  type_type &
+  type();
 
   /**
    * @brief Set the attribute value.
@@ -2098,7 +2068,7 @@ class VTKFile_t: public ::xml_schema::type
    * the new value of the attribute.
    */
   void
-  type (const type_type& x);
+  type(const type_type &x);
 
   /**
    * @brief Set the attribute value without copying.
@@ -2109,7 +2079,7 @@ class VTKFile_t: public ::xml_schema::type
    * instead of making a copy.
    */
   void
-  type (::std::unique_ptr< type_type > p);
+  type(::std::unique_ptr<type_type> p);
 
   //@}
 
@@ -2129,15 +2099,15 @@ class VTKFile_t: public ::xml_schema::type
   /**
    * @brief Attribute traits type.
    */
-  typedef ::xsd::cxx::tree::traits< version_type, char > version_traits;
+  typedef ::xsd::cxx::tree::traits<version_type, char> version_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the attribute.
    *
    * @return A constant reference to the attribute.
    */
-  const version_type&
-  version () const;
+  const version_type &
+  version() const;
 
   /**
    * @brief Return the default value for the attribute.
@@ -2145,8 +2115,8 @@ class VTKFile_t: public ::xml_schema::type
    * @return A read-only (constant) reference to the attribute's
    * default value.
    */
-  static const version_type&
-  version_default_value ();
+  static const version_type &
+  version_default_value();
 
   //@}
 
@@ -2166,15 +2136,15 @@ class VTKFile_t: public ::xml_schema::type
   /**
    * @brief Attribute traits type.
    */
-  typedef ::xsd::cxx::tree::traits< byte_order_type, char > byte_order_traits;
+  typedef ::xsd::cxx::tree::traits<byte_order_type, char> byte_order_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the attribute.
    *
    * @return A constant reference to the attribute.
    */
-  const byte_order_type&
-  byte_order () const;
+  const byte_order_type &
+  byte_order() const;
 
   /**
    * @brief Return the default value for the attribute.
@@ -2182,8 +2152,8 @@ class VTKFile_t: public ::xml_schema::type
    * @return A read-only (constant) reference to the attribute's
    * default value.
    */
-  static const byte_order_type&
-  byte_order_default_value ();
+  static const byte_order_type &
+  byte_order_default_value();
 
   //@}
 
@@ -2196,7 +2166,7 @@ class VTKFile_t: public ::xml_schema::type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  VTKFile_t (const type_type&);
+  VTKFile_t(const type_type &);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -2206,9 +2176,9 @@ class VTKFile_t: public ::xml_schema::type
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  VTKFile_t (const ::xercesc::DOMElement& e,
-             ::xml_schema::flags f = 0,
-             ::xml_schema::container* c = 0);
+  VTKFile_t(const ::xercesc::DOMElement &e,
+            ::xml_schema::flags f = 0,
+            ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy constructor.
@@ -2219,9 +2189,9 @@ class VTKFile_t: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  VTKFile_t (const VTKFile_t& x,
-             ::xml_schema::flags f = 0,
-             ::xml_schema::container* c = 0);
+  VTKFile_t(const VTKFile_t &x,
+            ::xml_schema::flags f = 0,
+            ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy the instance polymorphically.
@@ -2234,9 +2204,9 @@ class VTKFile_t: public ::xml_schema::type
    * used for copying and should be used for polymorphic object
    * models instead of the copy constructor.
    */
-  virtual VTKFile_t*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
+  virtual VTKFile_t *
+  _clone(::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0) const;
 
   /**
    * @brief Copy assignment operator.
@@ -2246,34 +2216,33 @@ class VTKFile_t: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  VTKFile_t&
-  operator= (const VTKFile_t& x);
+  VTKFile_t &
+  operator=(const VTKFile_t &x);
 
   //@}
 
   /**
    * @brief Destructor.
    */
-  virtual 
-  ~VTKFile_t ();
+  virtual ~VTKFile_t();
 
   // Implementation.
   //
 
   //@cond
 
-  protected:
+ protected:
   void
-  parse (::xsd::cxx::xml::dom::parser< char >&,
-         ::xml_schema::flags);
+  parse(::xsd::cxx::xml::dom::parser<char> &,
+        ::xml_schema::flags);
 
-  protected:
+ protected:
   UnstructuredGrid_optional UnstructuredGrid_;
   PolyData_optional PolyData_;
-  ::xsd::cxx::tree::one< type_type > type_;
-  ::xsd::cxx::tree::one< version_type > version_;
+  ::xsd::cxx::tree::one<type_type> type_;
+  ::xsd::cxx::tree::one<version_type> version_;
   static const version_type version_default_value_;
-  ::xsd::cxx::tree::one< byte_order_type > byte_order_;
+  ::xsd::cxx::tree::one<byte_order_type> byte_order_;
   static const byte_order_type byte_order_default_value_;
 
   //@endcond
@@ -2283,15 +2252,12 @@ class VTKFile_t: public ::xml_schema::type
  * @brief Enumeration class corresponding to the %type
  * schema type.
  */
-class type: public ::xml_schema::string
-{
-  public:
-
+class type : public ::xml_schema::string {
+ public:
   /**
    * @brief Underlying enum type.
    */
-  enum value
-  {
+  enum value {
     Int8,
     UInt8,
     Int16,
@@ -2309,28 +2275,28 @@ class type: public ::xml_schema::string
    *
    * @param v A enum value.
    */
-  type (value v);
+  type(value v);
 
   /**
    * @brief Create an instance from a C string.
    *
    * @param v A string value.
    */
-  type (const char* v);
+  type(const char *v);
 
   /**
    * @brief Create an instance from a string.
    *
    * @param v A string value.
    */
-  type (const ::std::string& v);
+  type(const ::std::string &v);
 
   /**
    * @brief Create an instance from the base value.
    *
    * @param v A base value.
    */
-  type (const ::xml_schema::string& v);
+  type(const ::xml_schema::string &v);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -2340,9 +2306,9 @@ class type: public ::xml_schema::string
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  type (const ::xercesc::DOMElement& e,
-        ::xml_schema::flags f = 0,
-        ::xml_schema::container* c = 0);
+  type(const ::xercesc::DOMElement &e,
+       ::xml_schema::flags f = 0,
+       ::xml_schema::container *c = 0);
 
   /**
    * @brief Create an instance from a DOM attribute.
@@ -2352,9 +2318,9 @@ class type: public ::xml_schema::string
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  type (const ::xercesc::DOMAttr& a,
-        ::xml_schema::flags f = 0,
-        ::xml_schema::container* c = 0);
+  type(const ::xercesc::DOMAttr &a,
+       ::xml_schema::flags f = 0,
+       ::xml_schema::container *c = 0);
 
   /**
    * @brief Create an instance from a string fragment.
@@ -2365,10 +2331,10 @@ class type: public ::xml_schema::string
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  type (const ::std::string& s,
-        const ::xercesc::DOMElement* e,
-        ::xml_schema::flags f = 0,
-        ::xml_schema::container* c = 0);
+  type(const ::std::string &s,
+       const ::xercesc::DOMElement *e,
+       ::xml_schema::flags f = 0,
+       ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy constructor.
@@ -2379,9 +2345,9 @@ class type: public ::xml_schema::string
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  type (const type& x,
-        ::xml_schema::flags f = 0,
-        ::xml_schema::container* c = 0);
+  type(const type &x,
+       ::xml_schema::flags f = 0,
+       ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy the instance polymorphically.
@@ -2394,9 +2360,9 @@ class type: public ::xml_schema::string
    * used for copying and should be used for polymorphic object
    * models instead of the copy constructor.
    */
-  virtual type*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
+  virtual type *
+  _clone(::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0) const;
 
   /**
    * @brief Assign the underlying enum value.
@@ -2404,8 +2370,8 @@ class type: public ::xml_schema::string
    * @param v A enum value.
    * @return A refernce to the instance.
    */
-  type&
-  operator= (value v);
+  type &
+  operator=(value v);
 
   /**
    * @brief Implicit conversion operator to the underlying
@@ -2414,19 +2380,18 @@ class type: public ::xml_schema::string
    * @return A enum value.
    */
   virtual
-  operator value () const
-  {
-    return _xsd_type_convert ();
+  operator value() const {
+    return _xsd_type_convert();
   }
 
   //@cond
 
-  protected:
+ protected:
   value
-  _xsd_type_convert () const;
+  _xsd_type_convert() const;
 
-  public:
-  static const char* const _xsd_type_literals_[10];
+ public:
+  static const char *const _xsd_type_literals_[10];
   static const value _xsd_type_indexes_[10];
 
   //@endcond
@@ -2437,9 +2402,8 @@ class type: public ::xml_schema::string
  *
  * @nosubgrouping
  */
-class PointData: public ::xml_schema::type
-{
-  public:
+class PointData : public ::xml_schema::type {
+ public:
   /**
    * @name DataArray
    *
@@ -2456,7 +2420,7 @@ class PointData: public ::xml_schema::type
   /**
    * @brief Element sequence container type.
    */
-  typedef ::xsd::cxx::tree::sequence< DataArray_type > DataArray_sequence;
+  typedef ::xsd::cxx::tree::sequence<DataArray_type> DataArray_sequence;
 
   /**
    * @brief Element iterator type.
@@ -2471,7 +2435,7 @@ class PointData: public ::xml_schema::type
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< DataArray_type, char > DataArray_traits;
+  typedef ::xsd::cxx::tree::traits<DataArray_type, char> DataArray_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element
@@ -2479,16 +2443,16 @@ class PointData: public ::xml_schema::type
    *
    * @return A constant reference to the sequence container.
    */
-  const DataArray_sequence&
-  DataArray () const;
+  const DataArray_sequence &
+  DataArray() const;
 
   /**
    * @brief Return a read-write reference to the element sequence.
    *
    * @return A reference to the sequence container.
    */
-  DataArray_sequence&
-  DataArray ();
+  DataArray_sequence &
+  DataArray();
 
   /**
    * @brief Copy elements from a given sequence.
@@ -2500,7 +2464,7 @@ class PointData: public ::xml_schema::type
    * sequence and all old elements will be lost.
    */
   void
-  DataArray (const DataArray_sequence& s);
+  DataArray(const DataArray_sequence &s);
 
   //@}
 
@@ -2513,7 +2477,7 @@ class PointData: public ::xml_schema::type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  PointData ();
+  PointData();
 
   /**
    * @brief Create an instance from a DOM element.
@@ -2523,9 +2487,9 @@ class PointData: public ::xml_schema::type
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  PointData (const ::xercesc::DOMElement& e,
-             ::xml_schema::flags f = 0,
-             ::xml_schema::container* c = 0);
+  PointData(const ::xercesc::DOMElement &e,
+            ::xml_schema::flags f = 0,
+            ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy constructor.
@@ -2536,9 +2500,9 @@ class PointData: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  PointData (const PointData& x,
-             ::xml_schema::flags f = 0,
-             ::xml_schema::container* c = 0);
+  PointData(const PointData &x,
+            ::xml_schema::flags f = 0,
+            ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy the instance polymorphically.
@@ -2551,9 +2515,9 @@ class PointData: public ::xml_schema::type
    * used for copying and should be used for polymorphic object
    * models instead of the copy constructor.
    */
-  virtual PointData*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
+  virtual PointData *
+  _clone(::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0) const;
 
   /**
    * @brief Copy assignment operator.
@@ -2563,28 +2527,27 @@ class PointData: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  PointData&
-  operator= (const PointData& x);
+  PointData &
+  operator=(const PointData &x);
 
   //@}
 
   /**
    * @brief Destructor.
    */
-  virtual 
-  ~PointData ();
+  virtual ~PointData();
 
   // Implementation.
   //
 
   //@cond
 
-  protected:
+ protected:
   void
-  parse (::xsd::cxx::xml::dom::parser< char >&,
-         ::xml_schema::flags);
+  parse(::xsd::cxx::xml::dom::parser<char> &,
+        ::xml_schema::flags);
 
-  protected:
+ protected:
   DataArray_sequence DataArray_;
 
   //@endcond
@@ -2595,9 +2558,8 @@ class PointData: public ::xml_schema::type
  *
  * @nosubgrouping
  */
-class CellData: public ::xml_schema::type
-{
-  public:
+class CellData : public ::xml_schema::type {
+ public:
   /**
    * @name DataArray
    *
@@ -2614,7 +2576,7 @@ class CellData: public ::xml_schema::type
   /**
    * @brief Element sequence container type.
    */
-  typedef ::xsd::cxx::tree::sequence< DataArray_type > DataArray_sequence;
+  typedef ::xsd::cxx::tree::sequence<DataArray_type> DataArray_sequence;
 
   /**
    * @brief Element iterator type.
@@ -2629,7 +2591,7 @@ class CellData: public ::xml_schema::type
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< DataArray_type, char > DataArray_traits;
+  typedef ::xsd::cxx::tree::traits<DataArray_type, char> DataArray_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element
@@ -2637,16 +2599,16 @@ class CellData: public ::xml_schema::type
    *
    * @return A constant reference to the sequence container.
    */
-  const DataArray_sequence&
-  DataArray () const;
+  const DataArray_sequence &
+  DataArray() const;
 
   /**
    * @brief Return a read-write reference to the element sequence.
    *
    * @return A reference to the sequence container.
    */
-  DataArray_sequence&
-  DataArray ();
+  DataArray_sequence &
+  DataArray();
 
   /**
    * @brief Copy elements from a given sequence.
@@ -2658,7 +2620,7 @@ class CellData: public ::xml_schema::type
    * sequence and all old elements will be lost.
    */
   void
-  DataArray (const DataArray_sequence& s);
+  DataArray(const DataArray_sequence &s);
 
   //@}
 
@@ -2671,7 +2633,7 @@ class CellData: public ::xml_schema::type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  CellData ();
+  CellData();
 
   /**
    * @brief Create an instance from a DOM element.
@@ -2681,9 +2643,9 @@ class CellData: public ::xml_schema::type
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  CellData (const ::xercesc::DOMElement& e,
-            ::xml_schema::flags f = 0,
-            ::xml_schema::container* c = 0);
+  CellData(const ::xercesc::DOMElement &e,
+           ::xml_schema::flags f = 0,
+           ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy constructor.
@@ -2694,9 +2656,9 @@ class CellData: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  CellData (const CellData& x,
-            ::xml_schema::flags f = 0,
-            ::xml_schema::container* c = 0);
+  CellData(const CellData &x,
+           ::xml_schema::flags f = 0,
+           ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy the instance polymorphically.
@@ -2709,9 +2671,9 @@ class CellData: public ::xml_schema::type
    * used for copying and should be used for polymorphic object
    * models instead of the copy constructor.
    */
-  virtual CellData*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
+  virtual CellData *
+  _clone(::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0) const;
 
   /**
    * @brief Copy assignment operator.
@@ -2721,28 +2683,27 @@ class CellData: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  CellData&
-  operator= (const CellData& x);
+  CellData &
+  operator=(const CellData &x);
 
   //@}
 
   /**
    * @brief Destructor.
    */
-  virtual 
-  ~CellData ();
+  virtual ~CellData();
 
   // Implementation.
   //
 
   //@cond
 
-  protected:
+ protected:
   void
-  parse (::xsd::cxx::xml::dom::parser< char >&,
-         ::xml_schema::flags);
+  parse(::xsd::cxx::xml::dom::parser<char> &,
+        ::xml_schema::flags);
 
-  protected:
+ protected:
   DataArray_sequence DataArray_;
 
   //@endcond
@@ -2753,9 +2714,8 @@ class CellData: public ::xml_schema::type
  *
  * @nosubgrouping
  */
-class Points: public ::xml_schema::type
-{
-  public:
+class Points : public ::xml_schema::type {
+ public:
   /**
    * @name DataArray
    *
@@ -2772,7 +2732,7 @@ class Points: public ::xml_schema::type
   /**
    * @brief Element sequence container type.
    */
-  typedef ::xsd::cxx::tree::sequence< DataArray_type > DataArray_sequence;
+  typedef ::xsd::cxx::tree::sequence<DataArray_type> DataArray_sequence;
 
   /**
    * @brief Element iterator type.
@@ -2787,7 +2747,7 @@ class Points: public ::xml_schema::type
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< DataArray_type, char > DataArray_traits;
+  typedef ::xsd::cxx::tree::traits<DataArray_type, char> DataArray_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element
@@ -2795,16 +2755,16 @@ class Points: public ::xml_schema::type
    *
    * @return A constant reference to the sequence container.
    */
-  const DataArray_sequence&
-  DataArray () const;
+  const DataArray_sequence &
+  DataArray() const;
 
   /**
    * @brief Return a read-write reference to the element sequence.
    *
    * @return A reference to the sequence container.
    */
-  DataArray_sequence&
-  DataArray ();
+  DataArray_sequence &
+  DataArray();
 
   /**
    * @brief Copy elements from a given sequence.
@@ -2816,7 +2776,7 @@ class Points: public ::xml_schema::type
    * sequence and all old elements will be lost.
    */
   void
-  DataArray (const DataArray_sequence& s);
+  DataArray(const DataArray_sequence &s);
 
   //@}
 
@@ -2829,7 +2789,7 @@ class Points: public ::xml_schema::type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  Points ();
+  Points();
 
   /**
    * @brief Create an instance from a DOM element.
@@ -2839,9 +2799,9 @@ class Points: public ::xml_schema::type
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  Points (const ::xercesc::DOMElement& e,
-          ::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0);
+  Points(const ::xercesc::DOMElement &e,
+         ::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy constructor.
@@ -2852,9 +2812,9 @@ class Points: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  Points (const Points& x,
-          ::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0);
+  Points(const Points &x,
+         ::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy the instance polymorphically.
@@ -2867,9 +2827,9 @@ class Points: public ::xml_schema::type
    * used for copying and should be used for polymorphic object
    * models instead of the copy constructor.
    */
-  virtual Points*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
+  virtual Points *
+  _clone(::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0) const;
 
   /**
    * @brief Copy assignment operator.
@@ -2879,28 +2839,27 @@ class Points: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  Points&
-  operator= (const Points& x);
+  Points &
+  operator=(const Points &x);
 
   //@}
 
   /**
    * @brief Destructor.
    */
-  virtual 
-  ~Points ();
+  virtual ~Points();
 
   // Implementation.
   //
 
   //@cond
 
-  protected:
+ protected:
   void
-  parse (::xsd::cxx::xml::dom::parser< char >&,
-         ::xml_schema::flags);
+  parse(::xsd::cxx::xml::dom::parser<char> &,
+        ::xml_schema::flags);
 
-  protected:
+ protected:
   DataArray_sequence DataArray_;
 
   //@endcond
@@ -2911,9 +2870,8 @@ class Points: public ::xml_schema::type
  *
  * @nosubgrouping
  */
-class Cells: public ::xml_schema::type
-{
-  public:
+class Cells : public ::xml_schema::type {
+ public:
   /**
    * @name DataArray
    *
@@ -2930,7 +2888,7 @@ class Cells: public ::xml_schema::type
   /**
    * @brief Element sequence container type.
    */
-  typedef ::xsd::cxx::tree::sequence< DataArray_type > DataArray_sequence;
+  typedef ::xsd::cxx::tree::sequence<DataArray_type> DataArray_sequence;
 
   /**
    * @brief Element iterator type.
@@ -2945,7 +2903,7 @@ class Cells: public ::xml_schema::type
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< DataArray_type, char > DataArray_traits;
+  typedef ::xsd::cxx::tree::traits<DataArray_type, char> DataArray_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element
@@ -2953,16 +2911,16 @@ class Cells: public ::xml_schema::type
    *
    * @return A constant reference to the sequence container.
    */
-  const DataArray_sequence&
-  DataArray () const;
+  const DataArray_sequence &
+  DataArray() const;
 
   /**
    * @brief Return a read-write reference to the element sequence.
    *
    * @return A reference to the sequence container.
    */
-  DataArray_sequence&
-  DataArray ();
+  DataArray_sequence &
+  DataArray();
 
   /**
    * @brief Copy elements from a given sequence.
@@ -2974,7 +2932,7 @@ class Cells: public ::xml_schema::type
    * sequence and all old elements will be lost.
    */
   void
-  DataArray (const DataArray_sequence& s);
+  DataArray(const DataArray_sequence &s);
 
   //@}
 
@@ -2987,7 +2945,7 @@ class Cells: public ::xml_schema::type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  Cells ();
+  Cells();
 
   /**
    * @brief Create an instance from a DOM element.
@@ -2997,9 +2955,9 @@ class Cells: public ::xml_schema::type
    * @param c A pointer to the object that will contain the new
    * instance.
    */
-  Cells (const ::xercesc::DOMElement& e,
-         ::xml_schema::flags f = 0,
-         ::xml_schema::container* c = 0);
+  Cells(const ::xercesc::DOMElement &e,
+        ::xml_schema::flags f = 0,
+        ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy constructor.
@@ -3010,9 +2968,9 @@ class Cells: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  Cells (const Cells& x,
-         ::xml_schema::flags f = 0,
-         ::xml_schema::container* c = 0);
+  Cells(const Cells &x,
+        ::xml_schema::flags f = 0,
+        ::xml_schema::container *c = 0);
 
   /**
    * @brief Copy the instance polymorphically.
@@ -3025,9 +2983,9 @@ class Cells: public ::xml_schema::type
    * used for copying and should be used for polymorphic object
    * models instead of the copy constructor.
    */
-  virtual Cells*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
+  virtual Cells *
+  _clone(::xml_schema::flags f = 0,
+         ::xml_schema::container *c = 0) const;
 
   /**
    * @brief Copy assignment operator.
@@ -3037,28 +2995,27 @@ class Cells: public ::xml_schema::type
    *
    * For polymorphic object models use the @c _clone function instead.
    */
-  Cells&
-  operator= (const Cells& x);
+  Cells &
+  operator=(const Cells &x);
 
   //@}
 
   /**
    * @brief Destructor.
    */
-  virtual 
-  ~Cells ();
+  virtual ~Cells();
 
   // Implementation.
   //
 
   //@cond
 
-  protected:
+ protected:
   void
-  parse (::xsd::cxx::xml::dom::parser< char >&,
-         ::xml_schema::flags);
+  parse(::xsd::cxx::xml::dom::parser<char> &,
+        ::xml_schema::flags);
 
-  protected:
+ protected:
   DataArray_sequence DataArray_;
 
   //@endcond
@@ -3066,9 +3023,9 @@ class Cells: public ::xml_schema::type
 
 #include <iosfwd>
 
-#include <xercesc/sax/InputSource.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
 #include <xercesc/dom/DOMErrorHandler.hpp>
+#include <xercesc/sax/InputSource.hpp>
 
 /**
  * @name Parsing functions for the %VTKFile document root.
@@ -3088,10 +3045,10 @@ class Cells: public ::xml_schema::type
  *
  * This function uses exceptions to report parsing errors.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (const ::std::string& uri,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(const ::std::string &uri,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a URI or a local file with an error handler.
@@ -3104,11 +3061,11 @@ VTKFile (const ::std::string& uri,
  *
  * This function reports parsing errors by calling the error handler.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (const ::std::string& uri,
-         ::xml_schema::error_handler& eh,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(const ::std::string &uri,
+        ::xml_schema::error_handler &eh,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a URI or a local file with a Xerces-C++ DOM error
@@ -3122,11 +3079,11 @@ VTKFile (const ::std::string& uri,
  *
  * This function reports parsing errors by calling the error handler.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (const ::std::string& uri,
-         ::xercesc::DOMErrorHandler& eh,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(const ::std::string &uri,
+        ::xercesc::DOMErrorHandler &eh,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a standard input stream.
@@ -3138,10 +3095,10 @@ VTKFile (const ::std::string& uri,
  *
  * This function uses exceptions to report parsing errors.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (::std::istream& is,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(::std::istream &is,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a standard input stream with an error handler.
@@ -3154,11 +3111,11 @@ VTKFile (::std::istream& is,
  *
  * This function reports parsing errors by calling the error handler.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (::std::istream& is,
-         ::xml_schema::error_handler& eh,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(::std::istream &is,
+        ::xml_schema::error_handler &eh,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a standard input stream with a Xerces-C++ DOM error
@@ -3172,11 +3129,11 @@ VTKFile (::std::istream& is,
  *
  * This function reports parsing errors by calling the error handler.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (::std::istream& is,
-         ::xercesc::DOMErrorHandler& eh,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(::std::istream &is,
+        ::xercesc::DOMErrorHandler &eh,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a standard input stream with a resource id.
@@ -3192,11 +3149,11 @@ VTKFile (::std::istream& is,
  *
  * This function uses exceptions to report parsing errors.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (::std::istream& is,
-         const ::std::string& id,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(::std::istream &is,
+        const ::std::string &id,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a standard input stream with a resource id and an
@@ -3214,12 +3171,12 @@ VTKFile (::std::istream& is,
  *
  * This function reports parsing errors by calling the error handler.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (::std::istream& is,
-         const ::std::string& id,
-         ::xml_schema::error_handler& eh,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(::std::istream &is,
+        const ::std::string &id,
+        ::xml_schema::error_handler &eh,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a standard input stream with a resource id and a
@@ -3237,12 +3194,12 @@ VTKFile (::std::istream& is,
  *
  * This function reports parsing errors by calling the error handler.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (::std::istream& is,
-         const ::std::string& id,
-         ::xercesc::DOMErrorHandler& eh,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(::std::istream &is,
+        const ::std::string &id,
+        ::xercesc::DOMErrorHandler &eh,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a Xerces-C++ input source.
@@ -3254,10 +3211,10 @@ VTKFile (::std::istream& is,
  *
  * This function uses exceptions to report parsing errors.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (::xercesc::InputSource& is,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(::xercesc::InputSource &is,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a Xerces-C++ input source with an error handler.
@@ -3270,11 +3227,11 @@ VTKFile (::xercesc::InputSource& is,
  *
  * This function reports parsing errors by calling the error handler.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (::xercesc::InputSource& is,
-         ::xml_schema::error_handler& eh,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(::xercesc::InputSource &is,
+        ::xml_schema::error_handler &eh,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a Xerces-C++ input source with a Xerces-C++ DOM
@@ -3288,11 +3245,11 @@ VTKFile (::xercesc::InputSource& is,
  *
  * This function reports parsing errors by calling the error handler.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (::xercesc::InputSource& is,
-         ::xercesc::DOMErrorHandler& eh,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(::xercesc::InputSource &is,
+        ::xercesc::DOMErrorHandler &eh,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a Xerces-C++ DOM document.
@@ -3302,10 +3259,10 @@ VTKFile (::xercesc::InputSource& is,
  * @param p Parsing properties. 
  * @return A pointer to the root of the object model.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (const ::xercesc::DOMDocument& d,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(const ::xercesc::DOMDocument &d,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 /**
  * @brief Parse a Xerces-C++ DOM document.
@@ -3319,10 +3276,10 @@ VTKFile (const ::xercesc::DOMDocument& d,
  * own_dom parsing flags to assign ownership of the DOM document
  * to the object model.
  */
-::std::unique_ptr< ::VTKFile_t >
-VTKFile (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
-         ::xml_schema::flags f = 0,
-         const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr<::VTKFile_t>
+VTKFile(::xml_schema::dom::unique_ptr<::xercesc::DOMDocument> d,
+        ::xml_schema::flags f = 0,
+        const ::xml_schema::properties &p = ::xml_schema::properties());
 
 //@}
 
@@ -3334,30 +3291,22 @@ VTKFile (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
 
 #include <xsd/cxx/xml/dom/auto-ptr.hxx>
 
-void
-operator<< (::xercesc::DOMElement&, const DataArrayList_t&);
+void operator<<(::xercesc::DOMElement &, const DataArrayList_t &);
 
-void
-operator<< (::xercesc::DOMAttr&, const DataArrayList_t&);
+void operator<<(::xercesc::DOMAttr &, const DataArrayList_t &);
 
-void
-operator<< (::xml_schema::list_stream&,
-            const DataArrayList_t&);
+void operator<<(::xml_schema::list_stream &,
+                const DataArrayList_t &);
 
-void
-operator<< (::xercesc::DOMElement&, const DataArray_t&);
+void operator<<(::xercesc::DOMElement &, const DataArray_t &);
 
-void
-operator<< (::xercesc::DOMElement&, const PieceUnstructuredGrid_t&);
+void operator<<(::xercesc::DOMElement &, const PieceUnstructuredGrid_t &);
 
-void
-operator<< (::xercesc::DOMElement&, const UnstructuredGrid_t&);
+void operator<<(::xercesc::DOMElement &, const UnstructuredGrid_t &);
 
-void
-operator<< (::xercesc::DOMElement&, const PolyData_t&);
+void operator<<(::xercesc::DOMElement &, const PolyData_t &);
 
-void
-operator<< (::xercesc::DOMElement&, const VTKFile_t&);
+void operator<<(::xercesc::DOMElement &, const VTKFile_t &);
 
 /**
  * @name Serialization functions for the %VTKFile document root.
@@ -3378,12 +3327,11 @@ operator<< (::xercesc::DOMElement&, const VTKFile_t&);
  *
  * This function uses exceptions to report serialization errors.
  */
-void
-VTKFile (::std::ostream& os,
-         const ::VTKFile_t& x, 
-         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
-         const ::std::string& e = "UTF-8",
-         ::xml_schema::flags f = 0);
+void VTKFile(::std::ostream &os,
+             const ::VTKFile_t &x,
+             const ::xml_schema::namespace_infomap &m = ::xml_schema::namespace_infomap(),
+             const ::std::string &e = "UTF-8",
+             ::xml_schema::flags f = 0);
 
 /**
  * @brief Serialize to a standard output stream with an error handler.
@@ -3398,13 +3346,12 @@ VTKFile (::std::ostream& os,
  * This function reports serialization errors by calling the error
  * handler.
  */
-void
-VTKFile (::std::ostream& os,
-         const ::VTKFile_t& x, 
-         ::xml_schema::error_handler& eh,
-         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
-         const ::std::string& e = "UTF-8",
-         ::xml_schema::flags f = 0);
+void VTKFile(::std::ostream &os,
+             const ::VTKFile_t &x,
+             ::xml_schema::error_handler &eh,
+             const ::xml_schema::namespace_infomap &m = ::xml_schema::namespace_infomap(),
+             const ::std::string &e = "UTF-8",
+             ::xml_schema::flags f = 0);
 
 /**
  * @brief Serialize to a standard output stream with a Xerces-C++ DOM
@@ -3420,13 +3367,12 @@ VTKFile (::std::ostream& os,
  * This function reports serialization errors by calling the error
  * handler.
  */
-void
-VTKFile (::std::ostream& os,
-         const ::VTKFile_t& x, 
-         ::xercesc::DOMErrorHandler& eh,
-         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
-         const ::std::string& e = "UTF-8",
-         ::xml_schema::flags f = 0);
+void VTKFile(::std::ostream &os,
+             const ::VTKFile_t &x,
+             ::xercesc::DOMErrorHandler &eh,
+             const ::xml_schema::namespace_infomap &m = ::xml_schema::namespace_infomap(),
+             const ::std::string &e = "UTF-8",
+             ::xml_schema::flags f = 0);
 
 /**
  * @brief Serialize to a Xerces-C++ XML format target.
@@ -3439,12 +3385,11 @@ VTKFile (::std::ostream& os,
  *
  * This function uses exceptions to report serialization errors.
  */
-void
-VTKFile (::xercesc::XMLFormatTarget& ft,
-         const ::VTKFile_t& x, 
-         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
-         const ::std::string& e = "UTF-8",
-         ::xml_schema::flags f = 0);
+void VTKFile(::xercesc::XMLFormatTarget &ft,
+             const ::VTKFile_t &x,
+             const ::xml_schema::namespace_infomap &m = ::xml_schema::namespace_infomap(),
+             const ::std::string &e = "UTF-8",
+             ::xml_schema::flags f = 0);
 
 /**
  * @brief Serialize to a Xerces-C++ XML format target with an error
@@ -3460,13 +3405,12 @@ VTKFile (::xercesc::XMLFormatTarget& ft,
  * This function reports serialization errors by calling the error
  * handler.
  */
-void
-VTKFile (::xercesc::XMLFormatTarget& ft,
-         const ::VTKFile_t& x, 
-         ::xml_schema::error_handler& eh,
-         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
-         const ::std::string& e = "UTF-8",
-         ::xml_schema::flags f = 0);
+void VTKFile(::xercesc::XMLFormatTarget &ft,
+             const ::VTKFile_t &x,
+             ::xml_schema::error_handler &eh,
+             const ::xml_schema::namespace_infomap &m = ::xml_schema::namespace_infomap(),
+             const ::std::string &e = "UTF-8",
+             ::xml_schema::flags f = 0);
 
 /**
  * @brief Serialize to a Xerces-C++ XML format target with a
@@ -3482,13 +3426,12 @@ VTKFile (::xercesc::XMLFormatTarget& ft,
  * This function reports serialization errors by calling the error
  * handler.
  */
-void
-VTKFile (::xercesc::XMLFormatTarget& ft,
-         const ::VTKFile_t& x, 
-         ::xercesc::DOMErrorHandler& eh,
-         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
-         const ::std::string& e = "UTF-8",
-         ::xml_schema::flags f = 0);
+void VTKFile(::xercesc::XMLFormatTarget &ft,
+             const ::VTKFile_t &x,
+             ::xercesc::DOMErrorHandler &eh,
+             const ::xml_schema::namespace_infomap &m = ::xml_schema::namespace_infomap(),
+             const ::std::string &e = "UTF-8",
+             ::xml_schema::flags f = 0);
 
 /**
  * @brief Serialize to an existing Xerces-C++ DOM document.
@@ -3501,10 +3444,9 @@ VTKFile (::xercesc::XMLFormatTarget& ft,
  * with the correct root element as well as set the necessary
  * namespace mapping attributes.
  */
-void
-VTKFile (::xercesc::DOMDocument& d,
-         const ::VTKFile_t& x,
-         ::xml_schema::flags f = 0);
+void VTKFile(::xercesc::DOMDocument &d,
+             const ::VTKFile_t &x,
+             ::xml_schema::flags f = 0);
 
 /**
  * @brief Serialize to a new Xerces-C++ DOM document.
@@ -3514,34 +3456,27 @@ VTKFile (::xercesc::DOMDocument& d,
  * @param f Serialization flags.
  * @return A pointer to the new Xerces-C++ DOM document.
  */
-::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument >
-VTKFile (const ::VTKFile_t& x, 
-         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
-         ::xml_schema::flags f = 0);
+::xml_schema::dom::unique_ptr<::xercesc::DOMDocument>
+VTKFile(const ::VTKFile_t &x,
+        const ::xml_schema::namespace_infomap &m = ::xml_schema::namespace_infomap(),
+        ::xml_schema::flags f = 0);
 
 //@}
 
-void
-operator<< (::xercesc::DOMElement&, const type&);
+void operator<<(::xercesc::DOMElement &, const type &);
 
-void
-operator<< (::xercesc::DOMAttr&, const type&);
+void operator<<(::xercesc::DOMAttr &, const type &);
 
-void
-operator<< (::xml_schema::list_stream&,
-            const type&);
+void operator<<(::xml_schema::list_stream &,
+                const type &);
 
-void
-operator<< (::xercesc::DOMElement&, const PointData&);
+void operator<<(::xercesc::DOMElement &, const PointData &);
 
-void
-operator<< (::xercesc::DOMElement&, const CellData&);
+void operator<<(::xercesc::DOMElement &, const CellData &);
 
-void
-operator<< (::xercesc::DOMElement&, const Points&);
+void operator<<(::xercesc::DOMElement &, const Points &);
 
-void
-operator<< (::xercesc::DOMElement&, const Cells&);
+void operator<<(::xercesc::DOMElement &, const Cells &);
 
 #include <xsd/cxx/post.hxx>
 
@@ -3550,4 +3485,4 @@ operator<< (::xercesc::DOMElement&, const Cells&);
 //
 // End epilogue.
 
-#endif // VTK_UNSTRUCTURED_H
+#endif// VTK_UNSTRUCTURED_H

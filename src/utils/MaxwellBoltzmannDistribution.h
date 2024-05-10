@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <random>
 #include <array>
+#include <random>
 
 /**
  * Generate a random velocity vector according to the Maxwell-Boltzmann distribution, with a given average velocity.

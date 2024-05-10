@@ -26,4 +26,4 @@ class XYZWriter {
                      int iteration);
 };
 
-} // namespace outputWriter
+}// namespace outputWriter
