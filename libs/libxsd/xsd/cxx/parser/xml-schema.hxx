@@ -5,567 +5,503 @@
 #ifndef XSD_CXX_PARSER_XML_SCHEMA_HXX
 #define XSD_CXX_PARSER_XML_SCHEMA_HXX
 
+#include <cstddef>// std::size_t
 #include <string>
 #include <vector>
-#include <cstddef> // std::size_t
-
-namespace xsd
-{
-  namespace cxx
-  {
-    namespace parser
-    {
-      // String sequence. Used for the NMTOKENS and IDREFS types.
-      //
-      template <typename C>
-      class string_sequence: public std::vector<std::basic_string<C> >
-      {
-      public:
-        typedef std::basic_string<C> value_type;
-        typedef std::vector<value_type> base;
-        typedef typename base::size_type size_type;
-
-        string_sequence ();
-
-        explicit
-        string_sequence (size_type n, const value_type& x = value_type ());
-
-        template <typename I>
-        string_sequence (const I& begin, const I& end);
-      };
-
-      template <typename C>
-      bool
-      operator== (const string_sequence<C>&, const string_sequence<C>&);
-
-      template <typename C>
-      bool
-      operator!= (const string_sequence<C>&, const string_sequence<C>&);
-
-
-      // QName
-      //
-      template <typename C>
-      class qname
-      {
-      public:
-        explicit
-        qname (const std::basic_string<C>& name);
-
-        qname (const std::basic_string<C>& prefix,
-               const std::basic_string<C>& name);
-
-        void
-        swap (qname&);
-
-        const std::basic_string<C>&
-        prefix () const;
-
-        std::basic_string<C>&
-        prefix ();
-
-        void
-        prefix (const std::basic_string<C>&);
-
-        const std::basic_string<C>&
-        name () const;
-
-        std::basic_string<C>&
-        name ();
-
-        void
-        name (const std::basic_string<C>&);
-
-      private:
-        std::basic_string<C> prefix_;
-        std::basic_string<C> name_;
-      };
-
-      template <typename C>
-      bool
-      operator== (const qname<C>&, const qname<C>&);
 
-      template <typename C>
-      bool
-      operator!= (const qname<C>&, const qname<C>&);
-
-
-      // Binary buffer. Used for the base64Binary and hexBinary types.
-      //
-      class buffer
-      {
-      public:
-        typedef std::size_t size_t;
-
-        class bounds {}; // Out of bounds exception.
-
-      public:
-        ~buffer ();
-
-        explicit
-        buffer (size_t size = 0);
-        buffer (size_t size, size_t capacity);
-        buffer (const void* data, size_t size);
-        buffer (const void* data, size_t size, size_t capacity);
+namespace xsd {
+namespace cxx {
+namespace parser {
+// String sequence. Used for the NMTOKENS and IDREFS types.
+//
+template<typename C>
+class string_sequence : public std::vector<std::basic_string<C>> {
+ public:
+  typedef std::basic_string<C> value_type;
+  typedef std::vector<value_type> base;
+  typedef typename base::size_type size_type;
 
-        // If the assume_ownership argument is true, the buffer will
-        // assume the ownership of the data and will release the memory
-        // by calling operator delete ().
-        //
-        buffer (void* data,
-                size_t size,
-                size_t capacity,
-                bool assume_ownership);
+  string_sequence();
 
-        buffer (const buffer&);
+  explicit string_sequence(size_type n, const value_type &x = value_type());
 
-      public:
-        buffer&
-        operator= (const buffer&);
+  template<typename I>
+  string_sequence(const I &begin, const I &end);
+};
 
-      public:
-        size_t
-        capacity () const;
+template<typename C>
+bool operator==(const string_sequence<C> &, const string_sequence<C> &);
 
-        // Returns true if the underlying buffer has moved.
-        //
-        bool
-        capacity (size_t);
+template<typename C>
+bool operator!=(const string_sequence<C> &, const string_sequence<C> &);
 
-      public:
-        size_t
-        size () const;
+// QName
+//
+template<typename C>
+class qname {
+ public:
+  explicit qname(const std::basic_string<C> &name);
 
-        // Returns true if the underlying buffer has moved.
-        //
-        bool
-        size (size_t);
+  qname(const std::basic_string<C> &prefix,
+        const std::basic_string<C> &name);
 
-      public:
-        const char*
-        data () const;
+  void
+  swap(qname &);
 
-        char*
-        data ();
+  const std::basic_string<C> &
+  prefix() const;
 
-        const char*
-        begin () const;
+  std::basic_string<C> &
+  prefix();
 
-        char*
-        begin ();
+  void
+  prefix(const std::basic_string<C> &);
 
-        const char*
-        end () const;
+  const std::basic_string<C> &
+  name() const;
 
-        char*
-        end ();
+  std::basic_string<C> &
+  name();
 
-      public:
-        void
-        swap (buffer&);
+  void
+  name(const std::basic_string<C> &);
 
-      private:
-        bool
-        capacity (size_t capacity, bool copy);
+ private:
+  std::basic_string<C> prefix_;
+  std::basic_string<C> name_;
+};
 
-      private:
-        char* data_;
-        size_t size_;
-        size_t capacity_;
-      };
+template<typename C>
+bool operator==(const qname<C> &, const qname<C> &);
 
-      bool
-      operator== (const buffer&, const buffer&);
+template<typename C>
+bool operator!=(const qname<C> &, const qname<C> &);
 
-      bool
-      operator!= (const buffer&, const buffer&);
+// Binary buffer. Used for the base64Binary and hexBinary types.
+//
+class buffer {
+ public:
+  typedef std::size_t size_t;
 
+  class bounds {};// Out of bounds exception.
 
-      // Time and date types.
-      //
+ public:
+  ~buffer();
 
-      class time_zone
-      {
-      public:
-        time_zone ();
-        time_zone (short hours, short minutes);
+  explicit buffer(size_t size = 0);
+  buffer(size_t size, size_t capacity);
+  buffer(const void *data, size_t size);
+  buffer(const void *data, size_t size, size_t capacity);
 
-        // Returns true if time zone is specified.
-        //
-        bool
-        zone_present () const;
+  // If the assume_ownership argument is true, the buffer will
+  // assume the ownership of the data and will clang-ubsan.cmake the memory
+  // by calling operator delete ().
+  //
+  buffer(void *data,
+         size_t size,
+         size_t capacity,
+         bool assume_ownership);
 
-        // Resets the time zone to the 'not specified' state.
-        //
-        void
-        zone_reset ();
+  buffer(const buffer &);
 
-        short
-        zone_hours () const;
+ public:
+  buffer &
+  operator=(const buffer &);
 
-        void
-        zone_hours (short);
+ public:
+  size_t
+  capacity() const;
 
-        short
-        zone_minutes () const;
+  // Returns true if the underlying buffer has moved.
+  //
+  bool
+      capacity(size_t);
 
-        void
-        zone_minutes (short);
+ public:
+  size_t
+  size() const;
 
-      private:
-        bool present_;
-        short hours_;
-        short minutes_;
-      };
+  // Returns true if the underlying buffer has moved.
+  //
+  bool
+      size(size_t);
 
-      bool
-      operator== (const time_zone&, const time_zone&);
+ public:
+  const char *
+  data() const;
 
-      bool
-      operator!= (const time_zone&, const time_zone&);
+  char *
+  data();
 
+  const char *
+  begin() const;
 
-      class gday: public time_zone
-      {
-      public:
-        explicit
-        gday (unsigned short day);
-        gday (unsigned short day, short zone_hours, short zone_minutes);
+  char *
+  begin();
 
-        unsigned short
-        day () const;
+  const char *
+  end() const;
 
-        void
-        day (unsigned short);
+  char *
+  end();
 
-      private:
-        unsigned short day_;
-      };
+ public:
+  void
+  swap(buffer &);
 
-      bool
-      operator== (const gday&, const gday&);
+ private:
+  bool
+  capacity(size_t capacity, bool copy);
 
-      bool
-      operator!= (const gday&, const gday&);
+ private:
+  char *data_;
+  size_t size_;
+  size_t capacity_;
+};
 
+bool operator==(const buffer &, const buffer &);
 
-      class gmonth: public time_zone
-      {
-      public:
-        explicit
-        gmonth (unsigned short month);
-        gmonth (unsigned short month, short zone_hours, short zone_minutes);
+bool operator!=(const buffer &, const buffer &);
 
-        unsigned short
-        month () const;
+// Time and date types.
+//
 
-        void
-        month (unsigned short);
+class time_zone {
+ public:
+  time_zone();
+  time_zone(short hours, short minutes);
 
-      private:
-        unsigned short month_;
-      };
+  // Returns true if time zone is specified.
+  //
+  bool
+  zone_present() const;
 
-      bool
-      operator== (const gmonth&, const gmonth&);
+  // Resets the time zone to the 'not specified' state.
+  //
+  void
+  zone_reset();
 
-      bool
-      operator!= (const gmonth&, const gmonth&);
+  short
+  zone_hours() const;
 
+  void
+  zone_hours(short);
 
-      class gyear: public time_zone
-      {
-      public:
-        explicit
-        gyear (int year);
-        gyear (int year, short zone_hours, short zone_minutes);
+  short
+  zone_minutes() const;
 
-        int
-        year () const;
+  void
+  zone_minutes(short);
 
-        void
-        year (int);
+ private:
+  bool present_;
+  short hours_;
+  short minutes_;
+};
 
-      private:
-        int year_;
-      };
+bool operator==(const time_zone &, const time_zone &);
 
-      bool
-      operator== (const gyear&, const gyear&);
+bool operator!=(const time_zone &, const time_zone &);
 
-      bool
-      operator!= (const gyear&, const gyear&);
+class gday : public time_zone {
+ public:
+  explicit gday(unsigned short day);
+  gday(unsigned short day, short zone_hours, short zone_minutes);
 
+  unsigned short
+  day() const;
 
-      class gmonth_day: public time_zone
-      {
-      public:
-        gmonth_day (unsigned short month, unsigned short day);
-        gmonth_day (unsigned short month, unsigned short day,
-                    short zone_hours, short zone_minutes);
+  void
+  day(unsigned short);
 
-        unsigned short
-        month () const;
+ private:
+  unsigned short day_;
+};
 
-        void
-        month (unsigned short);
+bool operator==(const gday &, const gday &);
 
-        unsigned short
-        day () const;
+bool operator!=(const gday &, const gday &);
 
-        void
-        day (unsigned short);
+class gmonth : public time_zone {
+ public:
+  explicit gmonth(unsigned short month);
+  gmonth(unsigned short month, short zone_hours, short zone_minutes);
 
-      private:
-        unsigned short month_;
-        unsigned short day_;
-      };
+  unsigned short
+  month() const;
 
-      bool
-      operator== (const gmonth_day&, const gmonth_day&);
+  void
+  month(unsigned short);
 
-      bool
-      operator!= (const gmonth_day&, const gmonth_day&);
+ private:
+  unsigned short month_;
+};
 
+bool operator==(const gmonth &, const gmonth &);
 
-      class gyear_month: public time_zone
-      {
-      public:
-        gyear_month (int year, unsigned short month);
-        gyear_month (int year, unsigned short month,
-                     short zone_hours, short zone_minutes);
+bool operator!=(const gmonth &, const gmonth &);
 
-        int
-        year () const;
+class gyear : public time_zone {
+ public:
+  explicit gyear(int year);
+  gyear(int year, short zone_hours, short zone_minutes);
 
-        void
-        year (int);
+  int year() const;
 
-        unsigned short
-        month () const;
+  void
+  year(int);
 
-        void
-        month (unsigned short);
+ private:
+  int year_;
+};
 
-      private:
-        int year_;
-        unsigned short month_;
-      };
+bool operator==(const gyear &, const gyear &);
 
-      bool
-      operator== (const gyear_month&, const gyear_month&);
+bool operator!=(const gyear &, const gyear &);
 
-      bool
-      operator!= (const gyear_month&, const gyear_month&);
+class gmonth_day : public time_zone {
+ public:
+  gmonth_day(unsigned short month, unsigned short day);
+  gmonth_day(unsigned short month, unsigned short day,
+             short zone_hours, short zone_minutes);
 
+  unsigned short
+  month() const;
 
-      class date: public time_zone
-      {
-      public:
-        date (int year, unsigned short month, unsigned short day);
-        date (int year, unsigned short month, unsigned short day,
+  void
+  month(unsigned short);
+
+  unsigned short
+  day() const;
+
+  void
+  day(unsigned short);
+
+ private:
+  unsigned short month_;
+  unsigned short day_;
+};
+
+bool operator==(const gmonth_day &, const gmonth_day &);
+
+bool operator!=(const gmonth_day &, const gmonth_day &);
+
+class gyear_month : public time_zone {
+ public:
+  gyear_month(int year, unsigned short month);
+  gyear_month(int year, unsigned short month,
               short zone_hours, short zone_minutes);
 
-        int
-        year () const;
+  int year() const;
 
-        void
-        year (int);
+  void
+  year(int);
 
-        unsigned short
-        month () const;
+  unsigned short
+  month() const;
 
-        void
-        month (unsigned short);
+  void
+  month(unsigned short);
 
-        unsigned short
-        day () const;
+ private:
+  int year_;
+  unsigned short month_;
+};
 
-        void
-        day (unsigned short);
+bool operator==(const gyear_month &, const gyear_month &);
 
-      private:
-        int year_;
-        unsigned short month_;
-        unsigned short day_;
-      };
+bool operator!=(const gyear_month &, const gyear_month &);
 
-      bool
-      operator== (const date&, const date&);
+class date : public time_zone {
+ public:
+  date(int year, unsigned short month, unsigned short day);
+  date(int year, unsigned short month, unsigned short day,
+       short zone_hours, short zone_minutes);
 
-      bool
-      operator!= (const date&, const date&);
+  int year() const;
 
+  void
+  year(int);
 
-      class time: public time_zone
-      {
-      public:
-        time (unsigned short hours, unsigned short minutes, double seconds);
-        time (unsigned short hours, unsigned short minutes, double seconds,
-              short zone_hours, short zone_minutes);
+  unsigned short
+  month() const;
 
-        unsigned short
-        hours () const;
+  void
+  month(unsigned short);
 
-        void
-        hours (unsigned short);
+  unsigned short
+  day() const;
 
-        unsigned short
-        minutes () const;
+  void
+  day(unsigned short);
 
-        void
-        minutes (unsigned short);
+ private:
+  int year_;
+  unsigned short month_;
+  unsigned short day_;
+};
 
-        double
-        seconds () const;
+bool operator==(const date &, const date &);
 
-        void
-        seconds (double);
+bool operator!=(const date &, const date &);
 
-      private:
-        unsigned short hours_;
-        unsigned short minutes_;
-        double seconds_;
-      };
+class time : public time_zone {
+ public:
+  time(unsigned short hours, unsigned short minutes, double seconds);
+  time(unsigned short hours, unsigned short minutes, double seconds,
+       short zone_hours, short zone_minutes);
 
-      bool
-      operator== (const time&, const time&);
+  unsigned short
+  hours() const;
 
-      bool
-      operator!= (const time&, const time&);
+  void
+  hours(unsigned short);
 
+  unsigned short
+  minutes() const;
 
-      class date_time: public time_zone
-      {
-      public:
-        date_time (int year, unsigned short month, unsigned short day,
-                   unsigned short hours, unsigned short minutes, double seconds);
+  void
+  minutes(unsigned short);
 
-        date_time (int year, unsigned short month, unsigned short day,
-                   unsigned short hours, unsigned short minutes, double seconds,
-                   short zone_hours, short zone_minutes);
+  double
+  seconds() const;
 
-        int
-        year () const;
+  void
+  seconds(double);
 
-        void
-        year (int);
+ private:
+  unsigned short hours_;
+  unsigned short minutes_;
+  double seconds_;
+};
 
-        unsigned short
-        month () const;
+bool operator==(const time &, const time &);
 
-        void
-        month (unsigned short);
+bool operator!=(const time &, const time &);
 
-        unsigned short
-        day () const;
+class date_time : public time_zone {
+ public:
+  date_time(int year, unsigned short month, unsigned short day,
+            unsigned short hours, unsigned short minutes, double seconds);
 
-        void
-        day (unsigned short);
+  date_time(int year, unsigned short month, unsigned short day,
+            unsigned short hours, unsigned short minutes, double seconds,
+            short zone_hours, short zone_minutes);
 
-        unsigned short
-        hours () const;
+  int year() const;
 
-        void
-        hours (unsigned short);
+  void
+  year(int);
 
-        unsigned short
-        minutes () const;
+  unsigned short
+  month() const;
 
-        void
-        minutes (unsigned short);
+  void
+  month(unsigned short);
 
-        double
-        seconds () const;
+  unsigned short
+  day() const;
 
-        void
-        seconds (double);
+  void
+  day(unsigned short);
 
-      private:
-        int year_;
-        unsigned short month_;
-        unsigned short day_;
-        unsigned short hours_;
-        unsigned short minutes_;
-        double seconds_;
-      };
+  unsigned short
+  hours() const;
 
-      bool
-      operator== (const date_time&, const date_time&);
+  void
+  hours(unsigned short);
 
-      bool
-      operator!= (const date_time&, const date_time&);
+  unsigned short
+  minutes() const;
 
+  void
+  minutes(unsigned short);
 
-      class duration
-      {
-      public:
-        duration (bool negative,
-                  unsigned int years, unsigned int months, unsigned int days,
-                  unsigned int hours, unsigned int minutes, double seconds);
+  double
+  seconds() const;
 
-        bool
-        negative () const;
+  void
+  seconds(double);
 
-        void
-        negative (bool);
+ private:
+  int year_;
+  unsigned short month_;
+  unsigned short day_;
+  unsigned short hours_;
+  unsigned short minutes_;
+  double seconds_;
+};
 
-        unsigned int
-        years () const;
+bool operator==(const date_time &, const date_time &);
 
-        void
-        years (unsigned int);
+bool operator!=(const date_time &, const date_time &);
 
-        unsigned int
-        months () const;
+class duration {
+ public:
+  duration(bool negative,
+           unsigned int years, unsigned int months, unsigned int days,
+           unsigned int hours, unsigned int minutes, double seconds);
 
-        void
-        months (unsigned int);
+  bool
+  negative() const;
 
-        unsigned int
-        days () const;
+  void
+  negative(bool);
 
-        void
-        days (unsigned int);
+  unsigned int
+  years() const;
 
-        unsigned int
-        hours () const;
+  void
+  years(unsigned int);
 
-        void
-        hours (unsigned int);
+  unsigned int
+  months() const;
 
-        unsigned int
-        minutes () const;
+  void
+  months(unsigned int);
 
-        void
-        minutes (unsigned int);
+  unsigned int
+  days() const;
 
-        double
-        seconds () const;
+  void
+  days(unsigned int);
 
-        void
-        seconds (double);
+  unsigned int
+  hours() const;
 
-      private:
-        bool negative_;
-        unsigned int years_;
-        unsigned int months_;
-        unsigned int days_;
-        unsigned int hours_;
-        unsigned int minutes_;
-        double seconds_;
-      };
+  void
+  hours(unsigned int);
 
-      bool
-      operator== (const duration&, const duration&);
+  unsigned int
+  minutes() const;
 
-      bool
-      operator!= (const duration&, const duration&);
-    }
-  }
-}
+  void
+  minutes(unsigned int);
+
+  double
+  seconds() const;
+
+  void
+  seconds(double);
+
+ private:
+  bool negative_;
+  unsigned int years_;
+  unsigned int months_;
+  unsigned int days_;
+  unsigned int hours_;
+  unsigned int minutes_;
+  double seconds_;
+};
+
+bool operator==(const duration &, const duration &);
+
+bool operator!=(const duration &, const duration &);
+}// namespace parser
+}// namespace cxx
+}// namespace xsd
 
 #include <xsd/cxx/parser/xml-schema.ixx>
 #include <xsd/cxx/parser/xml-schema.txx>
 
-#endif // XSD_CXX_PARSER_XML_SCHEMA_HXX
+#endif// XSD_CXX_PARSER_XML_SCHEMA_HXX
