@@ -19,6 +19,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
+      - run: sudo apt-get install libxerces-c-dev
       - run: cmake -DCMAKE_TOOLCHAIN_FILE=./toolchains/test.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -G 'Unix Makefiles' -S $(pwd) -B $(pwd)/build
       - run: cd ./build && make
       - run: clang-tidy src/* -p ./build/compile_commands.json
