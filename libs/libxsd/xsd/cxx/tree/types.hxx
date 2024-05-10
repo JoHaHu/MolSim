@@ -15,24 +15,22 @@
 #ifndef XSD_CXX_TREE_TYPES_HXX
 #define XSD_CXX_TREE_TYPES_HXX
 
+#include <cstddef>// std::size_t
 #include <string>
-#include <cstddef> // std::size_t
 
 #include <xercesc/dom/DOMAttr.hpp>
 #include <xercesc/dom/DOMElement.hpp>
 
-#include <xsd/cxx/tree/elements.hxx>
-#include <xsd/cxx/tree/list.hxx>
 #include <xsd/cxx/tree/buffer.hxx>
+#include <xsd/cxx/tree/elements.hxx>
 #include <xsd/cxx/tree/istream-fwd.hxx>
+#include <xsd/cxx/tree/list.hxx>
 
 #include <xsd/cxx/tree/date-time.hxx>
 
-namespace xsd
-{
-  namespace cxx
-  {
-    /**
+namespace xsd {
+namespace cxx {
+/**
      * @brief C++/Tree mapping runtime namespace.
      *
      * This is an internal namespace and normally should not be referenced
@@ -40,9 +38,8 @@ namespace xsd
      * namespaces that are created in the generated code.
      *
      */
-    namespace tree
-    {
-      /**
+namespace tree {
+/**
        * @brief Class corresponding to the XML Schema %string built-in
        * type.
        *
@@ -53,89 +50,81 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B>
-      class string: public B, public std::basic_string<C>
-      {
-        typedef std::basic_string<C> base_type;
+template<typename C, typename B>
+class string : public B, public std::basic_string<C> {
+  typedef std::basic_string<C> base_type;
 
-        base_type&
-        base ()
-        {
-          return *this;
-        }
+  base_type &
+  base() {
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Default constructor creates an empty %string.
          */
-        string ()
-        {
-        }
+  string() {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a C %string.
          *
          * @param s A C %string to copy.
          */
-        string (const C* s)
-            : base_type (s)
-        {
-        }
+  string(const C *s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a character array.
          *
          * @param s A character array to copy.
          * @param n A number of character to copy.
          */
-        string (const C* s, std::size_t n)
-            : base_type (s, n)
-        {
-        }
+  string(const C *s, std::size_t n)
+      : base_type(s, n) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with multiple copies of the same
          * character.
          *
          * @param n A number of copies to create.
          * @param c A character to copy.
          */
-        string (std::size_t n, C c)
-            : base_type (n, c)
-        {
-        }
+  string(std::size_t n, C c)
+      : base_type(n, c) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a standard %string.
          *
          * @param s A standard %string to copy.
          */
-        string (const std::basic_string<C>& s)
-            : base_type (s)
-        {
-        }
+  string(const std::basic_string<C> &s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a substring.
          *
          * @param s   A standard %string to copy the substring from.
          * @param pos An index of the first character to copy from.
          * @param n   A number of characters to copy.
          */
-        string (const std::basic_string<C>& s,
-                std::size_t pos,
-                std::size_t n = std::basic_string<C>::npos)
-            : base_type (s, pos, n)
-        {
-        }
+  string(const std::basic_string<C> &s,
+         std::size_t pos,
+         std::size_t n = std::basic_string<C>::npos)
+      : base_type(s, pos, n) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -144,12 +133,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        string (const string& x, flags f = 0, container* c = 0)
-            : B (x, f, c), base_type (x)
-        {
-        }
+  string(const string &x, flags f = 0, container *c = 0)
+      : B(x, f, c), base_type(x) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -160,11 +148,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual string*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual string *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -173,10 +161,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        string (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  string(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -184,9 +172,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        string (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  string(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -194,9 +182,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        string (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  string(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -205,14 +193,14 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        string (const std::basic_string<C>& s,
-                const xercesc::DOMElement* e,
-                flags f = 0,
-                container* c = 0);
-        //@}
+  string(const std::basic_string<C> &s,
+         const xercesc::DOMElement *e,
+         flags f = 0,
+         container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Assign a character to the instance.
          *
          * The resulting %string has only one character.
@@ -220,14 +208,13 @@ namespace xsd
          * @param c A character to assign.
          * @return A reference to the instance.
          */
-        string&
-        operator= (C c)
-        {
-          base () = c;
-          return *this;
-        }
+  string &
+  operator=(C c) {
+    base() = c;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a C %string to the instance.
          *
          * The resulting %string contains a copy of the C %string.
@@ -235,14 +222,13 @@ namespace xsd
          * @param s A C %string to assign.
          * @return A reference to the instance.
          */
-        string&
-        operator= (const C* s)
-        {
-          base () = s;
-          return *this;
-        }
+  string &
+  operator=(const C *s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a standard %string to the instance.
          *
          * The resulting %string contains a copy of the standard %string.
@@ -250,52 +236,48 @@ namespace xsd
          * @param s A standard %string to assign.
          * @return A reference to the instance.
          */
-        string&
-        operator= (const std::basic_string<C>& s)
-        {
-          base () = s;
-          return *this;
-        }
+  string &
+  operator=(const std::basic_string<C> &s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        string&
-        operator= (const string& x)
-        {
-          base () = x;
-          return *this;
-        }
-      };
+  string &
+  operator=(const string &x) {
+    base() = x;
+    return *this;
+  }
+};
 
-      /**
+/**
        * @brief %string comparison operator.
        *
        * @return True if the strings are equal, false otherwise.
        */
-      template <typename C, typename B>
-      inline bool
-      operator== (const string<C, B>& a, const string<C, B>& b)
-      {
-        return static_cast<const std::basic_string<C>&> (a) == b;
-      }
+template<typename C, typename B>
+inline bool
+operator==(const string<C, B> &a, const string<C, B> &b) {
+  return static_cast<const std::basic_string<C> &>(a) == b;
+}
 
-      /**
+/**
        * @brief %string comparison operator.
        *
        * @return True if the strings are not equal, false otherwise.
        */
-      template <typename C, typename B>
-      inline bool
-      operator!= (const string<C, B>& a, const string<C, B>& b)
-      {
-        return !(a == b);
-      }
+template<typename C, typename B>
+inline bool
+operator!=(const string<C, B> &a, const string<C, B> &b) {
+  return !(a == b);
+}
 
-      /**
+/**
        * @brief Class corresponding to the XML Schema normalizedString
        * built-in type.
        *
@@ -306,89 +288,81 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B>
-      class normalized_string: public B
-      {
-        typedef B base_type;
+template<typename C, typename B>
+class normalized_string : public B {
+  typedef B base_type;
 
-        base_type&
-        base ()
-        {
-          return *this;
-        }
+  base_type &
+  base() {
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Default constructor creates an empty %normalized_string.
          */
-        normalized_string ()
-        {
-        }
+  normalized_string() {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a C %string.
          *
          * @param s A C %string to copy.
          */
-        normalized_string (const C* s)
-            : base_type (s)
-        {
-        }
+  normalized_string(const C *s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a character array.
          *
          * @param s A character array to copy.
          * @param n A number of character to copy.
          */
-        normalized_string (const C* s, std::size_t n)
-            : base_type (s, n)
-        {
-        }
+  normalized_string(const C *s, std::size_t n)
+      : base_type(s, n) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with multiple copies of the same
          * character.
          *
          * @param n A number of copies to create.
          * @param c A character to copy.
          */
-        normalized_string (std::size_t n, C c)
-            : base_type (n, c)
-        {
-        }
+  normalized_string(std::size_t n, C c)
+      : base_type(n, c) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a standard %string.
          *
          * @param s A standard %string to copy.
          */
-        normalized_string (const std::basic_string<C>& s)
-            : base_type (s)
-        {
-        }
+  normalized_string(const std::basic_string<C> &s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a substring.
          *
          * @param s   A standard %string to copy the substring from.
          * @param pos An index of the first character to copy from.
          * @param n   A number of characters to copy.
          */
-        normalized_string (const std::basic_string<C>& s,
-                           std::size_t pos,
-                           std::size_t n = std::basic_string<C>::npos)
-            : base_type (s, pos, n)
-        {
-        }
+  normalized_string(const std::basic_string<C> &s,
+                    std::size_t pos,
+                    std::size_t n = std::basic_string<C>::npos)
+      : base_type(s, pos, n) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -397,14 +371,13 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        normalized_string (const normalized_string& x,
-                           flags f = 0,
-                           container* c = 0)
-            : base_type (x, f, c)
-        {
-        }
+  normalized_string(const normalized_string &x,
+                    flags f = 0,
+                    container *c = 0)
+      : base_type(x, f, c) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -415,11 +388,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual normalized_string*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual normalized_string *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -428,10 +401,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        normalized_string (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  normalized_string(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -439,11 +412,11 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        normalized_string (const xercesc::DOMElement& e,
-                           flags f = 0,
-                           container* c = 0);
+  normalized_string(const xercesc::DOMElement &e,
+                    flags f = 0,
+                    container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -451,11 +424,11 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        normalized_string (const xercesc::DOMAttr& a,
-                           flags f = 0,
-                           container* c = 0);
+  normalized_string(const xercesc::DOMAttr &a,
+                    flags f = 0,
+                    container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -464,14 +437,14 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        normalized_string (const std::basic_string<C>& s,
-                           const xercesc::DOMElement* e,
-                           flags f = 0,
-                           container* c = 0);
-        //@}
+  normalized_string(const std::basic_string<C> &s,
+                    const xercesc::DOMElement *e,
+                    flags f = 0,
+                    container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Assign a character to the instance.
          *
          * The resulting %normalized_string has only one character.
@@ -479,14 +452,13 @@ namespace xsd
          * @param c A character to assign.
          * @return A reference to the instance.
          */
-        normalized_string&
-        operator= (C c)
-        {
-          base () = c;
-          return *this;
-        }
+  normalized_string &
+  operator=(C c) {
+    base() = c;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a C %string to the instance.
          *
          * The resulting %normalized_string contains a copy of the C %string.
@@ -494,14 +466,13 @@ namespace xsd
          * @param s A C %string to assign.
          * @return A reference to the instance.
          */
-        normalized_string&
-        operator= (const C* s)
-        {
-          base () = s;
-          return *this;
-        }
+  normalized_string &
+  operator=(const C *s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a standard %string to the instance.
          *
          * The resulting %normalized_string contains a copy of the standard
@@ -510,37 +481,34 @@ namespace xsd
          * @param s A standard %string to assign.
          * @return A reference to the instance.
          */
-        normalized_string&
-        operator= (const std::basic_string<C>& s)
-        {
-          base () = s;
-          return *this;
-        }
+  normalized_string &
+  operator=(const std::basic_string<C> &s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        normalized_string&
-        operator= (const normalized_string& x)
-        {
-          base () = x;
-          return *this;
-        }
+  normalized_string &
+  operator=(const normalized_string &x) {
+    base() = x;
+    return *this;
+  }
 
-      protected:
-        //@cond
+ protected:
+  //@cond
 
-        void
-        normalize ();
+  void
+  normalize();
 
-        //@endcond
-      };
+  //@endcond
+};
 
-
-      /**
+/**
        * @brief Class corresponding to the XML Schema %token built-in
        * type.
        *
@@ -551,89 +519,81 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B>
-      class token: public B
-      {
-        typedef B base_type;
+template<typename C, typename B>
+class token : public B {
+  typedef B base_type;
 
-        base_type&
-        base ()
-        {
-          return *this;
-        }
+  base_type &
+  base() {
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Default constructor creates an empty %token.
          */
-        token ()
-        {
-        }
+  token() {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a C %string.
          *
          * @param s A C %string to copy.
          */
-        token (const C* s)
-            : base_type (s)
-        {
-        }
+  token(const C *s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a character array.
          *
          * @param s A character array to copy.
          * @param n A number of character to copy.
          */
-        token (const C* s, std::size_t n)
-            : base_type (s, n)
-        {
-        }
+  token(const C *s, std::size_t n)
+      : base_type(s, n) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with multiple copies of the same
          * character.
          *
          * @param n A number of copies to create.
          * @param c A character to copy.
          */
-        token (std::size_t n, C c)
-            : base_type (n, c)
-        {
-        }
+  token(std::size_t n, C c)
+      : base_type(n, c) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a standard %string.
          *
          * @param s A standard %string to copy.
          */
-        token (const std::basic_string<C>& s)
-            : base_type (s)
-        {
-        }
+  token(const std::basic_string<C> &s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a substring.
          *
          * @param s   A standard %string to copy the substring from.
          * @param pos An index of the first character to copy from.
          * @param n   A number of characters to copy.
          */
-        token (const std::basic_string<C>& s,
-               std::size_t pos,
-               std::size_t n = std::basic_string<C>::npos)
-            : base_type (s, pos, n)
-        {
-        }
+  token(const std::basic_string<C> &s,
+        std::size_t pos,
+        std::size_t n = std::basic_string<C>::npos)
+      : base_type(s, pos, n) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -642,12 +602,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        token (const token& x, flags f = 0, container* c = 0)
-            : base_type (x, f, c)
-        {
-        }
+  token(const token &x, flags f = 0, container *c = 0)
+      : base_type(x, f, c) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -658,11 +617,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual token*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual token *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -671,10 +630,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        token (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  token(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -682,9 +641,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        token (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  token(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -692,9 +651,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        token (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  token(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -703,14 +662,14 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        token (const std::basic_string<C>& s,
-               const xercesc::DOMElement* e,
-               flags f = 0,
-               container* c = 0);
-        //@}
+  token(const std::basic_string<C> &s,
+        const xercesc::DOMElement *e,
+        flags f = 0,
+        container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Assign a character to the instance.
          *
          * The resulting %token has only one character.
@@ -718,14 +677,13 @@ namespace xsd
          * @param c A character to assign.
          * @return A reference to the instance.
          */
-        token&
-        operator= (C c)
-        {
-          base () = c;
-          return *this;
-        }
+  token &
+  operator=(C c) {
+    base() = c;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a C %string to the instance.
          *
          * The resulting %token contains a copy of the C %string.
@@ -733,14 +691,13 @@ namespace xsd
          * @param s A C %string to assign.
          * @return A reference to the instance.
          */
-        token&
-        operator= (const C* s)
-        {
-          base () = s;
-          return *this;
-        }
+  token &
+  operator=(const C *s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a standard %string to the instance.
          *
          * The resulting %token contains a copy of the standard %string.
@@ -748,37 +705,34 @@ namespace xsd
          * @param s A standard %string to assign.
          * @return A reference to the instance.
          */
-        token&
-        operator= (const std::basic_string<C>& s)
-        {
-          base () = s;
-          return *this;
-        }
+  token &
+  operator=(const std::basic_string<C> &s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        token&
-        operator= (const token& x)
-        {
-          base () = x;
-          return *this;
-        }
+  token &
+  operator=(const token &x) {
+    base() = x;
+    return *this;
+  }
 
-      protected:
-        //@cond
+ protected:
+  //@cond
 
-        void
-        collapse ();
+  void
+  collapse();
 
-        //@endcond
-      };
+  //@endcond
+};
 
-
-      /**
+/**
        * @brief Class corresponding to the XML Schema NMTOKEN built-in
        * type.
        *
@@ -789,82 +743,75 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B>
-      class nmtoken: public B
-      {
-        typedef B base_type;
+template<typename C, typename B>
+class nmtoken : public B {
+  typedef B base_type;
 
-        base_type&
-        base ()
-        {
-          return *this;
-        }
+  base_type &
+  base() {
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a C %string.
          *
          * @param s A C %string to copy.
          */
-        nmtoken (const C* s)
-            : base_type (s)
-        {
-        }
+  nmtoken(const C *s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a character array.
          *
          * @param s A character array to copy.
          * @param n A number of character to copy.
          */
-        nmtoken (const C* s, std::size_t n)
-            : base_type (s, n)
-        {
-        }
+  nmtoken(const C *s, std::size_t n)
+      : base_type(s, n) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with multiple copies of the same
          * character.
          *
          * @param n A number of copies to create.
          * @param c A character to copy.
          */
-        nmtoken (std::size_t n, C c)
-            : base_type (n, c)
-        {
-        }
+  nmtoken(std::size_t n, C c)
+      : base_type(n, c) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a standard %string.
          *
          * @param s A standard %string to copy.
          */
-        nmtoken (const std::basic_string<C>& s)
-            : base_type (s)
-        {
-        }
+  nmtoken(const std::basic_string<C> &s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a substring.
          *
          * @param s   A standard %string to copy the substring from.
          * @param pos An index of the first character to copy from.
          * @param n   A number of characters to copy.
          */
-        nmtoken (const std::basic_string<C>& s,
-                 std::size_t pos,
-                 std::size_t n = std::basic_string<C>::npos)
-            : base_type (s, pos, n)
-        {
-        }
+  nmtoken(const std::basic_string<C> &s,
+          std::size_t pos,
+          std::size_t n = std::basic_string<C>::npos)
+      : base_type(s, pos, n) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -873,12 +820,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        nmtoken (const nmtoken& x, flags f = 0, container* c = 0)
-            : base_type (x, f, c)
-        {
-        }
+  nmtoken(const nmtoken &x, flags f = 0, container *c = 0)
+      : base_type(x, f, c) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -889,11 +835,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual nmtoken*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual nmtoken *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -902,10 +848,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        nmtoken (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  nmtoken(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -913,9 +859,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        nmtoken (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  nmtoken(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -923,9 +869,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        nmtoken (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  nmtoken(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -934,14 +880,14 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        nmtoken (const std::basic_string<C>& s,
-                 const xercesc::DOMElement* e,
-                 flags f = 0,
-                 container* c = 0);
-        //@}
+  nmtoken(const std::basic_string<C> &s,
+          const xercesc::DOMElement *e,
+          flags f = 0,
+          container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Assign a character to the instance.
          *
          * The resulting %nmtoken has only one character.
@@ -949,14 +895,13 @@ namespace xsd
          * @param c A character to assign.
          * @return A reference to the instance.
          */
-        nmtoken&
-        operator= (C c)
-        {
-          base () = c;
-          return *this;
-        }
+  nmtoken &
+  operator=(C c) {
+    base() = c;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a C %string to the instance.
          *
          * The resulting %nmtoken contains a copy of the C %string.
@@ -964,14 +909,13 @@ namespace xsd
          * @param s A C %string to assign.
          * @return A reference to the instance.
          */
-        nmtoken&
-        operator= (const C* s)
-        {
-          base () = s;
-          return *this;
-        }
+  nmtoken &
+  operator=(const C *s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a standard %string to the instance.
          *
          * The resulting %nmtoken contains a copy of the standard %string.
@@ -979,39 +923,35 @@ namespace xsd
          * @param s A standard %string to assign.
          * @return A reference to the instance.
          */
-        nmtoken&
-        operator= (const std::basic_string<C>& s)
-        {
-          base () = s;
-          return *this;
-        }
+  nmtoken &
+  operator=(const std::basic_string<C> &s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        nmtoken&
-        operator= (const nmtoken& x)
-        {
-          base () = x;
-          return *this;
-        }
+  nmtoken &
+  operator=(const nmtoken &x) {
+    base() = x;
+    return *this;
+  }
 
-      protected:
-        //@cond
+ protected:
+  //@cond
 
-        nmtoken ()
-            : base_type ()
-        {
-        }
+  nmtoken()
+      : base_type() {
+  }
 
-        //@endcond
-      };
+  //@endcond
+};
 
-
-      /**
+/**
        * @brief Class corresponding to the XML Schema NMTOKENS built-in
        * type.
        *
@@ -1021,51 +961,47 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B, typename nmtoken>
-      class nmtokens: public B, public list<nmtoken, C>
-      {
-        typedef list<nmtoken, C> base_type;
+template<typename C, typename B, typename nmtoken>
+class nmtokens : public B, public list<nmtoken, C> {
+  typedef list<nmtoken, C> base_type;
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Default constructor creates no elements.
          */
-        nmtokens ()
-            : base_type (this)
-        {
-        }
+  nmtokens()
+      : base_type(this) {
+  }
 
-        /**
+  /**
          * @brief Initialize the instance with copies of an exemplar elements.
          *
          * @param n A number of elements to copy.
          * @param x An exemplar element to copy.
          */
-        nmtokens (typename base_type::size_type n, const nmtoken& x)
-            : base_type (n, x, this)
-        {
-        }
+  nmtokens(typename base_type::size_type n, const nmtoken &x)
+      : base_type(n, x, this) {
+  }
 
-        /**
+  /**
          * @brief Initialize the instance with copies of elements from an
          * iterator range.
          *
          * @param begin An iterator pointing to the first element.
          * @param end An iterator pointing to the one past the last element.
          */
-        template <typename I>
-        nmtokens (const I& begin, const I& end)
-            : base_type (begin, end, this)
-        {
-        }
+  template<typename I>
+  nmtokens(const I &begin, const I &end)
+      : base_type(begin, end, this) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -1074,12 +1010,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        nmtokens (const nmtokens& x, flags f, container* c = 0)
-            : B (x, f, c), base_type (x, f, this)
-        {
-        }
+  nmtokens(const nmtokens &x, flags f, container *c = 0)
+      : B(x, f, c), base_type(x, f, this) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -1090,11 +1025,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual nmtokens*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual nmtokens *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -1103,10 +1038,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        nmtokens (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  nmtokens(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -1114,9 +1049,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        nmtokens (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  nmtokens(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -1124,9 +1059,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        nmtokens (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  nmtokens(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -1135,40 +1070,38 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        nmtokens (const std::basic_string<C>& s,
-                  const xercesc::DOMElement* e,
-                  flags f = 0,
-                  container* c = 0);
-        //@}
-      };
+  nmtokens(const std::basic_string<C> &s,
+           const xercesc::DOMElement *e,
+           flags f = 0,
+           container *c = 0);
+  //@}
+};
 
-      /**
+/**
        * @brief %nmtokens comparison operator.
        *
        * @return True if the lists of nmtokens are equal, false otherwise.
        */
-      template <typename C, typename B, typename nmtoken>
-      inline bool
-      operator== (const nmtokens<C, B, nmtoken>& a,
-                  const nmtokens<C, B, nmtoken>& b)
-      {
-        return static_cast<const list<nmtoken, C>&> (a) == b;
-      }
+template<typename C, typename B, typename nmtoken>
+inline bool
+operator==(const nmtokens<C, B, nmtoken> &a,
+           const nmtokens<C, B, nmtoken> &b) {
+  return static_cast<const list<nmtoken, C> &>(a) == b;
+}
 
-      /**
+/**
        * @brief %nmtokens comparison operator.
        *
        * @return True if the lists of nmtokens are not equal, false otherwise.
        */
-      template <typename C, typename B, typename nmtoken>
-      inline bool
-      operator!= (const nmtokens<C, B, nmtoken>& a,
-                  const nmtokens<C, B, nmtoken>& b)
-      {
-        return !(a == b);
-      }
+template<typename C, typename B, typename nmtoken>
+inline bool
+operator!=(const nmtokens<C, B, nmtoken> &a,
+           const nmtokens<C, B, nmtoken> &b) {
+  return !(a == b);
+}
 
-      /**
+/**
        * @brief Class corresponding to the XML Schema Name built-in
        * type.
        *
@@ -1179,82 +1112,75 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B>
-      class name: public B
-      {
-        typedef B base_type;
+template<typename C, typename B>
+class name : public B {
+  typedef B base_type;
 
-        base_type&
-        base ()
-        {
-          return *this;
-        }
+  base_type &
+  base() {
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a C %string.
          *
          * @param s A C %string to copy.
          */
-        name (const C* s)
-            : base_type (s)
-        {
-        }
+  name(const C *s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a character array.
          *
          * @param s A character array to copy.
          * @param n A number of character to copy.
          */
-        name (const C* s, std::size_t n)
-            : base_type (s, n)
-        {
-        }
+  name(const C *s, std::size_t n)
+      : base_type(s, n) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with multiple copies of the same
          * character.
          *
          * @param n A number of copies to create.
          * @param c A character to copy.
          */
-        name (std::size_t n, C c)
-            : base_type (n, c)
-        {
-        }
+  name(std::size_t n, C c)
+      : base_type(n, c) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a standard %string.
          *
          * @param s A standard %string to copy.
          */
-        name (const std::basic_string<C>& s)
-            : base_type (s)
-        {
-        }
+  name(const std::basic_string<C> &s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a substring.
          *
          * @param s   A standard %string to copy the substring from.
          * @param pos An index of the first character to copy from.
          * @param n   A number of characters to copy.
          */
-        name (const std::basic_string<C>& s,
-              std::size_t pos,
-              std::size_t n = std::basic_string<C>::npos)
-            : base_type (s, pos, n)
-        {
-        }
+  name(const std::basic_string<C> &s,
+       std::size_t pos,
+       std::size_t n = std::basic_string<C>::npos)
+      : base_type(s, pos, n) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -1263,12 +1189,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        name (const name& x, flags f = 0, container* c = 0)
-            : base_type (x, f, c)
-        {
-        }
+  name(const name &x, flags f = 0, container *c = 0)
+      : base_type(x, f, c) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -1279,11 +1204,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual name*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual name *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -1292,10 +1217,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        name (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  name(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -1303,9 +1228,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        name (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  name(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -1313,9 +1238,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        name (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  name(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -1324,14 +1249,14 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        name (const std::basic_string<C>& s,
-              const xercesc::DOMElement* e,
-              flags f = 0,
-              container* c = 0);
-        //@}
+  name(const std::basic_string<C> &s,
+       const xercesc::DOMElement *e,
+       flags f = 0,
+       container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Assign a character to the instance.
          *
          * The resulting %name has only one character.
@@ -1339,14 +1264,13 @@ namespace xsd
          * @param c A character to assign.
          * @return A reference to the instance.
          */
-        name&
-        operator= (C c)
-        {
-          base () = c;
-          return *this;
-        }
+  name &
+  operator=(C c) {
+    base() = c;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a C %string to the instance.
          *
          * The resulting %name contains a copy of the C %string.
@@ -1354,14 +1278,13 @@ namespace xsd
          * @param s A C %string to assign.
          * @return A reference to the instance.
          */
-        name&
-        operator= (const C* s)
-        {
-          base () = s;
-          return *this;
-        }
+  name &
+  operator=(const C *s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a standard %string to the instance.
          *
          * The resulting %name contains a copy of the standard %string.
@@ -1369,45 +1292,40 @@ namespace xsd
          * @param s A standard %string to assign.
          * @return A reference to the instance.
          */
-        name&
-        operator= (const std::basic_string<C>& s)
-        {
-          base () = s;
-          return *this;
-        }
+  name &
+  operator=(const std::basic_string<C> &s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        name&
-        operator= (const name& x)
-        {
-          base () = x;
-          return *this;
-        }
+  name &
+  operator=(const name &x) {
+    base() = x;
+    return *this;
+  }
 
-      protected:
-        //@cond
+ protected:
+  //@cond
 
-        name ()
-            : base_type ()
-        {
-        }
+  name()
+      : base_type() {
+  }
 
-        //@endcond
-      };
+  //@endcond
+};
 
+// Forward declaration for Sun CC.
+//
+template<typename C, typename B, typename uri, typename ncname>
+class qname;
 
-      // Forward declaration for Sun CC.
-      //
-      template <typename C, typename B, typename uri, typename ncname>
-      class qname;
-
-
-      /**
+/**
        * @brief Class corresponding to the XML Schema NCame built-in
        * type.
        *
@@ -1418,82 +1336,75 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B>
-      class ncname: public B
-      {
-        typedef B base_type;
+template<typename C, typename B>
+class ncname : public B {
+  typedef B base_type;
 
-        base_type&
-        base ()
-        {
-          return *this;
-        }
+  base_type &
+  base() {
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a C %string.
          *
          * @param s A C %string to copy.
          */
-        ncname (const C* s)
-            : base_type (s)
-        {
-        }
+  ncname(const C *s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a character array.
          *
          * @param s A character array to copy.
          * @param n A number of character to copy.
          */
-        ncname (const C* s, std::size_t n)
-            : base_type (s, n)
-        {
-        }
+  ncname(const C *s, std::size_t n)
+      : base_type(s, n) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with multiple copies of the same
          * character.
          *
          * @param n A number of copies to create.
          * @param c A character to copy.
          */
-        ncname (std::size_t n, C c)
-            : base_type (n, c)
-        {
-        }
+  ncname(std::size_t n, C c)
+      : base_type(n, c) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a standard %string.
          *
          * @param s A standard %string to copy.
          */
-        ncname (const std::basic_string<C>& s)
-            : base_type (s)
-        {
-        }
+  ncname(const std::basic_string<C> &s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a substring.
          *
          * @param s   A standard %string to copy the substring from.
          * @param pos An index of the first character to copy from.
          * @param n   A number of characters to copy.
          */
-        ncname (const std::basic_string<C>& s,
-                std::size_t pos,
-                std::size_t n = std::basic_string<C>::npos)
-            : base_type (s, pos, n)
-        {
-        }
+  ncname(const std::basic_string<C> &s,
+         std::size_t pos,
+         std::size_t n = std::basic_string<C>::npos)
+      : base_type(s, pos, n) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -1502,12 +1413,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        ncname (const ncname& x, flags f = 0, container* c = 0)
-            : base_type (x, f, c)
-        {
-        }
+  ncname(const ncname &x, flags f = 0, container *c = 0)
+      : base_type(x, f, c) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -1518,11 +1428,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual ncname*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual ncname *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -1531,10 +1441,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        ncname (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  ncname(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -1542,9 +1452,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        ncname (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  ncname(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -1552,9 +1462,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        ncname (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  ncname(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -1563,14 +1473,14 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        ncname (const std::basic_string<C>& s,
-                const xercesc::DOMElement* e,
-                flags f = 0,
-                container* c = 0);
-        //@}
+  ncname(const std::basic_string<C> &s,
+         const xercesc::DOMElement *e,
+         flags f = 0,
+         container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Assign a character to the instance.
          *
          * The resulting %ncname has only one character.
@@ -1578,14 +1488,13 @@ namespace xsd
          * @param c A character to assign.
          * @return A reference to the instance.
          */
-        ncname&
-        operator= (C c)
-        {
-          base () = c;
-          return *this;
-        }
+  ncname &
+  operator=(C c) {
+    base() = c;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a C %string to the instance.
          *
          * The resulting %ncname contains a copy of the C %string.
@@ -1593,14 +1502,13 @@ namespace xsd
          * @param s A C %string to assign.
          * @return A reference to the instance.
          */
-        ncname&
-        operator= (const C* s)
-        {
-          base () = s;
-          return *this;
-        }
+  ncname &
+  operator=(const C *s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a standard %string to the instance.
          *
          * The resulting %ncname contains a copy of the standard %string.
@@ -1608,42 +1516,38 @@ namespace xsd
          * @param s A standard %string to assign.
          * @return A reference to the instance.
          */
-        ncname&
-        operator= (const std::basic_string<C>& s)
-        {
-          base () = s;
-          return *this;
-        }
+  ncname &
+  operator=(const std::basic_string<C> &s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        ncname&
-        operator= (const ncname& x)
-        {
-          base () = x;
-          return *this;
-        }
+  ncname &
+  operator=(const ncname &x) {
+    base() = x;
+    return *this;
+  }
 
-      protected:
-        //@cond
+ protected:
+  //@cond
 
-        ncname ()
-            : base_type ()
-        {
-        }
+  ncname()
+      : base_type() {
+  }
 
-        //@endcond
+  //@endcond
 
-        template <typename, typename, typename, typename>
-        friend class qname;
-      };
+  template<typename, typename, typename, typename>
+  friend class qname;
+};
 
-
-      /**
+/**
        * @brief Class corresponding to the XML Schema %language built-in
        * type.
        *
@@ -1654,82 +1558,75 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B>
-      class language: public B
-      {
-        typedef B base_type;
+template<typename C, typename B>
+class language : public B {
+  typedef B base_type;
 
-        base_type&
-        base ()
-        {
-          return *this;
-        }
+  base_type &
+  base() {
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a C %string.
          *
          * @param s A C %string to copy.
          */
-        language (const C* s)
-            : base_type (s)
-        {
-        }
+  language(const C *s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a character array.
          *
          * @param s A character array to copy.
          * @param n A number of character to copy.
          */
-        language (const C* s, std::size_t n)
-            : base_type (s, n)
-        {
-        }
+  language(const C *s, std::size_t n)
+      : base_type(s, n) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with multiple copies of the same
          * character.
          *
          * @param n A number of copies to create.
          * @param c A character to copy.
          */
-        language (std::size_t n, C c)
-            : base_type (n, c)
-        {
-        }
+  language(std::size_t n, C c)
+      : base_type(n, c) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a standard %string.
          *
          * @param s A standard %string to copy.
          */
-        language (const std::basic_string<C>& s)
-            : base_type (s)
-        {
-        }
+  language(const std::basic_string<C> &s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a substring.
          *
          * @param s   A standard %string to copy the substring from.
          * @param pos An index of the first character to copy from.
          * @param n   A number of characters to copy.
          */
-        language (const std::basic_string<C>& s,
-                  std::size_t pos,
-                  std::size_t n = std::basic_string<C>::npos)
-            : base_type (s, pos, n)
-        {
-        }
+  language(const std::basic_string<C> &s,
+           std::size_t pos,
+           std::size_t n = std::basic_string<C>::npos)
+      : base_type(s, pos, n) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -1738,12 +1635,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        language (const language& x, flags f = 0, container* c = 0)
-            : base_type (x, f, c)
-        {
-        }
+  language(const language &x, flags f = 0, container *c = 0)
+      : base_type(x, f, c) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -1754,11 +1650,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual language*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual language *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -1767,10 +1663,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        language (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  language(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -1778,9 +1674,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        language (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  language(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -1788,9 +1684,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        language (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  language(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -1799,14 +1695,14 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        language (const std::basic_string<C>& s,
-                  const xercesc::DOMElement* e,
-                  flags f = 0,
-                  container* c = 0);
-        //@}
+  language(const std::basic_string<C> &s,
+           const xercesc::DOMElement *e,
+           flags f = 0,
+           container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Assign a character to the instance.
          *
          * The resulting %language has only one character.
@@ -1814,14 +1710,13 @@ namespace xsd
          * @param c A character to assign.
          * @return A reference to the instance.
          */
-        language&
-        operator= (C c)
-        {
-          base () = c;
-          return *this;
-        }
+  language &
+  operator=(C c) {
+    base() = c;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a C %string to the instance.
          *
          * The resulting %language contains a copy of the C %string.
@@ -1829,14 +1724,13 @@ namespace xsd
          * @param s A C %string to assign.
          * @return A reference to the instance.
          */
-        language&
-        operator= (const C* s)
-        {
-          base () = s;
-          return *this;
-        }
+  language &
+  operator=(const C *s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a standard %string to the instance.
          *
          * The resulting %language contains a copy of the standard %string.
@@ -1844,62 +1738,55 @@ namespace xsd
          * @param s A standard %string to assign.
          * @return A reference to the instance.
          */
-        language&
-        operator= (const std::basic_string<C>& s)
-        {
-          base () = s;
-          return *this;
-        }
+  language &
+  operator=(const std::basic_string<C> &s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        language&
-        operator= (const language& x)
-        {
-          base () = x;
-          return *this;
-        }
+  language &
+  operator=(const language &x) {
+    base() = x;
+    return *this;
+  }
 
-      protected:
-        //@cond
+ protected:
+  //@cond
 
-        language ()
-            : base_type ()
-        {
-        }
+  language()
+      : base_type() {
+  }
 
-        //@endcond
-      };
+  //@endcond
+};
 
+//@cond
 
-      //@cond
+template<typename C, typename ncname>
+struct identity_impl : identity {
+  identity_impl(const ncname &id)
+      : id_(id) {
+  }
 
-      template <typename C, typename ncname>
-      struct identity_impl: identity
-      {
-        identity_impl (const ncname& id)
-            : id_ (id)
-        {
-        }
+  virtual bool
+  before(const identity &y) const;
 
-        virtual bool
-        before (const identity& y) const;
+  virtual void
+  throw_duplicate_id() const;
 
-        virtual void
-        throw_duplicate_id () const;
+ private:
+  const ncname &id_;
+};
 
-      private:
-        const ncname& id_;
-      };
+//@endcond
 
-      //@endcond
-
-
-      /**
+/**
        * @brief Class corresponding to the XML Schema ID built-in
        * type.
        *
@@ -1910,93 +1797,85 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B>
-      class id: public B
-      {
-        typedef B base_type;
+template<typename C, typename B>
+class id : public B {
+  typedef B base_type;
 
-        base_type&
-        base ()
-        {
-          return *this;
-        }
+  base_type &
+  base() {
+    return *this;
+  }
 
-      public:
-        ~id()
-        {
-          unregister_id ();
-        }
+ public:
+  ~id() {
+    unregister_id();
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a C %string.
          *
          * @param s A C %string to copy.
          */
-        id (const C* s)
-            : base_type (s), identity_ (*this)
-        {
-          register_id ();
-        }
+  id(const C *s)
+      : base_type(s), identity_(*this) {
+    register_id();
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a character array.
          *
          * @param s A character array to copy.
          * @param n A number of character to copy.
          */
-        id (const C* s, std::size_t n)
-            : base_type (s, n), identity_ (*this)
-        {
-          register_id ();
-        }
+  id(const C *s, std::size_t n)
+      : base_type(s, n), identity_(*this) {
+    register_id();
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with multiple copies of the same
          * character.
          *
          * @param n A number of copies to create.
          * @param c A character to copy.
          */
-        id (std::size_t n, C c)
-            : base_type (n, c), identity_ (*this)
-        {
-          register_id ();
-        }
+  id(std::size_t n, C c)
+      : base_type(n, c), identity_(*this) {
+    register_id();
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a standard %string.
          *
          * @param s A standard %string to copy.
          */
-        id (const std::basic_string<C>& s)
-            : base_type (s), identity_ (*this)
-        {
-          register_id ();
-        }
+  id(const std::basic_string<C> &s)
+      : base_type(s), identity_(*this) {
+    register_id();
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a substring.
          *
          * @param s   A standard %string to copy the substring from.
          * @param pos An index of the first character to copy from.
          * @param n   A number of characters to copy.
          */
-        id (const std::basic_string<C>& s,
-            std::size_t pos,
-            std::size_t n = std::basic_string<C>::npos)
-            : base_type (s, pos, n), identity_ (*this)
-        {
-          register_id ();
-        }
+  id(const std::basic_string<C> &s,
+     std::size_t pos,
+     std::size_t n = std::basic_string<C>::npos)
+      : base_type(s, pos, n), identity_(*this) {
+    register_id();
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -2005,13 +1884,12 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        id (const id& x, flags f = 0, container* c = 0)
-            : base_type (x, f, c), identity_ (*this)
-        {
-          register_id ();
-        }
+  id(const id &x, flags f = 0, container *c = 0)
+      : base_type(x, f, c), identity_(*this) {
+    register_id();
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -2022,11 +1900,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual id*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual id *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -2035,10 +1913,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        id (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  id(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -2046,9 +1924,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        id (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  id(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -2056,9 +1934,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        id (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  id(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -2067,14 +1945,14 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        id (const std::basic_string<C>& s,
-            const xercesc::DOMElement* e,
-            flags f = 0,
-            container* c = 0);
-        //@}
+  id(const std::basic_string<C> &s,
+     const xercesc::DOMElement *e,
+     flags f = 0,
+     container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Assign a character to the instance.
          *
          * The resulting %id has only one character.
@@ -2082,11 +1960,10 @@ namespace xsd
          * @param c A character to assign.
          * @return A reference to the instance.
          */
-        id&
-        operator= (C c);
+  id &
+  operator=(C c);
 
-
-        /**
+  /**
          * @brief Assign a C %string to the instance.
          *
          * The resulting %id contains a copy of the C %string.
@@ -2094,10 +1971,10 @@ namespace xsd
          * @param s A C %string to assign.
          * @return A reference to the instance.
          */
-        id&
-        operator= (const C* s);
+  id &
+  operator=(const C *s);
 
-        /**
+  /**
          * @brief Assign a standard %string to the instance.
          *
          * The resulting %id contains a copy of the standard %string.
@@ -2105,52 +1982,50 @@ namespace xsd
          * @param s A standard %string to assign.
          * @return A reference to the instance.
          */
-        id&
-        operator= (const std::basic_string<C>& s);
+  id &
+  operator=(const std::basic_string<C> &s);
 
-        /**
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        id&
-        operator= (const id& x);
+  id &
+  operator=(const id &x);
 
-      public:
-        //@cond
+ public:
+  //@cond
 
-        virtual void
-        _container (container*);
+  virtual void
+  _container(container *);
 
-        using B::_container;
+  using B::_container;
 
-        //@endcond
+  //@endcond
 
-      protected:
-        //@cond
+ protected:
+  //@cond
 
-        id ()
-            : base_type (), identity_ (*this)
-        {
-          register_id ();
-        }
+  id()
+      : base_type(), identity_(*this) {
+    register_id();
+  }
 
-        //@endcond
+  //@endcond
 
-      private:
-        void
-        register_id ();
+ private:
+  void
+  register_id();
 
-        void
-        unregister_id ();
+  void
+  unregister_id();
 
-      private:
-        identity_impl<C, B> identity_;
-      };
+ private:
+  identity_impl<C, B> identity_;
+};
 
-
-      /**
+/**
        * @brief Class corresponding to the XML Schema IDREF built-in
        * type.
        *
@@ -2167,88 +2042,81 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B, typename T>
-      class idref: public B
-      {
-        typedef B base_type;
+template<typename C, typename B, typename T>
+class idref : public B {
+  typedef B base_type;
 
-        base_type&
-        base ()
-        {
-          return *this;
-        }
+  base_type &
+  base() {
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Referenced type.
          */
-        typedef T ref_type;
+  typedef T ref_type;
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a C %string.
          *
          * @param s A C %string to copy.
          */
-        idref (const C* s)
-            : base_type (s), identity_ (*this)
-        {
-        }
+  idref(const C *s)
+      : base_type(s), identity_(*this) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a character array.
          *
          * @param s A character array to copy.
          * @param n A number of character to copy.
          */
-        idref (const C* s, std::size_t n)
-            : base_type (s, n), identity_ (*this)
-        {
-        }
+  idref(const C *s, std::size_t n)
+      : base_type(s, n), identity_(*this) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with multiple copies of the same
          * character.
          *
          * @param n A number of copies to create.
          * @param c A character to copy.
          */
-        idref (std::size_t n, C c)
-            : base_type (n, c), identity_ (*this)
-        {
-        }
+  idref(std::size_t n, C c)
+      : base_type(n, c), identity_(*this) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a standard %string.
          *
          * @param s A standard %string to copy.
          */
-        idref (const std::basic_string<C>& s)
-            : base_type (s), identity_ (*this)
-        {
-        }
+  idref(const std::basic_string<C> &s)
+      : base_type(s), identity_(*this) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a substring.
          *
          * @param s   A standard %string to copy the substring from.
          * @param pos An index of the first character to copy from.
          * @param n   A number of characters to copy.
          */
-        idref (const std::basic_string<C>& s,
-               std::size_t pos,
-               std::size_t n = std::basic_string<C>::npos)
-            : base_type (s, pos, n), identity_ (*this)
-        {
-        }
+  idref(const std::basic_string<C> &s,
+        std::size_t pos,
+        std::size_t n = std::basic_string<C>::npos)
+      : base_type(s, pos, n), identity_(*this) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -2257,12 +2125,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        idref (const idref& x, flags f = 0, container* c = 0)
-            : base_type (x, f, c), identity_ (*this)
-        {
-        }
+  idref(const idref &x, flags f = 0, container *c = 0)
+      : base_type(x, f, c), identity_(*this) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -2273,11 +2140,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual idref*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual idref *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -2286,10 +2153,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        idref (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  idref(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -2297,9 +2164,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        idref (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  idref(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -2307,9 +2174,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        idref (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  idref(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -2318,14 +2185,14 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        idref (const std::basic_string<C>& s,
-               const xercesc::DOMElement* e,
-               flags f = 0,
-               container* c = 0);
-        //@}
+  idref(const std::basic_string<C> &s,
+        const xercesc::DOMElement *e,
+        flags f = 0,
+        container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Assign a character to the instance.
          *
          * The resulting %idref has only one character.
@@ -2333,14 +2200,13 @@ namespace xsd
          * @param c A character to assign.
          * @return A reference to the instance.
          */
-        idref&
-        operator= (C c)
-        {
-          base () = c;
-          return *this;
-        }
+  idref &
+  operator=(C c) {
+    base() = c;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a C %string to the instance.
          *
          * The resulting %idref contains a copy of the C %string.
@@ -2348,14 +2214,13 @@ namespace xsd
          * @param s A C %string to assign.
          * @return A reference to the instance.
          */
-        idref&
-        operator= (const C* s)
-        {
-          base () = s;
-          return *this;
-        }
+  idref &
+  operator=(const C *s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a standard %string to the instance.
          *
          * The resulting %idref contains a copy of the standard %string.
@@ -2363,136 +2228,125 @@ namespace xsd
          * @param s A standard %string to assign.
          * @return A reference to the instance.
          */
-        idref&
-        operator= (const std::basic_string<C>& s)
-        {
-          base () = s;
-          return *this;
-        }
+  idref &
+  operator=(const std::basic_string<C> &s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        idref&
-        operator= (const idref& x)
-        {
-          base () = x;
-          return *this;
-        }
+  idref &
+  operator=(const idref &x) {
+    base() = x;
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Call referenced object.
          *
          * @return A constant pointer to the referenced object.
          */
-        const ref_type*
-        operator-> () const
-        {
-          return get ();
-        }
+  const ref_type *
+  operator->() const {
+    return get();
+  }
 
-        /**
+  /**
          * @brief Call referenced object.
          *
          * @return A pointer to the referenced object.
          */
-        ref_type*
-        operator-> ()
-        {
-          return get ();
-        }
+  ref_type *
+  operator->() {
+    return get();
+  }
 
-        /**
+  /**
          * @brief Dereference referenced object.
          *
          * @return A constant C++ reference to the referenced object.
          */
-        const ref_type&
-        operator* () const
-        {
-          return *(get ());
-        }
+  const ref_type &
+  operator*() const {
+    return *(get());
+  }
 
-        /**
+  /**
          * @brief Dereference referenced object.
          *
          * @return A C++ reference to the referenced object.
          */
-        ref_type&
-        operator* ()
-        {
-          return *(get ());
-        }
+  ref_type &
+  operator*() {
+    return *(get());
+  }
 
-        /**
+  /**
          * @brief Get a constant pointer to the referenced object.
          *
          * @return A constant pointer to the referenced object or 0 if
          * the object is not found.
          */
-        const ref_type*
-        get () const
-        {
-          return dynamic_cast<const ref_type*> (get_ ());
-        }
+  const ref_type *
+  get() const {
+    return dynamic_cast<const ref_type *>(get_());
+  }
 
-        /**
+  /**
          * @brief Get a pointer to the referenced object.
          *
          * @return A pointer to the referenced object or 0 if the object
          * is not found.
          */
-        ref_type*
-        get ()
-        {
-          return dynamic_cast<ref_type*> (get_ ());
-        }
+  ref_type *
+  get() {
+    return dynamic_cast<ref_type *>(get_());
+  }
 
-        /**
+  /**
          * @brief Opaque type that can be evaluated as true or false.
          */
-        typedef void (idref::*bool_convertible)();
+  typedef void (idref::*bool_convertible)();
 
-        /**
+  /**
          * @brief Implicit conversion to boolean type.
          *
          * @return True if the referenced object is found, false otherwise.
          */
-        operator bool_convertible () const
-        {
-          return get_ () ? &idref::true_ : 0;
-        }
+  operator bool_convertible() const {
+    return get_() ? &idref::true_ : 0;
+  }
 
-      protected:
-        //@cond
+ protected:
+  //@cond
 
-        idref ()
-            : base_type (), identity_ (*this)
-        {
-        }
+  idref()
+      : base_type(), identity_(*this) {
+  }
 
-        //@endcond
+  //@endcond
 
-      private:
-        const _type*
-        get_ () const;
+ private:
+  const _type *
+  get_() const;
 
-        _type*
-        get_ ();
+  _type *
+  get_();
 
-        void
-        true_ ();
+  void
+  true_();
 
-      private:
-        identity_impl<C, B> identity_;
-      };
+ private:
+  identity_impl<C, B> identity_;
+};
 
-
-      /**
+/**
        * @brief Class corresponding to the XML Schema IDREFS built-in
        * type.
        *
@@ -2502,51 +2356,47 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B, typename idref>
-      class idrefs: public B, public list<idref, C>
-      {
-        typedef list<idref, C> base_type;
+template<typename C, typename B, typename idref>
+class idrefs : public B, public list<idref, C> {
+  typedef list<idref, C> base_type;
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Default constructor creates no elements.
          */
-        idrefs ()
-            : base_type (this)
-        {
-        }
+  idrefs()
+      : base_type(this) {
+  }
 
-        /**
+  /**
          * @brief Initialize the instance with copies of an exemplar elements.
          *
          * @param n A number of elements to copy.
          * @param x An exemplar element to copy.
          */
-        idrefs (typename base_type::size_type n, const idref& x)
-            : base_type (n, x, this)
-        {
-        }
+  idrefs(typename base_type::size_type n, const idref &x)
+      : base_type(n, x, this) {
+  }
 
-        /**
+  /**
          * @brief Initialize the instance with copies of elements from an
          * iterator range.
          *
          * @param begin An iterator pointing to the first element.
          * @param end An iterator pointing to the one past the last element.
          */
-        template <typename I>
-        idrefs (const I& begin, const I& end)
-            : base_type (begin, end, this)
-        {
-        }
+  template<typename I>
+  idrefs(const I &begin, const I &end)
+      : base_type(begin, end, this) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -2555,12 +2405,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        idrefs (const idrefs& x, flags f = 0, container* c = 0)
-            : B (x, f, c), base_type (x, f, this)
-        {
-        }
+  idrefs(const idrefs &x, flags f = 0, container *c = 0)
+      : B(x, f, c), base_type(x, f, this) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -2571,11 +2420,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual idrefs*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual idrefs *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -2584,10 +2433,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        idrefs (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  idrefs(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -2595,9 +2444,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        idrefs (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  idrefs(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -2605,9 +2454,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        idrefs (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  idrefs(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -2616,38 +2465,36 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        idrefs (const std::basic_string<C>& s,
-                const xercesc::DOMElement* e,
-                flags f = 0,
-                container* c = 0);
-        //@}
-      };
+  idrefs(const std::basic_string<C> &s,
+         const xercesc::DOMElement *e,
+         flags f = 0,
+         container *c = 0);
+  //@}
+};
 
-      /**
+/**
        * @brief %idrefs comparison operator.
        *
        * @return True if the lists of idrefs are equal, false otherwise.
        */
-      template <typename C, typename B, typename idref>
-      inline bool
-      operator== (const idrefs<C, B, idref>& a, const idrefs<C, B, idref>& b)
-      {
-        return static_cast<const list<idref, C>&> (a) == b;
-      }
+template<typename C, typename B, typename idref>
+inline bool
+operator==(const idrefs<C, B, idref> &a, const idrefs<C, B, idref> &b) {
+  return static_cast<const list<idref, C> &>(a) == b;
+}
 
-      /**
+/**
        * @brief %idrefs comparison operator.
        *
        * @return True if the lists of idrefs are not equal, false otherwise.
        */
-      template <typename C, typename B, typename idref>
-      inline bool
-      operator!= (const idrefs<C, B, idref>& a, const idrefs<C, B, idref>& b)
-      {
-        return !(a == b);
-      }
+template<typename C, typename B, typename idref>
+inline bool
+operator!=(const idrefs<C, B, idref> &a, const idrefs<C, B, idref> &b) {
+  return !(a == b);
+}
 
-      /**
+/**
        * @brief Class corresponding to the XML Schema anyURI built-in
        * type.
        *
@@ -2658,82 +2505,75 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B>
-      class uri: public B, public std::basic_string<C>
-      {
-        typedef std::basic_string<C> base_type;
+template<typename C, typename B>
+class uri : public B, public std::basic_string<C> {
+  typedef std::basic_string<C> base_type;
 
-        base_type&
-        base ()
-        {
-          return *this;
-        }
+  base_type &
+  base() {
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a C %string.
          *
          * @param s A C %string to copy.
          */
-        uri (const C* s)
-            : base_type (s)
-        {
-        }
+  uri(const C *s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a character array.
          *
          * @param s A character array to copy.
          * @param n A number of character to copy.
          */
-        uri (const C* s, std::size_t n)
-            : base_type (s, n)
-        {
-        }
+  uri(const C *s, std::size_t n)
+      : base_type(s, n) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with multiple copies of the same
          * character.
          *
          * @param n A number of copies to create.
          * @param c A character to copy.
          */
-        uri (std::size_t n, C c)
-            : base_type (n, c)
-        {
-        }
+  uri(std::size_t n, C c)
+      : base_type(n, c) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a standard %string.
          *
          * @param s A standard %string to copy.
          */
-        uri (const std::basic_string<C>& s)
-            : base_type (s)
-        {
-        }
+  uri(const std::basic_string<C> &s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a substring.
          *
          * @param s   A standard %string to copy the substring from.
          * @param pos An index of the first character to copy from.
          * @param n   A number of characters to copy.
          */
-        uri (const std::basic_string<C>& s,
-             std::size_t pos,
-             std::size_t n = std::basic_string<C>::npos)
-            : base_type (s, pos, n)
-        {
-        }
+  uri(const std::basic_string<C> &s,
+      std::size_t pos,
+      std::size_t n = std::basic_string<C>::npos)
+      : base_type(s, pos, n) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -2742,12 +2582,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        uri (const uri& x, flags f = 0, container* c = 0)
-            : B (x, f, c), base_type (x)
-        {
-        }
+  uri(const uri &x, flags f = 0, container *c = 0)
+      : B(x, f, c), base_type(x) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -2758,11 +2597,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual uri*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual uri *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -2771,10 +2610,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        uri (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  uri(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -2782,9 +2621,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        uri (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  uri(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -2792,9 +2631,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        uri (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  uri(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -2803,14 +2642,14 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        uri (const std::basic_string<C>& s,
-             const xercesc::DOMElement* e,
-             flags f = 0,
-             container* c = 0);
-        //@}
+  uri(const std::basic_string<C> &s,
+      const xercesc::DOMElement *e,
+      flags f = 0,
+      container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Assign a character to the instance.
          *
          * The resulting %uri has only one character.
@@ -2818,14 +2657,13 @@ namespace xsd
          * @param c A character to assign.
          * @return A reference to the instance.
          */
-        uri&
-        operator= (C c)
-        {
-          base () = c;
-          return *this;
-        }
+  uri &
+  operator=(C c) {
+    base() = c;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a C %string to the instance.
          *
          * The resulting %uri contains a copy of the C %string.
@@ -2833,14 +2671,13 @@ namespace xsd
          * @param s A C %string to assign.
          * @return A reference to the instance.
          */
-        uri&
-        operator= (const C* s)
-        {
-          base () = s;
-          return *this;
-        }
+  uri &
+  operator=(const C *s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a standard %string to the instance.
          *
          * The resulting %uri contains a copy of the standard %string.
@@ -2848,65 +2685,60 @@ namespace xsd
          * @param s A standard %string to assign.
          * @return A reference to the instance.
          */
-        uri&
-        operator= (const std::basic_string<C>& s)
-        {
-          base () = s;
-          return *this;
-        }
+  uri &
+  operator=(const std::basic_string<C> &s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        uri&
-        operator= (const uri& x)
-        {
-          base () = x;
-          return *this;
-        }
+  uri &
+  operator=(const uri &x) {
+    base() = x;
+    return *this;
+  }
 
-      protected:
-        //@cond
+ protected:
+  //@cond
 
-        uri ()
-            : base_type ()
-        {
-        }
+  uri()
+      : base_type() {
+  }
 
-        //@endcond
+  //@endcond
 
-        template <typename, typename, typename, typename>
-        friend class qname;
-      };
+  template<typename, typename, typename, typename>
+  friend class qname;
+};
 
-      /**
+/**
        * @brief %uri comparison operator.
        *
        * @return True if the uris are equal, false otherwise.
        */
-      template <typename C, typename B>
-      inline bool
-      operator== (const uri<C, B>& a, const uri<C, B>& b)
-      {
-        return static_cast<const std::basic_string<C>&> (a) == b;
-      }
+template<typename C, typename B>
+inline bool
+operator==(const uri<C, B> &a, const uri<C, B> &b) {
+  return static_cast<const std::basic_string<C> &>(a) == b;
+}
 
-      /**
+/**
        * @brief %uri comparison operator.
        *
        * @return True if the uris are not equal, false otherwise.
        */
-      template <typename C, typename B>
-      inline bool
-      operator!= (const uri<C, B>& a, const uri<C, B>& b)
-      {
-        return !(a == b);
-      }
+template<typename C, typename B>
+inline bool
+operator!=(const uri<C, B> &a, const uri<C, B> &b) {
+  return !(a == b);
+}
 
-      /**
+/**
        * @brief Class corresponding to the XML Schema QName built-in
        * type.
        *
@@ -2915,28 +2747,26 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B, typename uri, typename ncname>
-      class qname: public B
-      {
-      public:
-        /**
+template<typename C, typename B, typename uri, typename ncname>
+class qname : public B {
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Initialize an instance with a %name only.
          *
          * The resulting %qname is unqualified.
          *
          * @param n An XML %name (ncname).
          */
-        qname (const ncname& n)
-            : ns_ (), name_ (n)
-        {
-        }
+  qname(const ncname &n)
+      : ns_(), name_(n) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a %name and a namespace.
          *
          * The resulting %qname is qualified.
@@ -2944,13 +2774,12 @@ namespace xsd
          * @param ns An XML namespace (uri).
          * @param n  An XML %name (ncname).
          */
-        qname (const uri& ns, const ncname& n)
-            : ns_ (ns), name_ (n)
-        {
-        }
+  qname(const uri &ns, const ncname &n)
+      : ns_(ns), name_(n) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -2959,16 +2788,15 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        qname (const qname& x, flags f = 0, container* c = 0)
-            : B (x, f, c),
-              ns_ (x.ns_),
-              name_ (x.name_)
-        {
-          // Note that ns_ and name_ have no DOM association.
-          //
-        }
+  qname(const qname &x, flags f = 0, container *c = 0)
+      : B(x, f, c),
+        ns_(x.ns_),
+        name_(x.name_) {
+    // Note that ns_ and name_ have no DOM association.
+    //
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -2979,11 +2807,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual qname*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual qname *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -2992,10 +2820,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        qname (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  qname(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -3003,9 +2831,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        qname (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  qname(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -3013,9 +2841,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        qname (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  qname(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -3024,93 +2852,86 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        qname (const std::basic_string<C>& s,
-               const xercesc::DOMElement* e,
-               flags f = 0,
-               container* c = 0);
-        //@}
+  qname(const std::basic_string<C> &s,
+        const xercesc::DOMElement *e,
+        flags f = 0,
+        container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Determine if the %name is qualified.
          *
          * @return True if the %name is qualified, false otherwise.
          */
-        bool
-        qualified () const
-        {
-          return !ns_.empty ();
-        }
+  bool
+  qualified() const {
+    return !ns_.empty();
+  }
 
-        /**
+  /**
          * @brief Get XML namespace.
          *
          * @return A constant reference to qualifying XML namespace.
          */
-        const uri&
-        namespace_ () const
-        {
-          return ns_;
-        }
+  const uri &
+  namespace_() const {
+    return ns_;
+  }
 
-        /**
+  /**
          * @brief Get XML %name.
          *
          * @return A constant reference to unqualified XML %name.
          */
-        const ncname&
-        name () const
-        {
-          return name_;
-        }
+  const ncname &
+  name() const {
+    return name_;
+  }
 
-      protected:
-        //@cond
+ protected:
+  //@cond
 
-        qname ()
-            : ns_ (), name_ ()
-        {
-        }
+  qname()
+      : ns_(), name_() {
+  }
 
-        //@endcond
+  //@endcond
 
-      private:
-        static uri
-        resolve (const std::basic_string<C>&, const xercesc::DOMElement*);
+ private:
+  static uri
+  resolve(const std::basic_string<C> &, const xercesc::DOMElement *);
 
-      private:
-        uri ns_;
-        ncname name_;
-      };
+ private:
+  uri ns_;
+  ncname name_;
+};
 
-      /**
+/**
        * @brief %qname comparison operator.
        *
        * @return True if the names are equal, false otherwise.
        */
-      template <typename C, typename B, typename uri, typename ncname>
-      inline bool
-      operator== (const qname<C, B, uri, ncname>& a,
-                  const qname<C, B, uri, ncname>& b)
-      {
-        return a.name () == b.name () && a.namespace_ () == b.namespace_ ();
-      }
+template<typename C, typename B, typename uri, typename ncname>
+inline bool
+operator==(const qname<C, B, uri, ncname> &a,
+           const qname<C, B, uri, ncname> &b) {
+  return a.name() == b.name() && a.namespace_() == b.namespace_();
+}
 
-      /**
+/**
        * @brief %qname comparison operator.
        *
        * @return True if the names are not equal, false otherwise.
        */
-      template <typename C, typename B, typename uri, typename ncname>
-      inline bool
-      operator!= (const qname<C, B, uri, ncname>& a,
-                  const qname<C, B, uri, ncname>& b)
-      {
-        return !(a == b);
-      }
+template<typename C, typename B, typename uri, typename ncname>
+inline bool
+operator!=(const qname<C, B, uri, ncname> &a,
+           const qname<C, B, uri, ncname> &b) {
+  return !(a == b);
+}
 
-
-      /**
+/**
        * @brief Class corresponding to the XML Schema base64Binary
        * built-in type.
        *
@@ -3120,38 +2941,36 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B>
-      class base64_binary: public B, public buffer<C>
-      {
-      public:
-        typedef typename buffer<C>::size_t size_t;
+template<typename C, typename B>
+class base64_binary : public B, public buffer<C> {
+ public:
+  typedef typename buffer<C>::size_t size_t;
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Allocate a %buffer of the specified size.
          *
          * The resulting %buffer has the same size and capacity.
          *
          * @param size A %buffer size in bytes.
          */
-        explicit
-        base64_binary (size_t size = 0);
+  explicit base64_binary(size_t size = 0);
 
-        /**
+  /**
          * @brief Allocate a %buffer of the specified size and capacity.
          *
          * @param size A %buffer size in bytes.
          * @param capacity A %buffer capacity in bytes.
          * @throw bounds If @a size exceeds @a capacity
          */
-        base64_binary (size_t size, size_t capacity);
+  base64_binary(size_t size, size_t capacity);
 
-        /**
+  /**
          * @brief Allocate a %buffer of the specified size and copy
          * the data.
          *
@@ -3161,9 +2980,9 @@ namespace xsd
          * @param data A %buffer to copy the data from.
          * @param size A %buffer size in bytes.
          */
-        base64_binary (const void* data, size_t size);
+  base64_binary(const void *data, size_t size);
 
-        /**
+  /**
          * @brief Allocate a %buffer of the specified size and capacity
          * and copy the data.
          *
@@ -3175,13 +2994,13 @@ namespace xsd
          * @param capacity A %buffer capacity in bytes.
          * @throw bounds If @a size exceeds @a capacity
          */
-        base64_binary (const void* data, size_t size, size_t capacity);
+  base64_binary(const void *data, size_t size, size_t capacity);
 
-        /**
+  /**
          * @brief Reuse an existing %buffer.
          *
          * If the @a assume_ownership argument is true, the %buffer will
-         * assume ownership of @a data and will release the memory
+         * assume ownership of @a data and will clang-ubsan.cmake the memory
          * by calling @c operator @c delete().
          *
          * @param data A %buffer to reuse.
@@ -3191,12 +3010,13 @@ namespace xsd
          * assume ownership.
          * @throw bounds If @a size exceeds @a capacity
          */
-        base64_binary (void* data,
-                       size_t size,
-                       size_t capacity,
-                       bool assume_ownership);
-      public:
-        /**
+  base64_binary(void *data,
+                size_t size,
+                size_t capacity,
+                bool assume_ownership);
+
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -3205,14 +3025,13 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        base64_binary (const base64_binary& x,
-                       flags f = 0,
-                       container* c = 0)
-            : B (x, f, c), buffer<C> (x)
-        {
-        }
+  base64_binary(const base64_binary &x,
+                flags f = 0,
+                container *c = 0)
+      : B(x, f, c), buffer<C>(x) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -3223,11 +3042,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual base64_binary*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual base64_binary *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -3236,10 +3055,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        base64_binary (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  base64_binary(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -3247,11 +3066,11 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        base64_binary (const xercesc::DOMElement& e,
-                       flags f = 0,
-                       container* c = 0);
+  base64_binary(const xercesc::DOMElement &e,
+                flags f = 0,
+                container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -3259,9 +3078,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        base64_binary (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  base64_binary(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -3270,66 +3089,63 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        base64_binary (const std::basic_string<C>& s,
-                       const xercesc::DOMElement* e,
-                       flags f = 0,
-                       container* c = 0);
-        //@}
+  base64_binary(const std::basic_string<C> &s,
+                const xercesc::DOMElement *e,
+                flags f = 0,
+                container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        base64_binary&
-        operator= (const base64_binary& x)
-        {
-          buffer<C>& b (*this);
-          b = x;
-          return *this;
-        }
+  base64_binary &
+  operator=(const base64_binary &x) {
+    buffer<C> &b(*this);
+    b = x;
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Encode the %buffer in base64 encoding.
          *
          * @return A %string with base64-encoded data.
          */
-        std::basic_string<C>
-        encode () const;
+  std::basic_string<C>
+  encode() const;
 
-      private:
-        void
-        decode (const XMLCh*);
-      };
+ private:
+  void
+  decode(const XMLCh *);
+};
 
-      /**
+/**
        * @brief %base64_binary comparison operator.
        *
        * @return True if the binaries are equal, false otherwise.
        */
-      template <typename C, typename B>
-      inline bool
-      operator== (const base64_binary<C, B>& a, const base64_binary<C, B>& b)
-      {
-        return static_cast<const buffer<C>&> (a) == b;
-      }
+template<typename C, typename B>
+inline bool
+operator==(const base64_binary<C, B> &a, const base64_binary<C, B> &b) {
+  return static_cast<const buffer<C> &>(a) == b;
+}
 
-      /**
+/**
        * @brief %base64_binary comparison operator.
        *
        * @return True if the binaries are not equal, false otherwise.
        */
-      template <typename C, typename B>
-      inline bool
-      operator!= (const base64_binary<C, B>& a, const base64_binary<C, B>& b)
-      {
-        return !(a == b);
-      }
+template<typename C, typename B>
+inline bool
+operator!=(const base64_binary<C, B> &a, const base64_binary<C, B> &b) {
+  return !(a == b);
+}
 
-      /**
+/**
        * @brief Class corresponding to the XML Schema hexBinary
        * built-in type.
        *
@@ -3339,38 +3155,36 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B>
-      class hex_binary: public B, public buffer<C>
-      {
-      public:
-        typedef typename buffer<C>::size_t size_t;
+template<typename C, typename B>
+class hex_binary : public B, public buffer<C> {
+ public:
+  typedef typename buffer<C>::size_t size_t;
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Allocate a %buffer of the specified size.
          *
          * The resulting %buffer has the same size and capacity.
          *
          * @param size A %buffer size in bytes.
          */
-        explicit
-        hex_binary (size_t size = 0);
+  explicit hex_binary(size_t size = 0);
 
-        /**
+  /**
          * @brief Allocate a %buffer of the specified size and capacity.
          *
          * @param size A %buffer size in bytes.
          * @param capacity A %buffer capacity in bytes.
          * @throw bounds If @a size exceeds @a capacity
          */
-        hex_binary (size_t size, size_t capacity);
+  hex_binary(size_t size, size_t capacity);
 
-        /**
+  /**
          * @brief Allocate a %buffer of the specified size and copy
          * the data.
          *
@@ -3380,9 +3194,9 @@ namespace xsd
          * @param data A %buffer to copy the data from.
          * @param size A %buffer size in bytes.
          */
-        hex_binary (const void* data, size_t size);
+  hex_binary(const void *data, size_t size);
 
-        /**
+  /**
          * @brief Allocate a %buffer of the specified size and capacity
          * and copy the data.
          *
@@ -3394,13 +3208,13 @@ namespace xsd
          * @param capacity A %buffer capacity in bytes.
          * @throw bounds If @a size exceeds @a capacity
          */
-        hex_binary (const void* data, size_t size, size_t capacity);
+  hex_binary(const void *data, size_t size, size_t capacity);
 
-        /**
+  /**
          * @brief Reuse an existing %buffer..
          *
          * If the @a assume_ownership argument is true, the %buffer will
-         * assume ownership of @a data and will release the memory
+         * assume ownership of @a data and will clang-ubsan.cmake the memory
          * by calling @c operator @c delete().
          *
          * @param data A %buffer to reuse.
@@ -3410,13 +3224,13 @@ namespace xsd
          * assume ownership.
          * @throw bounds If @a size exceeds @a capacity
          */
-        hex_binary (void* data,
-                    size_t size,
-                    size_t capacity,
-                    bool assume_ownership);
+  hex_binary(void *data,
+             size_t size,
+             size_t capacity,
+             bool assume_ownership);
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -3425,12 +3239,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        hex_binary (const hex_binary& x, flags f = 0, container* c = 0)
-            : B (x, f, c), buffer<C> (x)
-        {
-        }
+  hex_binary(const hex_binary &x, flags f = 0, container *c = 0)
+      : B(x, f, c), buffer<C>(x) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -3441,11 +3254,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual hex_binary*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual hex_binary *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -3454,10 +3267,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        hex_binary (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  hex_binary(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -3465,9 +3278,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        hex_binary (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  hex_binary(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -3475,9 +3288,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        hex_binary (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  hex_binary(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -3486,66 +3299,63 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        hex_binary (const std::basic_string<C>& s,
-                    const xercesc::DOMElement* e,
-                    flags f = 0,
-                    container* c = 0);
-        //@}
+  hex_binary(const std::basic_string<C> &s,
+             const xercesc::DOMElement *e,
+             flags f = 0,
+             container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        hex_binary&
-        operator= (const hex_binary& x)
-        {
-          buffer<C>& b (*this);
-          b = x;
-          return *this;
-        }
+  hex_binary &
+  operator=(const hex_binary &x) {
+    buffer<C> &b(*this);
+    b = x;
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Encode the %buffer in hex encoding.
          *
          * @return A %string with hex-encoded data.
          */
-        std::basic_string<C>
-        encode () const;
+  std::basic_string<C>
+  encode() const;
 
-      private:
-        void
-        decode (const XMLCh*);
-      };
+ private:
+  void
+  decode(const XMLCh *);
+};
 
-      /**
+/**
        * @brief %hex_binary comparison operator.
        *
        * @return True if the binaries are equal, false otherwise.
        */
-      template <typename C, typename B>
-      inline bool
-      operator== (const hex_binary<C, B>& a, const hex_binary<C, B>& b)
-      {
-        return static_cast<const buffer<C>&> (a) == b;
-      }
+template<typename C, typename B>
+inline bool
+operator==(const hex_binary<C, B> &a, const hex_binary<C, B> &b) {
+  return static_cast<const buffer<C> &>(a) == b;
+}
 
-      /**
+/**
        * @brief %hex_binary comparison operator.
        *
        * @return True if the binaries are not equal, false otherwise.
        */
-      template <typename C, typename B>
-      inline bool
-      operator!= (const hex_binary<C, B>& a, const hex_binary<C, B>& b)
-      {
-        return !(a == b);
-      }
+template<typename C, typename B>
+inline bool
+operator!=(const hex_binary<C, B> &a, const hex_binary<C, B> &b) {
+  return !(a == b);
+}
 
-      /**
+/**
        * @brief Class corresponding to the XML Schema ENTITY built-in
        * type.
        *
@@ -3556,82 +3366,75 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B>
-      class entity: public B
-      {
-        typedef B base_type;
+template<typename C, typename B>
+class entity : public B {
+  typedef B base_type;
 
-        base_type&
-        base ()
-        {
-          return *this;
-        }
+  base_type &
+  base() {
+    return *this;
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a C %string.
          *
          * @param s A C %string to copy.
          */
-        entity (const C* s)
-            : base_type (s)
-        {
-        }
+  entity(const C *s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a character array.
          *
          * @param s A character array to copy.
          * @param n A number of character to copy.
          */
-        entity (const C* s, std::size_t n)
-            : base_type (s, n)
-        {
-        }
+  entity(const C *s, std::size_t n)
+      : base_type(s, n) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with multiple copies of the same
          * character.
          *
          * @param n A number of copies to create.
          * @param c A character to copy.
          */
-        entity (std::size_t n, C c)
-            : base_type (n, c)
-        {
-        }
+  entity(std::size_t n, C c)
+      : base_type(n, c) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a standard %string.
          *
          * @param s A standard %string to copy.
          */
-        entity (const std::basic_string<C>& s)
-            : base_type (s)
-        {
-        }
+  entity(const std::basic_string<C> &s)
+      : base_type(s) {
+  }
 
-        /**
+  /**
          * @brief Initialize an instance with a copy of a substring.
          *
          * @param s   A standard %string to copy the substring from.
          * @param pos An index of the first character to copy from.
          * @param n   A number of characters to copy.
          */
-        entity (const std::basic_string<C>& s,
-                std::size_t pos,
-                std::size_t n = std::basic_string<C>::npos)
-            : base_type (s, pos, n)
-        {
-        }
+  entity(const std::basic_string<C> &s,
+         std::size_t pos,
+         std::size_t n = std::basic_string<C>::npos)
+      : base_type(s, pos, n) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -3640,12 +3443,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        entity (const entity& x, flags f = 0, container* c = 0)
-            : base_type (x, f, c)
-        {
-        }
+  entity(const entity &x, flags f = 0, container *c = 0)
+      : base_type(x, f, c) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -3656,11 +3458,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual entity*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual entity *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -3669,10 +3471,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        entity (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  entity(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -3680,9 +3482,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        entity (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  entity(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -3690,9 +3492,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        entity (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  entity(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -3701,14 +3503,14 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        entity (const std::basic_string<C>& s,
-                const xercesc::DOMElement* e,
-                flags f = 0,
-                container* c = 0);
-        //@}
+  entity(const std::basic_string<C> &s,
+         const xercesc::DOMElement *e,
+         flags f = 0,
+         container *c = 0);
+  //@}
 
-      public:
-        /**
+ public:
+  /**
          * @brief Assign a character to the instance.
          *
          * The resulting %entity has only one character.
@@ -3716,14 +3518,13 @@ namespace xsd
          * @param c A character to assign.
          * @return A reference to the instance.
          */
-        entity&
-        operator= (C c)
-        {
-          base () = c;
-          return *this;
-        }
+  entity &
+  operator=(C c) {
+    base() = c;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a C %string to the instance.
          *
          * The resulting %entity contains a copy of the C %string.
@@ -3731,14 +3532,13 @@ namespace xsd
          * @param s A C %string to assign.
          * @return A reference to the instance.
          */
-        entity&
-        operator= (const C* s)
-        {
-          base () = s;
-          return *this;
-        }
+  entity &
+  operator=(const C *s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Assign a standard %string to the instance.
          *
          * The resulting %entity contains a copy of the standard %string.
@@ -3746,39 +3546,35 @@ namespace xsd
          * @param s A standard %string to assign.
          * @return A reference to the instance.
          */
-        entity&
-        operator= (const std::basic_string<C>& s)
-        {
-          base () = s;
-          return *this;
-        }
+  entity &
+  operator=(const std::basic_string<C> &s) {
+    base() = s;
+    return *this;
+  }
 
-        /**
+  /**
          * @brief Copy assignment operator.
          *
          * @param x An instance to assign.
          * @return A reference to the instance.
          */
-        entity&
-        operator= (const entity& x)
-        {
-          base () = x;
-          return *this;
-        }
+  entity &
+  operator=(const entity &x) {
+    base() = x;
+    return *this;
+  }
 
-      protected:
-        //@cond
+ protected:
+  //@cond
 
-        entity ()
-            : base_type ()
-        {
-        }
+  entity()
+      : base_type() {
+  }
 
-        //@endcond
-      };
+  //@endcond
+};
 
-
-      /**
+/**
        * @brief Class corresponding to the XML Schema ENTITIES built-in
        * type.
        *
@@ -3788,51 +3584,47 @@ namespace xsd
        *
        * @nosubgrouping
        */
-      template <typename C, typename B, typename entity>
-      class entities: public B, public list<entity, C>
-      {
-        typedef list<entity, C> base_type;
+template<typename C, typename B, typename entity>
+class entities : public B, public list<entity, C> {
+  typedef list<entity, C> base_type;
 
-      public:
-        /**
+ public:
+  /**
          * @name Constructors
          */
-        //@{
+  //@{
 
-        /**
+  /**
          * @brief Default constructor creates no elements.
          */
-        entities ()
-            : base_type (this)
-        {
-        }
+  entities()
+      : base_type(this) {
+  }
 
-        /**
+  /**
          * @brief Initialize the instance with copies of an exemplar elements.
          *
          * @param n A number of elements to copy.
          * @param x An exemplar element to copy.
          */
-        entities (typename base_type::size_type n, const entity& x)
-            : base_type (n, x, this)
-        {
-        }
+  entities(typename base_type::size_type n, const entity &x)
+      : base_type(n, x, this) {
+  }
 
-        /**
+  /**
          * @brief Initialize the instance with copies of elements from an
          * iterator range.
          *
          * @param begin An iterator pointing to the first element.
          * @param end An iterator pointing to the one past the last element.
          */
-        template <typename I>
-        entities (const I& begin, const I& end)
-            : base_type (begin, end, this)
-        {
-        }
+  template<typename I>
+  entities(const I &begin, const I &end)
+      : base_type(begin, end, this) {
+  }
 
-      public:
-        /**
+ public:
+  /**
          * @brief Copy constructor.
          *
          * @param x An instance to make a copy of.
@@ -3841,12 +3633,11 @@ namespace xsd
          *
          * For polymorphic object models use the @c _clone function instead.
          */
-        entities (const entities& x, flags f = 0, container* c = 0)
-            : B (x, f, c), base_type (x, f, this)
-        {
-        }
+  entities(const entities &x, flags f = 0, container *c = 0)
+      : B(x, f, c), base_type(x, f, this) {
+  }
 
-        /**
+  /**
          * @brief Copy the instance polymorphically.
          *
          * @param f Flags to create the copy with.
@@ -3857,11 +3648,11 @@ namespace xsd
          * is used for copying and should be used for polymorphic object
          * models instead of the copy constructor.
          */
-        virtual entities*
-        _clone (flags f = 0, container* c = 0) const;
+  virtual entities *
+  _clone(flags f = 0, container *c = 0) const;
 
-      public:
-        /**
+ public:
+  /**
          * @brief Create an instance from a data representation
          * stream.
          *
@@ -3870,10 +3661,10 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        template <typename S>
-        entities (istream<S>& s, flags f = 0, container* c = 0);
+  template<typename S>
+  entities(istream<S> &s, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM element.
          *
          * @param e A DOM element to extract the data from.
@@ -3881,9 +3672,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        entities (const xercesc::DOMElement& e, flags f = 0, container* c = 0);
+  entities(const xercesc::DOMElement &e, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a DOM Attribute.
          *
          * @param a A DOM attribute to extract the data from.
@@ -3891,9 +3682,9 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        entities (const xercesc::DOMAttr& a, flags f = 0, container* c = 0);
+  entities(const xercesc::DOMAttr &a, flags f = 0, container *c = 0);
 
-        /**
+  /**
          * @brief Create an instance from a %string fragment.
          *
          * @param s A %string fragment to extract the data from.
@@ -3902,42 +3693,40 @@ namespace xsd
          * @param c A pointer to the object that will contain the new
          * instance.
          */
-        entities (const std::basic_string<C>& s,
-                  const xercesc::DOMElement* e,
-                  flags f = 0,
-                  container* c = 0);
-        //@}
-      };
+  entities(const std::basic_string<C> &s,
+           const xercesc::DOMElement *e,
+           flags f = 0,
+           container *c = 0);
+  //@}
+};
 
-      /**
+/**
        * @brief %entities comparison operator.
        *
        * @return True if the lists of entities are equal, false otherwise.
        */
-      template <typename C, typename B, typename entity>
-      inline bool
-      operator== (const entities<C, B, entity>& a,
-                  const entities<C, B, entity>& b)
-      {
-        return static_cast<const list<entity, C>&> (a) == b;
-      }
+template<typename C, typename B, typename entity>
+inline bool
+operator==(const entities<C, B, entity> &a,
+           const entities<C, B, entity> &b) {
+  return static_cast<const list<entity, C> &>(a) == b;
+}
 
-      /**
+/**
        * @brief %entities comparison operator.
        *
        * @return True if the lists of entities are not equal, false otherwise.
        */
-      template <typename C, typename B, typename entity>
-      inline bool
-      operator!= (const entities<C, B, entity>& a,
-                  const entities<C, B, entity>& b)
-      {
-        return !(a == b);
-      }
-    }
-  }
+template<typename C, typename B, typename entity>
+inline bool
+operator!=(const entities<C, B, entity> &a,
+           const entities<C, B, entity> &b) {
+  return !(a == b);
 }
+}// namespace tree
+}// namespace cxx
+}// namespace xsd
 
 #include <xsd/cxx/tree/types.txx>
 
-#endif  // XSD_CXX_TREE_TYPES_HXX
+#endif// XSD_CXX_TREE_TYPES_HXX
