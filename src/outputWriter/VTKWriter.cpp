@@ -37,14 +37,14 @@ void VTKWriter::initializeOutput(int numParticles) {
   pointData.DataArray().push_back(forces);
   pointData.DataArray().push_back(type);
 
-  CellData cellData; // we don't have cell data => leave it empty
+  CellData cellData;// we don't have cell data => leave it empty
 
   // 3 coordinates
   Points points;
   DataArray_t pointCoordinates(type::Float32, "points", 3);
   points.DataArray().push_back(pointCoordinates);
 
-  Cells cells; // we don't have cells, => leave it empty
+  Cells cells;// we don't have cells, => leave it empty
   // for some reasons, we have to add a dummy entry for paraview
   DataArray_t cells_data(type::Float32, "types", 0);
   cells.DataArray().push_back(cells_data);
@@ -101,4 +101,4 @@ void VTKWriter::plotParticle(Particle &p) {
   pointsIterator->push_back(p.x[2]);
 }
 
-} // namespace outputWriter
+}// namespace outputWriter

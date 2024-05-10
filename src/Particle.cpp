@@ -6,6 +6,7 @@
  */
 
 #include "Particle.h"
+
 #include "utils/ArrayUtils.h"
 #include <iostream>
 
