@@ -46,8 +46,7 @@ public:
  public:
   explicit Particle(int type = 0);
 
-  Particle(const Particle& other);
-
+  Particle(const Particle &other);
 
   Particle(
       // for visualization, we need always 3 coordinates
@@ -55,7 +54,7 @@ public:
       std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg,
       int type = 0);
 
-  ~Particle() ;
+  ~Particle();
 
   bool operator==(Particle &other) const;
 

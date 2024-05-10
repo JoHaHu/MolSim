@@ -1,7 +1,9 @@
+
 #include "FileReader.h"
 #include "outputWriter/VTKWriter.h"
 #include "outputWriter/XYZWriter.h"
 #include "utils/ArrayUtils.h"
+
 #include <iostream>
 #include <filesystem>
 #include <vector>
@@ -17,6 +19,11 @@ namespace po = boost::program_options;
 namespace fs = std::filesystem;
 
 /**** forward declaration of the calculation functions ****/
+
+//! Function for force calculation
+/*!
+  calculates the force for all particles, takes no arguments and has no return value
+*/
 void calculateF();
 void calculateX(double delta_t);
 void calculateV(double delta_t);
