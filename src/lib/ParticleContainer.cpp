@@ -1,6 +1,7 @@
 #include "ParticleContainer.h"
 #include <iostream>
 #include <utility>
+#include "spdlog/spdlog.h"
 
 /**
  * Dereferences the iterator to access the current pair of particles.
@@ -43,21 +44,25 @@ auto ParticleContainer::PairIterator::operator==(PairIterator &i) -> bool {
 
 ParticleContainer::PairIterator::PairIterator(std::vector<Particle>::iterator i1,
                                               std::vector<Particle>::iterator i2,
-                                              std::vector<Particle>::iterator end) : i1(i1), i2(i2), end(end) {
+                                              std::vector<Particle>::iterator end)
+    : i1(i1), i2(i2), end(end) {
+  spdlog::trace("PairIterator initialized.");
 }
 
 auto ParticleContainer::begin_pair() -> ParticleContainer::PairIterator {
-  return {
-      particles.begin(), std::next(particles.begin()), particles.end()};
+  spdlog::trace("Creating begin_pair iterator.");
+  return {particles.begin(), std::next(particles.begin()), particles.end()};
 }
 
 auto ParticleContainer::end_pair() -> ParticleContainer::PairIterator {
+  spdlog::trace("Creating end_pair iterator.");
   return {particles.end(), particles.end(), particles.end()};
 }
 
 ParticleContainer::ParticleContainer(int capacity) {
   particles = std::vector<Particle>();
   particles.reserve(capacity);
+  spdlog::info("ParticleContainer initialized with capacity: {}", capacity);
 }
 
 auto ParticleContainer::begin() -> ParticleContainer::Iterator {
@@ -73,4 +78,5 @@ auto ParticleContainer::size() -> unsigned long {
 }
 
 ParticleContainer::ParticleContainer(std::vector<Particle> &particles) : particles(std::move(particles)) {
+  spdlog::debug("ParticleContainer initialized with {} particles.", this->particles.size());
 }
