@@ -16,9 +16,14 @@ endif (NOT CMAKE_BUILD_TYPE)
 # collect all cpp files
 file(GLOB_RECURSE MY_SRC
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+        # we use cxx extension to exclude generated files from clang-tidy
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cxx"
         # header don't need to be included but this might be necessary for some IDEs
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+        # we use hxx extension to exclude generated files from clang-tidy
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hxx"
 )
+
 
 # create make target
 add_executable(MolSim ${MY_SRC})
