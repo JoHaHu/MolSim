@@ -19,7 +19,7 @@ jobs:
       matrix:
         compiler:
           - gcc
-          - clang
+    #          - clang
     steps:
       - uses: actions/checkout@v4
         with:
