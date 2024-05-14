@@ -6,6 +6,8 @@ project(PSEMolDyn_GroupD VERSION 0.0.1 LANGUAGES CXX)
 # let ccmake and cmake-gui offer the default build type options
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel")
 
+cmake_policy(SET CMP0135 NEW)
+
 # set Release as the default build type if it is not yet set.
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING
@@ -15,18 +17,18 @@ endif (NOT CMAKE_BUILD_TYPE)
 
 # collect all cpp files
 file(GLOB_RECURSE MY_SRC
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.cpp"
         # we use cxx extension to exclude generated files from clang-tidy
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cxx"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.cxx"
         # header don't need to be included but this might be necessary for some IDEs
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.h"
         # we use hxx extension to exclude generated files from clang-tidy
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hxx"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.hxx"
 )
 
 
 # create make target
-add_executable(MolSim ${MY_SRC})
+add_executable(MolSim src/bin/MolSim.cpp ${MY_SRC})
 
 
 # set cxx standard. You may raise this if you want.
@@ -90,10 +92,25 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
 endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
 
 
+# Setup Google Test
+include(FetchContent)
+FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+FetchContent_MakeAvailable(googletest)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+# Discover tests
+include(GoogleTest)
+
+
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
+
 include(doxygen)
 
 # for Googletest Suite
 enable_testing()
+
 add_subdirectory(test)
 
