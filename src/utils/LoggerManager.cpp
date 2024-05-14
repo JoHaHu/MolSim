@@ -1,45 +1,36 @@
 #include "LoggerManager.h"
-#include <vector>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/async.h>
+
+#include <iostream>
+
+#include "spdlog/spdlog.h"
+#include "spdlog/cfg/env.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 /**
- * Sets the logging level and ensures immediate flushing at this level.
+ * Initializes the default logger with console and file sinks.
  *
- * @param level The log level to be set for the logger.
- */
-void LoggerManager::setLogLevel(spdlog::level::level_enum level) {
-    auto logger = LoggerManager::getLogger();
-    logger->set_level(level);
-    logger->flush_on(level);
-}
-
-/**
- * Retrieves the singleton logger instance.
+ * Sets up a default logger to log to both the console and a file. Loads log
+ * levels from environment variables and sets the specified log level.
  *
- * @return Reference to the shared logger instance.
+ * @param level The log level to set for the logger.
  */
-std::shared_ptr<spdlog::logger> &LoggerManager::getLogger() {
-    static std::shared_ptr<spdlog::logger> logger = LoggerManager::createLogger();
-    return logger;
-}
+void LoggerManager::setupLogger(spdlog::level::level_enum level) {
+    try {
+        // Create logger
+        auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/log.txt", true);
 
-/**
- * Creates and configures the logger with console and file sinks.
- *
- * @return A shared pointer to the newly created logger.
- */
-std::shared_ptr<spdlog::logger> LoggerManager::createLogger() {
-    spdlog::init_thread_pool(8192, 1);
-    std::vector<spdlog::sink_ptr> sinks;
-    sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-    sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("log.txt", true));
+        std::vector<spdlog::sink_ptr> sinks {console_sink, file_sink};
+        auto logger = std::make_shared<spdlog::logger>("multi_sink", sinks.begin(), sinks.end());
 
-    auto logger = std::make_shared<spdlog::async_logger>("console", sinks.begin(), sinks.end(),
-                                                         spdlog::thread_pool(),
-                                                         spdlog::async_overflow_policy::block);
-    logger->set_level(spdlog::level::info); // Default log level
+        spdlog::set_default_logger(logger);
+        spdlog::cfg::load_env_levels();
+        spdlog::set_level(level);
+        spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
 
-    return logger;
+        spdlog::info("Logger initialized with level: {}", spdlog::level::to_string_view(level));
+    } catch (const spdlog::spdlog_ex &ex) {
+        std::cerr << "Log initialization failed: " << ex.what() << std::endl;
+    }
 }
