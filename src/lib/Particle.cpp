@@ -14,7 +14,10 @@
 #include "spdlog/spdlog.h"
 #include "utils/LoggerManager.h"
 
-Particle::Particle(int type_arg) : type(type_arg) {
+// initialising the static atomic counter for the IDs starting with 1
+std::atomic<int> Particle::nextID{0};
+
+Particle::Particle(int type_arg) : type(type_arg), id(nextID++) {
   spdlog::trace("Particle generated!");
   force = {0., 0., 0.};
   old_force = {0., 0., 0.};
