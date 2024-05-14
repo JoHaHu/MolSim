@@ -7,12 +7,12 @@ on:
       - ws*
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         compiler:
           - gcc
-        # - clang
+          - clang
     steps:
       - uses: actions/checkout@v4
         with:
