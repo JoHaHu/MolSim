@@ -10,15 +10,10 @@
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
-#include <iostream>
 #include <sstream>
 
 #include "spdlog/spdlog.h"
 #include "utils/LoggerManager.h"
-
-FileReader::FileReader() = default;
-
-FileReader::~FileReader() = default;
 
 void FileReader::readFile(std::vector<Particle> &particles, char *filename) {
   std::array<double, 3> x{};
