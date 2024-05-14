@@ -40,7 +40,6 @@ target_compile_features(MolSim
 target_include_directories(MolSim
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/libxsd
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/boost
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -51,7 +50,6 @@ target_link_libraries(MolSim
         # stuff that is used in headers and source files
         PUBLIC
         xerces-c
-        ${Boost_LIBRARIES}
         spdlog::spdlog
 )
 
@@ -65,18 +63,9 @@ target_compile_options(MolSim
         $<$<CXX_COMPILER_ID:Clang>:-Wall>
 )
 
-# Boost configuration
-find_package(Boost REQUIRED COMPONENTS system filesystem program_options)
-if (Boost_FOUND)
-    target_include_directories(MolSim PRIVATE ${Boost_INCLUDE_DIRS})
-    target_link_libraries(MolSim PRIVATE ${Boost_LIBRARIES})
-endif ()
-
 # Spdlog configuration
-find_package(spdlog REQUIRED)
-if (spdlog_FOUND)
-    target_link_libraries(MolSim PRIVATE spdlog::spdlog)
-endif ()
+add_subdirectory(libs/spdlog)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog/include)
 
 # Configure Debug and Release specific options
 if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
@@ -89,7 +78,7 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
             PRIVATE
             $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize >
     )
-endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+endif ()
 
 
 # Setup Google Test
