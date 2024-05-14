@@ -9,6 +9,7 @@
 
 #include "utils/ArrayUtils.h"
 #include <iostream>
+#include <sstream>
 
 #include "spdlog/spdlog.h"
 #include "utils/LoggerManager.h"
