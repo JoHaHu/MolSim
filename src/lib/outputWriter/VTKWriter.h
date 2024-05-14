@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "Particle.h"
-#include "outputWriter/VTKUnstructured.hxx"
+#include "../Particle.h"
+#include "VTKUnstructured.hxx"
 
 #include <list>
 
