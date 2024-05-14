@@ -1,7 +1,7 @@
 #include "ParticleContainer.h"
+#include "spdlog/spdlog.h"
 #include <iostream>
 #include <utility>
-#include "spdlog/spdlog.h"
 
 /**
  * Dereferences the iterator to access the current pair of particles.
