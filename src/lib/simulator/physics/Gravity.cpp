@@ -31,3 +31,4 @@ auto Gravity::calculateF(const Particle &p1, const Particle &p2) -> std::array<d
 
   return f;
 }
+
