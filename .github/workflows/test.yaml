@@ -19,4 +19,4 @@ jobs:
           submodules: true
       - run: sudo apt-get install libxerces-c-dev
       - run: cmake -DCMAKE_TOOLCHAIN_FILE=./toolchains/${{ matrix.compiler }}-test.cmake  -G 'Unix Makefiles' -S $(pwd) -B $(pwd)/build
-      - run: cd $(pwd)/build && make all && ctest
+      - run: cd $(pwd)/build && make all -j5 && ctest

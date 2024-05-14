@@ -26,5 +26,5 @@ jobs:
           submodules: true
       - run: sudo apt-get install libxerces-c-dev
       - run: cmake -DCMAKE_TOOLCHAIN_FILE=./toolchains/${{ matrix.compiler }}-test.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -G 'Unix Makefiles' -S $(pwd) -B $(pwd)/build
-      - run: cd ./build && make VERBOSE=1
+      - run: cd ./build && make VERBOSE=1 -j5
       - run: clang-tidy-18 src/**/*.{cpp,h} -p ./build/compile_commands.json
