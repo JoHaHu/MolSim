@@ -21,10 +21,6 @@ namespace outputWriter {
 class VTKWriter {
 
  public:
-  VTKWriter();
-
-  virtual ~VTKWriter();
-
   /**
    * set up internal data structures and prepare to plot a particle.
    */
@@ -47,7 +43,7 @@ class VTKWriter {
   void writeFile(const std::string &filename, int iteration);
 
  private:
-  VTKFile_t *vtkFile{};
+  std::unique_ptr<VTKFile_t> vtkFile;
 };
 
 }// namespace outputWriter

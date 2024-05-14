@@ -7,7 +7,6 @@
 
 #include "VTKWriter.h"
 
-#include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -18,13 +17,9 @@
 
 namespace outputWriter {
 
-VTKWriter::VTKWriter() = default;
-
-VTKWriter::~VTKWriter() = default;
-
 void VTKWriter::initializeOutput(int numParticles) {
 
-  vtkFile = new VTKFile_t("UnstructuredGrid");
+  vtkFile = std::make_unique<VTKFile_t>(VTKFile_t("UnstructuredGrid"));
 
   // per point, we add type, position, velocity and force
   PointData pointData;
@@ -61,7 +56,8 @@ void VTKWriter::writeFile(const std::string &filename, int iteration) {
 
   std::ofstream file(strstr.str().c_str());
   VTKFile(file, *vtkFile);
-  delete vtkFile;
+  // Early release of memory resources
+  vtkFile.reset();
 }
 
 void VTKWriter::plotParticle(Particle &p) {
