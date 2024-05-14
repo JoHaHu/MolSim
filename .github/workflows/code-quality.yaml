@@ -15,11 +15,16 @@ jobs:
 
   check-clang-tidy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler:
+          - gcc
+          - clang
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
       - run: sudo apt-get install libxerces-c-dev
-      - run: cmake -DCMAKE_TOOLCHAIN_FILE=./toolchains/test.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -G 'Unix Makefiles' -S $(pwd) -B $(pwd)/build
+      - run: cmake -DCMAKE_TOOLCHAIN_FILE=./toolchains/${{ matrix.compiler }}-test.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -G 'Unix Makefiles' -S $(pwd) -B $(pwd)/build
       - run: cd ./build && make VERBOSE=1
       - run: clang-tidy src/**/*.{cpp,h} -p ./build/compile_commands.json

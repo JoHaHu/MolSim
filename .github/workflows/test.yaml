@@ -8,9 +8,14 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler:
+          - gcc
+          - clang
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
       - run: sudo apt-get install libxerces-c-dev
-      - run: cmake -DCMAKE_TOOLCHAIN_FILE=./toolchains/test.cmake  -G 'Unix Makefiles' -S $(pwd) -B $(pwd)/build
+      - run: cmake -DCMAKE_TOOLCHAIN_FILE=./toolchains/${{matrix.compiler}}-test.cmake  -G 'Unix Makefiles' -S $(pwd) -B $(pwd)/build
