@@ -12,8 +12,8 @@
 #include <iostream>
 #include <string>
 
-#include "spdlog/spdlog.h"
 #include "lib/utils/LoggerManager.h"
+#include "spdlog/spdlog.h"
 
 namespace outputWriter {
 
