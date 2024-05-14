@@ -8,7 +8,7 @@
 #pragma once
 
 #include "Particle.h"
-#include "outputWriter/VTKUnstructured.h"
+#include "outputWriter/VTKUnstructured.hxx"
 
 #include <list>
 
@@ -47,7 +47,7 @@ class VTKWriter {
   void writeFile(const std::string &filename, int iteration);
 
  private:
-  VTKFile_t *vtkFile;
+  VTKFile_t *vtkFile{};
 };
 
 }// namespace outputWriter

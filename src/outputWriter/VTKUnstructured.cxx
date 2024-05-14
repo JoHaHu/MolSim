@@ -38,7 +38,7 @@
 
 #include <xsd/cxx/pre.hxx>
 
-#include "VTKUnstructured.h"
+#include "VTKUnstructured.hxx"
 
 // DataArrayList_t
 //

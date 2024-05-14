@@ -48,6 +48,8 @@ class Particle {
 
   Particle(const Particle &other);
 
+  Particle(const Particle &&other) = delete;
+
   Particle(
       // for visualization, we need always 3 coordinates
       // -> in case of 2d, we use only the first and the second
@@ -57,6 +59,9 @@ class Particle {
   ~Particle();
 
   auto operator==(Particle &other) const -> bool;
+
+  auto operator=(Particle const &other) -> Particle & = default;
+  auto operator=(Particle &&other) -> Particle & = default;
 
   [[nodiscard]] auto toString() const -> std::string;
 };
