@@ -1,6 +1,3 @@
-
-
-
 add_executable(ParticleTest ParticleTest.cpp ${MY_SRC})
 target_link_libraries(ParticleTest
         PUBLIC

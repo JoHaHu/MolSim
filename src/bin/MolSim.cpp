@@ -26,7 +26,7 @@ void print_usage() {
  * @param log_level Stores the log level.
  * @return True if parsing succeeds and it's okay to proceed, False if help is displayed or parsing fails.
  */
-auto InitializeOptions(int argc, char *argv[], char *&filename, double &end_time, double &delta_t, std::string &log_level) -> bool {
+auto InitializeOptions(int argc, char *argv[], char *&filename, double &end_time, double &delta_t, std::string &log_level) -> bool {// NOLINT(*-avoid-c-arrays)
   int opt = -1;
   while ((opt = getopt(argc, argv, "hf:e:d:l:")) != -1) {
     switch (opt) {
