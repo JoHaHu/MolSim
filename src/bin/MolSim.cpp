@@ -1,7 +1,6 @@
 #include "lib/FileReader.h"
 #include "lib/utils/LoggerManager.h"
-#include <cstdlib>
-#include <filesystem>
+
 #include <getopt.h>
 #include <iostream>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -27,8 +26,8 @@ void print_usage() {
  * @param log_level Stores the log level.
  * @return True if parsing succeeds and it's okay to proceed, False if help is displayed or parsing fails.
  */
-bool InitializeOptions(int argc, char *argv[], char *&filename, double &end_time, double &delta_t, std::string &log_level) {
-  int opt;
+auto InitializeOptions(int argc, char *argv[], char *&filename, double &end_time, double &delta_t, std::string &log_level) -> bool {
+  int opt = -1;
   while ((opt = getopt(argc, argv, "hf:e:d:l:")) != -1) {
     switch (opt) {
       case 'h':
@@ -81,7 +80,7 @@ void SetupLogger(const std::string &level) {
  *
  * Orchestrates initialization, input validation, and simulation. Logs final output or errors.
  */
-int main(int argc, char *argv[]) {
+auto main(int argc, char *argv[]) -> int {
   char *filename = nullptr;
   double end_time = 0.0;
   double delta_t = 0.0;
