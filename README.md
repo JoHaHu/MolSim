@@ -27,6 +27,17 @@ DEBUG_BUILD_DIR=build-debug
 BUILD_DIR=RELEASE_BUILD_DIR # or DEBUG_BUILD_DIR if debugging
 ```
 
+## Fetching git submodules
+
+This project uses boost and spdlog as submodules. Make sure to fetch them before building the project.
+
+Run this in the root folder of this repository:
+
+```shell
+git submodule update --init --recursive
+```
+
+
 Run this in the root folder of this repository
 
 ```shell
