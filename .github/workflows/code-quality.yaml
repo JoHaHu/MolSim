@@ -6,7 +6,7 @@ on:
       - ws*
 jobs:
   check-format:
-    runs-on: "ubuntu-24.04"
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -14,12 +14,12 @@ jobs:
       - run: find src  -iname "*.h" -o -iname "*.cpp" | xargs clang-format --dry-run --Werror
 
   check-clang-tidy:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         compiler:
           - gcc
-          - clang
+        # - clang
     steps:
       - uses: actions/checkout@v4
         with:

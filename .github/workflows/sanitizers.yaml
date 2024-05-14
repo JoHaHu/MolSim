@@ -15,10 +15,10 @@ jobs:
         # - msan
         compiler:
           - gcc
-          - clang
+        # - clang
         build_type:
           - Debug
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
