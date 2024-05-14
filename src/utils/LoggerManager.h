@@ -1,17 +1,8 @@
-#ifndef LOGGER_MANAGER_H
-#define LOGGER_MANAGER_H
+#pragma once
 
-#include <memory>
-#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 class LoggerManager {
 public:
-    static void setLogLevel(spdlog::level::level_enum level);
-
-    static std::shared_ptr<spdlog::logger>& getLogger();
-
-private:
-    static std::shared_ptr<spdlog::logger> createLogger();
+    static void setupLogger(spdlog::level::level_enum level);
 };
-
-#endif // LOGGER_MANAGER_H

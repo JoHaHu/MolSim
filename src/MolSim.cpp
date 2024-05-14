@@ -17,25 +17,9 @@ namespace po = boost::program_options;
 namespace fs = std::filesystem;
 
 /**** forward declaration of the calculation functions ****/
-
-/**
- * calculate the force for all particles
- */
 void calculateF();
-
-/**
- * calculate the position for all particles
- */
 void calculateX(double delta_t);
-
-/**
- * calculate the position for all particles
- */
 void calculateV(double delta_t);
-
-/**
- * plot the particles to a xyz-file
- */
 void plotParticles(int iteration);
 
 /**
@@ -72,8 +56,7 @@ bool InitializeOptions(int argc, char *argv[], po::variables_map &vm) {
 
     // Check input validity
     if (!vm.count("filename") || !vm.count("end_time") || !vm.count("delta_t")) {
-        auto logger = LoggerManager::getLogger();
-        logger->error(
+        spdlog::error(
             "Erroneous program call!\nUsage: ./MolSim -f filename -e end_time -d delta_t -l log_level (trace, debug, info, warn, error, critical)");
         return false;
     }
@@ -88,7 +71,7 @@ bool InitializeOptions(int argc, char *argv[], po::variables_map &vm) {
  */
 void SetupLogger(const std::string &level) {
     spdlog::level::level_enum log_level = spdlog::level::from_str(level);
-    LoggerManager::setLogLevel(log_level);
+    LoggerManager::setupLogger(log_level);
 }
 
 /**
@@ -102,8 +85,7 @@ void SetupLogger(const std::string &level) {
  * Updates particle states and logs progress every X iterations.
  */
 void RunSimulation(double start_time, double end_time, double delta_t) {
-    auto logger = LoggerManager::getLogger();
-    logger->info("Running simulation...");
+    spdlog::info("Running simulation...");
     int iteration = 0;
     double current_time = start_time;
 
@@ -115,10 +97,10 @@ void RunSimulation(double start_time, double end_time, double delta_t) {
         iteration++;
         if (iteration % 10 == 0) {
             plotParticles(iteration);
-            logger->debug("Iteration {} plotted.", iteration);
+            spdlog::debug("Iteration {} plotted.", iteration);
         }
 
-        logger->debug("Iteration {} finished.", iteration);
+        spdlog::debug("Iteration {} finished.", iteration);
         current_time += delta_t;
     }
 }
@@ -139,40 +121,38 @@ int main(int argc, char *argv[]) {
     }
 
     SetupLogger(vm["log_level"].as<std::string>());
-    auto logger = LoggerManager::getLogger();
-    logger->info("Hello from MolSim for PSE!");
+    spdlog::info("Hello from MolSim for PSE!");
 
     std::string filename = vm["filename"].as<std::string>();
     double end_time = vm["end_time"].as<double>();
     double delta_t = vm["delta_t"].as<double>();
     std::string log_level = vm["log_level"].as<std::string>();
 
-    logger->debug("Filename: {}", filename);
-    logger->debug("End Time: {}", end_time);
-    logger->debug("Delta T: {}", delta_t);
-    logger->debug("Log Level: {}", log_level);
+    spdlog::debug("Filename: {}", filename);
+    spdlog::debug("End Time: {}", end_time);
+    spdlog::debug("Delta T: {}", delta_t);
+    spdlog::debug("Log Level: {}", log_level);
 
     std::vector<Particle> particles;
     FileReader fileReader;
     try {
-        logger->info("Reading file: " + filename);
+        spdlog::info("Reading file: " + filename);
         fileReader.readFile(particles, filename);
     } catch (const std::exception &e) {
-        logger->error("Failed to read file: {}", e.what());
+        spdlog::error("Failed to read file: {}", e.what());
         return 1;
     }
 
     ParticleContainer particleContainer(particles);
     RunSimulation(start_time, end_time, delta_t);
 
-    logger->info("Output written. Terminating...");
+    spdlog::info("Output written. Terminating...");
 
     return 0;
 }
 
 void calculateF() {
-    auto logger = LoggerManager::getLogger();
-    logger->debug("Starting force calculation for {} particles.", particles.size());
+    spdlog::debug("Starting force calculation for {} particles.", particles.size());
     for (auto &p: particles) {
         p.old_f = p.f;
         p.f = {0, 0, 0};
@@ -186,66 +166,63 @@ void calculateF() {
 
             auto norm = ArrayUtils::L2Norm(x_diff);
             if (norm == 0) {
-                logger->warn("Zero distance between particles encountered, skipping force calculation for a pair.");
+                spdlog::warn("Zero distance between particles encountered, skipping force calculation for a pair.");
                 continue;
             }
             auto f = (p1.m * p2.m) / pow(norm, 3) * x_diff;
             p1.f = p1.f + f;
             p2.f = p2.f - f;
-            logger->trace("Force calculation completed.");
+            spdlog::trace("Force calculation completed.");
         }
     } catch (const std::exception &e) {
-        logger->error("Error during force calculation: {}", e.what());
+        spdlog::error("Error during force calculation: {}", e.what());
     }
 }
 
 
 void calculateX(double delta_t) {
-    auto logger = LoggerManager::getLogger();
-    logger->debug("Updating positions for {} particles.", particles.size());
+    spdlog::debug("Updating positions for {} particles.", particles.size());
 
     try {
         for (auto &p: particles) {
             p.x = p.x + delta_t * p.v + (pow(delta_t, 2) / (2 * p.m)) * p.old_f;
 
-            logger->trace("Particle updated.");
+            spdlog::trace("Particle updated.");
         }
-        logger->trace("Position updates completed.");
+        spdlog::trace("Position updates completed.");
     } catch (const std::exception &e) {
-        logger->error("Error during position update: {}", e.what());
+        spdlog::error("Error during position update: {}", e.what());
     }
 }
 
 void calculateV(double delta_t) {
-    auto logger = LoggerManager::getLogger();
-    logger->debug("Updating velocities for {} particles.", particles.size());
+    spdlog::debug("Updating velocities for {} particles.", particles.size());
 
     try {
         for (auto &p: particles) {
             p.v = p.v + delta_t * (1 / (2 * p.m)) * (p.old_f + p.f);
 
-            logger->trace("Particle velocity updated.");
+            spdlog::trace("Particle velocity updated.");
         }
-        logger->trace("Velocity updates completed.");
+        spdlog::trace("Velocity updates completed.");
     } catch (const std::exception &e) {
-        logger->error("Error during velocity update: {}", e.what());
+        spdlog::error("Error during velocity update: {}", e.what());
     }
 }
 
 void plotParticles(int iteration) {
-    auto logger = LoggerManager::getLogger();
-    logger->debug("Starting particle plotting for iteration {}", iteration);
+    spdlog::debug("Starting particle plotting for iteration {}", iteration);
 
     std::string out_name("MD_vtk");
 
     try {
         outputWriter::XYZWriter writer;
         writer.plotParticles(particles, out_name, iteration);
-        logger->debug("XYZ particle plotting completed for iteration {}", iteration);
+        spdlog::debug("XYZ particle plotting completed for iteration {}", iteration);
 
         outputWriter::VTKWriter vtk_writer;
         if (particles.size() > INT_MAX) {
-            logger->error("Particle size > INT_MAX! Abort.");
+            spdlog::error("Particle size > INT_MAX! Abort.");
             throw std::runtime_error("Particle size exceeds maximum allowable value (INT_MAX), cannot proceed!");
         }
         vtk_writer.initializeOutput(static_cast<int>(particles.size()));
@@ -254,8 +231,8 @@ void plotParticles(int iteration) {
             vtk_writer.plotParticle(p);
         }
         vtk_writer.writeFile(out_name, iteration);
-        logger->debug("VTK particle plotting and file writing completed for iteration {}", iteration);
+        spdlog::debug("VTK particle plotting and file writing completed for iteration {}", iteration);
     } catch (const std::exception &e) {
-        logger->error("Error during particle plotting for iteration {}: {}", iteration, e.what());
+        spdlog::error("Error during particle plotting for iteration {}: {}", iteration, e.what());
     }
 }
