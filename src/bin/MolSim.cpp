@@ -92,7 +92,6 @@ int main(int argc, char *argv[]) {
   }
 
   SetupLogger(log_level);
-  spdlog::info("Hello from MolSim for PSE!");
 
   spdlog::debug("Filename: {}", filename);
   spdlog::debug("End Time: {}", end_time);

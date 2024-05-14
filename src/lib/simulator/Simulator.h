@@ -4,6 +4,9 @@
 #include "lib/ParticleContainer.h"
 #include "lib/utils/ArrayUtils.h"
 #include <cmath>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 //! Function for force calculation
 /*!
@@ -56,9 +59,9 @@ class Simulator {
    * \param particles
    * \param plotter
    * \param physics
-   * \param start_time  initialisation of the start time of the simulation with 0
-   * \param end_time  initialisation of the end time of the simulation (default 1000)
-   * \param delta_t  initialisation of time delta (defaul 0.014)
+   * \param start_time
+   * \param end_time
+   * \param delta_t
    * */
   explicit Simulator(
       ParticleContainer particles,
@@ -82,6 +85,7 @@ Simulator<PY, PL>::Simulator(
 
 template<Physics PY, Plotter PL>
 auto Simulator<PY, PL>::run() -> void {
+  spdlog::info("Running simulation...");
   double current_time = start_time;
   int iteration = 0;
 
@@ -96,30 +100,37 @@ auto Simulator<PY, PL>::run() -> void {
     iteration++;
     if (iteration % 10 == 0) {
       plotter.plotParticles(particles, iteration);
+      spdlog::debug("Iteration {} plotted.", iteration);
     }
 
-    std::cout << "Iteration " << iteration << " finished." << std::endl;
+    spdlog::debug("Iteration {} finished.", iteration);
 
     current_time += delta_t;
   }
-  std::cout << "Output written. Terminating..." << std::endl;
+  spdlog::info("Output written. Terminating...");
 }
+
 template<Physics PY, Plotter PL>
 void Simulator<PY, PL>::calculateX() {
+  spdlog::debug("Updating positions for {} particles.", particles.size());
   for (auto &p : particles) {
     p.x = p.x + delta_t * p.v + pow(delta_t, 2) * (1 / (2 * p.m)) * p.old_f;
+    spdlog::trace("Particle position updated: ({}, {}, {})", p.x[0], p.x[1], p.x[2]);
   }
 }
 
 template<Physics PY, Plotter PL>
 void Simulator<PY, PL>::calculateV() {
+  spdlog::debug("Updating velocities for {} particles.", particles.size());
   for (auto &p : particles) {
     p.v = p.v + delta_t * (1 / (2 * p.m)) * (p.old_f + p.f);
+    spdlog::trace("Particle velocity updated: ({}, {}, {})", p.v[0], p.v[1], p.v[2]);
   }
 }
 
 template<Physics PY, Plotter PL>
 void Simulator<PY, PL>::calculateF() {
+  spdlog::debug("Starting force calculation for {} particles.", particles.size());
   for (auto &p : particles) {
     p.old_f = p.f;
     p.f = {0, 0, 0};
@@ -132,5 +143,8 @@ void Simulator<PY, PL>::calculateF() {
 
     p1.f = p1.f + f;
     p2.f = p2.f - f;
+
+    spdlog::trace("Force updated for particle pair: ({}, {}, {}) - ({}, {}, {})", p1.f[0], p1.f[1], p1.f[2], p2.f[0], p2.f[1], p2.f[2]);
   }
+  spdlog::trace("Force calculation completed.");
 }

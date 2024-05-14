@@ -1,5 +1,5 @@
 /*
- * FileReader.cpp
+* FileReader.cpp
  *
  *  Created on: 23.02.2010
  *      Author: eckhardw
@@ -8,7 +8,6 @@
 #include "FileReader.h"
 
 #include <cmath>
-
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -26,6 +25,8 @@ void FileReader::readFile(std::vector<Particle> &particles, char *filename) {
   std::array<double, 3> v{};
   double m = NAN;
   int num_particles = 0;
+
+  spdlog::debug("Opening file: {}", filename);
 
   std::ifstream input_file(filename);
   std::string tmp_string;
@@ -60,10 +61,12 @@ void FileReader::readFile(std::vector<Particle> &particles, char *filename) {
       }
       datastream >> m;
       particles.emplace_back(x, v, m);
+      spdlog::trace("Particle {}: position = ({}, {}, {}), velocity = ({}, {}, {}), mass = {}", i, x[0], x[1], x[2], v[0], v[1], v[2], m);
 
       getline(input_file, tmp_string);
       spdlog::trace("Read line: {}", tmp_string);
     }
+    spdlog::debug("Successfully read {} particles from {}", num_particles, filename);
   } else {
     spdlog::error("Error: could not open file {}", filename);
     exit(-1);
