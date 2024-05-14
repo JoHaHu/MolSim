@@ -4,8 +4,8 @@
 
 #include "Gravity.h"
 #include "lib/utils/ArrayUtils.h"
-#include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 
 auto Gravity::calculateF(const Particle &p1, const Particle &p2) -> std::array<double, 3> {
   spdlog::trace("Entering calculateF");
@@ -31,4 +31,3 @@ auto Gravity::calculateF(const Particle &p1, const Particle &p2) -> std::array<d
 
   return f;
 }
-
