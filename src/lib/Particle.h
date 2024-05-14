@@ -9,6 +9,8 @@
 
 #include <array>
 #include <string>
+#include <atomic>
+#include <iostream>
 
 class Particle {
  public:
@@ -42,6 +44,16 @@ class Particle {
    * molecules belonging to different bodies, matters, and so on)
    */
   int type;
+
+  /**
+   * Static atomic ID counter shared by all objects that assigns the ID value to a new object when created
+   */
+  static std::atomic<int> nextID;
+
+  /**
+   * ID of the particle to differentiate between particles and compare if a particle is the same
+   */
+  int id;
 
   explicit Particle(int type = 0);
 
