@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Plotter.h"
+#include "VTKWriter.h"
 #include "lib/ParticleContainer.h"
-#include "lib/outputWriter/VTKWriter.h"
 
 namespace simulator::io {
 class VTKPlotter final : public Plotter {
  private:
-  outputWriter::VTKWriter vtk_writer;
+  VTKWriter vtk_writer;
 
  public:
   auto plotParticles(ParticleContainer &particle_container, int iteration) -> void override;

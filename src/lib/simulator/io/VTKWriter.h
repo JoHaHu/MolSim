@@ -1,11 +1,11 @@
 #pragma once
 
-#include "VTKUnstructured.hxx"
 #include "lib/Particle.h"
+#include "lib/simulator/io/VTKUnstructured.hxx"
 
 #include <list>
 
-namespace outputWriter {
+namespace simulator::io {
 
 /**
  * This class implements the functionality to generate vtk output from
@@ -42,4 +42,4 @@ class VTKWriter {
   std::unique_ptr<VTKFile_t> vtkFile = std::make_unique<VTKFile_t>(VTKFile_t("UnstructuredGrid"));
 };
 
-}// namespace outputWriter
+}// namespace simulator::io

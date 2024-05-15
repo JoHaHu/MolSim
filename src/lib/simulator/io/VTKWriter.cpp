@@ -1,6 +1,5 @@
-#include "lib/outputWriter/VTKWriter.h"
+#include "lib/simulator/io/VTKWriter.h"
 
-#include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -9,7 +8,7 @@
 #include "lib/utils/LoggerManager.h"
 #include "spdlog/spdlog.h"
 
-namespace outputWriter {
+namespace simulator::io {
 
 void VTKWriter::initializeOutput(int numParticles) {
   vtkFile = std::make_unique<VTKFile_t>(VTKFile_t("UnstructuredGrid"));
@@ -90,4 +89,4 @@ void VTKWriter::plotParticle(Particle &p) {
   pointsIterator->push_back(p.position[2]);
 }
 
-}// namespace outputWriter
+}// namespace simulator::io
