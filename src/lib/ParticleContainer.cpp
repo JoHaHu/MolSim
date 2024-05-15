@@ -24,9 +24,10 @@ auto ParticleContainer::PairIterator::operator++() -> ParticleContainer::PairIte
       if (i2 == end) {
         i1 = end;
       }
-    };
+    } else {
+      i2 = end;
+    }
   }
-  if (i1 == end) i2 = end;
   return *this;
 }
 
