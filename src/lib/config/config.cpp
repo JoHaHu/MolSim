@@ -27,7 +27,7 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
   int io_interval = 10;//NOLINT(*-avoid-magic-numbers)
   simulator::Task task = simulator::Task::gravity;
 
-  const std::string short_options = "ho:i:d:s:e:r:";
+  const std::string short_options = "ho:i:d:s:e:r:t:l:";
   const std::array<option, 9> long_options = {{{"output", required_argument, nullptr, 'o'},
                                                {"input", required_argument, nullptr, 'i'},
                                                {"help", no_argument, nullptr, '?'},
