@@ -4,6 +4,7 @@
 #include "lib/config/config.h"
 #include "lib/simulator/physics/ForceModel.h"
 #include <memory>
+#include <optional>
 
 namespace simulator::io {
 
@@ -30,11 +31,11 @@ class ParticleLoader {
   static auto recognize_planet(std::istreambuf_iterator<char> &buf) -> std::optional<Particle>;
   static auto parse_gravity(std::istreambuf_iterator<char> &buf) -> std::optional<std::vector<Particle>>;
   static auto parse_cuboids(std::istreambuf_iterator<char> &buf) -> std::optional<std::vector<cuboid_t>>;
+  static auto recognize_end_of_file(std::istreambuf_iterator<char> &buf) -> bool;
 
  public:
   explicit ParticleLoader(const std::shared_ptr<config::Config> &config);
   auto load_particles() -> std::tuple<ParticleContainer, physics::ForceModel>;
-  static bool recognize_end_of_file(std::istreambuf_iterator<char> &buf);
 };
 
 }// namespace simulator::io

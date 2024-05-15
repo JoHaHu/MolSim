@@ -1,6 +1,5 @@
 
 
-#include <cmath>
 #include <fstream>
 #include <sstream>
 
@@ -123,17 +122,17 @@ auto ParticleLoader::recognize_cuboid(std::istreambuf_iterator<char> &buf) -> st
   auto velocity = *recognize_double_triplet(buf);
   auto dim = *recognize_dimension_triplet(buf);
   auto h = *recognize_double(buf);
-  auto m = *recognize_double(buf);
+  auto mass = *recognize_double(buf);
   auto sigma = *recognize_double(buf);
   recognize_end_of_line(buf);
-  return {{position, velocity, dim, h, m, sigma}};
+  return {{position, velocity, dim, h, mass, sigma}};
 }
 auto ParticleLoader::recognize_planet(std::istreambuf_iterator<char> &buf) -> std::optional<Particle> {
   recognize_whitespace(buf);
   auto position = *recognize_double_triplet(buf);
   auto velocity = *recognize_double_triplet(buf);
-  auto m = *recognize_double(buf);
-  auto p = Particle(position, velocity, m, 0);
+  auto mass = *recognize_double(buf);
+  auto p = Particle(position, velocity, mass, 0);
   recognize_end_of_line(buf);
   return {p};
 }
