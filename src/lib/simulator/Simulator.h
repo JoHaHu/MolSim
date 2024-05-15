@@ -117,7 +117,8 @@ void Simulator::calculate_force() {
     particle.force = {0, 0, 0};
   }
 
-  for (auto pair = particles.begin_pair(); pair != particles.end_pair(); pair++) {
+  auto end = particles.end_pair();
+  for (auto pair = particles.begin_pair(); pair != end; pair++) {
     const auto [particle1, particle2] = *pair;
 
     const auto force = PY::calculate_force(particle1, particle2);

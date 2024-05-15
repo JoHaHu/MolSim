@@ -25,9 +25,10 @@ auto main(int argc, char *argv[]) -> int {
   LoggerManager::setup_logger(config);
 
   auto particle_loader = simulator::io::ParticleLoader(config);
+
   auto [particle_container, force_model] = particle_loader.load_particles();
 
-  auto plotter = std::make_unique<simulator::io::VTKPlotter>();
+  auto plotter = std::make_unique<simulator::io::VTKPlotter>(config);
 
   auto simulator = simulator::Simulator(std::move(particle_container), std::move(plotter), config);
 
@@ -50,6 +51,5 @@ auto main(int argc, char *argv[]) -> int {
         break;
     }
   }
-
   return 0;
 }
