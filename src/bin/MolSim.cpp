@@ -1,4 +1,4 @@
-#include "lib/FileReader.h"
+#include "lib/simulator/io/FileReader.h"
 
 #include <spdlog/spdlog.h>
 #include <vector>
@@ -26,7 +26,7 @@ auto main(int argc, char *argv[]) -> int {
   std::vector<Particle> particles;
   try {
     spdlog::info("Reading file: {}", config->input_filename);
-    FileReader::read_file(particles, config->input_filename);
+    simulator::io::FileReader::read_file(particles, config->input_filename);
   } catch (const std::exception &e) {
     spdlog::error("Failed to read file: {}", e.what());
     return 1;
