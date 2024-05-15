@@ -21,12 +21,12 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
   double end_time = 1000.0;// NOLINT(*-avoid-magic-numbers)
   double delta_t = 0.014;  // NOLINT(*-avoid-magic-numbers)
   int seed = 42;           // NOLINT(*-avoid-magic-numbers)
-  std::string output_file;
+  std::string output_file = "MD_vtk";
   std::string input_file;
-  int io_interval = 10;//NOLINT(*-avoid-magic-numbers)
+  int io_interval = 100;//NOLINT(*-avoid-magic-numbers)
 
   const std::string short_options = "ho:i:d:s:e:r:l:";
-  const std::array<option, 9> long_options = {{{"output", required_argument, nullptr, 'o'},
+  const std::array<option, 8> long_options = {{{"output", required_argument, nullptr, 'o'},
                                                {"input", required_argument, nullptr, 'i'},
                                                {"help", no_argument, nullptr, '?'},
                                                {"delta_t", required_argument, nullptr, 'd'},

@@ -11,11 +11,11 @@
 #include "spdlog/spdlog.h"
 
 namespace simulator::io {
-
+// TODO evaluate operator>> to primitive types
 ParticleLoader::ParticleLoader(const std::shared_ptr<config::Config> &config) : config(config) {}
 
 auto ParticleLoader::load_particles() -> std::tuple<ParticleContainer, simulator::physics::ForceModel> {
-
+  spdlog::info("Start loading particles");
   auto input = std::ifstream(config->input_filename);
   auto input_buf = std::istreambuf_iterator<char>(input);
 
@@ -37,6 +37,7 @@ auto ParticleLoader::load_particles() -> std::tuple<ParticleContainer, simulator
       break;
     }
   }
+  spdlog::info("particles loaded");
   return {particles, model};
 }
 auto ParticleLoader::recognize_force_model(std::istreambuf_iterator<char> &buf) -> std::optional<physics::ForceModel> {
@@ -177,7 +178,7 @@ auto ParticleLoader::generate_cuboids(const std::vector<cuboid_t> &cuboids, auto
     for (auto x : std::views::iota(0, dim[0])) {
       for (auto y : std::views::iota(0, dim[1])) {
         for (auto z : std::views::iota(0, dim[2])) {
-          auto particle = Particle(position + std::array<double, 3>({h * static_cast<double>(x), h * static_cast<double>(y), h * static_cast<double>(z)}), velocity + maxwellBoltzmannDistributedVelocity(brownian_motion, 2, seed), m, static_cast<int>(index));
+          auto particle = Particle(position + std::array<double, 3>({h * static_cast<double>(x), h * static_cast<double>(y), h * static_cast<double>(z)}), velocity + maxwellBoltzmannDistributedVelocity(brownian_motion, 3, seed), m, static_cast<int>(index));
           particles.emplace_back(particle);
         }
       }
