@@ -100,12 +100,6 @@ TEST_F(ParticleTest, IncrementOperator_BasicFunction) {
 
   auto [pair1par1, pair1par2] = *pair;
 
-  std::cout << pair1par1;
-  std::cout << "\n";
-  std::cout << pair1par2;
-
-  std::cout << particles.size();
-
   // Manually comparing the particles:
 
   // Particle A
