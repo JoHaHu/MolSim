@@ -1,12 +1,6 @@
-/*
- * VTKWriter.cpp
- *
- *  Created on: 01.03.2010
- *      Author: eckhardw
- */
+#include "lib/outputWriter/VTKWriter.h"
 
-#include "VTKWriter.h"
-
+#include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -18,7 +12,6 @@
 namespace outputWriter {
 
 void VTKWriter::initializeOutput(int numParticles) {
-
   vtkFile = std::make_unique<VTKFile_t>(VTKFile_t("UnstructuredGrid"));
 
   // per point, we add type, position, velocity and force
@@ -71,19 +64,19 @@ void VTKWriter::plotParticle(Particle &p) {
       vtkFile->UnstructuredGrid()->Piece().PointData().DataArray();
   PointData::DataArray_iterator dataIterator = pointDataSequence.begin();
 
-  dataIterator->push_back(p.m);
+  dataIterator->push_back(p.mass);
   // cout << "Appended mass data in: " << dataIterator->Name();
 
   dataIterator++;
-  dataIterator->push_back(p.v[0]);
-  dataIterator->push_back(p.v[1]);
-  dataIterator->push_back(p.v[2]);
+  dataIterator->push_back(p.velocity[0]);
+  dataIterator->push_back(p.velocity[1]);
+  dataIterator->push_back(p.velocity[2]);
   // cout << "Appended velocity data in: " << dataIterator->Name();
 
   dataIterator++;
-  dataIterator->push_back(p.old_f[0]);
-  dataIterator->push_back(p.old_f[1]);
-  dataIterator->push_back(p.old_f[2]);
+  dataIterator->push_back(p.old_force[0]);
+  dataIterator->push_back(p.old_force[1]);
+  dataIterator->push_back(p.old_force[2]);
   // cout << "Appended force data in: " << dataIterator->Name();
 
   dataIterator++;
@@ -92,9 +85,9 @@ void VTKWriter::plotParticle(Particle &p) {
   Points::DataArray_sequence &pointsSequence =
       vtkFile->UnstructuredGrid()->Piece().Points().DataArray();
   Points::DataArray_iterator pointsIterator = pointsSequence.begin();
-  pointsIterator->push_back(p.x[0]);
-  pointsIterator->push_back(p.x[1]);
-  pointsIterator->push_back(p.x[2]);
+  pointsIterator->push_back(p.position[0]);
+  pointsIterator->push_back(p.position[1]);
+  pointsIterator->push_back(p.position[2]);
 }
 
 }// namespace outputWriter

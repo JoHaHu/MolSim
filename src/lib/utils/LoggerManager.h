@@ -4,5 +4,6 @@
 
 class LoggerManager {
  public:
-  static void setupLogger(spdlog::level::level_enum level);
+  LoggerManager() = delete;
+  static void setupLogger(spdlog::level::level_enum level = spdlog::level::from_str("info"));
 };

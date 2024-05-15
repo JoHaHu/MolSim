@@ -2,89 +2,72 @@
 
 #include "lib/Particle.h"
 #include "lib/ParticleContainer.h"
+#include "lib/config/config.h"
+#include "lib/simulator/io/Plotter.h"
 #include "lib/utils/ArrayUtils.h"
 #include <cmath>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
+#include <utility>
 
-//! Function for force calculation
-/*!
-  calculates the force for all particles, takes no arguments and has no return value
-  */
-auto calculateF(Particle const &p1, Particle const &p2) -> std::array<double, 3>;
-
-//! Function for position calculation
-/*!
-  calculates the position for all particles, takes no arguments and has no return value
-*/
-auto calculateX(Particle const &p1, Particle const &p2) -> std::array<double, 3>;
-
-//! Function for velocity calculation
-/*!
-  calculates the velocity for all particles, takes no arguments and has no return value
-*/
-auto calculateV(Particle const &p1, Particle const &p2) -> std::array<double, 3>;
-
-//! Function for plotting particles
-/*!
-  plots the particles of the particle array, takes an integer value and has no return value
-  \param iteration an integer argument that sets the number of iterations
-*/
-auto plotParticles(ParticleContainer &pc, int iteration) -> void;
+namespace simulator {
 
 template<typename T>
-concept Plotter = requires(ParticleContainer &pc, int iteration) {
-  { plotParticles(pc, iteration) };
+/** <p> physics concept for force calculation </p>
+    * calculates the force for all particles,
+    * \param T
+    * \param particle1
+    * \param particle2
+    */
+concept Physics = requires(T type, Particle const &particle1, Particle const &particle2) {
+  { T::calculateF(particle1, particle2) } -> std::convertible_to<std::array<double, 3>>;
 };
 
-template<typename T>
-concept Physics = requires(Particle const &p1, Particle const &p2) {
-  { calculateF(p1, p2) } -> std::convertible_to<std::array<double, 3>>;
-};
-
-template<Physics PY, Plotter PL>
 class Simulator {
 
  private:
   ParticleContainer particles;
-  PL plotter;
-  PY physics;
-  double start_time = 0;
-  double end_time = 0;
-  double delta_t = 0.014;
+  std::unique_ptr<io::Plotter> plotter;
+  std::shared_ptr<config::Config> config;
+  double start_time;
+  double end_time;
+  double delta_t;
 
  public:
-  /***
+  /**
    * \param particles
    * \param plotter
-   * \param physics
-   * \param start_time
-   * \param end_time
-   * \param delta_t
+   * \param config
    * */
   explicit Simulator(
       ParticleContainer particles,
-      PL const &plotter,
-      PY const &physics,
-      auto start_time,
-      auto end_time,
-      auto delta_t);
+      std::unique_ptr<io::Plotter> plotter,
+      const std::shared_ptr<config::Config> &config);
 
+  template<Physics PY>
   auto run() -> void;
+  /*! <p> Function for position calculation </p>
+  *
+  * calculates the position for all particles, takes no arguments and has no return value
+  */
   auto calculateX() -> void;
+
+  /*! <p> Function for velocity calculation </p>
+  * calculates the velocity for all particles, takes no arguments and has no return value
+  */
   auto calculateV() -> void;
+  template<Physics PY>
   auto calculateF() -> void;
 };
 
-template<Physics PY, Plotter PL>
-Simulator<PY, PL>::Simulator(
-    ParticleContainer particles, PL const &plotter, PY const &physics, auto start_time, auto end_time, auto delta_t)
-    : particles(std::move(particles)), plotter(std::move(plotter)), physics(std::move(physics)), start_time(start_time), end_time(end_time), delta_t(delta_t) {
+Simulator::Simulator(
+    ParticleContainer particles, std::unique_ptr<io::Plotter> plotter, const std::shared_ptr<config::Config> &config)
+    : particles(std::move(particles)), plotter(std::move(plotter)), config(config), start_time(config->start_time), end_time(config->end_time), delta_t(config->delta_t) {
 }
 
-template<Physics PY, Plotter PL>
-auto Simulator<PY, PL>::run() -> void {
+template<Physics PY>
+auto Simulator::run() -> void {
   spdlog::info("Running simulation...");
   double current_time = start_time;
   int iteration = 0;
@@ -93,13 +76,13 @@ auto Simulator<PY, PL>::run() -> void {
     // calculate new x
     calculateX();
     // calculate new f
-    calculateF();
+    calculateF<PY>();
     // calculate new v
     calculateV();
 
     iteration++;
     if (iteration % 10 == 0) {
-      plotter.plotParticles(particles, iteration);
+      plotter->plotParticles(particles, iteration);
       spdlog::debug("Iteration {} plotted.", iteration);
     }
 
@@ -110,41 +93,41 @@ auto Simulator<PY, PL>::run() -> void {
   spdlog::info("Output written. Terminating...");
 }
 
-template<Physics PY, Plotter PL>
-void Simulator<PY, PL>::calculateX() {
+void Simulator::calculateX() {
   spdlog::debug("Updating positions for {} particles.", particles.size());
-  for (auto &p : particles) {
-    p.x = p.x + delta_t * p.v + pow(delta_t, 2) * (1 / (2 * p.m)) * p.old_f;
-    spdlog::trace("Particle position updated: ({}, {}, {})", p.x[0], p.x[1], p.x[2]);
+  for (auto &particle : particles) {
+    particle.position = particle.position + delta_t * particle.velocity + pow(delta_t, 2) * (1 / (2 * particle.mass)) * particle.old_force;
+    spdlog::trace("Particle position updated: ({}, {}, {})", particle.position[0], particle.position[1], particle.position[2]);
   }
 }
 
-template<Physics PY, Plotter PL>
-void Simulator<PY, PL>::calculateV() {
+void Simulator::calculateV() {
   spdlog::debug("Updating velocities for {} particles.", particles.size());
-  for (auto &p : particles) {
-    p.v = p.v + delta_t * (1 / (2 * p.m)) * (p.old_f + p.f);
-    spdlog::trace("Particle velocity updated: ({}, {}, {})", p.v[0], p.v[1], p.v[2]);
+  for (auto &particle : particles) {
+    particle.velocity = particle.velocity + delta_t * (1 / (2 * particle.mass)) * (particle.old_force + particle.force);
+    spdlog::trace("Particle velocity updated: ({}, {}, {})", particle.velocity[0], particle.velocity[1], particle.velocity[2]);
   }
 }
 
-template<Physics PY, Plotter PL>
-void Simulator<PY, PL>::calculateF() {
+template<Physics PY>
+void Simulator::calculateF() {
   spdlog::debug("Starting force calculation for {} particles.", particles.size());
-  for (auto &p : particles) {
-    p.old_f = p.f;
-    p.f = {0, 0, 0};
+  for (auto &particle : particles) {
+    particle.old_force = particle.force;
+    particle.force = {0, 0, 0};
   }
 
   for (auto pair = particles.begin_pair(); pair != particles.end_pair(); pair++) {
-    const auto [p1, p2] = *pair;
+    const auto [particle1, particle2] = *pair;
 
-    const auto f = physics.calculateF(p1, p2);
+    const auto force = PY::calculateF(particle1, particle2);
 
-    p1.f = p1.f + f;
-    p2.f = p2.f - f;
+    particle1.force = particle1.force + force;
+    particle2.force = particle2.force - force;
 
-    spdlog::trace("Force updated for particle pair: ({}, {}, {}) - ({}, {}, {})", p1.f[0], p1.f[1], p1.f[2], p2.f[0], p2.f[1], p2.f[2]);
+    spdlog::trace("Force updated for particle pair: ({}, {}, {}) - ({}, {}, {})", particle1.force[0], particle1.force[1], particle1.force[2], particle2.force[0], particle2.force[1], particle2.force[2]);
   }
   spdlog::trace("Force calculation completed.");
 }
+
+}// namespace simulator
