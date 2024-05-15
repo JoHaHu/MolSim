@@ -14,7 +14,7 @@
  *
  * @param level The log level to set for the logger.
  */
-void LoggerManager::setupLogger(spdlog::level::level_enum level) {
+void LoggerManager::setup_logger(spdlog::level::level_enum level) {
   try {
     spdlog::trace("Setting up logger with level: {}", spdlog::level::to_string_view(level));
 

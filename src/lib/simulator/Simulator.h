@@ -21,7 +21,7 @@ template<typename T>
     * \param particle2
     */
 concept Physics = requires(T type, Particle const &particle1, Particle const &particle2) {
-  { T::calculateF(particle1, particle2) } -> std::convertible_to<std::array<double, 3>>;
+  { T::calculate_force(particle1, particle2) } -> std::convertible_to<std::array<double, 3>>;
 };
 
 class Simulator {
@@ -51,14 +51,14 @@ class Simulator {
   *
   * calculates the position for all particles, takes no arguments and has no return value
   */
-  auto calculateX() -> void;
+  auto calculate_position() -> void;
 
   /*! <p> Function for velocity calculation </p>
   * calculates the velocity for all particles, takes no arguments and has no return value
   */
-  auto calculateV() -> void;
+  auto calculate_velocity() -> void;
   template<Physics PY>
-  auto calculateF() -> void;
+  auto calculate_force() -> void;
 };
 
 Simulator::Simulator(
@@ -74,11 +74,11 @@ auto Simulator::run() -> void {
 
   while (current_time < end_time) {
     // calculate new x
-    calculateX();
+    calculate_position();
     // calculate new f
-    calculateF<PY>();
+    calculate_force<PY>();
     // calculate new v
-    calculateV();
+    calculate_velocity();
 
     iteration++;
     if (iteration % 10 == 0) {
@@ -93,7 +93,7 @@ auto Simulator::run() -> void {
   spdlog::info("Output written. Terminating...");
 }
 
-void Simulator::calculateX() {
+void Simulator::calculate_position() {
   spdlog::debug("Updating positions for {} particles.", particles.size());
   for (auto &particle : particles) {
     particle.position = particle.position + delta_t * particle.velocity + pow(delta_t, 2) * (1 / (2 * particle.mass)) * particle.old_force;
@@ -101,7 +101,7 @@ void Simulator::calculateX() {
   }
 }
 
-void Simulator::calculateV() {
+void Simulator::calculate_velocity() {
   spdlog::debug("Updating velocities for {} particles.", particles.size());
   for (auto &particle : particles) {
     particle.velocity = particle.velocity + delta_t * (1 / (2 * particle.mass)) * (particle.old_force + particle.force);
@@ -110,7 +110,7 @@ void Simulator::calculateV() {
 }
 
 template<Physics PY>
-void Simulator::calculateF() {
+void Simulator::calculate_force() {
   spdlog::debug("Starting force calculation for {} particles.", particles.size());
   for (auto &particle : particles) {
     particle.old_force = particle.force;
@@ -120,7 +120,7 @@ void Simulator::calculateF() {
   for (auto pair = particles.begin_pair(); pair != particles.end_pair(); pair++) {
     const auto [particle1, particle2] = *pair;
 
-    const auto force = PY::calculateF(particle1, particle2);
+    const auto force = PY::calculate_force(particle1, particle2);
 
     particle1.force = particle1.force + force;
     particle2.force = particle2.force - force;

@@ -21,12 +21,12 @@
 auto main(int argc, char *argv[]) -> int {
 
   auto config = config::Config::parse_config(argc, argv);
-  LoggerManager::setupLogger();
+  LoggerManager::setup_logger();
 
   std::vector<Particle> particles;
   try {
     spdlog::info("Reading file: {}", config->input_filename);
-    FileReader::readFile(particles, config->input_filename);
+    FileReader::read_file(particles, config->input_filename);
   } catch (const std::exception &e) {
     spdlog::error("Failed to read file: {}", e.what());
     return 1;
