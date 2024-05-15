@@ -2,6 +2,7 @@
 #include "config.h"
 #include "spdlog/spdlog.h"
 #include <getopt.h>
+#include <string>
 
 void print_usage() {
   std::cout << "Usage: MolSim [options]\n"
@@ -11,7 +12,7 @@ void print_usage() {
                "--delta_t\t-d\t\t set delta_t\n"
                "--start_time\t-s\t\t set start_time\n"
                "--seed\t\t-r\t\t set seed for rng\n"
-               "--task\t\t-t\t\t select task\n"
+               "--task\t\t-t\t\t select task {gravity, collision}\n"
                "--end_time\t-e\t\t set end_time\n"
                "--io_interval\t-l\t\t set plot interval, 0 disables plotting\n";
 }
@@ -24,6 +25,7 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
   std::string output_file;
   std::string input_file;
   int io_interval = 10;//NOLINT(*-avoid-magic-numbers)
+  simulator::Task task = simulator::Task::gravity;
 
   const std::string short_options = "ho:i:d:s:e:r:";
   const std::array<option, 9> long_options = {{{"output", required_argument, nullptr, 'o'},
@@ -63,6 +65,16 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
       case 'l':
         io_interval = std::stoi(optarg);
         break;
+      case 't':
+        if (std::string(optarg) == "gravity") {
+          task = simulator::Task::gravity;
+        } else if (std::string(optarg) == "collision") {
+          task = simulator::Task::collision;
+        } else {
+          print_usage();
+          exit(4);
+        }
+        break;
       case '?':
         print_usage();
         exit(1);
@@ -83,6 +95,7 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
   config.delta_t = delta_t;
   config.seed = seed;
   config.io_interval = io_interval;
+  config.task = task;
 
   if (config.input_filename.empty()) {
     print_usage();

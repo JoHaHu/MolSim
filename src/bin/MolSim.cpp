@@ -7,6 +7,7 @@
 #include "lib/simulator/Simulator.h"
 #include "lib/simulator/io/VTKPlotter.h"
 #include "lib/simulator/physics/Gravity.h"
+#include "lib/simulator/physics/LennardJones.h"
 #include "lib/utils/LoggerManager.h"
 
 /**
@@ -21,7 +22,7 @@
 auto main(int argc, char *argv[]) -> int {
 
   auto config = config::Config::parse_config(argc, argv);
-  LoggerManager::setup_logger();
+  LoggerManager::setup_logger(config);
 
   std::vector<Particle> particles;
   try {
@@ -36,7 +37,26 @@ auto main(int argc, char *argv[]) -> int {
   auto particleContainer = ParticleContainer(particles);
 
   auto simulator = simulator::Simulator(std::move(particleContainer), std::move(plotter), config);
-  simulator.run<simulator::physics::Gravity>();
+
+  if (config->io_interval == 0) {
+    switch (config->task) {
+      case simulator::Task::gravity:
+        simulator.run<simulator::physics::Gravity, false>();
+        break;
+      case simulator::Task::collision:
+        simulator.run<simulator::physics::LennardJones, false>();
+        break;
+    }
+  } else {
+    switch (config->task) {
+      case simulator::Task::gravity:
+        simulator.run<simulator::physics::Gravity, true>();
+        break;
+      case simulator::Task::collision:
+        simulator.run<simulator::physics::LennardJones, true>();
+        break;
+    }
+  }
 
   return 0;
 }
