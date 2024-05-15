@@ -15,9 +15,9 @@ class VTKPlotter final : public Plotter {
   VTKPlotter() = default;
 
   VTKPlotter(VTKPlotter &plotter) = delete;
-  VTKPlotter(VTKPlotter &&plotter) = default;
+  VTKPlotter(VTKPlotter &&plotter) = delete;
 
   auto operator=(VTKPlotter &plotter) = delete;
-  auto operator=(VTKPlotter &&plotter) -> VTKPlotter & = default;
+  auto operator=(VTKPlotter &&plotter) -> VTKPlotter & = delete;
 };
 }// namespace simulator::io

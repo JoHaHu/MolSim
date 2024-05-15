@@ -129,8 +129,7 @@ inline auto elementWiseScalarOp(const Scalar &lhs, const C &rhs,
  */
 template<Container C>
 auto inline L2Norm(const C &c) {
-  return std::sqrt(std::accumulate(std::cbegin(c), std::cend(c), 0.0,
-                                   [](auto a, auto b) { return a + b * b; }));
+  return std::sqrt(std::accumulate(std::cbegin(c), std::cend(c), 0.0, [](auto a, auto b) { return a + b * b; }));
 }
 
 }// namespace ArrayUtils
@@ -144,7 +143,7 @@ auto inline L2Norm(const C &c) {
  * @return
  */
 template<Container C>
-auto inline operator<<(auto &os, const C &container) -> auto & {
+auto inline operator<<(auto &os, const C &container) -> std::ostream & {
   os << ArrayUtils::to_string(container);
   return os;
 }
