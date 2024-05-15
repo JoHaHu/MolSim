@@ -62,7 +62,7 @@ class Particle {
   auto operator=(Particle const &other) -> Particle & = default;
   auto operator=(Particle &&other) -> Particle & = default;
 
-  [[nodiscard]] auto toString() const -> std::string;
+  [[nodiscard]] auto to_string() const -> std::string;
 };
 
 auto operator<<(std::ostream &stream, Particle &p) -> std::ostream &;

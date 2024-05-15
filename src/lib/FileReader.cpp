@@ -8,7 +8,7 @@
 #include "spdlog/spdlog.h"
 #include "utils/LoggerManager.h"
 
-void FileReader::readFile(std::vector<Particle> &particles, std::string filename) {
+void FileReader::read_file(std::vector<Particle> &particles, std::string filename) {
   std::array<double, 3> x{};
   std::array<double, 3> v{};
   double m = NAN;

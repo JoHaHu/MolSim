@@ -18,6 +18,7 @@ class Config {
   std::string input_filename;
   std::string log_level = "info";
   int seed{};
+  int io_interval{};
 };
 
 }// namespace config

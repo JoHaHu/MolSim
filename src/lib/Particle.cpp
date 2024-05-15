@@ -52,7 +52,7 @@ Particle::~Particle() {
   spdlog::trace("Particle destructed!");
 }
 
-auto Particle::toString() const -> std::string {
+auto Particle::to_string() const -> std::string {
   std::stringstream stream;
   stream << "Particle: X:" << position << " v: " << velocity << " f: " << force << " old_force: " << old_force << " type: " << type;
   return stream.str();
@@ -64,6 +64,6 @@ auto Particle::operator==(Particle &other) const -> bool {
 }
 
 auto operator<<(std::ostream &stream, Particle &p) -> std::ostream & {
-  stream << p.toString();
+  stream << p.to_string();
   return stream;
 }
