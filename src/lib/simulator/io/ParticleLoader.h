@@ -17,7 +17,7 @@ class ParticleLoader {
 
   using cuboid_t = std::tuple<std::array<double, 3>, std::array<double, 3>, std::array<int, 3>, double, double, double>;
 
-  auto generate_cuboids(std::vector<cuboid_t>) -> std::vector<Particle>;
+  auto generate_cuboids(const std::vector<cuboid_t> &, auto seed) -> std::vector<Particle>;
   static auto recognize_comment(std::istreambuf_iterator<char> &buf) -> bool;
   static auto recognize_whitespace(std::istreambuf_iterator<char> &buf) -> bool;
   static auto recognize_end_of_line(std::istreambuf_iterator<char> &buf) -> bool;
