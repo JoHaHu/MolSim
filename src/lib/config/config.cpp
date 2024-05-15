@@ -4,7 +4,7 @@
 #include <getopt.h>
 #include <string>
 
-void print_usage() {
+void config::Config::print_usage() {
   std::cout << "Usage: MolSim [options]\n"
                "--output\t-o\t\t specify output file\n"
                "--input\t\t-i\t\t specify input file\n"
@@ -25,16 +25,14 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
   std::string output_file;
   std::string input_file;
   int io_interval = 10;//NOLINT(*-avoid-magic-numbers)
-  simulator::Task task = simulator::Task::gravity;
 
-  const std::string short_options = "ho:i:d:s:e:r:t:l:";
+  const std::string short_options = "ho:i:d:s:e:r:l:";
   const std::array<option, 9> long_options = {{{"output", required_argument, nullptr, 'o'},
                                                {"input", required_argument, nullptr, 'i'},
                                                {"help", no_argument, nullptr, '?'},
                                                {"delta_t", required_argument, nullptr, 'd'},
                                                {"start_time", required_argument, nullptr, 's'},
                                                {"seed", required_argument, nullptr, 'r'},
-                                               {"task", required_argument, nullptr, 't'},
                                                {"end_time", required_argument, nullptr, 'e'},
                                                {"io_interval", required_argument, nullptr, 'l'}}};
 
@@ -65,16 +63,6 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
       case 'l':
         io_interval = std::stoi(optarg);
         break;
-      case 't':
-        if (std::string(optarg) == "gravity") {
-          task = simulator::Task::gravity;
-        } else if (std::string(optarg) == "collision") {
-          task = simulator::Task::collision;
-        } else {
-          print_usage();
-          exit(4);
-        }
-        break;
       case '?':
         print_usage();
         exit(1);
@@ -95,7 +83,6 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
   config.delta_t = delta_t;
   config.seed = seed;
   config.io_interval = io_interval;
-  config.task = task;
 
   return std::make_shared<Config>(config);
 }
