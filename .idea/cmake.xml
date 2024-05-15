@@ -4,6 +4,8 @@
     <configurations>
       <configuration PROFILE_NAME="Release-System" ENABLED="true" GENERATION_DIR="build-release" CONFIG_NAME="Release" TOOLCHAIN_NAME="System" GENERATION_OPTIONS="-G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON" />
       <configuration PROFILE_NAME="Debug-System" ENABLED="true" GENERATION_DIR="build-debug" CONFIG_NAME="Debug" TOOLCHAIN_NAME="System" GENERATION_OPTIONS="-G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON" />
+      <configuration PROFILE_NAME="Release-System-Coverage" ENABLED="true" CONFIG_NAME="Release" TOOLCHAIN_NAME="System" GENERATION_OPTIONS="-G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_FLAGS=&quot;-fcoverage-mapping -fprofile-instr-generate&quot; -DCMAKE_C_FLAGS=&quot;-fcoverage-mapping -fprofile-instr-generate&quot;" />
+      <configuration PROFILE_NAME="RelWithDebInfo-System" ENABLED="true" GENERATION_DIR="build-release-debinfo" CONFIG_NAME="RelWithDebInfo" TOOLCHAIN_NAME="System" GENERATION_OPTIONS="-G Ninja" />
     </configurations>
   </component>
 </project>

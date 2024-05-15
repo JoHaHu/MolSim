@@ -21,7 +21,7 @@ auto Gravity::calculate_force(const Particle &particle1, const Particle &particl
     spdlog::warn("Zero distance between particles encountered");
   }
 
-  const auto f = (particle1.mass * particle2.mass) / pow(norm, 3) * x_diff;
+  const auto f = (particle1.mass * particle2.mass) / (norm * norm * norm) * x_diff;
   spdlog::trace("Calculated force: ({}, {}, {})", f[0], f[1], f[2]);
 
   spdlog::trace("Exiting calculate_force");
