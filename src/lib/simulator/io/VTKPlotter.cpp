@@ -1,5 +1,5 @@
-#include "VTKPlotter.h"
-#include "lib/outputWriter/VTKWriter.h"
+#include "lib/simulator/io/VTKPlotter.h"
+#include "lib/simulator/io/VTKWriter.h"
 
 namespace simulator::io {
 auto VTKPlotter::plotParticles(ParticleContainer &particle_container, int iteration) -> void {

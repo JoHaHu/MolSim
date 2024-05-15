@@ -39,7 +39,7 @@ void LoggerManager::setup_logger(spdlog::level::level_enum level) {
     spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
     spdlog::info("Logger initialized with level: {}", spdlog::level::to_string_view(level));
   } catch (const spdlog::spdlog_ex &ex) {
-    std::cerr << "Log initialization failed: " << ex.what() << std::endl;
+    std::cerr << "Log initialization failed: " << ex.what() << '\n';
     spdlog::critical("Log initialization failed: {}", ex.what());
   }
 }
