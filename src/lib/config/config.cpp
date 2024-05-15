@@ -12,7 +12,6 @@ void config::Config::print_usage() {
                "--delta_t\t-d\t\t set delta_t\n"
                "--start_time\t-s\t\t set start_time\n"
                "--seed\t\t-r\t\t set seed for rng\n"
-               "--task\t\t-t\t\t select task {gravity, collision}\n"
                "--end_time\t-e\t\t set end_time\n"
                "--io_interval\t-l\t\t set plot interval, 0 disables plotting\n";
 }
