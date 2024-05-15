@@ -10,11 +10,16 @@
 #include "spdlog/spdlog.h"
 
 namespace simulator::io {
-void FileReader::read_file(std::vector<Particle> &particles, std::string filename) {
+
+FileReader::FileReader(const std::shared_ptr<config::Config> &config) : config(config) {}
+auto FileReader::load_particles() -> ParticleContainer {
   std::array<double, 3> x{};
   std::array<double, 3> v{};
   double m = NAN;
   int num_particles = 0;
+
+  auto filename = config->input_filename;
+  auto particles = std::vector<Particle>();
 
   spdlog::debug("Opening file: {}", filename);
 
@@ -61,5 +66,6 @@ void FileReader::read_file(std::vector<Particle> &particles, std::string filenam
     spdlog::error("Error: could not open file {}", filename);
     exit(-1);
   }
+  return ParticleContainer(particles);
 }
 }// namespace simulator::io
