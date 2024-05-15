@@ -1,13 +1,15 @@
-#include "FileReader.h"
+#include "lib/simulator/io/FileReader.h"
 
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
 
+#include "lib/Particle.h"
+#include "lib/utils/LoggerManager.h"
 #include "spdlog/spdlog.h"
-#include "utils/LoggerManager.h"
 
+namespace simulator::io {
 void FileReader::read_file(std::vector<Particle> &particles, std::string filename) {
   std::array<double, 3> x{};
   std::array<double, 3> v{};
@@ -60,3 +62,4 @@ void FileReader::read_file(std::vector<Particle> &particles, std::string filenam
     exit(-1);
   }
 }
+}// namespace simulator::io
