@@ -45,7 +45,7 @@ class Simulator {
       std::unique_ptr<io::Plotter> plotter,
       const std::shared_ptr<config::Config> &config);
 
-  template<Physics PY>
+  template<Physics PY, bool IO>
   auto run() -> void;
   /*! <p> Function for position calculation </p>
   *
@@ -66,11 +66,12 @@ Simulator::Simulator(
     : particles(std::move(particles)), plotter(std::move(plotter)), config(config), start_time(config->start_time), end_time(config->end_time), delta_t(config->delta_t) {
 }
 
-template<Physics PY>
+template<Physics PY, bool IO>
 auto Simulator::run() -> void {
   spdlog::info("Running simulation...");
   double current_time = start_time;
   int iteration = 0;
+  auto interval = config->io_interval;
 
   while (current_time < end_time) {
     // calculate new x
@@ -81,7 +82,7 @@ auto Simulator::run() -> void {
     calculate_velocity();
 
     iteration++;
-    if (iteration % 10 == 0) {
+    if (iteration % interval == 0 && IO) {
       plotter->plotParticles(particles, iteration);
       spdlog::debug("Iteration {} plotted.", iteration);
     }
