@@ -15,27 +15,27 @@ class Particle {
   /**
    * Position of the particle
    */
-  std::array<double, 3> x{};
+  std::array<double, 3> position{};
 
   /**
    * Velocity of the particle
    */
-  std::array<double, 3> v{};
+  std::array<double, 3> velocity{};
 
   /**
    * Force effective on this particle
    */
-  std::array<double, 3> f{};
+  std::array<double, 3> force{};
 
   /**
    * Force which was effective on this particle
    */
-  std::array<double, 3> old_f{};
+  std::array<double, 3> old_force{};
 
   /**
    * Mass of this particle
    */
-  double m{};
+  double mass{};
 
   /**
    * Type of the particle. Use it for whatever you want (e.g. to separate
@@ -43,7 +43,6 @@ class Particle {
    */
   int type;
 
- public:
   explicit Particle(int type = 0);
 
   Particle(const Particle &other);

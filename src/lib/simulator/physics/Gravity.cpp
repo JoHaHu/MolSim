@@ -1,19 +1,16 @@
-//
-// Created by johannes on 14.05.24.
-//
-
 #include "Gravity.h"
 #include "lib/utils/ArrayUtils.h"
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
+namespace simulator::physics {
 
-auto Gravity::calculateF(const Particle &p1, const Particle &p2) -> std::array<double, 3> {
+auto Gravity::calculateF(const Particle &particle1, const Particle &particle2) -> std::array<double, 3> {
   spdlog::trace("Entering calculateF");
 
-  spdlog::trace("Particle 1: mass = {}, position = ({}, {}, {})", p1.m, p1.x[0], p1.x[1], p1.x[2]);
-  spdlog::trace("Particle 2: mass = {}, position = ({}, {}, {})", p2.m, p2.x[0], p2.x[1], p2.x[2]);
+  spdlog::trace("Particle 1: mass = {}, position = ({}, {}, {})", particle1.mass, particle1.position[0], particle1.position[1], particle1.position[2]);
+  spdlog::trace("Particle 2: mass = {}, position = ({}, {}, {})", particle2.mass, particle2.position[0], particle2.position[1], particle2.position[2]);
 
-  const Container auto x_diff = p2.x - p1.x;
+  const auto x_diff = particle2.position - particle1.position;
 
   spdlog::trace("Position difference: ({}, {}, {})", x_diff[0], x_diff[1], x_diff[2]);
 
@@ -24,10 +21,11 @@ auto Gravity::calculateF(const Particle &p1, const Particle &p2) -> std::array<d
     spdlog::warn("Zero distance between particles encountered");
   }
 
-  const Container auto f = (p1.m * p2.m) / pow(norm, 3) * x_diff;
+  const auto f = (particle1.mass * particle2.mass) / pow(norm, 3) * x_diff;
   spdlog::trace("Calculated force: ({}, {}, {})", f[0], f[1], f[2]);
 
   spdlog::trace("Exiting calculateF");
 
   return f;
 }
+}// namespace simulator::physics

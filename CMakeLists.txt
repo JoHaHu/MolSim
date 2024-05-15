@@ -6,6 +6,7 @@ project(PSEMolDyn_GroupD VERSION 0.0.1 LANGUAGES CXX)
 # let ccmake and cmake-gui offer the default build type options
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel")
 
+
 cmake_policy(SET CMP0135 NEW)
 
 # set Release as the default build type if it is not yet set.
@@ -53,6 +54,12 @@ target_link_libraries(MolSim
         spdlog::spdlog
 )
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT result)
+if (result)
+    set_property(TARGET MolSim PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif ()
+
 # activate all compiler warnings. Clean up your code :P
 # depending on the compiler different flags are used
 target_compile_options(MolSim
@@ -71,7 +78,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog/include)
 if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -g -O1 -fno-omit-frame-pointer>
+            $<$<CXX_COMPILER_ID:Clang>: -g -O0 -fno-omit-frame-pointer>
     )
 elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
     target_compile_options(MolSim

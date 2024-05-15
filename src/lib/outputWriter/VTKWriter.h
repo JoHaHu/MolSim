@@ -1,14 +1,7 @@
-/*
- * VTKWriter.h
- *
- *  Created on: 01.03.2010
- *      Author: eckhardw
- */
-
 #pragma once
 
-#include "../Particle.h"
 #include "VTKUnstructured.hxx"
+#include "lib/Particle.h"
 
 #include <list>
 
@@ -21,6 +14,9 @@ namespace outputWriter {
 class VTKWriter {
 
  public:
+  VTKWriter() = default;
+
+  virtual ~VTKWriter() = default;
   /**
    * set up internal data structures and prepare to plot a particle.
    */
@@ -31,7 +27,7 @@ class VTKWriter {
    *
    * @note: initializeOutput() must have been called before.
    */
-  void plotParticle(Particle &p);
+  void plotParticle(Particle &particle);
 
   /**
    * writes the final output file.
@@ -43,7 +39,7 @@ class VTKWriter {
   void writeFile(const std::string &filename, int iteration);
 
  private:
-  std::unique_ptr<VTKFile_t> vtkFile;
+  std::unique_ptr<VTKFile_t> vtkFile = std::make_unique<VTKFile_t>(VTKFile_t("UnstructuredGrid"));
 };
 
 }// namespace outputWriter

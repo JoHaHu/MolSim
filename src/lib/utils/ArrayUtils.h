@@ -79,8 +79,7 @@ to_string(const C &container, const std::string &delimiter = ", ",
  * @return Element wise F(lhs, rhs).
  */
 template<Container C, class F>
-inline auto elementWisePairOp(const C &lhs, const C &rhs,
-                              F binaryFunction) -> C {
+inline auto elementWisePairOp(const C &lhs, const C &rhs, F binaryFunction) -> C {
   C ret = lhs;
   auto retIter = std::begin(ret);
   auto lhsIter = std::cbegin(lhs);

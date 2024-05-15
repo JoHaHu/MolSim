@@ -1,10 +1,3 @@
-/*
-* FileReader.cpp
- *
- *  Created on: 23.02.2010
- *      Author: eckhardw
- */
-
 #include "FileReader.h"
 
 #include <cmath>
@@ -15,7 +8,7 @@
 #include "spdlog/spdlog.h"
 #include "utils/LoggerManager.h"
 
-void FileReader::readFile(std::vector<Particle> &particles, char *filename) {
+void FileReader::readFile(std::vector<Particle> &particles, std::string filename) {
   std::array<double, 3> x{};
   std::array<double, 3> v{};
   double m = NAN;
