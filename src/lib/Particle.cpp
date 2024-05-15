@@ -7,7 +7,7 @@
 
 #include "Particle.h"
 
-#include "utils/ArrayUtils.h"
+#include "lib/utils/ArrayUtils.h"
 #include <iostream>
 #include <sstream>
 
