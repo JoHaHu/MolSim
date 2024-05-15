@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lib/simulator/Task.h"
 #include <iostream>
 #include <memory>
 
@@ -19,6 +20,7 @@ class Config {
   std::string log_level = "info";
   int seed{};
   int io_interval{};
+  simulator::Task task{};
 };
 
 }// namespace config

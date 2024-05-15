@@ -14,7 +14,7 @@
  *
  * @param level The log level to set for the logger.
  */
-void LoggerManager::setup_logger(spdlog::level::level_enum level) {
+void LoggerManager::setup_logger(std::shared_ptr<config::Config> config, spdlog::level::level_enum level) {
   try {
     spdlog::trace("Setting up logger with level: {}", spdlog::level::to_string_view(level));
 
@@ -36,6 +36,11 @@ void LoggerManager::setup_logger(spdlog::level::level_enum level) {
     spdlog::set_default_logger(logger);
     spdlog::cfg::load_env_levels();
     spdlog::set_level(level);
+    // Disable log when io disabled
+    if (config->io_interval == 0) {
+      spdlog::set_level(spdlog::level::off);
+    }
+
     spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
     spdlog::info("Logger initialized with level: {}", spdlog::level::to_string_view(level));
   } catch (const spdlog::spdlog_ex &ex) {
