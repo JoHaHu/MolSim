@@ -12,7 +12,8 @@ void print_usage() {
                "--start_time\t-s\t\t set start_time\n"
                "--seed\t\t-r\t\t set seed for rng\n"
                "--task\t\t-t\t\t select task\n"
-               "--end_time\t-e\t\t set end_time\n";
+               "--end_time\t-e\t\t set end_time\n"
+               "--io_interval\t-l\t\t set plot interval, 0 disables plotting\n";
 }
 
 auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Config> {// NOLINT(*-avoid-c-arrays)
@@ -22,18 +23,18 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
   int seed = 42;           // NOLINT(*-avoid-magic-numbers)
   std::string output_file;
   std::string input_file;
+  int io_interval = 10;//NOLINT(*-avoid-magic-numbers)
 
   const std::string short_options = "ho:i:d:s:e:r:";
-  const std::array<option, 8> long_options = {{
-      {"output", required_argument, nullptr, 'o'},
-      {"input", required_argument, nullptr, 'i'},
-      {"help", no_argument, nullptr, '?'},
-      {"delta_t", required_argument, nullptr, 'd'},
-      {"start_time", required_argument, nullptr, 's'},
-      {"seed", required_argument, nullptr, 'r'},
-      {"task", required_argument, nullptr, 't'},
-      {"end_time", required_argument, nullptr, 'e'},
-  }};
+  const std::array<option, 9> long_options = {{{"output", required_argument, nullptr, 'o'},
+                                               {"input", required_argument, nullptr, 'i'},
+                                               {"help", no_argument, nullptr, '?'},
+                                               {"delta_t", required_argument, nullptr, 'd'},
+                                               {"start_time", required_argument, nullptr, 's'},
+                                               {"seed", required_argument, nullptr, 'r'},
+                                               {"task", required_argument, nullptr, 't'},
+                                               {"end_time", required_argument, nullptr, 'e'},
+                                               {"io_interval", required_argument, nullptr, 'l'}}};
 
   while (true) {
     const auto opt = getopt_long(argc, argv, short_options.c_str(), long_options.data(), nullptr);
@@ -59,6 +60,9 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
       case 'r':
         seed = std::stoi(optarg);
         break;
+      case 'l':
+        io_interval = std::stoi(optarg);
+        break;
       case '?':
         print_usage();
         exit(1);
@@ -78,6 +82,7 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
   config.start_time = start_time;
   config.delta_t = delta_t;
   config.seed = seed;
+  config.io_interval = io_interval;
 
   if (config.input_filename.empty()) {
     print_usage();

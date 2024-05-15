@@ -8,5 +8,5 @@
 class FileReader {
 
  public:
-  static void readFile(std::vector<Particle> &particles, std::string filename);
+  static void read_file(std::vector<Particle> &particles, std::string filename);
 };
