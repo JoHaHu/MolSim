@@ -73,12 +73,11 @@ auto Simulator::run() -> void {
   int iteration = 0;
   auto interval = config->io_interval;
 
+  calculate_force<PY>();
+
   while (current_time < end_time) {
-    // calculate new x
     calculate_position();
-    // calculate new f
     calculate_force<PY>();
-    // calculate new v
     calculate_velocity();
 
     iteration++;
