@@ -97,10 +97,5 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
   config.io_interval = io_interval;
   config.task = task;
 
-  if (config.input_filename.empty()) {
-    print_usage();
-    exit(1);
-  }
-
   return std::make_shared<Config>(config);
 }

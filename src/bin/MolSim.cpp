@@ -24,19 +24,20 @@ auto main(int argc, char *argv[]) -> int {
   auto config = config::Config::parse_config(argc, argv);
   LoggerManager::setup_logger(config);
 
-  std::vector<Particle> particles;
+  std::optional<ParticleContainer> particle_container{};
+
+  auto particle_loader = std::make_unique<simulator::io::FileReader>(simulator::io::FileReader(config));
+
   try {
-    spdlog::info("Reading file: {}", config->input_filename);
-    simulator::io::FileReader::read_file(particles, config->input_filename);
+    particle_container = particle_loader->load_particles();
   } catch (const std::exception &e) {
     spdlog::error("Failed to read file: {}", e.what());
     return 1;
   }
 
   auto plotter = std::make_unique<simulator::io::VTKPlotter>();
-  auto particleContainer = ParticleContainer(particles);
 
-  auto simulator = simulator::Simulator(std::move(particleContainer), std::move(plotter), config);
+  auto simulator = simulator::Simulator(std::move(*particle_container), std::move(plotter), config);
 
   if (config->io_interval == 0) {
     switch (config->task) {
