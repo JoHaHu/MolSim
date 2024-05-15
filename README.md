@@ -14,17 +14,6 @@ Developed and tested with these versions, other versions might work
 - clang 17.0.6
 - lldb 17.0.6
 - cmake 3.27.7
-- ninja 1.11.1
-
-These environment variables are assumed to be always set. They are used to select which environment should be build.
-There purpose is simplifying the documentation only.
-
-```shell
-RELEASE_BUILD_DIR=build-release
-DEBUG_BUILD_DIR=build-debug
-
-BUILD_DIR=RELEASE_BUILD_DIR # or DEBUG_BUILD_DIR if debugging
-```
 
 ## Fetching git submodules
 
@@ -36,41 +25,37 @@ Run this in the root folder of this repository:
 git submodule update --init --recursive
 ```
 
-
 Run this in the root folder of this repository
 
 ```shell
 /usr/bin/cmake  -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja \
                 -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
-                -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-                -G Ninja \
+                -G 'Unix Makefiles' \
                 -S $(pwd) \
-                -B $(pwd)/${BUILD_DIR}
+                -B $(pwd)/build
 ```
-
-`-G 'Unix Makefiles'` would generate make files if required
 
 ## Building documentation
 
 ```shell
 cd ${BUILD_DIR}
-ninja doc_doxygen
+make doc_doxygen
 ```
 
 ## Build and run
 
 ```shell
 cd ${BUILD_DIR}
-ninja
-./MolSim input t_end delta_t
+make
+./MolSim --help
+SPDLOG_LEVEL=info ./MolSim --input <input> --end_time <t_end> --delta_t <delta_t>
 ```
 
 ## Clean
 
 ```shell
 cd ${BUILD_DIR}
-ninja clean
+make clean
 ```
 
 ## Static analysis
