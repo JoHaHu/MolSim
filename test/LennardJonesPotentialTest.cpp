@@ -1,13 +1,6 @@
-//
-// Created by TimSc on 16.05.2024.
-//
-
 #include "simulator/physics/LennardJones.h"
 #include <cmath>
 #include <gtest/gtest.h>
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 
 class LennardJonesPotentialTest : public ::testing::Test {
  public:
@@ -216,9 +209,3 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_forces_xenon) {
   EXPECT_EQ(actual_forces, calculated_forces);
 }
  **/
-
-//auto main(int argc, char **argv) -> int {
-//  ::testing::InitGoogleTest(&argc, argv);
-//  return RUN_ALL_TESTS();
-//}
-#pragma clang diagnostic pop
