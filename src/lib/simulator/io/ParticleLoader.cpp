@@ -53,7 +53,7 @@ auto ParticleLoader::load_particles() -> std::tuple<ParticleContainer, simulator
       break;
     }
   }
-  spdlog::info("File {} read successfully.", config->input_filename);
+  spdlog::debug("File {} read successfully.", config->input_filename);
   return {particles, model};
 }
 
