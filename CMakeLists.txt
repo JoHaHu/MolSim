@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.24.1)
 
 # define project name, version
 project(PSEMolDyn_GroupD VERSION 0.0.1 LANGUAGES CXX)
