@@ -51,6 +51,13 @@ class ParticleTest : public ::testing::Test {
   }
 };
 
+/**
+ * Test: iterator_not_at_end
+ *
+ * Verifies that incrementing an iterator moves it from its original position and that it does not reach the end of the container.
+ *
+ * Ensures the iterator is correctly incremented and is not equal to the original position or the end of the container.
+ */
 TEST_F(ParticleTest, iterator_not_at_end) {
   SetUp();
   auto it = container.begin();
@@ -62,6 +69,13 @@ TEST_F(ParticleTest, iterator_not_at_end) {
   EXPECT_NE(it, container.end());
 }
 
+/**
+ * Test: iterator_container_size
+ *
+ * Verifies that the size of the container is correctly reported and that iterating through the container covers all elements.
+ *
+ * Ensures the container size is as expected and the iterator correctly counts all elements.
+ */
 TEST_F(ParticleTest, iterator_container_size) {
   SetUp();
   auto it = container.begin();
@@ -76,6 +90,13 @@ TEST_F(ParticleTest, iterator_container_size) {
   EXPECT_EQ(counter, 3);
 }
 
+/**
+ * Test: iterator_reaching_end
+ *
+ * Verifies that an iterator can traverse the entire container and reach the end.
+ *
+ * Ensures that the iterator reaches the end of the container after iterating through all elements.
+ */
 TEST_F(ParticleTest, iterator_reaching_end) {
   auto it = container.begin();
 
@@ -87,6 +108,16 @@ TEST_F(ParticleTest, iterator_reaching_end) {
   EXPECT_TRUE(it == endIt);
 }
 
+/**
+ * Test: iterator_pair_building_simple
+ *
+ * Verifies that the container correctly forms pairs of particles and that these pairs can be iterated over.
+ *
+ * Manually compares the positions and velocities of particles in pairs to expected values.
+ *
+ * Ensures the first pair consists of Particle A and Particle B, the second pair consists of Particle A and Particle C,
+ * and the third pair consists of Particle B and Particle C.
+ */
 TEST_F(ParticleTest, iterator_pair_building_simple) {
   auto pair = container.begin_pair();
 
@@ -136,6 +167,15 @@ TEST_F(ParticleTest, iterator_pair_building_simple) {
   EXPECT_EQ(pair3_par2.velocity, velocityC);
 }
 
+/**
+ * Test: iterator_pair_building_large
+ *
+ * Verifies that the container correctly forms all possible pairs of particles and that these pairs can be iterated over.
+ *
+ * Checks the number of pairs using the handshake lemma.
+ *
+ * Ensures that the number of pairs in container1 and container2 matches the expected counts based on the number of particles.
+ */
 TEST_F(ParticleTest, iterator_pair_building_large) {
   auto pair1 = container.begin_pair();
   auto pair2 = container2.begin_pair();
@@ -162,6 +202,13 @@ TEST_F(ParticleTest, iterator_pair_building_large) {
   EXPECT_EQ(amount_of_pairs2, count2);
 }
 
+/**
+ * Test: multi_increment_stability
+ *
+ * Verifies that an iterator remains stable and correctly reaches the end of the container after multiple increments.
+ *
+ * Ensures that incrementing the iterator eight times results in it being equal to the end of the container.
+ */
 TEST_F(ParticleTest, multi_increment_stability) {
   auto it = container.begin();
 

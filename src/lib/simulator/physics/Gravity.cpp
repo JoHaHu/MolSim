@@ -31,11 +31,11 @@ auto Gravity::calculate_force(const Particle &particle1, const Particle &particl
     return {0.0, 0.0, 0.0};
   }
 
-  const auto f = (particle1.mass * particle2.mass) / (norm * norm * norm) * x_diff;
+  const auto force = (particle1.mass * particle2.mass) / (norm * norm * norm) * x_diff;
   spdlog::trace("Calculated force: ({}, {}, {})", f[0], f[1], f[2]);
 
   spdlog::trace("Exiting Gravity calculate_force");
 
-  return f;
+  return force;
 }
 }// namespace simulator::physics
