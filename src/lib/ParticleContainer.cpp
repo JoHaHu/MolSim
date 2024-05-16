@@ -118,6 +118,6 @@ auto ParticleContainer::size() -> unsigned long {
  * @brief Constructs a ParticleContainer with a given vector of particles.
  * @param particles A vector of particles to initialize the container with.
  */
-ParticleContainer::ParticleContainer(std::vector<Particle> &particles) : particles(std::move(particles)) {
+ParticleContainer::ParticleContainer(std::vector<Particle> const &particles) : particles(particles) {
   spdlog::debug("ParticleContainer initialized with {} particles.", this->particles.size());
 }
