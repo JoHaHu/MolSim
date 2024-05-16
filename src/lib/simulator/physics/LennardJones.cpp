@@ -9,9 +9,9 @@
 
 namespace simulator::physics {
     /**
-   * @brief Calculates the gravitational force between two particles.
+   * @brief Calculates the Lennard Jones force between two particles.
    *
-   * Computes the gravitational force based on the masses and positions of two particles.
+   * Computes the Lennard Jones forces based on the positions of two particles.
    *
    * @param particle1 The first particle.
    * @param particle2 The second particle.
