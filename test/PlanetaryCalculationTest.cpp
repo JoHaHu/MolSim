@@ -113,8 +113,6 @@ TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   EXPECT_TRUE(calculated_force[2] - actual_force[2] < 0.000001);
 }
 
-
-
 auto main(int argc, char **argv) -> int {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
