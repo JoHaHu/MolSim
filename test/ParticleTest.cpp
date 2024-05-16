@@ -183,8 +183,8 @@ TEST_F(ParticleTest, IncrementOperator_LargerVector) {
   }
 
   // check if amount of pairs matches (according to number of particles)
-  EXPECT_EQ(amountOfPairs1, count1 - 1);
-  EXPECT_EQ(amountOfPairs2, count2 - 1);
+  EXPECT_EQ(amountOfPairs1, count1);
+  EXPECT_EQ(amountOfPairs2, count2);
 }
 
 TEST_F(ParticleTest, IncrementOperator_MultiIncrementStability) {
