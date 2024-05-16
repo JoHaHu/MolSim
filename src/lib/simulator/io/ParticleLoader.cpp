@@ -10,11 +10,11 @@
 #include "spdlog/spdlog.h"
 
 namespace simulator::io {
-    // TODO evaluate operator>> to primitive types
-    ParticleLoader::ParticleLoader(const std::shared_ptr<config::Config> &config) : config(config) {
-    }
+// TODO evaluate operator>> to primitive types
+ParticleLoader::ParticleLoader(const std::shared_ptr<config::Config> &config) : config(config) {
+}
 
-    /**
+/**
     * @brief Loads particles from the input file.
     *
     * Reads the input file specified in the config, recognizes comments, headers, and force models,
@@ -22,114 +22,114 @@ namespace simulator::io {
     *
     * @return std::tuple<ParticleContainer, simulator::physics::ForceModel> The loaded particles and the force model.
     */
-    auto ParticleLoader::load_particles() -> std::tuple<ParticleContainer, simulator::physics::ForceModel> {
-        spdlog::info("Reading file {}", config->input_filename);
-        auto input = std::ifstream(config->input_filename);
-        auto input_buf = std::istreambuf_iterator<char>(input);
+auto ParticleLoader::load_particles() -> std::tuple<ParticleContainer, simulator::physics::ForceModel> {
+  spdlog::info("Reading file {}", config->input_filename);
+  auto input = std::ifstream(config->input_filename);
+  auto input_buf = std::istreambuf_iterator<char>(input);
 
-        while (recognize_comment(input_buf)) {
-            spdlog::trace("Recognized a comment in the input file.");
-        }
+  while (recognize_comment(input_buf)) {
+    spdlog::trace("Recognized a comment in the input file.");
+  }
 
-        auto [model, length] = *recognize_header(input_buf);
-        spdlog::debug("Recognized header: Model = {}, Length = {}", static_cast<int>(model), length);
+  auto [model, length] = *recognize_header(input_buf);
+  spdlog::debug("Recognized header: Model = {}, Length = {}", static_cast<int>(model), length);
 
-        ParticleContainer particles(0);
-        switch (model) {
-            case physics::ForceModel::LennardJones: {
-                spdlog::info("Processing Lennard-Jones model.");
-                auto cuboids = *parse_cuboids(input_buf);
-                spdlog::debug("Parsed {} cuboids.", cuboids.size());
-                auto p = generate_cuboids(cuboids, config->seed);
-                spdlog::debug("Generated {} particles for Lennard-Jones model.", p.size());
-                particles = ParticleContainer(p);
-                break;
-            }
-            case physics::ForceModel::Gravity: {
-                spdlog::info("Processing Gravity model.");
-                auto p = *parse_gravity(input_buf);
-                spdlog::debug("Parsed {} particles for Gravity model.", p.size());
-                particles = ParticleContainer(p);
-                break;
-            }
-        }
-        spdlog::info("File {} read successfully.", config->input_filename);
-        return {particles, model};
+  ParticleContainer particles(0);
+  switch (model) {
+    case physics::ForceModel::LennardJones: {
+      spdlog::info("Processing Lennard-Jones model.");
+      auto cuboids = *parse_cuboids(input_buf);
+      spdlog::debug("Parsed {} cuboids.", cuboids.size());
+      auto p = generate_cuboids(cuboids, config->seed);
+      spdlog::debug("Generated {} particles for Lennard-Jones model.", p.size());
+      particles = ParticleContainer(p);
+      break;
     }
+    case physics::ForceModel::Gravity: {
+      spdlog::info("Processing Gravity model.");
+      auto p = *parse_gravity(input_buf);
+      spdlog::debug("Parsed {} particles for Gravity model.", p.size());
+      particles = ParticleContainer(p);
+      break;
+    }
+  }
+  spdlog::info("File {} read successfully.", config->input_filename);
+  return {particles, model};
+}
 
-    /**
+/**
     * @brief Recognizes the force model from the input buffer.
     *
     * @param buf Input buffer iterator.
     * @return std::optional<physics::ForceModel> The recognized force model or an empty optional if unrecognized.
     */
-    auto ParticleLoader::recognize_force_model(
-        std::istreambuf_iterator<char> &buf) -> std::optional<physics::ForceModel> {
-        spdlog::trace("Starting to recognize force model");
+auto ParticleLoader::recognize_force_model(
+    std::istreambuf_iterator<char> &buf) -> std::optional<physics::ForceModel> {
+  spdlog::trace("Starting to recognize force model");
 
-        recognize_whitespace(buf);
+  recognize_whitespace(buf);
 
-        auto tmp = std::ostringstream();
-        while ((isalpha(*buf) != 0) || *buf == '-') {
-            tmp << *buf;
-            buf++;
-        }
-        std::string model_str = tmp.str();
+  auto tmp = std::ostringstream();
+  while ((isalpha(*buf) != 0) || *buf == '-') {
+    tmp << *buf;
+    buf++;
+  }
+  std::string model_str = tmp.str();
 
-        if (model_str == "lennard-jones") {
-            spdlog::debug("Force model identified as Lennard-Jones");
-            return {physics::ForceModel::LennardJones};
-        }
-        if (model_str == "gravity") {
-            spdlog::debug("Force model identified as Gravity");
-            return {physics::ForceModel::Gravity};
-        }
+  if (model_str == "lennard-jones") {
+    spdlog::debug("Force model identified as Lennard-Jones");
+    return {physics::ForceModel::LennardJones};
+  }
+  if (model_str == "gravity") {
+    spdlog::debug("Force model identified as Gravity");
+    return {physics::ForceModel::Gravity};
+  }
 
-        spdlog::warn("Unrecognized force model string: {}", model_str);
-        return {};
+  spdlog::warn("Unrecognized force model string: {}", model_str);
+  return {};
+}
+
+auto ParticleLoader::recognize_comment(std::istreambuf_iterator<char> &buf) -> bool {
+  if (*buf == '#') {
+    while (*(++buf) != '\n') {
     }
+    ++buf;
+    return true;
+  }
+  return false;
+}
 
-    auto ParticleLoader::recognize_comment(std::istreambuf_iterator<char> &buf) -> bool {
-        if (*buf == '#') {
-            while (*(++buf) != '\n') {
-            }
-            ++buf;
-            return true;
-        }
-        return false;
+auto ParticleLoader::recognize_whitespace(std::istreambuf_iterator<char> &buf) -> bool {
+  if (*buf == ' ') {
+    while (*(++buf) == ' ') {
     }
+    return true;
+  }
+  return false;
+}
 
-    auto ParticleLoader::recognize_whitespace(std::istreambuf_iterator<char> &buf) -> bool {
-        if (*buf == ' ') {
-            while (*(++buf) == ' ') {
-            }
-            return true;
-        }
-        return false;
-    }
+auto ParticleLoader::recognize_header(
+    std::istreambuf_iterator<char> &buf) -> std::optional<std::tuple<physics::ForceModel, int>> {
+  recognize_whitespace(buf);
+  auto force = *recognize_force_model(buf);
+  recognize_whitespace(buf);
+  auto length = *recognize_int(buf);
+  recognize_end_of_line(buf);
+  return {{force, length}};
+}
 
-    auto ParticleLoader::recognize_header(
-        std::istreambuf_iterator<char> &buf) -> std::optional<std::tuple<physics::ForceModel, int> > {
-        recognize_whitespace(buf);
-        auto force = *recognize_force_model(buf);
-        recognize_whitespace(buf);
-        auto length = *recognize_int(buf);
-        recognize_end_of_line(buf);
-        return {{force, length}};
-    }
+auto ParticleLoader::recognize_int(std::istreambuf_iterator<char> &buf) -> std::optional<int> {
+  recognize_whitespace(buf);
 
-    auto ParticleLoader::recognize_int(std::istreambuf_iterator<char> &buf) -> std::optional<int> {
-        recognize_whitespace(buf);
+  auto tmp = std::ostringstream();
+  while (isdigit(*buf) != 0) {
+    tmp << *buf;
+    buf++;
+  }
+  return std::stoi(tmp.str());
+}
 
-        auto tmp = std::ostringstream();
-        while (isdigit(*buf) != 0) {
-            tmp << *buf;
-            buf++;
-        }
-        return std::stoi(tmp.str());
-    }
-
-    /**
+/**
     * @brief Extracts and parses a double value from an input stream buffer.
     *
     * @param buf Iterator into the input stream buffer.
@@ -138,196 +138,194 @@ namespace simulator::io {
     *        - parsed value is NaN or infinite
     *        - parsing error occurs
     */
-    auto ParticleLoader::recognize_double(std::istreambuf_iterator<char> &buf) -> std::optional<double> {
-        spdlog::trace("Input to recognize_double: '{}'", std::string(buf, {})); // Log input directly
-        recognize_whitespace(buf);
-        if (buf == std::istreambuf_iterator<char>()) return {};
+auto ParticleLoader::recognize_double(std::istreambuf_iterator<char> &buf) -> std::optional<double> {
+  recognize_whitespace(buf);
+  if (buf == std::istreambuf_iterator<char>()) return {};
 
-        std::string doubleStr;
-        while (buf != std::istreambuf_iterator<char>() &&
-               (std::isdigit(*buf) || *buf == '.' || *buf == '-' || *buf == 'e' || *buf == 'E')) {
-            doubleStr += *buf++;
-        }
+  std::string doubleStr;
+  while (buf != std::istreambuf_iterator<char>() && (std::isdigit(*buf) || *buf == '.' || *buf == '-' || *buf == 'e' || *buf == 'E')) {
+    doubleStr += *buf++;
+  }
 
-        try {
-            double parsedValue = std::stod(doubleStr);
-            if (!std::isfinite(parsedValue)) {
-                // Combined NaN and infinity check
-                spdlog::error("Parsed value not finite: '{}'", doubleStr);
-                return {};
-            }
-            return parsedValue;
-        } catch (const std::invalid_argument &) {
-            spdlog::error("Failed to parse double: '{}'", doubleStr);
-            return {};
-        }
+  try {
+    double parsedValue = std::stod(doubleStr);
+    if (!std::isfinite(parsedValue)) {
+      // Combined NaN and infinity check
+      spdlog::error("Parsed value not finite: '{}'", doubleStr);
+      return {};
     }
+    return parsedValue;
+  } catch (const std::invalid_argument &) {
+    spdlog::error("Failed to parse double: '{}'", doubleStr);
+    return {};
+  }
+}
 
-    /**
+/**
     * @brief Recognizes a triplet of doubles from the input buffer.
     *
     * @param buf Input buffer iterator.
     * @return std::optional<std::array<double, 3>> The recognized triplet or an empty optional if not recognized.
     */
-    auto ParticleLoader::recognize_double_triplet(std::istreambuf_iterator<char> &buf)
-        -> std::optional<std::array<double, 3> > {
-        spdlog::trace("Starting to recognize a double triplet");
-        if (buf == std::istreambuf_iterator<char>()) return {};
+auto ParticleLoader::recognize_double_triplet(std::istreambuf_iterator<char> &buf)
+    -> std::optional<std::array<double, 3>> {
+  spdlog::trace("Starting to recognize a double triplet");
+  if (buf == std::istreambuf_iterator<char>()) return {};
 
-        try {
-            std::array<double, 3> result;
-            for (int i = 0; i < 3; ++i) {
-                recognize_whitespace(buf);
-                auto value = recognize_double(buf);
-                if (!value) {
-                    spdlog::error("Failed to recognize double #{}", i + 1);
-                    return {};
-                }
-                result[i] = *value;
-            }
-
-            spdlog::debug("Recognized double triplet: ({}, {}, {})", result[0], result[1], result[2]);
-            return result;
-        } catch (const std::exception &e) {
-            spdlog::error("Error parsing double triplet: {}", e.what());
-            return {};
-        }
+  try {
+    std::array<double, 3> result;
+    for (int i = 0; i < 3; ++i) {
+      recognize_whitespace(buf);
+      auto value = recognize_double(buf);
+      if (!value) {
+        spdlog::error("Failed to recognize double #{}", i + 1);
+        return {};
+      }
+      result[i] = *value;
     }
 
-    /**
+    spdlog::debug("Recognized double triplet: ({}, {}, {})", result[0], result[1], result[2]);
+    return result;
+  } catch (const std::exception &e) {
+    spdlog::error("Error parsing double triplet: {}", e.what());
+    return {};
+  }
+}
+
+/**
      * @brief Recognizes a triplet of integers from the input buffer.
      *
      * @param buf Input buffer iterator.
      * @return std::optional<std::array<int, 3>> The recognized triplet or an empty optional if not recognized.
      */
-    auto ParticleLoader::recognize_dimension_triplet(
-        std::istreambuf_iterator<char> &buf) -> std::optional<std::array<int, 3> > {
-        spdlog::trace("Starting to recognize a dimension triplet");
-        recognize_whitespace(buf);
-        auto first = *recognize_int(buf);
-        recognize_whitespace(buf);
-        auto second = *recognize_int(buf);
-        recognize_whitespace(buf);
-        auto third = *recognize_int(buf);
-        spdlog::debug("Recognized dimension triplet: ({}, {}, {})", first, second, third);
-        return {{first, second, third}};
-    }
+auto ParticleLoader::recognize_dimension_triplet(
+    std::istreambuf_iterator<char> &buf) -> std::optional<std::array<int, 3>> {
+  spdlog::trace("Starting to recognize a dimension triplet");
+  recognize_whitespace(buf);
+  auto first = *recognize_int(buf);
+  recognize_whitespace(buf);
+  auto second = *recognize_int(buf);
+  recognize_whitespace(buf);
+  auto third = *recognize_int(buf);
+  spdlog::debug("Recognized dimension triplet: ({}, {}, {})", first, second, third);
+  return {{first, second, third}};
+}
 
-    /**
+/**
      * @brief Recognizes a cuboid structure from the input buffer.
      *
      * @param buf Input buffer iterator.
      * @return std::optional<cuboid_t> The recognized cuboid or an empty optional if not recognized.
      */
-    auto ParticleLoader::recognize_cuboid(std::istreambuf_iterator<char> &buf) -> std::optional<cuboid_t> {
-        spdlog::trace("Starting to recognize a cuboid");
-        recognize_whitespace(buf);
-        auto position = *recognize_double_triplet(buf);
-        auto velocity = *recognize_double_triplet(buf);
-        auto dim = *recognize_dimension_triplet(buf);
-        auto h = *recognize_double(buf);
-        auto mass = *recognize_double(buf);
-        auto sigma = *recognize_double(buf);
-        recognize_end_of_line(buf);
-        spdlog::debug(
-            "Recognized cuboid: position = ({}, {}, {}), velocity = ({}, {}, {}), dimensions = ({}, {}, {}), h = {}, mass = {}, sigma = {}",
-            position[0], position[1], position[2],
-            velocity[0], velocity[1], velocity[2],
-            dim[0], dim[1], dim[2], h, mass, sigma);
-        return {{position, velocity, dim, h, mass, sigma}};
-    }
+auto ParticleLoader::recognize_cuboid(std::istreambuf_iterator<char> &buf) -> std::optional<cuboid_t> {
+  spdlog::trace("Starting to recognize a cuboid");
+  recognize_whitespace(buf);
+  auto position = *recognize_double_triplet(buf);
+  auto velocity = *recognize_double_triplet(buf);
+  auto dim = *recognize_dimension_triplet(buf);
+  auto h = *recognize_double(buf);
+  auto mass = *recognize_double(buf);
+  auto sigma = *recognize_double(buf);
+  recognize_end_of_line(buf);
+  spdlog::debug(
+      "Recognized cuboid: position = ({}, {}, {}), velocity = ({}, {}, {}), dimensions = ({}, {}, {}), h = {}, mass = {}, sigma = {}",
+      position[0], position[1], position[2],
+      velocity[0], velocity[1], velocity[2],
+      dim[0], dim[1], dim[2], h, mass, sigma);
+  return {{position, velocity, dim, h, mass, sigma}};
+}
 
-    /**
+/**
      * @brief Recognizes a planet structure from the input buffer.
      *
      * @param buf Input buffer iterator.
      * @return std::optional<Particle> The recognized planet or an empty optional if not recognized.
      */
-    auto ParticleLoader::recognize_planet(std::istreambuf_iterator<char> &buf) -> std::optional<Particle> {
-        spdlog::trace("Starting to recognize a planet");
-        recognize_whitespace(buf);
-        auto position = *recognize_double_triplet(buf);
-        auto velocity = *recognize_double_triplet(buf);
-        auto mass = *recognize_double(buf);
+auto ParticleLoader::recognize_planet(std::istreambuf_iterator<char> &buf) -> std::optional<Particle> {
+  spdlog::trace("Starting to recognize a planet");
+  recognize_whitespace(buf);
+  auto position = *recognize_double_triplet(buf);
+  auto velocity = *recognize_double_triplet(buf);
+  auto mass = *recognize_double(buf);
 
-        for (double d: position) {
-            if (std::isnan(d)) {
-                spdlog::error("Invalid planet data: NaN values encountered.");
-                return std::nullopt;
-            }
-        }
-        for (double d: velocity) {
-            if (std::isnan(d)) {
-                spdlog::error("Invalid planet data: NaN values encountered.");
-                return std::nullopt;
-            }
-        }
-        if (std::isnan(mass)) {
-            spdlog::error("Invalid planet data: NaN mass encountered.");
-            return std::nullopt;
-        }
-
-        auto p = Particle(position, velocity, mass, 0);
-        recognize_end_of_line(buf);
-        spdlog::debug("Recognized planet: position = ({}, {}, {}), velocity = ({}, {}, {}), mass = {}",
-                      position[0], position[1], position[2],
-                      velocity[0], velocity[1], velocity[2], mass);
-        return {p};
+  for (double d : position) {
+    if (std::isnan(d)) {
+      spdlog::error("Invalid planet data: NaN values encountered.");
+      return std::nullopt;
     }
+  }
+  for (double d : velocity) {
+    if (std::isnan(d)) {
+      spdlog::error("Invalid planet data: NaN values encountered.");
+      return std::nullopt;
+    }
+  }
+  if (std::isnan(mass)) {
+    spdlog::error("Invalid planet data: NaN mass encountered.");
+    return std::nullopt;
+  }
 
-    /**
+  auto p = Particle(position, velocity, mass, 0);
+  recognize_end_of_line(buf);
+  spdlog::debug("Recognized planet: position = ({}, {}, {}), velocity = ({}, {}, {}), mass = {}",
+                position[0], position[1], position[2],
+                velocity[0], velocity[1], velocity[2], mass);
+  return {p};
+}
+
+/**
      * @brief Parses particles affected by gravity from the input buffer.
      *
      * @param buf Input buffer iterator.
      * @return std::optional<std::vector<Particle>> The parsed particles or an empty optional if parsing fails.
      */
-    auto ParticleLoader::parse_gravity(std::istreambuf_iterator<char> &buf) -> std::optional<std::vector<Particle> > {
-        spdlog::trace("Starting to parse gravity particles");
-        auto particles = std::vector<Particle>();
-        while (true) {
-            if (recognize_end_of_file(buf)) {
-                spdlog::trace("Reached end of file while parsing gravity particles");
-                break;
-            }
-            if (auto particle = recognize_planet(buf)) {
-                particles.emplace_back(*particle);
-            } else {
-                spdlog::warn("Failed to recognize a planet while parsing gravity particles");
-                break;
-            }
-        }
-        spdlog::debug("Parsed {} gravity particles", particles.size());
-        return particles;
+auto ParticleLoader::parse_gravity(std::istreambuf_iterator<char> &buf) -> std::optional<std::vector<Particle>> {
+  spdlog::trace("Starting to parse gravity particles");
+  auto particles = std::vector<Particle>();
+  while (true) {
+    if (recognize_end_of_file(buf)) {
+      spdlog::trace("Reached end of file while parsing gravity particles");
+      break;
     }
+    if (auto particle = recognize_planet(buf)) {
+      particles.emplace_back(*particle);
+    } else {
+      spdlog::warn("Failed to recognize a planet while parsing gravity particles");
+      break;
+    }
+  }
+  spdlog::debug("Parsed {} gravity particles", particles.size());
+  return particles;
+}
 
-    /**
+/**
      * @brief Parses cuboid structures from the input buffer.
      *
      * @param buf Input buffer iterator.
      * @return std::optional<std::vector<cuboid_t>> The parsed cuboids or an empty optional if parsing fails.
      */
-    auto ParticleLoader::parse_cuboids(std::istreambuf_iterator<char> &buf) -> std::optional<std::vector<cuboid_t> > {
-        spdlog::trace("Starting to parse cuboids");
-        auto particles = std::vector<cuboid_t>();
-        while (true) {
-            if (recognize_end_of_file(buf)) {
-                spdlog::trace("Reached end of file while parsing cuboids");
-                break;
-            }
-            if (auto particle = recognize_cuboid(buf)) {
-                particles.emplace_back(*particle);
-            } else {
-                spdlog::warn("Failed to recognize a cuboid while parsing");
-                break;
-            }
-        }
-        spdlog::debug("Parsed {} cuboids", particles.size());
-        return particles;
+auto ParticleLoader::parse_cuboids(std::istreambuf_iterator<char> &buf) -> std::optional<std::vector<cuboid_t>> {
+  spdlog::trace("Starting to parse cuboids");
+  auto particles = std::vector<cuboid_t>();
+  while (true) {
+    if (recognize_end_of_file(buf)) {
+      spdlog::trace("Reached end of file while parsing cuboids");
+      break;
     }
+    if (auto particle = recognize_cuboid(buf)) {
+      particles.emplace_back(*particle);
+    } else {
+      spdlog::warn("Failed to recognize a cuboid while parsing");
+      break;
+    }
+  }
+  spdlog::debug("Parsed {} cuboids", particles.size());
+  return particles;
+}
 
-    static constexpr const double brownian_motion = 0.1;
+static constexpr const double brownian_motion = 0.1;
 
-    /**
+/**
     * @brief Generates particles from a list of cuboids using the given seed.
     *
     * Iterates through each cuboid and generates particles based on its dimensions and properties.
@@ -337,61 +335,59 @@ namespace simulator::io {
     * @param seed The seed used for random number generation.
     * @return std::vector<Particle> The generated particles.
     */
-    auto ParticleLoader::generate_cuboids(const std::vector<cuboid_t> &cuboids, auto seed) -> std::vector<Particle> {
-        auto particles = std::vector<Particle>();
+auto ParticleLoader::generate_cuboids(const std::vector<cuboid_t> &cuboids, auto seed) -> std::vector<Particle> {
+  auto particles = std::vector<Particle>();
 
-        for (auto const [index, cuboid]: std::views::enumerate(cuboids)) {
-            auto [position, velocity, dim, h, m, sigma] = cuboid;
+  for (auto const [index, cuboid] : std::views::enumerate(cuboids)) {
+    auto [position, velocity, dim, h, m, sigma] = cuboid;
 
-            for (double pos: position) {
-                if (std::isnan(pos)) {
-                    spdlog::error("Invalid cuboid data: NaN value encountered in position.");
-                    continue; // Skip this cuboid
-                }
-            }
-            for (double vel: velocity) {
-                if (std::isnan(vel)) {
-                    spdlog::error("Invalid cuboid data: NaN value encountered in velocity.");
-                    continue; // Skip this cuboid
-                }
-            }
-            if (std::isnan(h) || std::isnan(m) || std::isnan(sigma)) {
-                spdlog::error("Invalid cuboid data: NaN value encountered in h, m, or sigma.");
-                continue; // Skip this cuboid
-            }
-
-            for (auto x: std::views::iota(0, dim[0])) {
-                for (auto y: std::views::iota(0, dim[1])) {
-                    for (auto z: std::views::iota(0, dim[2])) {
-                        auto particle = Particle(
-                            position + std::array<double, 3>({
-                                h * static_cast<double>(x), h * static_cast<double>(y), h * static_cast<double>(z)
-                            }), velocity + maxwellBoltzmannDistributedVelocity(brownian_motion, 2, seed), m,
-                            static_cast<int>(index));
-                        particles.emplace_back(particle);
-                    }
-                }
-            }
-        }
-
-        particles.shrink_to_fit();
-        return particles;
+    for (double pos : position) {
+      if (std::isnan(pos)) {
+        spdlog::error("Invalid cuboid data: NaN value encountered in position.");
+        continue;// Skip this cuboid
+      }
+    }
+    for (double vel : velocity) {
+      if (std::isnan(vel)) {
+        spdlog::error("Invalid cuboid data: NaN value encountered in velocity.");
+        continue;// Skip this cuboid
+      }
+    }
+    if (std::isnan(h) || std::isnan(m) || std::isnan(sigma)) {
+      spdlog::error("Invalid cuboid data: NaN value encountered in h, m, or sigma.");
+      continue;// Skip this cuboid
     }
 
-    auto ParticleLoader::recognize_end_of_line(std::istreambuf_iterator<char> &buf) -> bool {
-        recognize_whitespace(buf);
-        if (*buf == '\n') {
-            buf++;
-            return true;
+    for (auto x : std::views::iota(0, dim[0])) {
+      for (auto y : std::views::iota(0, dim[1])) {
+        for (auto z : std::views::iota(0, dim[2])) {
+          auto particle = Particle(
+              position + std::array<double, 3>({h * static_cast<double>(x), h * static_cast<double>(y), h * static_cast<double>(z)}), velocity + maxwellBoltzmannDistributedVelocity(brownian_motion, 2, seed), m,
+              static_cast<int>(index));
+          particles.emplace_back(particle);
         }
-        return false;
+      }
     }
+  }
 
-    auto ParticleLoader::recognize_end_of_file(std::istreambuf_iterator<char> &buf) -> bool {
-        recognize_whitespace(buf);
-        if (*buf == '\xff') {
-            return true;
-        }
-        return false;
-    }
-} // namespace simulator::io
+  particles.shrink_to_fit();
+  return particles;
+}
+
+auto ParticleLoader::recognize_end_of_line(std::istreambuf_iterator<char> &buf) -> bool {
+  recognize_whitespace(buf);
+  if (*buf == '\n') {
+    buf++;
+    return true;
+  }
+  return false;
+}
+
+auto ParticleLoader::recognize_end_of_file(std::istreambuf_iterator<char> &buf) -> bool {
+  recognize_whitespace(buf);
+  if (*buf == '\xff') {
+    return true;
+  }
+  return false;
+}
+}// namespace simulator::io

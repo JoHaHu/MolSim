@@ -4,7 +4,7 @@
 #include <spdlog/spdlog.h>
 namespace simulator::physics {
 
-  /**
+/**
  * @brief Calculates the gravitational force between two particles.
  *
  * Computes the gravitational force based on the masses and positions of two particles.
