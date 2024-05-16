@@ -1,8 +1,8 @@
 #pragma once
 
-#include "lib/ParticleContainer.h"
-#include "lib/config/config.h"
-#include "lib/simulator/physics/ForceModel.h"
+#include "ParticleContainer.h"
+#include "config/config.h"
+#include "simulator/physics/ForceModel.h"
 #include <memory>
 #include <optional>
 

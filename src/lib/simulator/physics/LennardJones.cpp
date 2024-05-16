@@ -4,8 +4,8 @@
 #include <cmath>
 #include <limits>
 
-#include "lib/utils/ArrayUtils.h"
 #include "spdlog/spdlog.h"
+#include "utils/ArrayUtils.h"
 
 namespace simulator::physics {
 /**

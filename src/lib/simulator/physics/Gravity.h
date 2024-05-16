@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lib/Particle.h"
+#include "Particle.h"
 namespace simulator::physics {
 class Gravity {
  public:

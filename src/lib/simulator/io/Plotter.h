@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lib/ParticleContainer.h"
+#include "ParticleContainer.h"
 
 namespace simulator::io {
 

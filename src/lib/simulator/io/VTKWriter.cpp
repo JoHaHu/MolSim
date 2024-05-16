@@ -1,12 +1,12 @@
-#include "lib/simulator/io/VTKWriter.h"
+#include "simulator/io/VTKWriter.h"
 
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <string>
 
-#include "lib/utils/LoggerManager.h"
 #include "spdlog/spdlog.h"
+#include "utils/LoggerManager.h"
 
 namespace simulator::io {
 
