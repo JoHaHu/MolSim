@@ -3,15 +3,14 @@
 
 #include "lib/Particle.h"
 #include "lib/ParticleContainer.h"
-#include <gtest/gtest.h>
 #include <array>
+#include <gtest/gtest.h>
 #include <iostream>
 
 class ParticleTest : public ::testing::Test {
  public:
   ParticleContainer container, container2;
   std::vector<Particle> particles, particles2;
-
 
   // custom ParticleContainer constructor with capacity 10 because there is no default otherwise
   ParticleTest() : container(20), container2(20) {}
@@ -29,7 +28,6 @@ class ParticleTest : public ::testing::Test {
     // Particle C
     std::array<double, 3> coordinatesC = {2.0, 3.0, 4.0};
     std::array<double, 3> velocityC = {5.0, 6.0, 3.0};
-
 
     // construct particles with different parameter values
     Particle particleA = Particle(coordinatesA, velocityA, 1.0, 0);
@@ -56,7 +54,6 @@ class ParticleTest : public ::testing::Test {
     container2 = ParticleContainer(particles2);
   }
 };
-
 
 TEST_F(ParticleTest, IncrementOperator_NotAtEnd) {
   SetUp();
@@ -94,7 +91,6 @@ TEST_F(ParticleTest, IncrementOperator_ReachesEnd) {
   EXPECT_TRUE(it == endIt);
 }
 
-
 TEST_F(ParticleTest, IncrementOperator_BasicFunction) {
   auto pair = container.begin_pair();
 
@@ -115,33 +111,33 @@ TEST_F(ParticleTest, IncrementOperator_BasicFunction) {
   std::array<double, 3> velocityC = {5.0, 6.0, 3.0};
 
   // first pair: 1 and 2
-  EXPECT_EQ(pair1par1.x, coordinatesA);
-  EXPECT_EQ(pair1par1.v, velocityA);
+  EXPECT_EQ(pair1par1.position, coordinatesA);
+  EXPECT_EQ(pair1par1.velocity, velocityA);
 
-  EXPECT_EQ(pair1par2.x, coordinatesB);
-  EXPECT_EQ(pair1par2.v, velocityB);
+  EXPECT_EQ(pair1par2.position, coordinatesB);
+  EXPECT_EQ(pair1par2.velocity, velocityB);
 
   // increment and read new pair
   pair++;
   auto [pair2par1, pair2par2] = *pair;
 
   // second pair: 1 and 3
-  EXPECT_EQ(pair2par1.x, coordinatesA);
-  EXPECT_EQ(pair2par1.v, velocityA);
+  EXPECT_EQ(pair2par1.position, coordinatesA);
+  EXPECT_EQ(pair2par1.velocity, velocityA);
 
-  EXPECT_EQ(pair2par2.x, coordinatesC);
-  EXPECT_EQ(pair2par2.v, velocityC);
+  EXPECT_EQ(pair2par2.position, coordinatesC);
+  EXPECT_EQ(pair2par2.velocity, velocityC);
 
   // increment and read new pair
   pair++;
   auto [pair3par1, pair3par2] = *pair;
 
   // third pair: 2 and 3
-  EXPECT_EQ(pair3par1.x, coordinatesB);
-  EXPECT_EQ(pair3par1.v, velocityB);
+  EXPECT_EQ(pair3par1.position, coordinatesB);
+  EXPECT_EQ(pair3par1.velocity, velocityB);
 
-  EXPECT_EQ(pair3par2.x, coordinatesC);
-  EXPECT_EQ(pair3par2.v, velocityC);
+  EXPECT_EQ(pair3par2.position, coordinatesC);
+  EXPECT_EQ(pair3par2.velocity, velocityC);
 
   /** TESTING WITH IDs (work in progress)
    * // TODO: initialise ID properly and compare IDs
@@ -189,9 +185,7 @@ TEST_F(ParticleTest, IncrementOperator_LargerVector) {
   // check if amount of pairs matches (according to number of particles)
   EXPECT_EQ(amountOfPairs1, count1 - 1);
   EXPECT_EQ(amountOfPairs2, count2 - 1);
-
 }
-
 
 TEST_F(ParticleTest, IncrementOperator_MultiIncrementStability) {
   auto it = container.begin();
@@ -204,7 +198,6 @@ TEST_F(ParticleTest, IncrementOperator_MultiIncrementStability) {
 
   EXPECT_TRUE(it == container.end());
 }
-
 
 auto main(int argc, char **argv) -> int {
   ::testing::InitGoogleTest(&argc, argv);
