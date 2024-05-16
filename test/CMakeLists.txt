@@ -1,58 +1,43 @@
-add_executable(ParticleTest ParticleTest.cpp ${MY_SRC})
-add_executable(PlanetaryCalculationTest PlanetaryCalculationTest.cpp ${MY_SRC})
-add_executable(LennardJonesPotentialTest LennardJonesPotentialTest.cpp ${MY_SRC})
+add_executable(Test Test.cpp ParticleTest.cpp PlanetaryCalculationTest.cpp LennardJonesPotentialTest.cpp)
 
-target_link_libraries(ParticleTest
+include(CheckIPOSupported)
+check_ipo_supported(RESULT result)
+if (result)
+    set_property(TARGET Test PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif ()
+
+target_link_libraries(Test
         PUBLIC
         GTest::gtest_main
-        xerces-c
-)
-target_link_libraries(PlanetaryCalculationTest
-        PUBLIC
-        GTest::gtest_main
-        xerces-c
-)
-target_link_libraries(LennardJonesPotentialTest
-        PUBLIC
-        GTest::gtest_main
-        xerces-c
+        simulator
 )
 
-target_compile_features(ParticleTest
-        PRIVATE
-        cxx_std_23
-)
-target_compile_features(PlanetaryCalculationTest
-        PRIVATE
-        cxx_std_23
-)
-target_compile_features(LennardJonesPotentialTest
+target_compile_features(Test
         PRIVATE
         cxx_std_23
 )
 
-target_include_directories(ParticleTest
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/libxsd
+target_compile_options(Test
         PRIVATE
-        ${gtest_SOURCE_DIR}/include ${gtest_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src
-)
-target_include_directories(PlanetaryCalculationTest
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/libxsd
-        PRIVATE
-        ${gtest_SOURCE_DIR}/include ${gtest_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src
-)
-target_include_directories(LennardJonesPotentialTest
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/libxsd
-        PRIVATE
-        ${gtest_SOURCE_DIR}/include ${gtest_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src
+        $<$<CXX_COMPILER_ID:GNU>:-Wall -march=native>
+        # disable some spam warnings for icpc...
+        $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -march=native>
 )
 
-gtest_discover_tests(ParticleTest)
-gtest_discover_tests(PlanetaryCalculationTest)
-gtest_discover_tests(LennardJonesPotentialTest)
+
+target_link_options(
+        Test
+        PRIVATE
+        $<$<CXX_COMPILER_ID:Clang>: -fuse-ld=lld>
+)
+
+
+target_include_directories(Test
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/test/
+        ${gtest_SOURCE_DIR}/include
+        ${gtest_BINARY_DIR}
+        ${SIMULATOR_INCLUDES}
+)
+gtest_discover_tests(Test)

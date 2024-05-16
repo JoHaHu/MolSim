@@ -12,20 +12,15 @@ MolSim2024 - Group D
 Developed and tested with these versions, other versions might work
 
 - clang 17.0.6
+- lld 17.0.6
 - lldb 17.0.6
 - cmake 3.27.7
 
-## Fetching git submodules
-
-This project uses boost and spdlog as submodules. Make sure to fetch them before building the project.
-
-Run this in the root folder of this repository:
-
-```shell
-git submodule update --init --recursive
-```
-
-Run this in the root folder of this repository
+this repository includes `.idea/cmake.xml`.
+This is a shareable IDE config file that allows all team members to use the same config.
+The way Clion implements it, still allows to use your own config.
+The only necessary prerequisite is that there is one Toolchain named "System" in your CLion config otherwise you might
+get error messages.
 
 ```shell
 /usr/bin/cmake  -DCMAKE_BUILD_TYPE=Release \

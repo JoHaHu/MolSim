@@ -3,10 +3,16 @@
 #include "Particle.h"
 #include <vector>
 
+/**
+ * The particle container. Provides method to store and iterate and iterate in pairs over particles
+ * */
 class ParticleContainer {
  public:
   using Iterator = std::vector<Particle>::iterator;
 
+  /**
+   * A Iterator iterating over unique pairs in a vector of particles
+   * */
   struct PairIterator {
    public:
     /**
@@ -56,7 +62,7 @@ class ParticleContainer {
    * Constructor that initializes the container with a list of particles.
    * @param particles A vector of particles to initialize the container.
    */
-  explicit ParticleContainer(std::vector<Particle> &particles);
+  explicit ParticleContainer(std::vector<Particle> particles);
 
  private:
   std::vector<Particle> particles;

@@ -2,15 +2,15 @@
 #include <ranges>
 #include <sstream>
 
+#include "Particle.h"
 #include "ParticleLoader.h"
-#include "lib/Particle.h"
-#include "lib/utils/ArrayUtils.h"
-#include "lib/utils/LoggerManager.h"
-#include "lib/utils/MaxwellBoltzmannDistribution.h"
 #include "spdlog/spdlog.h"
+#include "utils/ArrayUtils.h"
+#include "utils/LoggerManager.h"
+#include "utils/MaxwellBoltzmannDistribution.h"
 
 namespace simulator::io {
-// TODO evaluate operator>> to primitive types
+// this parser is implemented just for fun, next week we will switch to a xml filereader
 ParticleLoader::ParticleLoader(const std::shared_ptr<config::Config> &config) : config(config) {
 }
 
@@ -31,23 +31,25 @@ auto ParticleLoader::load_particles() -> std::tuple<ParticleContainer, simulator
     spdlog::trace("Recognized a comment in the input file.");
   }
 
-  auto [model, length] = *recognize_header(input_buf);
+  const auto [model, length] = *recognize_header(input_buf);
   spdlog::debug("Recognized header: Model = {}, Length = {}", static_cast<int>(model), length);
 
   ParticleContainer particles(0);
   switch (model) {
     case physics::ForceModel::LennardJones: {
       spdlog::info("Processing Lennard-Jones model.");
-      auto cuboids = *parse_cuboids(input_buf);
+      const auto cuboids = *parse_cuboids(input_buf);
       spdlog::debug("Parsed {} cuboids.", cuboids.size());
-      auto p = generate_cuboids(cuboids, config->seed);
+      const auto seed = config->seed;
+      const auto p = generate_cuboids(cuboids, seed);
+      spdlog::debug("Seed: ", seed);
       spdlog::debug("Generated {} particles for Lennard-Jones model.", p.size());
       particles = ParticleContainer(p);
       break;
     }
     case physics::ForceModel::Gravity: {
       spdlog::info("Processing Gravity model.");
-      auto p = *parse_gravity(input_buf);
+      const auto p = *parse_gravity(input_buf);
       spdlog::debug("Parsed {} particles for Gravity model.", p.size());
       particles = ParticleContainer(p);
       break;
@@ -111,9 +113,9 @@ auto ParticleLoader::recognize_whitespace(std::istreambuf_iterator<char> &buf) -
 auto ParticleLoader::recognize_header(
     std::istreambuf_iterator<char> &buf) -> std::optional<std::tuple<physics::ForceModel, int>> {
   recognize_whitespace(buf);
-  auto force = *recognize_force_model(buf);
+  const auto force = *recognize_force_model(buf);
   recognize_whitespace(buf);
-  auto length = *recognize_int(buf);
+  const auto length = *recognize_int(buf);
   recognize_end_of_line(buf);
   return {{force, length}};
 }
@@ -148,7 +150,7 @@ auto ParticleLoader::recognize_double(std::istreambuf_iterator<char> &buf) -> st
   }
 
   try {
-    double parsedValue = std::stod(doubleStr);
+    const double parsedValue = std::stod(doubleStr);
     if (!std::isfinite(parsedValue)) {
       // Combined NaN and infinity check
       spdlog::error("Parsed value not finite: '{}'", doubleStr);
@@ -174,9 +176,9 @@ auto ParticleLoader::recognize_double_triplet(std::istreambuf_iterator<char> &bu
 
   try {
     std::array<double, 3> result;
-    for (int i = 0; i < 3; ++i) {
+    for (auto i = 0; i < 3; ++i) {
       recognize_whitespace(buf);
-      auto value = recognize_double(buf);
+      const auto value = recognize_double(buf);
       if (!value) {
         spdlog::error("Failed to recognize double #{}", i + 1);
         return {};
@@ -202,11 +204,11 @@ auto ParticleLoader::recognize_dimension_triplet(
     std::istreambuf_iterator<char> &buf) -> std::optional<std::array<int, 3>> {
   spdlog::trace("Starting to recognize a dimension triplet");
   recognize_whitespace(buf);
-  auto first = *recognize_int(buf);
+  const auto first = *recognize_int(buf);
   recognize_whitespace(buf);
-  auto second = *recognize_int(buf);
+  const auto second = *recognize_int(buf);
   recognize_whitespace(buf);
-  auto third = *recognize_int(buf);
+  const auto third = *recognize_int(buf);
   spdlog::debug("Recognized dimension triplet: ({}, {}, {})", first, second, third);
   return {{first, second, third}};
 }
@@ -220,12 +222,12 @@ auto ParticleLoader::recognize_dimension_triplet(
 auto ParticleLoader::recognize_cuboid(std::istreambuf_iterator<char> &buf) -> std::optional<cuboid_t> {
   spdlog::trace("Starting to recognize a cuboid");
   recognize_whitespace(buf);
-  auto position = *recognize_double_triplet(buf);
-  auto velocity = *recognize_double_triplet(buf);
-  auto dim = *recognize_dimension_triplet(buf);
-  auto h = *recognize_double(buf);
-  auto mass = *recognize_double(buf);
-  auto sigma = *recognize_double(buf);
+  const auto position = *recognize_double_triplet(buf);
+  const auto velocity = *recognize_double_triplet(buf);
+  const auto dim = *recognize_dimension_triplet(buf);
+  const auto h = *recognize_double(buf);
+  const auto mass = *recognize_double(buf);
+  const auto sigma = *recognize_double(buf);
   recognize_end_of_line(buf);
   spdlog::debug(
       "Recognized cuboid: position = ({}, {}, {}), velocity = ({}, {}, {}), dimensions = ({}, {}, {}), h = {}, mass = {}, sigma = {}",
@@ -244,9 +246,9 @@ auto ParticleLoader::recognize_cuboid(std::istreambuf_iterator<char> &buf) -> st
 auto ParticleLoader::recognize_planet(std::istreambuf_iterator<char> &buf) -> std::optional<Particle> {
   spdlog::trace("Starting to recognize a planet");
   recognize_whitespace(buf);
-  auto position = *recognize_double_triplet(buf);
-  auto velocity = *recognize_double_triplet(buf);
-  auto mass = *recognize_double(buf);
+  const auto position = *recognize_double_triplet(buf);
+  const auto velocity = *recognize_double_triplet(buf);
+  const auto mass = *recognize_double(buf);
 
   for (double d : position) {
     if (std::isnan(d)) {
@@ -265,7 +267,7 @@ auto ParticleLoader::recognize_planet(std::istreambuf_iterator<char> &buf) -> st
     return std::nullopt;
   }
 
-  auto p = Particle(position, velocity, mass, 0);
+  const auto p = Particle(position, velocity, mass, 0);
   recognize_end_of_line(buf);
   spdlog::debug("Recognized planet: position = ({}, {}, {}), velocity = ({}, {}, {}), mass = {}",
                 position[0], position[1], position[2],
@@ -287,8 +289,8 @@ auto ParticleLoader::parse_gravity(std::istreambuf_iterator<char> &buf) -> std::
       spdlog::trace("Reached end of file while parsing gravity particles");
       break;
     }
-    if (auto particle = recognize_planet(buf)) {
-      particles.emplace_back(*particle);
+    if (const auto particle = recognize_planet(buf)) {
+      particles.push_back(*particle);
     } else {
       spdlog::warn("Failed to recognize a planet while parsing gravity particles");
       break;
@@ -312,8 +314,8 @@ auto ParticleLoader::parse_cuboids(std::istreambuf_iterator<char> &buf) -> std::
       spdlog::trace("Reached end of file while parsing cuboids");
       break;
     }
-    if (auto particle = recognize_cuboid(buf)) {
-      particles.emplace_back(*particle);
+    if (const auto particle = recognize_cuboid(buf)) {
+      particles.push_back(*particle);
     } else {
       spdlog::warn("Failed to recognize a cuboid while parsing");
       break;
@@ -323,6 +325,7 @@ auto ParticleLoader::parse_cuboids(std::istreambuf_iterator<char> &buf) -> std::
   return particles;
 }
 
+// TODO make configurable
 static constexpr const double brownian_motion = 0.1;
 
 /**
@@ -339,7 +342,7 @@ auto ParticleLoader::generate_cuboids(const std::vector<cuboid_t> &cuboids, auto
   auto particles = std::vector<Particle>();
 
   for (auto const [index, cuboid] : std::views::enumerate(cuboids)) {
-    auto [position, velocity, dim, h, m, sigma] = cuboid;
+    const auto [position, velocity, dim, h, m, sigma] = cuboid;
 
     for (double pos : position) {
       if (std::isnan(pos)) {
@@ -358,13 +361,13 @@ auto ParticleLoader::generate_cuboids(const std::vector<cuboid_t> &cuboids, auto
       continue;// Skip this cuboid
     }
 
-    for (auto x : std::views::iota(0, dim[0])) {
-      for (auto y : std::views::iota(0, dim[1])) {
-        for (auto z : std::views::iota(0, dim[2])) {
-          auto particle = Particle(
+    for (const auto x : std::views::iota(0, dim[0])) {
+      for (const auto y : std::views::iota(0, dim[1])) {
+        for (const auto z : std::views::iota(0, dim[2])) {
+          const auto particle = Particle(
               position + std::array<double, 3>({h * static_cast<double>(x), h * static_cast<double>(y), h * static_cast<double>(z)}), velocity + maxwellBoltzmannDistributedVelocity(brownian_motion, 2, seed), m,
               static_cast<int>(index));
-          particles.emplace_back(particle);
+          particles.push_back(std::move(particle));
         }
       }
     }
