@@ -45,72 +45,72 @@ class PlanetaryCalculationTest : public ::testing::Test {
 TEST_F(PlanetaryCalculationTest, force_calculation_same_particles) {
   SetUp();
 
-  auto calculatedForce = simulator::physics::Gravity::calculate_force(particleA, particleA);
-  std::array<double, 3> zeroForce = {0.0, 0.0, 0.0};
+  auto calculated_force = simulator::physics::Gravity::calculate_force(particleA, particleA);
+  std::array<double, 3> zero_force = {0.0, 0.0, 0.0};
 
-  EXPECT_EQ(calculatedForce, zeroForce);
+  EXPECT_EQ(calculated_force, zero_force);
 }
 
 TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
   SetUp();
 
   // force between particleA and particleB
-  auto calculatedForce = simulator::physics::Gravity::calculate_force(particleA, particleB);
+  auto calculated_force = simulator::physics::Gravity::calculate_force(particleA, particleB);
 
   // calculating force by hand and checking if the return is the expected result
   // for each axis (x, y and z are meant as axes here)
 
-  auto xDifference = 1.0;
-  auto yDifference = 1.0;
-  auto zDifference = 2.0;
+  auto x_difference = 1.0;
+  auto y_difference = 1.0;
+  auto z_difference = 2.0;
 
-  const Container auto positionDifference = std::array<double, 3>({xDifference, yDifference, zDifference});
+  const Container auto position_difference = std::array<double, 3>({x_difference, y_difference, z_difference});
 
   // L2-norm = sqrt(1² + 1² + 2²) = 2.449489743
   // multiplied mass of particles = 1.0 * 4.0 = 4.0
   // (L2-norm)³ = 14.69693846
 
-  const Container auto actualForce = 4.0 / 14.69693846 * positionDifference;
+  const Container auto actual_force = 4.0 / 14.69693846 * position_difference;
 
   // check if each axis force is exact enough (based on the manually computed numbers)
   // in this case 7 digits accuracy is enough
-  EXPECT_TRUE(calculatedForce[0] - actualForce[0] < 0.000001);
-  EXPECT_TRUE(calculatedForce[1] - actualForce[1] < 0.000001);
-  EXPECT_TRUE(calculatedForce[2] - actualForce[2] < 0.000001);
+  EXPECT_TRUE(calculated_force[0] - actual_force[0] < 0.000001);
+  EXPECT_TRUE(calculated_force[1] - actual_force[1] < 0.000001);
+  EXPECT_TRUE(calculated_force[2] - actual_force[2] < 0.000001);
 }
 
 
 TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   SetUp();
 
-  auto calculatedForce = simulator::physics::Gravity::calculate_force(particleA, particleD);
+  auto calculated_force = simulator::physics::Gravity::calculate_force(particleA, particleD);
 
   // calculating value differences for each axis by hand (x, y and z are meant as axes here)
 
-  // xDifference = 219.4
-  // yDifference = 321.06
-  // zDifference = 0.45
+  // x_difference = 219.4
+  // y_difference = 321.06
+  // z_difference = 0.45
 
-  auto xDifference = 219.4;
-  auto yDifference = 321.06;
-  auto zDifference = 0.45;
+  auto x_difference = 219.4;
+  auto y_difference = 321.06;
+  auto z_difference = 0.45;
 
-  const auto positionDifference = std::array<double, 3>({xDifference, yDifference, zDifference});
+  const auto position_difference = std::array<double, 3>({x_difference, y_difference, z_difference});
 
   // computing the L2 / Euclidean norm manually
-  auto l2Norm = sqrt((pow(xDifference, 2) + pow(yDifference, 2) + pow(zDifference, 2)));
+  auto l2Norm = sqrt((pow(x_difference, 2) + pow(y_difference, 2) + pow(z_difference, 2)));
 
   // L2-norm = sqrt(219.4² + 321.06² + 0.45²) = 388.8651258499597
   // multiplied mass of particles = 1.0 * 1005.34 = 1005.34
   // (L2-norm)³ = 58802662.352711186
 
-  const Container auto actualForce = 1005.34 / 58802662.352711186 * positionDifference;
+  const Container auto actual_force = 1005.34 / 58802662.352711186 * position_difference;
 
   // check if each axis force is exact enough (based on the manually computed numbers)
   // in this case 7 digits accuracy is enough
-  EXPECT_TRUE(calculatedForce[0] - actualForce[0] < 0.000001);
-  EXPECT_TRUE(calculatedForce[1] - actualForce[1] < 0.000001);
-  EXPECT_TRUE(calculatedForce[2] - actualForce[2] < 0.000001);
+  EXPECT_TRUE(calculated_force[0] - actual_force[0] < 0.000001);
+  EXPECT_TRUE(calculated_force[1] - actual_force[1] < 0.000001);
+  EXPECT_TRUE(calculated_force[2] - actual_force[2] < 0.000001);
 }
 
 
