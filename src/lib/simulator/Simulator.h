@@ -115,7 +115,7 @@ auto Simulator::run() -> void {
   spdlog::info("Output written. Terminating...");
 }
 
-void Simulator::calculate_position() {
+inline void Simulator::calculate_position() {
   spdlog::debug("Updating positions for {} particles.", particles.size());
   for (auto &particle : particles) {
     particle.position = particle.position + delta_t * particle.velocity + pow(delta_t, 2) * (1 / (2 * particle.mass)) * particle.old_force;
@@ -124,7 +124,7 @@ void Simulator::calculate_position() {
   }
 }
 
-void Simulator::calculate_velocity() {
+inline void Simulator::calculate_velocity() {
   spdlog::debug("Updating velocities for {} particles.", particles.size());
   for (auto &particle : particles) {
     particle.velocity = particle.velocity + delta_t * (1 / (2 * particle.mass)) * (particle.old_force + particle.force);
@@ -134,7 +134,7 @@ void Simulator::calculate_velocity() {
 }
 
 template<Physics PY>
-void Simulator::calculate_force() {
+inline void Simulator::calculate_force() {
   spdlog::debug("Starting force calculation for {} particles.", particles.size());
   for (auto &particle : particles) {
     particle.old_force = particle.force;
