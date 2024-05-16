@@ -1,8 +1,11 @@
 #pragma once
 
-#include "lib/Particle.h"
+#include "Particle.h"
 
 namespace simulator::physics {
+/**
+ * Implements physics for simulations using lennard-jones as force Model
+ * */
 class LennardJones {
  public:
   LennardJones() = delete;

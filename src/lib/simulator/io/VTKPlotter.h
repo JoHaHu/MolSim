@@ -1,11 +1,15 @@
 #pragma once
 
+#include "ParticleContainer.h"
 #include "Plotter.h"
 #include "VTKWriter.h"
-#include "lib/ParticleContainer.h"
-#include "lib/config/config.h"
+#include "config/config.h"
 
 namespace simulator::io {
+
+/*!
+ * plotting vtk files
+ */
 class VTKPlotter final : public Plotter {
  private:
   VTKWriter vtk_writer;

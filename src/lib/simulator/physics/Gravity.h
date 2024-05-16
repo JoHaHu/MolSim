@@ -1,7 +1,12 @@
 #pragma once
 
-#include "lib/Particle.h"
+#include "Particle.h"
 namespace simulator::physics {
+
+/**
+ * Implements physics for simulations using gravity as force Model
+ *
+ * */
 class Gravity {
  public:
   Gravity() = delete;

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "lib/ParticleContainer.h"
-#include "lib/config/config.h"
-#include "lib/simulator/physics/ForceModel.h"
+#include "ParticleContainer.h"
+#include "config/config.h"
+#include "simulator/physics/ForceModel.h"
 #include <memory>
 #include <optional>
 
@@ -10,7 +10,7 @@ namespace simulator::io {
 
 /*!
  * A recursive descent parser to load scenario from file and populate ParticleContainer
- * */
+ */
 class ParticleLoader {
  private:
   std::shared_ptr<config::Config> config;
@@ -35,6 +35,9 @@ class ParticleLoader {
 
  public:
   explicit ParticleLoader(const std::shared_ptr<config::Config> &config);
+  /**
+   * Load particles based on a input file and returns a particle container and the used force model
+   * */
   auto load_particles() -> std::tuple<ParticleContainer, physics::ForceModel>;
 };
 

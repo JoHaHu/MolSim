@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lib/Particle.h"
-#include "lib/simulator/io/VTKUnstructured.hxx"
+#include "Particle.h"
+#include "simulator/io/VTKUnstructured.hxx"
 
 #include <list>
 

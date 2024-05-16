@@ -4,8 +4,8 @@
 #include <cmath>
 #include <limits>
 
-#include "lib/utils/ArrayUtils.h"
 #include "spdlog/spdlog.h"
+#include "utils/ArrayUtils.h"
 
 namespace simulator::physics {
 /**
@@ -17,7 +17,7 @@ namespace simulator::physics {
    * @param particle2 The second particle.
    * @return std::array<double, 3> The calculated force vector.
    */
-std::array<double, 3> LennardJones::calculate_force(const Particle &particle1, const Particle &particle2) {
+auto LennardJones::calculate_force(const Particle &particle1, const Particle &particle2) -> std::array<double, 3> {
   const auto epsilon = 5;
   const auto sigma = 1;
 
@@ -30,7 +30,7 @@ std::array<double, 3> LennardJones::calculate_force(const Particle &particle1, c
 
   spdlog::trace("Position difference: ({}, {}, {})", x_diff[0], x_diff[1], x_diff[2]);
 
-  auto norm = ArrayUtils::L2Norm(x_diff);
+  const auto norm = ArrayUtils::L2Norm(x_diff);
   spdlog::trace("Norm of position difference: {}", norm);
 
   if (norm == 0) {

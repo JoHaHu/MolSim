@@ -1,13 +1,6 @@
-//
-// Created by TimSc on 15.05.2024.
-//
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
-
-#include "lib/Particle.h"
-#include "lib/simulator/physics/Gravity.h"
-#include "lib/utils/ArrayUtils.h"
+#include "Particle.h"
+#include "simulator/physics/Gravity.h"
+#include "utils/ArrayUtils.h"
 #include <array>
 #include <cmath>
 #include <gtest/gtest.h>
@@ -42,6 +35,13 @@ class PlanetaryCalculationTest : public ::testing::Test {
   }
 };
 
+/**
+ * Test: force_calculation_same_particles
+ *
+ * Verifies that the gravitational force calculation returns zero when the same particle is compared to itself.
+ *
+ * Ensures that the calculated force is {0.0, 0.0, 0.0} when using the same particle for both inputs.
+ */
 TEST_F(PlanetaryCalculationTest, force_calculation_same_particles) {
   SetUp();
 
@@ -51,6 +51,13 @@ TEST_F(PlanetaryCalculationTest, force_calculation_same_particles) {
   EXPECT_EQ(calculated_force, zero_force);
 }
 
+/**
+ * Test: force_calculation_simple_norm
+ *
+ * Verifies the gravitational force calculation between two particles using manual calculation for comparison.
+ *
+ * Ensures the calculated force vector is accurate to within seven decimal places for each axis (x, y, z).
+ */
 TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
   SetUp();
 
@@ -79,7 +86,13 @@ TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
   EXPECT_TRUE(calculated_force[2] - actual_force[2] < 0.000001);
 }
 
-
+/**
+ * Test: force_calculation_edge_norm
+ *
+ * Verifies the gravitational force calculation between two particles with a large positional difference.
+ *
+ * Ensures the calculated force vector is accurate to within seven decimal places for each axis (x, y, z) based on manual calculations.
+ */
 TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   SetUp();
 
@@ -98,8 +111,6 @@ TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   const auto position_difference = std::array<double, 3>({x_difference, y_difference, z_difference});
 
   // computing the L2 / Euclidean norm manually
-  auto l2Norm = sqrt((pow(x_difference, 2) + pow(y_difference, 2) + pow(z_difference, 2)));
-
   // L2-norm = sqrt(219.4² + 321.06² + 0.45²) = 388.8651258499597
   // multiplied mass of particles = 1.0 * 1005.34 = 1005.34
   // (L2-norm)³ = 58802662.352711186
@@ -112,9 +123,3 @@ TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   EXPECT_TRUE(calculated_force[1] - actual_force[1] < 0.000001);
   EXPECT_TRUE(calculated_force[2] - actual_force[2] < 0.000001);
 }
-
-auto main(int argc, char **argv) -> int {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
-#pragma clang diagnostic pop
