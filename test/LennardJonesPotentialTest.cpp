@@ -8,6 +8,13 @@ class LennardJonesPotentialTest : public ::testing::Test {
   double sigma = 1;
 };
 
+/**
+ * Test: lennard_jones_forces_simple
+ *
+ * Verifies the correctness of the Lennard-Jones force calculation between two particles.
+ *
+ * Verifies that each component of the calculated force vector is accurate within 0.000001.
+ */
 TEST_F(LennardJonesPotentialTest, lennard_jones_forces_simple) {
 
   // to change constants later, when type of atom/molecule is adjustable
@@ -49,6 +56,15 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_forces_simple) {
   EXPECT_TRUE(calculated_forces[2] - actual_forces[2] < 0.000001);
 }
 
+/**
+ * Test: lennard_jones_small_forces
+ *
+ * Verifies the correctness of the Lennard-Jones force calculation between two particles
+ * with small force magnitudes.
+ *
+ *
+ * Verifies that each component of the calculated force vector is accurate within 0.000001.
+ */
 TEST_F(LennardJonesPotentialTest, lennard_jones_small_forces) {
 
   // to change constants later, when type of atom/molecule is adjustable
@@ -90,6 +106,16 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_small_forces) {
   EXPECT_TRUE(calculated_forces[2] - actual_forces[2] < 0.000001);
 }
 
+/**
+ * Test: lennard_jones_large_forces
+ *
+ * Verifies the correctness of the Lennard-Jones force calculation between two particles
+ * where the forces are expected to be large.
+ *
+ * Checks the displacement vector and manually computed forces against the calculated values.
+ *
+ * Verifies that each component of the calculated force vector is accurate within 1.0.
+ */
 TEST_F(LennardJonesPotentialTest, lennard_jones_large_forces) {
 
   // to change constants later, when type of atom/molecule is adjustable
@@ -131,6 +157,13 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_large_forces) {
   EXPECT_TRUE(calculated_forces[2] - actual_forces[2] < 1);
 }
 
+/**
+ * Test: lennard_jones_same_particle_not_zero
+ *
+ * Verifies the behavior of the Lennard-Jones force calculation when the same particle is compared.
+ *
+ * Ensures that the calculated forces result in NaN values, as the displacement should be zero.
+ */
 TEST_F(LennardJonesPotentialTest, lennard_jones_same_particle_not_zero) {
 
   // velocity and mass do not matter in this calculation, therefore set to zero an 1.0

@@ -35,6 +35,13 @@ class PlanetaryCalculationTest : public ::testing::Test {
   }
 };
 
+/**
+ * Test: force_calculation_same_particles
+ *
+ * Verifies that the gravitational force calculation returns zero when the same particle is compared to itself.
+ *
+ * Ensures that the calculated force is {0.0, 0.0, 0.0} when using the same particle for both inputs.
+ */
 TEST_F(PlanetaryCalculationTest, force_calculation_same_particles) {
   SetUp();
 
@@ -44,6 +51,13 @@ TEST_F(PlanetaryCalculationTest, force_calculation_same_particles) {
   EXPECT_EQ(calculated_force, zero_force);
 }
 
+/**
+ * Test: force_calculation_simple_norm
+ *
+ * Verifies the gravitational force calculation between two particles using manual calculation for comparison.
+ *
+ * Ensures the calculated force vector is accurate to within seven decimal places for each axis (x, y, z).
+ */
 TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
   SetUp();
 
@@ -72,6 +86,13 @@ TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
   EXPECT_TRUE(calculated_force[2] - actual_force[2] < 0.000001);
 }
 
+/**
+ * Test: force_calculation_edge_norm
+ *
+ * Verifies the gravitational force calculation between two particles with a large positional difference.
+ *
+ * Ensures the calculated force vector is accurate to within seven decimal places for each axis (x, y, z) based on manual calculations.
+ */
 TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   SetUp();
 
