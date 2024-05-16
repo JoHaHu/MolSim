@@ -117,10 +117,12 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
     target_compile_options(simulator
             PRIVATE
             $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize >
+            $<$<CXX_COMPILER_ID:GNU>: -O3 >
     )
     target_compile_options(MolSim
             PRIVATE
             $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize >
+            $<$<CXX_COMPILER_ID:CNU>: -O3>
     )
 endif ()
 
