@@ -17,7 +17,7 @@ namespace simulator::physics {
    * @param particle2 The second particle.
    * @return std::array<double, 3> The calculated force vector.
    */
-std::array<double, 3> LennardJones::calculate_force(const Particle &particle1, const Particle &particle2) {
+auto LennardJones::calculate_force(const Particle &particle1, const Particle &particle2) -> std::array<double, 3> {
   const auto epsilon = 5;
   const auto sigma = 1;
 

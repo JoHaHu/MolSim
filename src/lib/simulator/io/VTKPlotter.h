@@ -6,6 +6,10 @@
 #include "config/config.h"
 
 namespace simulator::io {
+
+/*!
+ * plotting vtk files
+ */
 class VTKPlotter final : public Plotter {
  private:
   VTKWriter vtk_writer;

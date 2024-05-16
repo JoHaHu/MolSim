@@ -4,6 +4,9 @@
 
 namespace simulator::io {
 
+/*!
+ * a abstract for different plotting methods
+ */
 class Plotter {
  public:
   Plotter() = default;
@@ -13,7 +16,7 @@ class Plotter {
   /*!
   plots the particles of the particle array, takes an integer value and has no return value
   \param iteration an integer argument that sets the number of iterations
-*/
+ */
   virtual auto plotParticles(ParticleContainer &particle_container, int) -> void = 0;
 };
 

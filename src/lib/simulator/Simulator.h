@@ -14,6 +14,9 @@
 namespace simulator {
 /** <p> physics concept for force calculation </p>
       * calculates the force for all particles,
+      *
+      * This is a concept since it allows the physics to be transparent for compiler optimizations.
+      * Trade off is binary size.
       * \param T
       * \param particle1
       * \param particle2
@@ -22,52 +25,55 @@ template<typename T>
 concept Physics = requires(T type, Particle const &particle1, Particle const &particle2) {
   { T::calculate_force(particle1, particle2) } -> std::convertible_to<std::array<double, 3>>;
 };
-
+/**
+ * The main Simulator class. can be configured by providing a config and a plotter. Some methods use a physics model provided at compile time.
+ * */
 class Simulator {
  private:
   ParticleContainer particles;
   std::unique_ptr<io::Plotter> plotter;
   std::shared_ptr<config::Config> config;
+
   double start_time;
   double end_time;
   double delta_t;
 
  public:
   /**
-         * \param particles
-         * \param plotter
-         * \param config
-         * */
+   * \param particles the particle container
+   * \param plotter An instance plotter.
+   * \param config the runtime configuration
+   * */
   explicit Simulator(
       ParticleContainer particles,
       std::unique_ptr<io::Plotter> plotter,
       const std::shared_ptr<config::Config> &config);
 
   /**
-        * @brief Runs the simulation.
-        *
-        * Executes the main simulation loop, updating particle positions, forces, and velocities
-        * until the end time is reached. Periodically plots the particles based on the IO interval.
-        */
+  * @brief Runs the simulation.
+  *
+  * Executes the main simulation loop, updating particle positions, forces, and velocities
+  * until the end time is reached. Periodically plots the particles based on the IO interval.
+  */
   template<Physics PY, bool IO>
   auto run() -> void;
 
   /*! <p> Function for position calculation </p>
-        *
-        * calculates the position for all particles, takes no arguments and has no return value
-        */
+   *
+   * calculates the position for all particles, takes no arguments and has no return value
+   */
   auto calculate_position() -> void;
 
   /*! <p> Function for velocity calculation </p>
-        * calculates the velocity for all particles, takes no arguments and has no return value
-        */
+  * calculates the velocity for all particles, takes no arguments and has no return value
+  */
   auto calculate_velocity() -> void;
 
   /**
-        * @brief Calculates forces between particles.
-        *
-        * Resets forces for all particles, then calculates and updates forces for each particle pair.
-        */
+  * @brief Calculates forces between particles.
+  *
+  * Resets forces for all particles, then calculates and updates forces for each particle pair.
+  */
   template<Physics PY>
   auto calculate_force() -> void;
 };
@@ -79,6 +85,9 @@ Simulator::Simulator(
       end_time(config->end_time), delta_t(config->delta_t) {
 }
 
+/**
+ * runs the main simulation loop. The physics concept must be specified to provide compile time transparency to allow compiler optimizations
+ * */
 template<Physics PY, bool IO>
 auto Simulator::run() -> void {
   spdlog::info("Running simulation...");
