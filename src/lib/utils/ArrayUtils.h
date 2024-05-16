@@ -21,8 +21,8 @@
 // Defines a container as a type with a cbegin and cend function
 template<typename T>
 concept Container = requires(T container) {
-  { std::cbegin(container) };
-  { std::cend(container) };
+  {std::cbegin(container)};
+  {std::cend(container)};
 };
 
 // Asserts that arrays are a container
