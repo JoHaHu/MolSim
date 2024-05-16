@@ -367,7 +367,7 @@ auto ParticleLoader::generate_cuboids(const std::vector<cuboid_t> &cuboids, auto
           const auto particle = Particle(
               position + std::array<double, 3>({h * static_cast<double>(x), h * static_cast<double>(y), h * static_cast<double>(z)}), velocity + maxwellBoltzmannDistributedVelocity(brownian_motion, 2, seed), m,
               static_cast<int>(index));
-          particles.push_back(particle);
+          particles.push_back(std::move(particle));
         }
       }
     }
