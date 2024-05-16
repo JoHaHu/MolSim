@@ -1,8 +1,8 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 
-#include "lib/Particle.h"
-#include "lib/ParticleContainer.h"
+#include "Particle.h"
+#include "ParticleContainer.h"
 #include <array>
 #include <gtest/gtest.h>
 
