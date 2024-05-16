@@ -12,12 +12,12 @@
 #include <list>
 #include <map>
 #include <numeric>
+#include <ostream>
 #include <set>
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <ostream>
 
 // Defines a container as a type with a cbegin and cend function
 template<typename T>
