@@ -5,9 +5,9 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 
-#include "lib/Particle.h"
-#include "lib/simulator/physics/Gravity.h"
-#include "lib/utils/ArrayUtils.h"
+#include "Particle.h"
+#include "simulator/physics/Gravity.h"
+#include "utils/ArrayUtils.h"
 #include <array>
 #include <cmath>
 #include <gtest/gtest.h>
@@ -79,7 +79,6 @@ TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
   EXPECT_TRUE(calculated_force[2] - actual_force[2] < 0.000001);
 }
 
-
 TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   SetUp();
 
@@ -113,8 +112,8 @@ TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   EXPECT_TRUE(calculated_force[2] - actual_force[2] < 0.000001);
 }
 
-auto main(int argc, char **argv) -> int {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+//auto main(int argc, char **argv) -> int {
+//  ::testing::InitGoogleTest(&argc, argv);
+//  return RUN_ALL_TESTS();
+//}
 #pragma clang diagnostic pop

@@ -2,7 +2,7 @@
 // Created by TimSc on 16.05.2024.
 //
 
-#include "lib/simulator/physics/LennardJones.h"
+#include "simulator/physics/LennardJones.h"
 #include <cmath>
 #include <gtest/gtest.h>
 
@@ -13,7 +13,6 @@ class LennardJonesPotentialTest : public ::testing::Test {
  public:
   double epsilon = 5.0;
   double sigma = 1;
-
 };
 
 TEST_F(LennardJonesPotentialTest, lennard_jones_forces_simple) {
@@ -177,7 +176,6 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_same_particle_not_zero) {
   EXPECT_TRUE(std::isnan(z_force));
 }
 
-
 /** for future possibility to input sigma and epsilon (here for argon atoms)
 
 TEST_F(LennardJonesPotentialTest, lennard_jones_forces_xenon) {
@@ -219,8 +217,8 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_forces_xenon) {
 }
  **/
 
-auto main(int argc, char **argv) -> int {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+//auto main(int argc, char **argv) -> int {
+//  ::testing::InitGoogleTest(&argc, argv);
+//  return RUN_ALL_TESTS();
+//}
 #pragma clang diagnostic pop
