@@ -40,7 +40,9 @@ auto ParticleLoader::load_particles() -> std::tuple<ParticleContainer, simulator
       spdlog::info("Processing Lennard-Jones model.");
       auto cuboids = *parse_cuboids(input_buf);
       spdlog::debug("Parsed {} cuboids.", cuboids.size());
-      auto p = generate_cuboids(cuboids, config->seed);
+      auto seed = config->seed;
+      auto p = generate_cuboids(cuboids, seed);
+      spdlog::debug("Seed: ", seed);
       spdlog::debug("Generated {} particles for Lennard-Jones model.", p.size());
       particles = ParticleContainer(p);
       break;
