@@ -1,5 +1,5 @@
-#include "lib/simulator/io/VTKPlotter.h"
-#include "lib/simulator/io/VTKWriter.h"
+#include "simulator/io/VTKPlotter.h"
+#include "simulator/io/VTKWriter.h"
 
 namespace simulator::io {
 /**

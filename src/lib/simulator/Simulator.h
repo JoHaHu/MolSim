@@ -1,10 +1,10 @@
 #pragma once
 
-#include "lib/Particle.h"
-#include "lib/ParticleContainer.h"
-#include "lib/config/config.h"
-#include "lib/simulator/io/Plotter.h"
-#include "lib/utils/ArrayUtils.h"
+#include "Particle.h"
+#include "ParticleContainer.h"
+#include "config/config.h"
+#include "simulator/io/Plotter.h"
+#include "utils/ArrayUtils.h"
 #include <cmath>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>

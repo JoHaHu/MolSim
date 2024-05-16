@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lib/config/config.h"
+#include "config/config.h"
 #include <spdlog/sinks/basic_file_sink.h>
 
 class LoggerManager {

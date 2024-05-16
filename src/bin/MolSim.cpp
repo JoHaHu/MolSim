@@ -1,14 +1,14 @@
 #include <spdlog/spdlog.h>
 #include <vector>
 
-#include "lib/config/config.h"
-#include "lib/simulator/Simulator.h"
-#include "lib/simulator/io/ParticleLoader.h"
-#include "lib/simulator/io/VTKPlotter.h"
-#include "lib/simulator/physics/ForceModel.h"
-#include "lib/simulator/physics/Gravity.h"
-#include "lib/simulator/physics/LennardJones.h"
-#include "lib/utils/LoggerManager.h"
+#include "config/config.h"
+#include "simulator/Simulator.h"
+#include "simulator/io/ParticleLoader.h"
+#include "simulator/io/VTKPlotter.h"
+#include "simulator/physics/ForceModel.h"
+#include "simulator/physics/Gravity.h"
+#include "simulator/physics/LennardJones.h"
+#include "utils/LoggerManager.h"
 
 /**
  * Main entry point of the MolSim particle simulation program.
