@@ -1,3 +1,7 @@
+//
+// Created by TimSc on 15.05.2024.
+//
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 
@@ -5,6 +9,8 @@
 #include "lib/simulator/physics/Gravity.h"
 #include <gtest/gtest.h>
 #include <array>
+#include <cmath>
+#include "lib/utils/ArrayUtils.h"
 
 class PlanetaryCalculationTest : public ::testing::Test {
  public:
@@ -32,13 +38,35 @@ class PlanetaryCalculationTest : public ::testing::Test {
   }
 };
 
-TEST_F(PlanetaryCalculationTest, ForceCalculation_SameParticles) {
+TEST_F(PlanetaryCalculationTest, force_calculation_same_particles) {
   SetUp();
 
-  auto force = Gravity::calculateF(particleA, particleA);
+  auto calculatedForce = Gravity::calculateF(particleA, particleA);
   std::array<double, 3> zeroForce = {0.0, 0.0, 0.0};
 
-  EXPECT_EQ(force, zeroForce);
+  EXPECT_EQ(calculatedForce, zeroForce);
+}
+
+TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
+  SetUp();
+
+  auto calculatedForce = Gravity::calculateF(particleA, particleB);
+
+  // calculating value differences for each axis (x, y and z are meant as axes here
+  // despite attribute x saving all coordinate values
+  auto xDifference = particleB.x[0] - particleA.x[0];
+  auto yDifference = particleB.x[1] - particleA.x[1];
+  auto zDifference = particleB.x[2] - particleA.x[2];
+
+  const Container auto positionDifference = {xDifference, yDifference, zDifference};
+
+  // computing the L2 / Euclidean norm manually
+  auto l2Norm = sqrt((pow(xDifference, 2) + pow(yDifference, 2) + pow(zDifference, 2)));
+
+  // TODO: fix multiply operation
+  // const Container auto actualForce = (particleA.m * particleB.m) / pow(l2Norm, 3) * positionDifference;
+
+  //EXPECT_EQ(calculatedForce, actualForce);
 }
 
 
