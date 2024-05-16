@@ -78,7 +78,7 @@ target_include_directories(MolSim
 )
 target_link_libraries(MolSim
         # stuff that is used in headers and source files
-        PUBLIC
+        PRIVATE
         simulator
 )
 
@@ -126,7 +126,3 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 include(doxygen)
 include(spdlog)
 include(googletest)
-
-# for Googletest Suite
-enable_testing()
-add_subdirectory(test)

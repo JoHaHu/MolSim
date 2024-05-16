@@ -1,6 +1,5 @@
 #include "ParticleContainer.h"
 #include "spdlog/spdlog.h"
-#include <iostream>
 #include <utility>
 
 /**
