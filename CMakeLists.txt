@@ -27,6 +27,19 @@ file(GLOB_RECURSE MY_SRC
         "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.hxx"
 )
 
+#### SPDLOG ###
+
+include(FetchContent)
+# Spdlog configuration
+#add_subdirectory(libs/spdlog)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog/include)
+fetchcontent_declare(spdlog
+        URL https://github.com/gabime/spdlog/archive/refs/tags/v1.14.1.tar.gz
+        OVERRIDE_FIND_PACKAGE)
+fetchcontent_makeavailable(spdlog)
+find_package(spdlog REQUIRED)
+
+
 ##### LIBRARY #####
 
 add_library(simulator ${MY_SRC})
@@ -34,7 +47,6 @@ add_library(simulator ${MY_SRC})
 target_include_directories(simulator
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/libxsd
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog
         ${CMAKE_CURRENT_SOURCE_DIR}/src/lib
 )
 
@@ -101,9 +113,6 @@ target_compile_options(MolSim
         $<$<CXX_COMPILER_ID:Clang>:-Wall -march=native>
 )
 
-# Spdlog configuration
-add_subdirectory(libs/spdlog)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog/include)
 
 # Configure Debug and Release specific options
 if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
@@ -128,7 +137,6 @@ endif ()
 
 
 # Setup Google Test
-include(FetchContent)
 FetchContent_Declare(
         googletest
         URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
@@ -139,12 +147,9 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # Discover tests
 include(GoogleTest)
 
-
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
-
 include(doxygen)
 
 # for Googletest Suite
 enable_testing()
-
 add_subdirectory(test)
