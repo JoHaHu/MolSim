@@ -16,6 +16,26 @@ void config::Config::print_usage() {
                "--io_interval\t-l\t\t set plot interval, 0 disables plotting\n";
 }
 
+/**
+ * @brief Parses command-line arguments to configure the simulation parameters.
+ *
+ * Reads options from the command line and sets the corresponding configuration values.
+ * Prints usage and exits on invalid input.
+ *
+ * @param argc The number of command-line arguments.
+ * @param argv The array of command-line arguments.
+ * @return std::shared_ptr<Config> containing the configured parameters.
+ *
+ * Options:
+ * - -o, --output <file>       : Specify the output file.
+ * - -i, --input <file>        : Specify the input file.
+ * - -h, --help                : Display the usage page.
+ * - -d, --delta_t <value>     : Set the delta time (double).
+ * - -s, --start_time <value>  : Set the start time (double).
+ * - -r, --seed <value>        : Set the seed for RNG (int).
+ * - -e, --end_time <value>    : Set the end time (double).
+ * - -l, --io_interval <value> : Set the plot interval (int), 0 disables plotting.
+ */
 auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Config> {// NOLINT(*-avoid-c-arrays)
   double start_time = 0.0;
   double end_time = 1000.0;// NOLINT(*-avoid-magic-numbers)
