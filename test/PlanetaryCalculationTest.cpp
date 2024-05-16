@@ -90,8 +90,6 @@ TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   const auto position_difference = std::array<double, 3>({x_difference, y_difference, z_difference});
 
   // computing the L2 / Euclidean norm manually
-  auto l2Norm = sqrt((pow(x_difference, 2) + pow(y_difference, 2) + pow(z_difference, 2)));
-
   // L2-norm = sqrt(219.4² + 321.06² + 0.45²) = 388.8651258499597
   // multiplied mass of particles = 1.0 * 1005.34 = 1005.34
   // (L2-norm)³ = 58802662.352711186
