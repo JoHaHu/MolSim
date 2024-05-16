@@ -1,6 +1,3 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
-
 #include "Particle.h"
 #include "ParticleContainer.h"
 #include <array>
@@ -176,5 +173,3 @@ TEST_F(ParticleTest, multi_increment_stability) {
 
   EXPECT_TRUE(it == container.end());
 }
-
-#pragma clang diagnostic pop

@@ -1,10 +1,3 @@
-//
-// Created by TimSc on 15.05.2024.
-//
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
-
 #include "Particle.h"
 #include "simulator/physics/Gravity.h"
 #include "utils/ArrayUtils.h"
@@ -111,9 +104,3 @@ TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   EXPECT_TRUE(calculated_force[1] - actual_force[1] < 0.000001);
   EXPECT_TRUE(calculated_force[2] - actual_force[2] < 0.000001);
 }
-
-//auto main(int argc, char **argv) -> int {
-//  ::testing::InitGoogleTest(&argc, argv);
-//  return RUN_ALL_TESTS();
-//}
-#pragma clang diagnostic pop
