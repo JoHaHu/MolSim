@@ -4,6 +4,15 @@
 #include <spdlog/spdlog.h>
 namespace simulator::physics {
 
+  /**
+ * @brief Calculates the gravitational force between two particles.
+ *
+ * Computes the gravitational force based on the masses and positions of two particles.
+ *
+ * @param particle1 The first particle.
+ * @param particle2 The second particle.
+ * @return std::array<double, 3> The calculated force vector.
+ */
 auto Gravity::calculate_force(const Particle &particle1, const Particle &particle2) -> std::array<double, 3> {
   spdlog::trace("Entering calculate_force");
 
