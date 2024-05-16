@@ -10,7 +10,7 @@
 #include "utils/MaxwellBoltzmannDistribution.h"
 
 namespace simulator::io {
-// TODO evaluate operator>> to primitive types
+// this parser is implemented just for fun, next week we will switch to a xml filereader
 ParticleLoader::ParticleLoader(const std::shared_ptr<config::Config> &config) : config(config) {
 }
 
