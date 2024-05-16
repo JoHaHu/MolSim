@@ -6,7 +6,6 @@ project(PSEMolDyn_GroupD VERSION 0.0.1 LANGUAGES CXX)
 # let ccmake and cmake-gui offer the default build type options
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel")
 
-
 cmake_policy(SET CMP0135 NEW)
 
 # set Release as the default build type if it is not yet set.
