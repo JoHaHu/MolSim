@@ -129,14 +129,27 @@ namespace simulator::io {
         return std::stoi(tmp.str());
     }
 
-    auto ParticleLoader::recognize_double(std::istreambuf_iterator<char> &buf) -> std::optional<double> {
+    auto ParticleLoader::recognize_double(std::istreambuf_iterator<char>& buf) -> std::optional<double> {
         recognize_whitespace(buf);
-        auto tmp = std::ostringstream();
-        while ((isdigit(*buf) != 0) || (*buf == '.') || *buf == '-' || *buf == 'e') {
+
+        std::ostringstream tmp;
+        while (buf != std::istreambuf_iterator<char>() &&
+               (std::isdigit(*buf) || *buf == '.' || *buf == '-' || *buf == 'e' || *buf == 'E')) {
             tmp << *buf;
-            buf++;
+            ++buf;
+               }
+
+        if (tmp.str().empty()) { // Handle empty strings
+            return std::nullopt;
         }
-        return std::stod(tmp.str());
+
+        try {
+            double parsedValue = std::stod(tmp.str());
+            return parsedValue;
+        } catch (const std::invalid_argument& e) {
+            spdlog::error("Failed to parse double '{}': {}", tmp.str(), e.what());
+            return std::nullopt;
+        }
     }
 
     /**
@@ -146,23 +159,46 @@ namespace simulator::io {
     * @param buf Input buffer iterator.
     * @return std::optional<std::array<double, 3>> The recognized triplet or an empty optional if not recognized.
     */
-    auto ParticleLoader::recognize_double_triplet(std::istreambuf_iterator<char> &buf) -> std::optional<std::array<double, 3>> {
+    auto ParticleLoader::recognize_double_triplet(std::istreambuf_iterator<char>& buf)
+   -> std::optional<std::array<double, 3>> {
+
         spdlog::trace("Starting to recognize a double triplet");
 
-        try {
-            recognize_whitespace(buf);
-            auto first = *recognize_double(buf);
-            recognize_whitespace(buf);
-            auto second = *recognize_double(buf);
-            recognize_whitespace(buf);
-            auto third = *recognize_double(buf);
-            spdlog::debug("Recognized double triplet: ({}, {}, {})", first, second, third);
-            return {{first, second, third}};
-        } catch (const std::invalid_argument& e) {
-            spdlog::error("Invalid argument while parsing double triplet: {}", e.what());
+        // Buffer Exhaustion Check
+        if (buf == std::istreambuf_iterator<char>()) {
+            spdlog::warn("End of buffer reached before finding a double triplet.");
             return {};
-        } catch (const std::out_of_range& e) {
-            spdlog::error("Out of range error while parsing double triplet: {}", e.what());
+        }
+
+        try {
+            recognize_whitespace(buf); // Skip leading whitespace
+
+            auto first = recognize_double(buf);
+            if (!first.has_value()) {
+                spdlog::error("Failed to recognize the first double.");
+                return {};
+            }
+
+            recognize_whitespace(buf);
+
+            auto second = recognize_double(buf);
+            if (!second.has_value()) {
+                spdlog::error("Failed to recognize the second double.");
+                return {};
+            }
+
+            recognize_whitespace(buf);
+
+            auto third = recognize_double(buf);
+            if (!third.has_value()) {
+                spdlog::error("Failed to recognize the third double.");
+                return {};
+            }
+
+            spdlog::debug("Recognized double triplet: ({}, {}, {})", *first, *second, *third);
+            return {{*first, *second, *third}};
+        } catch (const std::exception& e) {
+            spdlog::error("Unexpected error while parsing double triplet: {}", e.what());
             return {};
         }
     }
