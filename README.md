@@ -16,7 +16,11 @@ Developed and tested with these versions, other versions might work
 - lldb 17.0.6
 - cmake 3.27.7
 
-Run this in the root folder of this repository
+this repository includes `.idea/cmake.xml`.
+This is a shareable IDE config file that allows all team members to use the same config.
+The way Clion implements it, still allows to use your own config.
+The only necessary prerequisite is that there is one Toolchain named "System" in your CLion config otherwise you might
+get error messages.
 
 ```shell
 /usr/bin/cmake  -DCMAKE_BUILD_TYPE=Release \
