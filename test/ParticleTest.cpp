@@ -137,7 +137,6 @@ TEST_F(ParticleTest, iterator_pair_building_simple) {
 
   EXPECT_EQ(pair3_par2.position, coordinatesC);
   EXPECT_EQ(pair3_par2.velocity, velocityC);
-
 }
 
 TEST_F(ParticleTest, iterator_pair_building_large) {
