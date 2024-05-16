@@ -2,7 +2,7 @@
 #include "lib/simulator/io/VTKWriter.h"
 
 namespace simulator::io {
-  /**
+/**
  * @brief Plots particles to a VTK file.
  *
  * Initializes the VTK writer, plots each particle, and writes the file.
