@@ -37,7 +37,8 @@ namespace simulator::physics {
             spdlog::warn("Zero distance between particles encountered");
         }
 
-        const auto sigmaOverNorm6 = (sigma/norm) * (sigma/norm) * (sigma/norm) * (sigma/norm) * (sigma/norm) * (sigma/norm);
+        const auto sigmaOverNorm3 = (sigma/norm) * (sigma/norm) * (sigma/norm);
+        const auto sigmaOverNorm6 = sigmaOverNorm3 * sigmaOverNorm3;
         const auto sigmaOverNorm12 = sigmaOverNorm6 * sigmaOverNorm6;
 
         const auto f = 24 * epsilon / norm * norm * (sigmaOverNorm6 - 2 * sigmaOverNorm12) * x_diff;
