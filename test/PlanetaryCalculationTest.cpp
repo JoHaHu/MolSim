@@ -80,7 +80,7 @@ TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
   const Container auto actual_force = 4.0 / 14.69693846 * position_difference;
 
   // check if each axis force is exact enough (based on the manually computed numbers)
-  // in this case 7 digits accuracy is enough
+  // in this case 6 digits accuracy should be enough
   EXPECT_TRUE(calculated_force[0] - actual_force[0] < 0.000001);
   EXPECT_TRUE(calculated_force[1] - actual_force[1] < 0.000001);
   EXPECT_TRUE(calculated_force[2] - actual_force[2] < 0.000001);
