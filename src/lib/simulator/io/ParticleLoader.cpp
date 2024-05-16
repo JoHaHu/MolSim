@@ -2,12 +2,12 @@
 #include <ranges>
 #include <sstream>
 
+#include "Particle.h"
 #include "ParticleLoader.h"
-#include "lib/Particle.h"
-#include "lib/utils/ArrayUtils.h"
-#include "lib/utils/LoggerManager.h"
-#include "lib/utils/MaxwellBoltzmannDistribution.h"
 #include "spdlog/spdlog.h"
+#include "utils/ArrayUtils.h"
+#include "utils/LoggerManager.h"
+#include "utils/MaxwellBoltzmannDistribution.h"
 
 namespace simulator::io {
 // TODO evaluate operator>> to primitive types

@@ -27,23 +27,38 @@ file(GLOB_RECURSE MY_SRC
         "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.hxx"
 )
 
+add_library(simulator ${MY_SRC})
+
+target_include_directories(simulator
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/libxsd
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/lib
+)
+
+target_compile_features(simulator
+        PRIVATE
+        cxx_std_23
+)
+
+# activate all compiler warnings. Clean up your code :P
+# depending on the compiler different flags are used
+target_compile_options(simulator
+        PRIVATE
+        $<$<CXX_COMPILER_ID:GNU>:-Wall -march=native>
+        # disable some spam warnings for icpc...
+        $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -march=native>
+)
+
 
 # create make target
-add_executable(MolSim src/bin/MolSim.cpp ${MY_SRC})
-
+add_executable(MolSim src/bin/MolSim.cpp)
 
 # set cxx standard. You may raise this if you want.
 target_compile_features(MolSim
         PRIVATE
         cxx_std_23
-)
-
-target_include_directories(MolSim
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/libxsd
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 
@@ -52,12 +67,14 @@ target_link_libraries(MolSim
         PUBLIC
         xerces-c
         spdlog::spdlog
+        simulator
 )
 
 include(CheckIPOSupported)
 check_ipo_supported(RESULT result)
 if (result)
     set_property(TARGET MolSim PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set_property(TARGET simulator PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif ()
 
 # activate all compiler warnings. Clean up your code :P
@@ -76,11 +93,19 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog/include)
 
 # Configure Debug and Release specific options
 if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+    target_compile_options(simulator
+            PRIVATE
+            $<$<CXX_COMPILER_ID:Clang>: -g -O0 -fno-omit-frame-pointer>
+    )
     target_compile_options(MolSim
             PRIVATE
             $<$<CXX_COMPILER_ID:Clang>: -g -O0 -fno-omit-frame-pointer>
     )
 elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
+    target_compile_options(simulator
+            PRIVATE
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize >
+    )
     target_compile_options(MolSim
             PRIVATE
             $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize >
