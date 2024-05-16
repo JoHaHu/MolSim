@@ -12,6 +12,7 @@ MolSim2024 - Group D
 Developed and tested with these versions, other versions might work
 
 - clang 17.0.6
+- lld 17.0.6
 - lldb 17.0.6
 - cmake 3.27.7
 

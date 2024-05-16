@@ -28,7 +28,10 @@ file(GLOB_RECURSE MY_SRC
         "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.hxx"
 )
 
-add_library(simulator ${MY_SRC})
+add_library(simulator
+        STATIC
+        ${MY_SRC}
+)
 
 target_include_directories(simulator
         PUBLIC
