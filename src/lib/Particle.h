@@ -12,6 +12,9 @@
 #include <iostream>
 #include <string>
 
+/**
+ * the Particle class representing the simulated particles
+ * */
 class Particle {
  public:
   /**
