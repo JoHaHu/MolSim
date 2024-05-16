@@ -24,6 +24,8 @@ auto main(int argc, char *argv[]) -> int {
   auto config = config::Config::parse_config(argc, argv);
   LoggerManager::setup_logger(config);
 
+  auto startTime = std::chrono::high_resolution_clock::now();
+
   auto particle_loader = simulator::io::ParticleLoader(config);
 
   auto [particle_container, force_model] = particle_loader.load_particles();
@@ -51,5 +53,16 @@ auto main(int argc, char *argv[]) -> int {
         break;
     }
   }
+
+  auto endTime = std::chrono::high_resolution_clock::now();
+  auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+  auto minutes = std::chrono::duration_cast<std::chrono::minutes>(durationMs);
+  durationMs -= minutes;
+  auto seconds = std::chrono::duration_cast<std::chrono::seconds>(durationMs);
+  durationMs -= seconds;
+  auto milliseconds = durationMs.count();
+
+  spdlog::info("Simulation completed in {:02d}:{:02d}:{:03d} (mm:ss:ms)", minutes.count(), seconds.count(), milliseconds);
+
   return 0;
 }

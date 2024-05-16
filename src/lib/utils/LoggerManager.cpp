@@ -14,19 +14,21 @@
  *
  * @param level The log level to set for the logger.
  */
-void LoggerManager::setup_logger(std::shared_ptr<config::Config> config, spdlog::level::level_enum level) {
+void LoggerManager::setup_logger(std::shared_ptr<config::Config> config) {
   try {
-    spdlog::trace("Setting up logger with level: {}", spdlog::level::to_string_view(level));
+    // Read environment variable
+    spdlog::cfg::load_env_levels();
+    spdlog::level::level_enum level = spdlog::get_level();
 
     // Create console sink
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     console_sink->set_level(level);
-    spdlog::debug("Console sink created");
+    spdlog::trace("Console sink created");
 
     // Create file sink
     auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/log.txt", true);
     file_sink->set_level(level);
-    spdlog::debug("File sink created");
+    spdlog::trace("File sink created");
 
     // Combine sinks into one logger
     std::vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
@@ -34,15 +36,15 @@ void LoggerManager::setup_logger(std::shared_ptr<config::Config> config, spdlog:
 
     // Set default logger
     spdlog::set_default_logger(logger);
-    spdlog::cfg::load_env_levels();
     spdlog::set_level(level);
+
     // Disable log when io disabled
     if (config->io_interval == 0) {
       spdlog::set_level(spdlog::level::off);
     }
 
     spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
-    spdlog::info("Logger initialized with level: {}", spdlog::level::to_string_view(level));
+    spdlog::debug("Logger initialized with level: {}", spdlog::level::to_string_view(level));
   } catch (const spdlog::spdlog_ex &ex) {
     std::cerr << "Log initialization failed: " << ex.what() << '\n';
     spdlog::critical("Log initialization failed: {}", ex.what());

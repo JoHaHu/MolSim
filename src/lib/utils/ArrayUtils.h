@@ -22,8 +22,8 @@
 // Defines a container as a type with a cbegin and cend function
 template<typename T>
 concept Container = requires(T container) {
-  { std::cbegin(container) };
-  { std::cend(container) };
+  std::cbegin(container);
+  std::cend(container);
 };
 
 // Asserts that arrays are a container
@@ -37,17 +37,16 @@ static_assert(Container<std::vector<double>>);
  * like std::array, std::vector, etc.
  */
 namespace ArrayUtils {
-
 /**
- * Generates a string representation of a container which fulfills the Container
- * requirement (provide cbegin and cend).
- * @tparam Container Type of Container.
- * @param container.
- * @param delimiter String that is put between items.
- * @param surround Strings to be put before and after the listing (e.g.
- * brackets).
- * @return String representation of container.
- */
+     * Generates a string representation of a container which fulfills the Container
+     * requirement (provide cbegin and cend).
+     * @tparam Container Type of Container.
+     * @param container.
+     * @param delimiter String that is put between items.
+     * @param surround Strings to be put before and after the listing (e.g.
+     * brackets).
+     * @return String representation of container.
+     */
 template<Container C>
 [[nodiscard]] auto
 to_string(const C &container, const std::string &delimiter = ", ",
@@ -67,18 +66,18 @@ to_string(const C &container, const std::string &delimiter = ", ",
 }
 
 /**
- * Applies an element wise binary function F to two containers.
- *
- * If the containers differ in size the F is only applied to as many elements as
- * are in the smaller container.
- *
- * @tparam Container Type for both containers.
- * @tparam F Type of binary function.
- * @param lhs
- * @param rhs
- * @param binaryFunction
- * @return Element wise F(lhs, rhs).
- */
+     * Applies an element wise binary function F to two containers.
+     *
+     * If the containers differ in size the F is only applied to as many elements as
+     * are in the smaller container.
+     *
+     * @tparam Container Type for both containers.
+     * @tparam F Type of binary function.
+     * @param lhs
+     * @param rhs
+     * @param binaryFunction
+     * @return Element wise F(lhs, rhs).
+     */
 template<Container C, class F>
 inline auto elementWisePairOp(const C &lhs, const C &rhs, F binaryFunction) -> C {
   C ret = lhs;
@@ -97,16 +96,16 @@ inline auto elementWisePairOp(const C &lhs, const C &rhs, F binaryFunction) -> C
 }
 
 /**
- * Applies a binary function F to with a scalar to every element in a container.
- *
- * @tparam Scalar Type of scalar value.
- * @tparam Container Type of the container.
- * @tparam F
- * @param lhs
- * @param rhs
- * @param binaryFunction
- * @return Element wise F(lhs, rhs).
- */
+     * Applies a binary function F to with a scalar to every element in a container.
+     *
+     * @tparam Scalar Type of scalar value.
+     * @tparam Container Type of the container.
+     * @tparam F
+     * @param lhs
+     * @param rhs
+     * @param binaryFunction
+     * @return Element wise F(lhs, rhs).
+     */
 template<class Scalar, Container C, class F>
 inline auto elementWiseScalarOp(const Scalar &lhs, const C &rhs,
                                 F binaryFunction) -> C {
@@ -123,16 +122,15 @@ inline auto elementWiseScalarOp(const Scalar &lhs, const C &rhs,
 }
 
 /**
- * Calculates the L2 norm for a given container.
- * @tparam Container
- * @param c
- * @return sqrt(sum_i(c[i]*c[i])).
- */
+     * Calculates the L2 norm for a given container.
+     * @tparam Container
+     * @param c
+     * @return sqrt(sum_i(c[i]*c[i])).
+     */
 template<Container C>
 auto inline L2Norm(const C &c) {
   return std::sqrt(std::accumulate(std::cbegin(c), std::cend(c), 0.0, [](auto a, auto b) { return a + b * b; }));
 }
-
 }// namespace ArrayUtils
 
 /**
