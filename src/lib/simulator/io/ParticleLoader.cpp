@@ -129,83 +129,73 @@ namespace simulator::io {
         return std::stoi(tmp.str());
     }
 
-    auto ParticleLoader::recognize_double(std::istreambuf_iterator<char>& buf) -> std::optional<double> {
+    /**
+    * @brief Extracts and parses a double value from an input stream buffer.
+    *
+    * @param buf Iterator into the input stream buffer.
+    * @return std::optional<double> The parsed double, or std::nullopt if:
+    *        - end of buffer reached prematurely
+    *        - parsed value is NaN or infinite
+    *        - parsing error occurs
+    */
+    auto ParticleLoader::recognize_double(std::istreambuf_iterator<char> &buf) -> std::optional<double> {
+        spdlog::trace("Input to recognize_double: '{}'", std::string(buf, {})); // Log input directly
         recognize_whitespace(buf);
+        if (buf == std::istreambuf_iterator<char>()) return {};
 
-        std::ostringstream tmp;
+        std::string doubleStr;
         while (buf != std::istreambuf_iterator<char>() &&
                (std::isdigit(*buf) || *buf == '.' || *buf == '-' || *buf == 'e' || *buf == 'E')) {
-            tmp << *buf;
-            ++buf;
-               }
-
-        if (tmp.str().empty()) { // Handle empty strings
-            return std::nullopt;
+            doubleStr += *buf++;
         }
 
         try {
-            double parsedValue = std::stod(tmp.str());
+            double parsedValue = std::stod(doubleStr);
+            if (!std::isfinite(parsedValue)) {
+                // Combined NaN and infinity check
+                spdlog::error("Parsed value not finite: '{}'", doubleStr);
+                return {};
+            }
             return parsedValue;
-        } catch (const std::invalid_argument& e) {
-            spdlog::error("Failed to parse double '{}': {}", tmp.str(), e.what());
-            return std::nullopt;
+        } catch (const std::invalid_argument &) {
+            spdlog::error("Failed to parse double: '{}'", doubleStr);
+            return {};
         }
     }
 
     /**
     * @brief Recognizes a triplet of doubles from the input buffer.
     *
-    *
     * @param buf Input buffer iterator.
     * @return std::optional<std::array<double, 3>> The recognized triplet or an empty optional if not recognized.
     */
-    auto ParticleLoader::recognize_double_triplet(std::istreambuf_iterator<char>& buf)
-   -> std::optional<std::array<double, 3>> {
-
+    auto ParticleLoader::recognize_double_triplet(std::istreambuf_iterator<char> &buf)
+        -> std::optional<std::array<double, 3> > {
         spdlog::trace("Starting to recognize a double triplet");
-
-        // Buffer Exhaustion Check
-        if (buf == std::istreambuf_iterator<char>()) {
-            spdlog::warn("End of buffer reached before finding a double triplet.");
-            return {};
-        }
+        if (buf == std::istreambuf_iterator<char>()) return {};
 
         try {
-            recognize_whitespace(buf); // Skip leading whitespace
-
-            auto first = recognize_double(buf);
-            if (!first.has_value()) {
-                spdlog::error("Failed to recognize the first double.");
-                return {};
+            std::array<double, 3> result;
+            for (int i = 0; i < 3; ++i) {
+                recognize_whitespace(buf);
+                auto value = recognize_double(buf);
+                if (!value) {
+                    spdlog::error("Failed to recognize double #{}", i + 1);
+                    return {};
+                }
+                result[i] = *value;
             }
 
-            recognize_whitespace(buf);
-
-            auto second = recognize_double(buf);
-            if (!second.has_value()) {
-                spdlog::error("Failed to recognize the second double.");
-                return {};
-            }
-
-            recognize_whitespace(buf);
-
-            auto third = recognize_double(buf);
-            if (!third.has_value()) {
-                spdlog::error("Failed to recognize the third double.");
-                return {};
-            }
-
-            spdlog::debug("Recognized double triplet: ({}, {}, {})", *first, *second, *third);
-            return {{*first, *second, *third}};
-        } catch (const std::exception& e) {
-            spdlog::error("Unexpected error while parsing double triplet: {}", e.what());
+            spdlog::debug("Recognized double triplet: ({}, {}, {})", result[0], result[1], result[2]);
+            return result;
+        } catch (const std::exception &e) {
+            spdlog::error("Error parsing double triplet: {}", e.what());
             return {};
         }
     }
 
     /**
      * @brief Recognizes a triplet of integers from the input buffer.
-     *
      *
      * @param buf Input buffer iterator.
      * @return std::optional<std::array<int, 3>> The recognized triplet or an empty optional if not recognized.
@@ -225,7 +215,6 @@ namespace simulator::io {
 
     /**
      * @brief Recognizes a cuboid structure from the input buffer.
-     *
      *
      * @param buf Input buffer iterator.
      * @return std::optional<cuboid_t> The recognized cuboid or an empty optional if not recognized.
@@ -251,7 +240,6 @@ namespace simulator::io {
     /**
      * @brief Recognizes a planet structure from the input buffer.
      *
-     *
      * @param buf Input buffer iterator.
      * @return std::optional<Particle> The recognized planet or an empty optional if not recognized.
      */
@@ -261,6 +249,24 @@ namespace simulator::io {
         auto position = *recognize_double_triplet(buf);
         auto velocity = *recognize_double_triplet(buf);
         auto mass = *recognize_double(buf);
+
+        for (double d: position) {
+            if (std::isnan(d)) {
+                spdlog::error("Invalid planet data: NaN values encountered.");
+                return std::nullopt;
+            }
+        }
+        for (double d: velocity) {
+            if (std::isnan(d)) {
+                spdlog::error("Invalid planet data: NaN values encountered.");
+                return std::nullopt;
+            }
+        }
+        if (std::isnan(mass)) {
+            spdlog::error("Invalid planet data: NaN mass encountered.");
+            return std::nullopt;
+        }
+
         auto p = Particle(position, velocity, mass, 0);
         recognize_end_of_line(buf);
         spdlog::debug("Recognized planet: position = ({}, {}, {}), velocity = ({}, {}, {}), mass = {}",
@@ -271,7 +277,6 @@ namespace simulator::io {
 
     /**
      * @brief Parses particles affected by gravity from the input buffer.
-     *
      *
      * @param buf Input buffer iterator.
      * @return std::optional<std::vector<Particle>> The parsed particles or an empty optional if parsing fails.
@@ -297,7 +302,6 @@ namespace simulator::io {
 
     /**
      * @brief Parses cuboid structures from the input buffer.
-     *
      *
      * @param buf Input buffer iterator.
      * @return std::optional<std::vector<cuboid_t>> The parsed cuboids or an empty optional if parsing fails.
@@ -338,6 +342,24 @@ namespace simulator::io {
 
         for (auto const [index, cuboid]: std::views::enumerate(cuboids)) {
             auto [position, velocity, dim, h, m, sigma] = cuboid;
+
+            for (double pos: position) {
+                if (std::isnan(pos)) {
+                    spdlog::error("Invalid cuboid data: NaN value encountered in position.");
+                    continue; // Skip this cuboid
+                }
+            }
+            for (double vel: velocity) {
+                if (std::isnan(vel)) {
+                    spdlog::error("Invalid cuboid data: NaN value encountered in velocity.");
+                    continue; // Skip this cuboid
+                }
+            }
+            if (std::isnan(h) || std::isnan(m) || std::isnan(sigma)) {
+                spdlog::error("Invalid cuboid data: NaN value encountered in h, m, or sigma.");
+                continue; // Skip this cuboid
+            }
+
             for (auto x: std::views::iota(0, dim[0])) {
                 for (auto y: std::views::iota(0, dim[1])) {
                     for (auto z: std::views::iota(0, dim[2])) {
