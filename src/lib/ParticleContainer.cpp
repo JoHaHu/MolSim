@@ -88,7 +88,7 @@ auto ParticleContainer::end_pair() -> ParticleContainer::PairIterator {
 ParticleContainer::ParticleContainer(int capacity) {
   particles = std::vector<Particle>();
   particles.reserve(capacity);
-  spdlog::info("ParticleContainer initialized with capacity: {}", capacity);
+  spdlog::debug("ParticleContainer initialized with capacity: {}", capacity);
 }
 
 /**
