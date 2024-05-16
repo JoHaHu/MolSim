@@ -19,7 +19,7 @@
 #include <vector>
 
 // Defines a container as a type with a cbegin and cend function
-template <typename T>
+template<typename T>
 concept Container = requires(T container) {
   std::cbegin(container);
   std::cend(container);
