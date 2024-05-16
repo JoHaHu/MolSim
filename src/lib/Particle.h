@@ -8,9 +8,9 @@
 #pragma once
 
 #include <array>
-#include <string>
 #include <atomic>
 #include <iostream>
+#include <string>
 
 class Particle {
  public:
