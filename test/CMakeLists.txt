@@ -1,21 +1,21 @@
-add_executable(ParticleTest ParticleTest.cpp ${MY_SRC})
-add_executable(PlanetaryCalculationTest PlanetaryCalculationTest.cpp ${MY_SRC})
-add_executable(LennardJonesPotentialTest LennardJonesPotentialTest.cpp ${MY_SRC})
+add_executable(ParticleTest ParticleTest.cpp )
+add_executable(PlanetaryCalculationTest PlanetaryCalculationTest.cpp )
+add_executable(LennardJonesPotentialTest LennardJonesPotentialTest.cpp )
 
 target_link_libraries(ParticleTest
         PUBLIC
         GTest::gtest_main
-        xerces-c
+        simulator
 )
 target_link_libraries(PlanetaryCalculationTest
         PUBLIC
         GTest::gtest_main
-        xerces-c
+        simulator
 )
 target_link_libraries(LennardJonesPotentialTest
         PUBLIC
         GTest::gtest_main
-        xerces-c
+        simulator
 )
 
 target_compile_features(ParticleTest
@@ -32,25 +32,19 @@ target_compile_features(LennardJonesPotentialTest
 )
 
 target_include_directories(ParticleTest
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/libxsd
         PRIVATE
         ${gtest_SOURCE_DIR}/include ${gtest_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src
+        ${SIMULATOR_INCLUDES}
 )
 target_include_directories(PlanetaryCalculationTest
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/libxsd
         PRIVATE
         ${gtest_SOURCE_DIR}/include ${gtest_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src
+        ${SIMULATOR_INCLUDES}
 )
 target_include_directories(LennardJonesPotentialTest
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/libxsd
         PRIVATE
         ${gtest_SOURCE_DIR}/include ${gtest_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src
+        ${SIMULATOR_INCLUDES}
 )
 
 gtest_discover_tests(ParticleTest)
