@@ -27,6 +27,8 @@ file(GLOB_RECURSE MY_SRC
         "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.hxx"
 )
 
+##### LIBRARY #####
+
 add_library(simulator ${MY_SRC})
 
 target_include_directories(simulator
@@ -34,6 +36,13 @@ target_include_directories(simulator
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/libxsd
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog
         ${CMAKE_CURRENT_SOURCE_DIR}/src/lib
+)
+
+target_link_libraries(simulator
+        # stuff that is used in headers and source files
+        PUBLIC
+        xerces-c
+        spdlog::spdlog
 )
 
 target_compile_features(simulator
@@ -50,6 +59,10 @@ target_compile_options(simulator
         $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>
         $<$<CXX_COMPILER_ID:Clang>:-Wall -march=native>
 )
+get_target_property(SIMULATOR_INCLUDES simulator INCLUDE_DIRECTORIES)
+
+
+####  EXECUTABLE #####
 
 
 # create make target
@@ -61,12 +74,13 @@ target_compile_features(MolSim
         cxx_std_23
 )
 
-
+target_include_directories(MolSim
+        PUBLIC
+        ${SIMULATOR_INCLUDES}
+)
 target_link_libraries(MolSim
         # stuff that is used in headers and source files
         PUBLIC
-        xerces-c
-        spdlog::spdlog
         simulator
 )
 
