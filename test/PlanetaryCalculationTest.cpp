@@ -62,10 +62,30 @@ TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
   // computing the L2 / Euclidean norm manually
   auto l2Norm = sqrt((pow(xDifference, 2) + pow(yDifference, 2) + pow(zDifference, 2)));
 
-  // TODO: fix multiply operation
-  // const Container auto actualForce = (particleA.m * particleB.m) / pow(l2Norm, 3) * positionDifference;
+  const Container auto actualForce = (particleA.mass * particleB.mass) / (l2Norm * l2Norm * l2Norm) * positionDifference;
 
-  //EXPECT_EQ(calculatedForce, actualForce);
+  EXPECT_EQ(calculatedForce, actualForce);
+}
+
+TEST_F(PlanetaryCalculationTest, force) {
+  SetUp();
+
+  auto calculatedForce = simulator::physics::Gravity::calculate_force(particleA, particleB);
+
+  // calculating value differences for each axis (x, y and z are meant as axes here
+  // despite attribute x saving all coordinate values
+  auto xDifference = particleB.position[0] - particleA.position[0];
+  auto yDifference = particleB.position[1] - particleA.position[1];
+  auto zDifference = particleB.position[2] - particleA.position[2];
+
+  const auto positionDifference = std::array<double, 3>({xDifference, yDifference, zDifference});
+
+  // computing the L2 / Euclidean norm manually
+  auto l2Norm = sqrt((pow(xDifference, 2) + pow(yDifference, 2) + pow(zDifference, 2)));
+
+  const Container auto actualForce = (particleA.mass * particleB.mass) / (l2Norm * l2Norm * l2Norm) * positionDifference;
+
+  EXPECT_EQ(calculatedForce, actualForce);
 }
 
 auto main(int argc, char **argv) -> int {
