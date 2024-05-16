@@ -4,7 +4,6 @@
 #include "lib/Particle.h"
 #include "lib/ParticleContainer.h"
 #include <array>
-#include <c++/11/iostream>
 #include <gtest/gtest.h>
 #include <iostream>
 
