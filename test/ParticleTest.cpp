@@ -5,7 +5,6 @@
 #include "lib/ParticleContainer.h"
 #include <array>
 #include <gtest/gtest.h>
-#include <iostream>
 
 class ParticleTest : public ::testing::Test {
  public:
