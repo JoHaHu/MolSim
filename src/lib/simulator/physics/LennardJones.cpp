@@ -30,7 +30,7 @@ auto LennardJones::calculate_force(const Particle &particle1, const Particle &pa
 
   spdlog::trace("Position difference: ({}, {}, {})", x_diff[0], x_diff[1], x_diff[2]);
 
-  auto norm = ArrayUtils::L2Norm(x_diff);
+  const auto norm = ArrayUtils::L2Norm(x_diff);
   spdlog::trace("Norm of position difference: {}", norm);
 
   if (norm == 0) {
