@@ -19,21 +19,21 @@ class ParticleTest : public ::testing::Test {
   void SetUp() override {
 
     // Particle A
-    std::array<double, 3> coordinatesA = {0.0, 0.0, 0.0};
-    std::array<double, 3> velocityA = {2.0, 3.0, 3.0};
+    std::array<double, 3> coordinates_A = {0.0, 0.0, 0.0};
+    std::array<double, 3> velocity_A = {2.0, 3.0, 3.0};
 
     // Particle B
-    std::array<double, 3> coordinatesB = {1.0, 1.0, 2.0};
-    std::array<double, 3> velocityB = {3.0, 2.0, 3.0};
+    std::array<double, 3> coordinates_B = {1.0, 1.0, 2.0};
+    std::array<double, 3> velocity_B = {3.0, 2.0, 3.0};
 
     // Particle C
-    std::array<double, 3> coordinatesC = {2.0, 3.0, 4.0};
-    std::array<double, 3> velocityC = {5.0, 6.0, 3.0};
+    std::array<double, 3> coordinates_C = {2.0, 3.0, 4.0};
+    std::array<double, 3> velocity_C = {5.0, 6.0, 3.0};
 
     // construct particles with different parameter values
-    Particle particleA = Particle(coordinatesA, velocityA, 1.0, 0);
-    Particle particleB = Particle(coordinatesB, velocityB, 4.0, 0);
-    Particle particleC = Particle(coordinatesC, velocityC, 10.0, 0);
+    Particle particleA = Particle(coordinates_A, velocity_A, 1.0, 0);
+    Particle particleB = Particle(coordinates_B, velocity_B, 4.0, 0);
+    Particle particleC = Particle(coordinates_C, velocity_C, 10.0, 0);
 
     // add test particles to the particles vector
     particles.emplace_back(particleA);
@@ -56,7 +56,7 @@ class ParticleTest : public ::testing::Test {
   }
 };
 
-TEST_F(ParticleTest, IncrementOperator_NotAtEnd) {
+TEST_F(ParticleTest, iterator_not_at_end) {
   SetUp();
   auto it = container.begin();
   auto original = it;
@@ -67,7 +67,7 @@ TEST_F(ParticleTest, IncrementOperator_NotAtEnd) {
   EXPECT_NE(it, container.end());
 }
 
-TEST_F(ParticleTest, Container_Size) {
+TEST_F(ParticleTest, iterator_container_size) {
   SetUp();
   auto it = container.begin();
   int counter = 0;
@@ -81,7 +81,7 @@ TEST_F(ParticleTest, Container_Size) {
   EXPECT_EQ(counter, 3);
 }
 
-TEST_F(ParticleTest, IncrementOperator_ReachesEnd) {
+TEST_F(ParticleTest, iterator_reaching_end) {
   auto it = container.begin();
 
   while (it != container.end()) {
@@ -95,7 +95,7 @@ TEST_F(ParticleTest, IncrementOperator_ReachesEnd) {
 TEST_F(ParticleTest, iterator_pair_building_simple) {
   auto pair = container.begin_pair();
 
-  auto [pair1par1, pair1par2] = *pair;
+  auto [pair1_par1, pair1_par2] = *pair;
 
   // Manually comparing the particles:
 
@@ -112,33 +112,33 @@ TEST_F(ParticleTest, iterator_pair_building_simple) {
   std::array<double, 3> velocityC = {5.0, 6.0, 3.0};
 
   // first pair: 1 and 2
-  EXPECT_EQ(pair1par1.position, coordinatesA);
-  EXPECT_EQ(pair1par1.velocity, velocityA);
+  EXPECT_EQ(pair1_par1.position, coordinatesA);
+  EXPECT_EQ(pair1_par1.velocity, velocityA);
 
-  EXPECT_EQ(pair1par2.position, coordinatesB);
-  EXPECT_EQ(pair1par2.velocity, velocityB);
+  EXPECT_EQ(pair1_par2.position, coordinatesB);
+  EXPECT_EQ(pair1_par2.velocity, velocityB);
 
   // increment and read new pair
   pair++;
-  auto [pair2par1, pair2par2] = *pair;
+  auto [pair2_par1, pair2_par2] = *pair;
 
   // second pair: 1 and 3
-  EXPECT_EQ(pair2par1.position, coordinatesA);
-  EXPECT_EQ(pair2par1.velocity, velocityA);
+  EXPECT_EQ(pair2_par1.position, coordinatesA);
+  EXPECT_EQ(pair2_par1.velocity, velocityA);
 
-  EXPECT_EQ(pair2par2.position, coordinatesC);
-  EXPECT_EQ(pair2par2.velocity, velocityC);
+  EXPECT_EQ(pair2_par2.position, coordinatesC);
+  EXPECT_EQ(pair2_par2.velocity, velocityC);
 
   // increment and read new pair
   pair++;
-  auto [pair3par1, pair3par2] = *pair;
+  auto [pair3_par1, pair3_par2] = *pair;
 
   // third pair: 2 and 3
-  EXPECT_EQ(pair3par1.position, coordinatesB);
-  EXPECT_EQ(pair3par1.velocity, velocityB);
+  EXPECT_EQ(pair3_par1.position, coordinatesB);
+  EXPECT_EQ(pair3_par1.velocity, velocityB);
 
-  EXPECT_EQ(pair3par2.position, coordinatesC);
-  EXPECT_EQ(pair3par2.velocity, velocityC);
+  EXPECT_EQ(pair3_par2.position, coordinatesC);
+  EXPECT_EQ(pair3_par2.velocity, velocityC);
 
 }
 
@@ -147,8 +147,8 @@ TEST_F(ParticleTest, iterator_pair_building_large) {
   auto pair2 = container2.begin_pair();
 
   // number of pairs can be calculated with the handshake lemma
-  auto amountOfPairs1 = 3;
-  auto amountOfPairs2 = (15 * (15 - 1)) / 2;
+  auto amount_of_pairs1 = 3;
+  auto amount_of_pairs2 = (15 * (15 - 1)) / 2;
 
   auto count1 = 0;
   auto count2 = 0;
@@ -164,8 +164,8 @@ TEST_F(ParticleTest, iterator_pair_building_large) {
   }
 
   // check if amount of pairs matches (according to number of particles)
-  EXPECT_EQ(amountOfPairs1, count1);
-  EXPECT_EQ(amountOfPairs2, count2);
+  EXPECT_EQ(amount_of_pairs1, count1);
+  EXPECT_EQ(amount_of_pairs2, count2);
 }
 
 TEST_F(ParticleTest, multi_increment_stability) {
