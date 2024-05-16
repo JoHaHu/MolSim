@@ -4,6 +4,7 @@
 #include "lib/Particle.h"
 #include "lib/ParticleContainer.h"
 #include <array>
+#include <c++/11/iostream>
 #include <gtest/gtest.h>
 #include <iostream>
 
@@ -91,7 +92,7 @@ TEST_F(ParticleTest, IncrementOperator_ReachesEnd) {
   EXPECT_TRUE(it == endIt);
 }
 
-TEST_F(ParticleTest, IncrementOperator_BasicFunction) {
+TEST_F(ParticleTest, iterator_pair_building_simple) {
   auto pair = container.begin_pair();
 
   auto [pair1par1, pair1par2] = *pair;
@@ -139,29 +140,9 @@ TEST_F(ParticleTest, IncrementOperator_BasicFunction) {
   EXPECT_EQ(pair3par2.position, coordinatesC);
   EXPECT_EQ(pair3par2.velocity, velocityC);
 
-  /** TESTING WITH IDs (work in progress)
-   * // TODO: initialise ID properly and compare IDs
-
-  // check for pair 1 (particle 1 and 2) and increment after
-  EXPECT_EQ(particle1.id, 1);
-  EXPECT_EQ(particle2.id, 2);
-  pair++;
-
-  // check for pair 1 (particle 2 and 3) and increment after
-  EXPECT_EQ(particle1.id, 2);
-  EXPECT_EQ(particle2.id, 3);
-  pair++;
-
-  // check for pair 1 (particle 1 and 3) and increment after
-  EXPECT_EQ(particle1.id, 1);
-  EXPECT_EQ(particle2.id, 3);
-
-  // check if pair reached end
-
-  **/
 }
 
-TEST_F(ParticleTest, IncrementOperator_LargerVector) {
+TEST_F(ParticleTest, iterator_pair_building_large) {
   auto pair1 = container.begin_pair();
   auto pair2 = container2.begin_pair();
 
@@ -187,7 +168,7 @@ TEST_F(ParticleTest, IncrementOperator_LargerVector) {
   EXPECT_EQ(amountOfPairs2, count2);
 }
 
-TEST_F(ParticleTest, IncrementOperator_MultiIncrementStability) {
+TEST_F(ParticleTest, multi_increment_stability) {
   auto it = container.begin();
 
   for (int i = 0; i < 8; ++i) {
