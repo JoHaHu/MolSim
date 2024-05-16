@@ -177,8 +177,4 @@ TEST_F(ParticleTest, multi_increment_stability) {
   EXPECT_TRUE(it == container.end());
 }
 
-auto main(int argc, char **argv) -> int {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
 #pragma clang diagnostic pop
