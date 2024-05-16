@@ -376,11 +376,12 @@ auto ParticleLoader::generate_cuboids(const std::vector<cuboid_t> &cuboids, auto
 
 auto ParticleLoader::recognize_end_of_line(std::istreambuf_iterator<char> &buf) -> bool {
   recognize_whitespace(buf);
-  if (*buf == '\n') {
+  bool result;
+  while (*buf == '\n' || *buf == '\r') {
     buf++;
-    return true;
+    result = true;
   }
-  return false;
+  return result;
 }
 
 auto ParticleLoader::recognize_end_of_file(std::istreambuf_iterator<char> &buf) -> bool {
