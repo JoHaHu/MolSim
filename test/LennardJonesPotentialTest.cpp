@@ -2,58 +2,79 @@
 // Created by TimSc on 16.05.2024.
 //
 
+#include "lib/simulator/physics/LennardJones.h"
+#include <cmath>
 #include <gtest/gtest.h>
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 
-
-
 class LennardJonesPotentialTest : public ::testing::Test {
  public:
-
-
-  // no additional setup necessary here
+  double epsilon = 5.0;
+  double sigma = 1;
 
 };
 
 TEST_F(LennardJonesPotentialTest, lennard_jones_forces_simple) {
 
-  // initialise input parameters with simple values
-  double epsilon = 1.0;
-  double sigma = 1.0;
+  // to change constants later, when type of atom/molecule is adjustable
+  // epsilon = 1.0;
+  // sigma = 1.0;
 
+  // velocity and mass do not matter in this calculation, therefore set to zero an 1.0
+
+  // Particle i
   std::array<double, 3> x_i = {1.0, 0.0, 0.0};
-  std::array<double, 3> x_j = {1.0, 0.0, 0.0};
+  std::array<double, 3> velocity_i = {0.0, 0.0, 0.0};
+
+  // Particle j
+  std::array<double, 3> x_j = {0.0, 1.0, 1.0};
+  std::array<double, 3> velocity_j = {0.0, 0.0, 0.0};
+
+  Particle particle_i = Particle(x_i, velocity_i, 1.0, 0);
+  Particle particle_j = Particle(x_j, velocity_j, 1.0, 0);
 
   // r_ij = displacement of vectors = || x_i - x_j ||
   // manual computation of forces
   //    x_i = [1.0, 0.0, 0.0]
-  //    x_j = [1.0, 0.0, 0.0]
-  // => r_ij = [1.0, 1.0, 0.1]
+  //    x_j = [0.0, 1.0, 1.0]
+  // => r_ij = [1.0, -1.0, -1.0]
 
   // computation of Lennard-Jones force according to the formulas on the worksheet
 
-  // Lennard-Jones potential U(x_i, x_j) = -0.4375
-  // Lennard-Jones force F_ij = [-1.125, 1.125, -0.0]
+  // Lennard-Jones potential U(x_i, x_j) = -0.7133058984910836
+  // Lennard-Jones force F_ij = [-1.37174211, 1.37174211, 1.37174211]
 
-  std::array<double,3> actual_forces = {-1.125, 1.125, -0.0};
+  std::array<double, 3> actual_forces = {-1.37174211, 1.37174211, 1.37174211};
 
   // computing forces with method
-  // TODO: insert method name and replace this hard-coded array
-  std::array<double,3> calculated_forces = {-1.125, 1.125, -0.0};
+  std::array<double, 3> calculated_forces = simulator::physics::LennardJones::calculate_force(particle_i, particle_j);
 
-  EXPECT_EQ(actual_forces, calculated_forces);
+  // check if each result of the force vector is accurate enough
+  EXPECT_TRUE(calculated_forces[0] - actual_forces[0] < 0.000001);
+  EXPECT_TRUE(calculated_forces[1] - actual_forces[1] < 0.000001);
+  EXPECT_TRUE(calculated_forces[2] - actual_forces[2] < 0.000001);
 }
 
 TEST_F(LennardJonesPotentialTest, lennard_jones_small_forces) {
 
-  // set input parameters with arbitrary values (no real life relation yet) and calculating forces
-  double epsilon = 4.30483;
-  double sigma = 0.397493;
+  // to change constants later, when type of atom/molecule is adjustable
+  // double epsilon = 4.30483;
+  // double sigma = 2.121;
 
+  // velocity and mass do not matter in this calculation, therefore set to zero an 1.0
+
+  // Particle i
   std::array<double, 3> x_i = {2.1, 3.5, 1.4};
+  std::array<double, 3> velocity_i = {0.0, 0.0, 0.0};
+
+  // Particle j
   std::array<double, 3> x_j = {0.004, 0.0584, 0.0372};
+  std::array<double, 3> velocity_j = {0.0, 0.0, 0.0};
+
+  Particle particle_i = Particle(x_i, velocity_i, 1.0, 0);
+  Particle particle_j = Particle(x_j, velocity_j, 1.0, 0);
 
   // r_ij = displacement of vectors = || x_i - x_j ||
   // manual computation of forces
@@ -63,56 +84,75 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_small_forces) {
 
   // computation of Lennard-Jones force according to the formulas on the worksheet
 
-  // Lennard-Jones potential U(x_i, x_j) = -1.1463394182511578e-05
-  // Lennard-Jones force F_ij = [-7.96701562e-06, -1.30817180e-05, -5.18008058e-06]
+  // Lennard-Jones potential U(x_i, x_j) = -0.0033750273618335614
+  // Lennard-Jones force F_ij = [-0.00234524 -0.00385084 -0.00152485]
 
-  std::array<double,3> actual_forces = {-7.96701562e-06, -1.30817180e-05, -5.18008058e-06};
+  std::array<double, 3> actual_forces = {-0.00234524, -0.00385084, -0.00152485};
 
   // computing forces with method
-  // TODO: insert method name and replace this hard-coded array
-  std::array<double,3> calculated_forces = {-7.96701562e-06, -1.30817180e-05, -5.18008058e-06};
+  std::array<double, 3> calculated_forces = simulator::physics::LennardJones::calculate_force(particle_i, particle_j);
 
-  EXPECT_EQ(actual_forces, calculated_forces);
+  // check if each result of the force vector is accurate enough
+  EXPECT_TRUE(calculated_forces[0] - actual_forces[0] < 0.000001);
+  EXPECT_TRUE(calculated_forces[1] - actual_forces[1] < 0.000001);
+  EXPECT_TRUE(calculated_forces[2] - actual_forces[2] < 0.000001);
 }
 
 TEST_F(LennardJonesPotentialTest, lennard_jones_large_forces) {
 
-  // set input parameters with arbitrary values (no real life relation yet) and calculating forces
-  double epsilon = 0.2453234;
-  double sigma = 4.482;
+  // to change constants later, when type of atom/molecule is adjustable
+  // epsilon = 1.2453234;
+  // sigma = 4.482;
 
-  std::array<double, 3> x_i = {0.001, 0.0532, 0.0361};
-  std::array<double, 3> x_j = {0.004, 0.0584, 0.0372};
+  // velocity and mass do not matter in this calculation, therefore set to zero an 1.0
+
+  // Particle i
+  std::array<double, 3> x_i = {0.01, 0.532, 0.0961};
+  std::array<double, 3> velocity_i = {0.0, 0.0, 0.0};
+
+  // Particle j
+  std::array<double, 3> x_j = {0.09, 0.584, 0.372};
+  std::array<double, 3> velocity_j = {0.0, 0.0, 0.0};
+
+  Particle particle_i = Particle(x_i, velocity_i, 1.0, 0);
+  Particle particle_j = Particle(x_j, velocity_j, 1.0, 0);
 
   // r_ij = displacement of vectors = || x_i - x_j ||
   // manual computation of forces
-  //    x_i = [0.001, 0.0532, 0.0361]
-  //    x_j = [0.004, 0.0584, 0.0372]
-  // => r_ij = [-0.003, -0.0052, -0.0011]
+  //    x_i = [0.01, 0.532, 0.0961]
+  //    x_j = [0.09, 0.584, 0.372]
+  // => r_ij = [-0.08, -0.052, -0.2759]
 
   // computation of Lennard-Jones force according to the formulas on the worksheet
 
-  // Lennard-Jones potential U(x_i, x_j) = 2.4138124905450815e+34
-  // Lennard-Jones force F_ij = [-2.33281207e+37,-4.04354092e+37, -8.55364426e+36]
+  // Lennard-Jones potential U(x_i, x_j) = 52163272.504740424
+  // Lennard-Jones force F_ij = [-5.87766053e+08, -3.82047935e+08, -2.02705818e+09]
 
-  std::array<double,3> actual_forces = {-2.33281207e+37, -4.04354092e+37, -8.55364426e+36};
+  std::array<double, 3> actual_forces = {-5.87766053e+08, -3.82047935e+08, -2.027058176e+09};
 
   // computing forces with method
-  // TODO: insert method name and replace this hard-coded array
-  std::array<double,3> calculated_forces = {-2.33281207e+37, -4.04354092e+37, -8.55364426e+36};
+  std::array<double, 3> calculated_forces = simulator::physics::LennardJones::calculate_force(particle_i, particle_j);
 
-  EXPECT_EQ(actual_forces, calculated_forces);
+  // check if each result of the force vector is accurate enough (in this case because of the immensely large numbers anything below 1.0 is accurate enough)
+  EXPECT_TRUE(calculated_forces[0] - actual_forces[0] < 1);
+  EXPECT_TRUE(calculated_forces[1] - actual_forces[1] < 1);
+  EXPECT_TRUE(calculated_forces[2] - actual_forces[2] < 1);
 }
 
+TEST_F(LennardJonesPotentialTest, lennard_jones_same_particle_not_zero) {
 
-TEST_F(LennardJonesPotentialTest, lennard_jones_forces_argon) {
+  // velocity and mass do not matter in this calculation, therefore set to zero an 1.0
 
-  // set input parameters with the values for argon
-  double epsilon = 0.238;
-  double sigma = 3.4;
+  // Particle i
+  std::array<double, 3> x_i = {1.0, 0.1, 0.0};
+  std::array<double, 3> velocity_i = {0.0, 0.0, 0.0};
 
-  std::array<double, 3> x_i = {1.1, 2.0, 0.9};
-  std::array<double, 3> x_j = {2.0, 1.1, 2.2};
+  // Particle j
+  std::array<double, 3> x_j = {1.0, 0.1, 0.0};
+  std::array<double, 3> velocity_j = {0.0, 0.0, 0.0};
+
+  Particle particle_i = Particle(x_i, velocity_i, 1.0, 0);
+  Particle particle_j = Particle(x_j, velocity_j, 1.0, 0);
 
   // r_ij = displacement of vectors = || x_i - x_j ||
   // manual computation of forces
@@ -125,23 +165,39 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_forces_argon) {
   // Lennard-Jones potential U(x_i, x_j) = 1686.938457711386
   // Lennard-Jones force F_ij = [-5570.3695767, 5570.3695767, -8046.08938856]
 
-  std::array<double,3> actual_forces = {-5570.3695767, 5570.3695767, -8046.08938856};
-
   // computing forces with method
-  // TODO: insert method name and replace this hard-coded array
-  std::array<double,3> calculated_forces = {-5570.3695767, 5570.3695767, -8046.08938856};
+  std::array<double, 3> calculated_forces = simulator::physics::LennardJones::calculate_force(particle_i, particle_j);
 
-  EXPECT_EQ(actual_forces, calculated_forces);
+  double x_force = calculated_forces[0];
+  double y_force = calculated_forces[1];
+  double z_force = calculated_forces[2];
+
+  EXPECT_TRUE(std::isnan(x_force));
+  EXPECT_TRUE(std::isnan(y_force));
+  EXPECT_TRUE(std::isnan(z_force));
 }
+
+
+/** for future possibility to input sigma and epsilon (here for argon atoms)
 
 TEST_F(LennardJonesPotentialTest, lennard_jones_forces_xenon) {
 
-  // set input parameters with the values for xenon
-  double epsilon = 0.399;
-  double sigma = 4.1;
+  // to change constants later, when type of atom/molecule is adjustable
+  // epsilon = 0.399;
+  // sigma = 4.1;
 
+  // velocity and mass do not matter in this calculation, therefore set to zero an 1.0
+
+  // Particle i
   std::array<double, 3> x_i = {1.1, 2.0, 0.9};
+  std::array<double, 3> velocity_i = {0.0, 0.0, 0.0};
+
+  // Particle j
   std::array<double, 3> x_j = {2.0, 1.1, 2.2};
+  std::array<double, 3> velocity_j = {0.0, 0.0, 0.0};
+
+  Particle particle_i = Particle(x_i, velocity_i, 1.0, 0);
+  Particle particle_j = Particle(x_j, velocity_j, 1.0, 0);
 
   // r_ij = displacement of vectors = || x_i - x_j ||
   // manual computation of forces
@@ -154,15 +210,14 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_forces_xenon) {
   // Lennard-Jones potential U(x_i, x_j) = 27173.32984787372
   // Lennard-Jones force F_ij = [-89003.27408715, 89003.27408715, -128560.28479256]
 
-  std::array<double,3> actual_forces = {-89003.27408715, 89003.27408715, -128560.28479256};
+  std::array<double, 3> actual_forces = {-89003.27408715, 89003.27408715, -128560.28479256};
 
   // computing forces with method
-  // TODO: insert method name and replace this hard-coded array
-  std::array<double,3> calculated_forces = {-89003.27408715, 89003.27408715, -128560.28479256};
+  std::array<double, 3> calculated_forces = simulator::physics::LennardJones::calculate_force(particle_i, particle_j);
 
   EXPECT_EQ(actual_forces, calculated_forces);
 }
-
+ **/
 
 auto main(int argc, char **argv) -> int {
   ::testing::InitGoogleTest(&argc, argv);

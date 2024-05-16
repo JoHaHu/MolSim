@@ -22,7 +22,7 @@ auto Gravity::calculate_force(const Particle &particle1, const Particle &particl
 
   spdlog::trace("Position difference: ({}, {}, {})", x_diff[0], x_diff[1], x_diff[2]);
 
-  double norm = ArrayUtils::L2Norm(x_diff);
+  auto norm = ArrayUtils::L2Norm(x_diff);
   spdlog::trace("Norm of position difference: {}", norm);
 
   if (norm == 0) {

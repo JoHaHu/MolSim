@@ -34,19 +34,19 @@ std::array<double, 3> LennardJones::calculate_force(const Particle &particle1, c
   spdlog::trace("Norm of position difference: {}", norm);
 
   if (norm == 0) {
-    spdlog::warn("Zero distance between particles encountered");
+    spdlog::warn("Zero distance between particles encountered. This should not be possible.");
   }
 
   const auto sigmaOverNorm3 = (sigma / norm) * (sigma / norm) * (sigma / norm);
   const auto sigmaOverNorm6 = sigmaOverNorm3 * sigmaOverNorm3;
   const auto sigmaOverNorm12 = sigmaOverNorm6 * sigmaOverNorm6;
 
-  const auto f = 24 * epsilon / norm * norm * (sigmaOverNorm6 - 2 * sigmaOverNorm12) * x_diff;
+  const auto force = 24 * epsilon / (norm * norm) * (sigmaOverNorm6 - 2 * sigmaOverNorm12) * x_diff;
 
-  spdlog::trace("Calculated force: ({}, {}, {})", f[0], f[1], f[2]);
+  spdlog::trace("Calculated force: ({}, {}, {})", force[0], force[1], force[2]);
 
   spdlog::trace("Exiting LennardJones calculate_force");
 
-  return f;
+  return force;
 }
 }// namespace simulator::physics
