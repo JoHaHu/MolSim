@@ -31,9 +31,9 @@ class ParticleTest : public ::testing::Test {
     Particle particleC = Particle(coordinates_C, velocity_C, 10.0, 0);
 
     // add test particles to the particles vector
-    particles.emplace_back(particleA);
-    particles.emplace_back(particleB);
-    particles.emplace_back(particleC);
+    particles.push_back(particleA);
+    particles.push_back(particleB);
+    particles.push_back(particleC);
 
     // add 15 particles to particles2 with different parameter values by using a loop
     for (int i = 0; i < 15; i++) {
@@ -42,7 +42,7 @@ class ParticleTest : public ::testing::Test {
       std::array<double, 3> velocityD = {2.0, 3.0, 3.0};
 
       Particle particleD = Particle(coordinatesD, velocityD, 15.0 + i, 0);
-      particles2.emplace_back(particleD);
+      particles2.push_back(particleD);
     }
 
     // initialise containers
@@ -59,7 +59,6 @@ class ParticleTest : public ::testing::Test {
  * Ensures the iterator is correctly incremented and is not equal to the original position or the end of the container.
  */
 TEST_F(ParticleTest, iterator_not_at_end) {
-  SetUp();
   auto it = container.begin();
   auto original = it;
 
@@ -77,7 +76,6 @@ TEST_F(ParticleTest, iterator_not_at_end) {
  * Ensures the container size is as expected and the iterator correctly counts all elements.
  */
 TEST_F(ParticleTest, iterator_container_size) {
-  SetUp();
   auto it = container.begin();
   int counter = 0;
 

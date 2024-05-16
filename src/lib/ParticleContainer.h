@@ -62,7 +62,7 @@ class ParticleContainer {
    * Constructor that initializes the container with a list of particles.
    * @param particles A vector of particles to initialize the container.
    */
-  explicit ParticleContainer(std::vector<Particle> const &particles);
+  explicit ParticleContainer(std::vector<Particle> particles);
 
  private:
   std::vector<Particle> particles;
