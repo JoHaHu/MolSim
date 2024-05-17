@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Particle.h"
-#include "ParticleContainer.h"
 #include "config/config.h"
+#include "container/ParticleContainer.h"
 #include "simulator/io/Plotter.h"
 #include "utils/ArrayUtils.h"
 #include <cmath>
@@ -30,7 +30,7 @@ concept Physics = requires(T type, Particle const &particle1, Particle const &pa
  * */
 class Simulator {
  private:
-  ParticleContainer particles;
+  container::ParticleContainer particles;
   std::unique_ptr<io::Plotter> plotter;
   std::shared_ptr<config::Config> config;
 
@@ -45,7 +45,7 @@ class Simulator {
    * \param config the runtime configuration
    * */
   explicit Simulator(
-      ParticleContainer particles,
+      container::ParticleContainer particles,
       std::unique_ptr<io::Plotter> plotter,
       const std::shared_ptr<config::Config> &config);
 
@@ -79,7 +79,7 @@ class Simulator {
 };
 
 Simulator::Simulator(
-    ParticleContainer particles, std::unique_ptr<io::Plotter> plotter,
+    container::ParticleContainer particles, std::unique_ptr<io::Plotter> plotter,
     const std::shared_ptr<config::Config> &config)
     : particles(std::move(particles)), plotter(std::move(plotter)), config(config), start_time(config->start_time),
       end_time(config->end_time), delta_t(config->delta_t) {

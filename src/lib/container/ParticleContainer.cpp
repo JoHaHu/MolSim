@@ -2,6 +2,8 @@
 #include "spdlog/spdlog.h"
 #include <utility>
 
+namespace container {
+
 /**
  * @brief Dereferences the iterator to access the current pair of particles.
  * @return A pair consisting of references to two adjacent particles.
@@ -121,3 +123,4 @@ auto ParticleContainer::size() -> unsigned long {
 ParticleContainer::ParticleContainer(std::vector<Particle> particles) : particles(std::move(particles)) {
   spdlog::debug("ParticleContainer initialized with {} particles.", this->particles.size());
 }
+}// namespace container

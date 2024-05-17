@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ParticleContainer.h"
 #include "Plotter.h"
 #include "VTKWriter.h"
 #include "config/config.h"
+#include "container/ParticleContainer.h"
 
 namespace simulator::io {
 
@@ -16,7 +16,7 @@ class VTKPlotter final : public Plotter {
   std::shared_ptr<config::Config> config;
 
  public:
-  auto plotParticles(ParticleContainer &particle_container, int iteration) -> void override;
+  auto plotParticles(container::ParticleContainer &particle_container, int iteration) -> void override;
   ~VTKPlotter() override;
   VTKPlotter() = default;
 

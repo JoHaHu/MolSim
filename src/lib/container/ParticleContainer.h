@@ -3,6 +3,8 @@
 #include "Particle.h"
 #include <vector>
 
+namespace container {
+
 /**
  * The particle container. Provides method to store and iterate and iterate in pairs over particles
  * */
@@ -68,4 +70,6 @@ class ParticleContainer {
   std::vector<Particle> particles;
 };
 
-//static_assert(std::output_iterator<ParticleContainer::PairIterator, std::pair<Particle &, Particle &>>);
+static_assert(std::output_iterator<ParticleContainer::PairIterator, std::pair<Particle &, Particle &>>);
+
+}// namespace container

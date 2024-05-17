@@ -10,7 +10,7 @@ namespace simulator::io {
  * @param particle_container The container holding the particles to be plotted.
  * @param iteration The current iteration number, used in the output file name.
  */
-auto VTKPlotter::plotParticles(ParticleContainer &particle_container, int iteration) -> void {
+auto VTKPlotter::plotParticles(container::ParticleContainer &particle_container, int iteration) -> void {
 
   std::string out_name(config->output_filename);
 
