@@ -22,7 +22,7 @@ ParticleLoader::ParticleLoader(const std::shared_ptr<config::Config> &config) : 
     *
     * @return std::tuple<ParticleContainer, simulator::physics::ForceModel> The loaded particles and the force model.
     */
-auto ParticleLoader::load_particles() -> std::tuple<container::ParticleContainer, simulator::physics::ForceModel> {
+auto ParticleLoader::load_particles() -> std::tuple<std::vector<Particle>, simulator::physics::ForceModel> {
   spdlog::info("Reading file {}", config->input_filename);
   auto input = std::ifstream(config->input_filename);
   auto input_buf = std::istreambuf_iterator<char>(input);
@@ -34,7 +34,7 @@ auto ParticleLoader::load_particles() -> std::tuple<container::ParticleContainer
   const auto [model, length] = *recognize_header(input_buf);
   spdlog::debug("Recognized header: Model = {}, Length = {}", static_cast<int>(model), length);
 
-  container::ParticleContainer particles(0);
+  std::vector<Particle> particles(0);
   switch (model) {
     case physics::ForceModel::LennardJones: {
       spdlog::info("Processing Lennard-Jones model.");
@@ -44,14 +44,14 @@ auto ParticleLoader::load_particles() -> std::tuple<container::ParticleContainer
       const auto p = generate_cuboids(cuboids, seed);
       spdlog::debug("Seed: ", seed);
       spdlog::debug("Generated {} particles for Lennard-Jones model.", p.size());
-      particles = container::ParticleContainer(p);
+      particles = std::vector<Particle>(p);
       break;
     }
     case physics::ForceModel::Gravity: {
       spdlog::info("Processing Gravity model.");
       const auto p = *parse_gravity(input_buf);
       spdlog::debug("Parsed {} particles for Gravity model.", p.size());
-      particles = container::ParticleContainer(p);
+      particles = std::vector<Particle>(p);
       break;
     }
   }

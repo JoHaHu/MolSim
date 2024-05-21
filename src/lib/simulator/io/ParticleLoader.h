@@ -1,10 +1,10 @@
 #pragma once
 
 #include "config/config.h"
-#include "container/ParticleContainer.h"
 #include "simulator/physics/ForceModel.h"
 #include <memory>
 #include <optional>
+#include <vector>
 
 namespace simulator::io {
 
@@ -38,7 +38,7 @@ class ParticleLoader {
   /**
    * Load particles based on a input file and returns a particle container and the used force model
    * */
-  auto load_particles() -> std::tuple<container::ParticleContainer, physics::ForceModel>;
+  auto load_particles() -> std::tuple<std::vector<Particle>, physics::ForceModel>;
 };
 
 }// namespace simulator::io

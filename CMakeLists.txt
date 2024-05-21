@@ -44,6 +44,7 @@ target_link_libraries(simulator
         PUBLIC
         xerces-c
         spdlog::spdlog
+        range-v3::range-v3
 )
 
 target_compile_features(simulator
@@ -131,3 +132,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 include(doxygen)
 include(spdlog)
 include(g_test)
+
+# include the ranges-v3 library because std::ranges::concat_view is not available yet
+# and ranges-v3 is the basis for the implementation of the std::ranges library
+include(ranges-v3)

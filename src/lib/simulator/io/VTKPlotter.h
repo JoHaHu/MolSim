@@ -3,26 +3,47 @@
 #include "Plotter.h"
 #include "VTKWriter.h"
 #include "config/config.h"
-#include "container/ParticleContainer.h"
 
 namespace simulator::io {
 
 /*!
  * plotting vtk files
  */
-class VTKPlotter final : public Plotter {
+template<std::input_iterator I>
+  requires(std::same_as<typename std::iterator_traits<I>::value_type, Particle>)
+class VTKPlotter final : public Plotter<I> {
  private:
   VTKWriter vtk_writer;
   std::shared_ptr<config::Config> config;
 
  public:
-  auto plotParticles(container::ParticleContainer &particle_container, int iteration) -> void override;
-  ~VTKPlotter() override;
+  /**
+ * @brief Plots particles to a VTK file.
+ *
+ * Initializes the VTK writer, plots each particle, and writes the file.
+ *
+ * @param particle_container The container holding the particles to be plotted.
+ * @param iteration The current iteration number, used in the output file name.
+ */
+
+  auto plotParticles(I &particle_container, int iteration) -> void override {
+    std::string out_name(config->output_filename);
+
+    assert(particle_container.size() <= INT_MAX);
+    vtk_writer.initializeOutput(static_cast<int>(particle_container.size()));
+
+    for (auto &particle : particle_container) {
+      vtk_writer.plotParticle(particle);
+    }
+    vtk_writer.writeFile(out_name, iteration);
+  };
+
+  ~VTKPlotter() override = default;
   VTKPlotter() = default;
 
   VTKPlotter(VTKPlotter &plotter) = delete;
   VTKPlotter(VTKPlotter &&plotter) = delete;
-  explicit VTKPlotter(const std::shared_ptr<config::Config> &config);
+  explicit VTKPlotter(const std::shared_ptr<config::Config> &config){};
 
   auto operator=(VTKPlotter &plotter) = delete;
   auto operator=(VTKPlotter &&plotter) -> VTKPlotter & = delete;

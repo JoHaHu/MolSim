@@ -1,11 +1,11 @@
 #include "Particle.h"
-#include "container/ParticleContainer.h"
+#include "container/ParticleVector.h"
 #include <array>
 #include <gtest/gtest.h>
 
 class ParticleTest : public ::testing::Test {
  public:
-  container::ParticleContainer container, container2;
+  container::ParticleVector container, container2;
   std::vector<Particle> particles, particles2;
 
   // custom ParticleContainer constructor with capacity 10 because there is no default otherwise
@@ -46,8 +46,8 @@ class ParticleTest : public ::testing::Test {
     }
 
     // initialise containers
-    container = container::ParticleContainer(particles);
-    container2 = container::ParticleContainer(particles2);
+    container = container::ParticleVector(particles);
+    container2 = container::ParticleVector(particles2);
   }
 };
 
