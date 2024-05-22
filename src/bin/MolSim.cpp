@@ -1,4 +1,5 @@
 #include <spdlog/spdlog.h>
+#include <variant>
 #include <vector>
 
 #include "config/config.h"
@@ -32,26 +33,24 @@ auto main(int argc, char *argv[]) -> int {
 
   auto plotter = std::make_unique<simulator::io::VTKPlotter>(config);
 
-  auto simulator = simulator::Simulator(std::move(particle_container), std::move(plotter), config);
+  auto container = container::particle_container(particle_container);
+
+  simulator::physics::force_model physics;
+  switch (force_model) {
+    case simulator::physics::ForceModel::Gravity:
+      physics = {simulator::physics::Gravity()};
+      break;
+    case simulator::physics::ForceModel::LennardJones:
+      physics = {simulator::physics::LennardJones()};
+      break;
+  }
+
+  auto simulator = simulator::Simulator(std::move(container), physics, std::move(plotter), config);
 
   if (config->io_interval == 0) {
-    switch (force_model) {
-      case simulator::physics::ForceModel::Gravity:
-        simulator.run<simulator::physics::Gravity, false>();
-        break;
-      case simulator::physics::ForceModel::LennardJones:
-        simulator.run<simulator::physics::LennardJones, false>();
-        break;
-    }
+    simulator.run<false>();
   } else {
-    switch (force_model) {
-      case simulator::physics::ForceModel::Gravity:
-        simulator.run<simulator::physics::Gravity, true>();
-        break;
-      case simulator::physics::ForceModel::LennardJones:
-        simulator.run<simulator::physics::LennardJones, true>();
-        break;
-    }
+    simulator.run<true>();
   }
 
   auto endTime = std::chrono::high_resolution_clock::now();

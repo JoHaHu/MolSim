@@ -9,9 +9,7 @@ namespace simulator::io {
 /*!
  * plotting vtk files
  */
-template<std::input_iterator I>
-  requires(std::same_as<typename std::iterator_traits<I>::value_type, Particle>)
-class VTKPlotter final : public Plotter<I> {
+class VTKPlotter final : public Plotter {
  private:
   VTKWriter vtk_writer;
   std::shared_ptr<config::Config> config;
@@ -26,7 +24,7 @@ class VTKPlotter final : public Plotter<I> {
  * @param iteration The current iteration number, used in the output file name.
  */
 
-  auto plotParticles(I &particle_container, int iteration) -> void override {
+  auto plotParticles(container::particle_container &particle_container, int iteration) -> void override {
     std::string out_name(config->output_filename);
 
     assert(particle_container.size() <= INT_MAX);

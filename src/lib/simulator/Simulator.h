@@ -2,35 +2,27 @@
 
 #include "Particle.h"
 #include "config/config.h"
-#include "container/ParticleVector.h"
+#include "container/container.h"
 #include "simulator/io/Plotter.h"
+#include "simulator/physics/ForceModel.h"
 #include "utils/ArrayUtils.h"
+#include "utils/variants.h"
 #include <cmath>
+#include <ranges>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 #include <utility>
 
 namespace simulator {
-/** <p> physics concept for force calculation </p>
-      * calculates the force for all particles,
-      *
-      * This is a concept since it allows the physics to be transparent for compiler optimizations.
-      * Trade off is binary size.
-      * \param T
-      * \param particle1
-      * \param particle2
-      */
-template<typename T>
-concept Physics = requires(T type, Particle const &particle1, Particle const &particle2) {
-  { T::calculate_force(particle1, particle2) } -> std::convertible_to<std::array<double, 3>>;
-};
+
 /**
  * The main Simulator class. can be configured by providing a config and a plotter. Some methods use a physics model provided at compile time.
  * */
 class Simulator {
  private:
-  container::ParticleVector particles;
+  container::particle_container particles;
+  physics::force_model physics;
   std::unique_ptr<io::Plotter> plotter;
   std::shared_ptr<config::Config> config;
 
@@ -45,8 +37,9 @@ class Simulator {
    * \param config the runtime configuration
    * */
   explicit Simulator(
-      container::ParticleVector particles,
-      std::unique_ptr<io::Plotter> plotter,
+      container::particle_container &&particles,
+      physics::force_model physics,
+      std::unique_ptr<io::Plotter> &&plotter,
       const std::shared_ptr<config::Config> &config);
 
   /**
@@ -55,7 +48,7 @@ class Simulator {
   * Executes the main simulation loop, updating particle positions, forces, and velocities
   * until the end time is reached. Periodically plots the particles based on the IO interval.
   */
-  template<Physics PY, bool IO>
+  template<bool IO>
   auto run() -> void;
 
   /*! <p> Function for position calculation </p>
@@ -74,32 +67,39 @@ class Simulator {
   *
   * Resets forces for all particles, then calculates and updates forces for each particle pair.
   */
-  template<Physics PY>
+
   auto calculate_force() -> void;
 };
 
 Simulator::Simulator(
-    container::ParticleVector particles, std::unique_ptr<io::Plotter> plotter,
+    container::particle_container &&particles,
+    physics::force_model physics,
+    std::unique_ptr<io::Plotter> &&plotter,
     const std::shared_ptr<config::Config> &config)
-    : particles(std::move(particles)), plotter(std::move(plotter)), config(config), start_time(config->start_time),
-      end_time(config->end_time), delta_t(config->delta_t) {
+    : particles(std::move(particles)),
+      physics(physics),
+      plotter(std::move(plotter)),
+      config(config),
+      start_time(config->start_time),
+      end_time(config->end_time),
+      delta_t(config->delta_t) {
 }
 
 /**
  * runs the main simulation loop. The physics concept must be specified to provide compile time transparency to allow compiler optimizations
  * */
-template<Physics PY, bool IO>
+template<bool IO>
 auto Simulator::run() -> void {
   spdlog::info("Running simulation...");
   double current_time = start_time;
   int iteration = 0;
   auto interval = config->io_interval;
 
-  calculate_force<PY>();
+  calculate_force();
 
   while (current_time < end_time) {
     calculate_position();
-    calculate_force<PY>();
+    calculate_force();
     calculate_velocity();
 
     iteration++;
@@ -133,27 +133,28 @@ inline void Simulator::calculate_velocity() {
   }
 }
 
-template<Physics PY>
 inline void Simulator::calculate_force() {
   spdlog::debug("Starting force calculation for {} particles.", particles.size());
   for (auto &particle : particles) {
     particle.old_force = particle.force;
     particle.force = {0, 0, 0};
   }
+  auto comb = particles.pairwise();
+  std::visit(
+      [this](auto &comb) { for (auto pair : comb) {
 
-  auto end = particles.end_pair();
-  for (auto pair = particles.begin_pair(); pair != end; pair++) {
-    const auto [particle1, particle2] = *pair;
+      Particle &particle1 = std::get<0>(pair);
+      Particle &particle2 = std::get<1>(pair);
+      const auto force = physics::calculate_force(physics, particle1, particle2);
+      particle1.force = particle1.force + force;
+      particle2.force = particle2.force - force;
+      spdlog::trace("Force updated for particle pair: ({}, {}, {}) - ({}, {}, {})", particle1.force[0],
+                    particle1.force[1], particle1.force[2], particle2.force[0], particle2.force[1],
+                    particle2.force[2]);
+    } },
+      comb);
 
-    const auto force = PY::calculate_force(particle1, particle2);
-
-    particle1.force = particle1.force + force;
-    particle2.force = particle2.force - force;
-
-    spdlog::trace("Force updated for particle pair: ({}, {}, {}) - ({}, {}, {})", particle1.force[0],
-                  particle1.force[1], particle1.force[2], particle2.force[0], particle2.force[1],
-                  particle2.force[2]);
-  }
   spdlog::trace("Force calculation completed.");
 }
+
 }// namespace simulator

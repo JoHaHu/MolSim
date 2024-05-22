@@ -6,7 +6,8 @@
 
 namespace container {
 
-template<std::forward_iterator Iter>
+template<typename Iter>
+  requires(std::forward_iterator<Iter>)
 class combination_iterator {
 
  public:
@@ -55,11 +56,25 @@ class combination_iterator {
     return i1 == iter.i1 && i2 == iter.i2 && end == iter.end;
   }
 
+  auto operator-(combination_iterator<Iter> const &other) const -> std::ptrdiff_t {
+    return other.size() - size();
+  }
+
+  auto size() const -> long {
+    long diff = end - i1;
+    long diff2 = end - i2;
+    if (diff == 0) {
+      return 0;
+    }
+    return (diff * (diff - 1) / 2) - (diff - (diff2 + 1));
+  }
+
  private:
   Iter i1{}, i2{}, end{};
 };
 
 static_assert(std::forward_iterator<combination_iterator<std::vector<Particle>::iterator>>);
+static_assert(std::sized_sentinel_for<combination_iterator<std::vector<Particle>::iterator>, combination_iterator<std::vector<Particle>::iterator>>);
 
 template<std::ranges::forward_range Range>
   requires(std::ranges::view<Range>)
@@ -70,12 +85,13 @@ class combination_view : public std::ranges::view_interface<combination_view<Ran
   explicit combination_view(Range &&range) : range(std::move(range)) {}
 
   using iterator = std::ranges::iterator_t<Range>;
+  using sentinel = std::ranges::sentinel_t<Range>;
 
-  auto begin() -> combination_iterator<iterator> {
+  auto begin() const -> combination_iterator<iterator> {
     return combination_iterator(range.begin(), range.end());
   }
 
-  auto end() -> combination_iterator<iterator> {
+  auto end() const -> combination_iterator<iterator> {
     return combination_iterator(range.end(), range.end());
   }
 
@@ -88,11 +104,15 @@ struct _combination : std::ranges::range_adaptor_closure<_combination> {
   constexpr auto operator()(R &&range) const {
     return combination_view(std::forward<R>(range));
   }
+  template<std::ranges::range R>
+  constexpr auto operator()(R &range) const {
+    return combination_view(std::ranges::ref_view<R>(range));
+  }
 };
 
 inline constexpr _combination combination;
 
-;
 static_assert(std::ranges::forward_range<combination_view<std::ranges::ref_view<std::vector<Particle>>>>);
+static_assert(std::ranges::sized_range<combination_view<std::ranges::ref_view<std::vector<Particle>>>>);
 
 }// namespace container
