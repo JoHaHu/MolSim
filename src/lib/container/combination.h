@@ -6,8 +6,7 @@
 
 namespace container {
 
-template<typename Iter>
-  requires(std::forward_iterator<Iter>)
+template<std::input_iterator Iter>
 class combination_iterator {
 
  public:
@@ -73,10 +72,9 @@ class combination_iterator {
   Iter i1{}, i2{}, end{};
 };
 
-static_assert(std::forward_iterator<combination_iterator<std::vector<Particle>::iterator>>);
-static_assert(std::sized_sentinel_for<combination_iterator<std::vector<Particle>::iterator>, combination_iterator<std::vector<Particle>::iterator>>);
+static_assert(std::input_iterator<combination_iterator<std::vector<Particle>::iterator>>);
 
-template<std::ranges::forward_range Range>
+template<std::ranges::input_range Range>
   requires(std::ranges::view<Range>)
 class combination_view : public std::ranges::view_interface<combination_view<Range>> {
 
@@ -87,11 +85,11 @@ class combination_view : public std::ranges::view_interface<combination_view<Ran
   using iterator = std::ranges::iterator_t<Range>;
   using sentinel = std::ranges::sentinel_t<Range>;
 
-  auto begin() const -> combination_iterator<iterator> {
+  auto begin() -> combination_iterator<iterator> {
     return combination_iterator(range.begin(), range.end());
   }
 
-  auto end() const -> combination_iterator<iterator> {
+  auto end() -> combination_iterator<iterator> {
     return combination_iterator(range.end(), range.end());
   }
 
@@ -101,6 +99,7 @@ class combination_view : public std::ranges::view_interface<combination_view<Ran
 
 struct _combination : std::ranges::range_adaptor_closure<_combination> {
   template<std::ranges::range R>
+    requires(std::ranges::view<R>)
   constexpr auto operator()(R &&range) const {
     return combination_view(std::forward<R>(range));
   }
@@ -112,7 +111,6 @@ struct _combination : std::ranges::range_adaptor_closure<_combination> {
 
 inline constexpr _combination combination;
 
-static_assert(std::ranges::forward_range<combination_view<std::ranges::ref_view<std::vector<Particle>>>>);
-static_assert(std::ranges::sized_range<combination_view<std::ranges::ref_view<std::vector<Particle>>>>);
+static_assert(std::ranges::input_range<combination_view<std::ranges::ref_view<std::vector<Particle>>>>);
 
 }// namespace container

@@ -495,7 +495,7 @@ namespace xsd
       const char* bounds<C>::
       what () const throw ()
       {
-        return "buffer boundary rules have been violated";
+        return "buffer is_boundary rules have been violated";
       }
 
       template <typename C>

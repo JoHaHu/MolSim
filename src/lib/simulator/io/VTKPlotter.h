@@ -3,6 +3,7 @@
 #include "Plotter.h"
 #include "VTKWriter.h"
 #include "config/config.h"
+#include <variant>
 
 namespace simulator::io {
 
@@ -16,23 +17,27 @@ class VTKPlotter final : public Plotter {
 
  public:
   /**
- * @brief Plots particles to a VTK file.
- *
- * Initializes the VTK writer, plots each particle, and writes the file.
- *
- * @param particle_container The container holding the particles to be plotted.
- * @param iteration The current iteration number, used in the output file name.
- */
+  * @brief Plots particles to a VTK file.
+  *
+  * Initializes the VTK writer, plots each particle, and writes the file.
+  *
+  * @param particle_container The container holding the particles to be plotted.
+  * @param iteration The current iteration number, used in the output file name.
+  */
+  auto plotParticles(container::particle_container &container, int iteration) -> void override {
 
-  auto plotParticles(container::particle_container &particle_container, int iteration) -> void override {
     std::string out_name(config->output_filename);
 
-    assert(particle_container.size() <= INT_MAX);
-    vtk_writer.initializeOutput(static_cast<int>(particle_container.size()));
+    vtk_writer.initializeOutput(container.size());
 
-    for (auto &particle : particle_container) {
-      vtk_writer.plotParticle(particle);
-    }
+    auto linear = container.linear();
+    std::visit(
+        [this](auto &range) {
+          for (auto &particle : range) {
+            vtk_writer.plotParticle(particle);
+          }
+        },
+        linear);
     vtk_writer.writeFile(out_name, iteration);
   };
 

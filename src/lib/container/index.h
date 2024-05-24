@@ -15,10 +15,21 @@ concept Index =
          { T(dim) };
        };
 
+class dimension {
+ public:
+  dimension(std::array<double, 3> domain, double cutoff) : domain(domain) {
+  }
+  std::array<size_t, 3> dim;
+  double cell_width;
+
+ private:
+  std::array<double, 3> domain;
+};
+
 /**
  * A simple index iterating over dimensions in xyz-order
  * */
-class SimpleIndex : public std::ranges::view_interface<SimpleIndex> {
+class simple_index : public std::ranges::view_interface<simple_index> {
 
   using View =
       std::ranges::cartesian_product_view<
@@ -30,9 +41,9 @@ class SimpleIndex : public std::ranges::view_interface<SimpleIndex> {
   View view;
 
  public:
-  SimpleIndex() = delete;
+  simple_index() = delete;
 
-  explicit SimpleIndex(std::array<size_t, 3> dim)
+  explicit simple_index(std::array<size_t, 3> dim)
       : view(std::views::cartesian_product(
             std::views::iota(dim[0]),
             std::views::iota(dim[1]),
@@ -47,13 +58,12 @@ class SimpleIndex : public std::ranges::view_interface<SimpleIndex> {
   }
 };
 
-static_assert(Index<SimpleIndex>);
+static_assert(Index<simple_index>);
 
 /**
- * A indexing scheme using space filling curves, specifically the 3 dimensional Hilbert curve
- *
+ * A indexing scheme using space filling curves, specifically a compact version of the 3 dimensional Hilbert curve with different order each side
  * */
-class HilbertIndex : public std::ranges::view_interface<HilbertIndex> {
+class hilbert_index : public std::ranges::view_interface<hilbert_index> {
  private:
  public:
 };
