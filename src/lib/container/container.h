@@ -7,30 +7,30 @@
 #include <vector>
 namespace container {
 
-using particle_container_variant = std::variant<std::vector<Particle>, container::linked_cells<index::simple_index>>;
+using particle_container_variant = std::variant<std::vector<Particle>, container::linked_cell<index::simple_index>>;
 
 struct particle_container {
  public:
   using linear_variant = std::variant<
       std::ranges::ref_view<std::vector<Particle>>,
-      decltype(std::declval<container::linked_cells<index::simple_index>>().linear())>;
+      decltype(std::declval<container::linked_cell<index::simple_index>>().linear())>;
 
   using pairwise_variant = std::variant<
       container::combination_view<std::ranges::ref_view<std::vector<Particle>>>,
-      decltype(std::declval<container::linked_cells<index::simple_index>>().pairwise())>;
+      decltype(std::declval<container::linked_cell<index::simple_index>>().pairwise())>;
   using halo_variant = std::variant<
       container::combination_view<std::ranges::ref_view<std::vector<Particle>>>,
-      decltype(std::declval<container::linked_cells<index::simple_index>>().halo())>;
+      decltype(std::declval<container::linked_cell<index::simple_index>>().halo())>;
   using boundary_variant = std::variant<
       container::combination_view<std::ranges::ref_view<std::vector<Particle>>>,
-      decltype(std::declval<container::linked_cells<index::simple_index>>().boundary())>;
+      decltype(std::declval<container::linked_cell<index::simple_index>>().boundary())>;
 
   explicit particle_container(const particle_container_variant &&var) : var(var) {}
 
   auto linear() -> linear_variant {
     return std::visit<linear_variant>(overloads{
                                           [](std::vector<Particle> &container) { return std::ranges::ref_view(container); },
-                                          [](linked_cells<index::simple_index> &container) { return container.linear(); },
+                                          [](linked_cell<index::simple_index> &container) { return container.linear(); },
                                       },
                                       var);
   }
@@ -38,7 +38,7 @@ struct particle_container {
   auto pairwise() -> pairwise_variant {
     return std::visit<pairwise_variant>(overloads{
                                             [](std::vector<Particle> &container) { return container | combination; },
-                                            [](linked_cells<index::simple_index> &container) { return container.pairwise(); }},
+                                            [](linked_cell<index::simple_index> &container) { return container.pairwise(); }},
                                         var);
   }
 

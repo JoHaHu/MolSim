@@ -3,6 +3,7 @@
 #include "Plotter.h"
 #include "VTKWriter.h"
 #include "config/config.h"
+#include <utility>
 #include <variant>
 
 namespace simulator::io {
@@ -46,7 +47,7 @@ class VTKPlotter final : public Plotter {
 
   VTKPlotter(VTKPlotter &plotter) = delete;
   VTKPlotter(VTKPlotter &&plotter) = delete;
-  explicit VTKPlotter(const std::shared_ptr<config::Config> &config){};
+  explicit VTKPlotter(std::shared_ptr<config::Config> config) : config(std::move(config)){};
 
   auto operator=(VTKPlotter &plotter) = delete;
   auto operator=(VTKPlotter &&plotter) -> VTKPlotter & = delete;

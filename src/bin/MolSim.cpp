@@ -29,9 +29,15 @@ auto main(int argc, char *argv[]) -> int {
 
   auto particle_loader = simulator::io::ParticleLoader(config);
 
-  auto [particle_container, force_model] = particle_loader.load_particles();
+  auto [particles, force_model] = particle_loader.load_particles();
 
-  auto plotter = std::make_unique<simulator::io::VTKPlotter>(config);
+  auto particle_container = container::linked_cell<container::index::simple_index>({70, 70, 70}, 3.0);
+
+  for (auto p : particles) {
+    particle_container.insert(p);
+  }
+
+  auto unique_plotter = std::make_unique<simulator::io::VTKPlotter>(config);
 
   auto container = container::particle_container(particle_container);
 
@@ -45,7 +51,7 @@ auto main(int argc, char *argv[]) -> int {
       break;
   }
 
-  auto simulator = simulator::Simulator(std::move(container), physics, std::move(plotter), config);
+  auto simulator = simulator::Simulator(std::move(container), physics, std::move(unique_plotter), config);
 
   if (config->io_interval == 0) {
     simulator.run<false>();
