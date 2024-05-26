@@ -6,6 +6,7 @@
 #include "index.h"
 #include "utils/ArrayUtils.h"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <concepts>
@@ -31,13 +32,13 @@ enum class cell_type : std::uint8_t {
 
 class cell {
  private:
-  std::vector<Particle> particles;
+  std::vector<std::shared_ptr<Particle>> particles;
 
  public:
   cell_type type;
   cell() = default;
   explicit cell(
-      std::vector<Particle> &&particles,
+      std::vector<std::shared_ptr<Particle>> &&particles,
       cell_type type) : particles(std::move(particles)),
                         type(type){};
 
@@ -51,8 +52,11 @@ class cell {
   constexpr auto is_boundary() -> bool {
     return type == cell_type::halo_and_boundary || type == cell_type::boundary;
   }
-  auto insert(Particle &particle) {
+  auto insert(const std::shared_ptr<Particle> &particle) {
     particles.emplace_back(particle);
+  }
+  auto clear() {
+    particles.clear();
   }
 };
 
@@ -64,41 +68,16 @@ class linked_cell {
 
  public:
   linked_cell() = delete;
-  explicit linked_cell(const std::array<double, 3> &domain, double cutoff) : domain(domain), cutoff(cutoff) {
-    {
-      double x_rem = NAN;
-      double x = NAN;
-      x_rem = std::modf(domain[0] / cutoff, &x);
-      x = x + 1;
-      if (x_rem == 0.0) {
-        x = x + 1;
-      }
-      double y_rem = NAN;
-      double y = NAN;
-      y_rem = std::modf(domain[1] / cutoff, &y);
-      y = y + 1;
-      if (y_rem == 0.0) {
-        y = y + 1;
-      }
+  explicit linked_cell(const std::array<double, 3> &domain, double cutoff) : index(I(domain, cutoff)), cutoff(cutoff) {
 
-      double z_rem = NAN;
-      double z = NAN;
-      z_rem = std::modf(domain[2] / cutoff, &z);
-      z = z + 1;
-      if (z_rem == 0.0) {
-        z = z + 1;
-      }
+    auto dim = index.dimension();
 
-      dim = {(size_t) x,
-             (size_t) y,
-             (size_t) z};
-    }
     cells.reserve((dim[0]) * (dim[1]) * (dim[2]));
 
     for (size_t i = 0; i < dim[0] * dim[1] * dim[2]; ++i) {
-      cells.emplace_back(std::vector<Particle>(), cell_type::inner);
+      cells.emplace_back(std::vector<std::shared_ptr<Particle>>(), cell_type::inner);
     }
-    index = I(dim);
+
     for (auto i : index) {
       auto [x, y, z] = i;
       if (x == 0 || y == 0 || z == 0 || x == dim[0] - 1 || y == dim[1] - 1 || z == dim[2] - 1) {
@@ -122,9 +101,7 @@ class linked_cell {
   }
 
   auto linear() -> auto {
-    return cells
-        | std::views::transform(&cell::linear)
-        | std::views::join;
+    return std::ranges::ref_view(store);
   }
 
   auto pairwise() -> auto {
@@ -132,22 +109,27 @@ class linked_cell {
     return index
         | std::views::transform([this](std::tuple<size_t, size_t, size_t> idx) {
              auto [x, y, z] = idx;
-             auto cell_idx = x + dim[0] * y + z * dim[0] * dim[1];
+             auto cell_idx = index.dimension_to_index({x, y, z});
              // TODO make this vector a member of cell and initialize when creating the cell,
-             //  because the position of a cell and therefore it's neighbours do not change
+             //  because the position of a cell and therefore it's neighbours do not change after initialization
              auto cartesian_products = std::vector<std::ranges::cartesian_product_view<
-                 std::ranges::ref_view<std::vector<Particle>>,
-                 std::ranges::ref_view<std::vector<Particle>>>>();
+                 std::ranges::ref_view<std::vector<std::shared_ptr<Particle>>>,
+                 std::ranges::ref_view<std::vector<std::shared_ptr<Particle>>>>>();
 
-             cell &cell = cells.at(cell_idx);
+             cell &cell = cells[cell_idx];
              if (cell.type == cell_type::inner) {
-               for (int x = -1; x <= 1; ++x) {
-                 for (int y = -1; y <= 1; ++y) {
-                   auto prod = std::views::cartesian_product(cell.linear(), cells.at(cell_idx + x + y * dim[1] + dim[1] * dim[2]).linear());
-                   cartesian_products.emplace_back(prod);
-                 }
-               }
+              for (int x = -1; x <= 1; ++x) {
+                for (int y = -1; y <= 1; ++y) {
+                  auto prod = std::views::cartesian_product(cell.linear(), cells[index.offset(cell_idx, {x, y, 1})].linear());
+                  cartesian_products.emplace_back(prod);
+                }
+              }
+               cartesian_products.emplace_back(cell.linear(), cells[index.offset(cell_idx, {1, -1, 0})].linear());
+               cartesian_products.emplace_back(cell.linear(), cells[index.offset(cell_idx, {1, 0, 0})].linear());
+               cartesian_products.emplace_back(cell.linear(), cells[index.offset(cell_idx, {1, 1, 0})].linear());
+               cartesian_products.emplace_back(cell.linear(), cells[index.offset(cell_idx, {0, 1, 0})].linear());
              }
+
              auto joined = std::move(cartesian_products) | std::views::join;
              return ranges::concat_view(cell.linear() | combination, std::move(joined));
            })
@@ -155,18 +137,41 @@ class linked_cell {
   }
 
   auto insert(Particle &particle) {
-    auto [x, y, z] = particle.position;
-    size_t x_idx = std::ceil(x / cutoff);
-    size_t y_idx = std::ceil(y / cutoff);
-    size_t z_idx = std::ceil(z / cutoff);
-    cells[x_idx + y_idx * dim[0] + z_idx * dim[0] * dim[1]].insert(particle);
+    auto shared = std::make_shared<Particle>(particle);
+    store.emplace_back(shared);
+    insert_shared(shared);
+  }
+
+  auto size() {
+    return linear().size();
+  }
+
+  // TODO better fixup than completly replace
+  auto fix_positions() {
+    std::ranges::for_each(cells, &cell::clear);
+    std::ranges::for_each(linear(), [this](std::shared_ptr<Particle> &p) {
+      insert_shared(p);
+    });
   }
 
  private:
-  std::array<double, 3> domain{};
-  std::array<size_t, 3> dim{};
+  auto insert_shared(std::shared_ptr<Particle> shared) {
+
+    auto idx = index.position_to_index(shared->position);
+    //    if (idx[0] < index.dimension()[0] && idx[1] < index.dimension()[1] && idx[2] < index.dimension()[2]) {
+    // TODO proper handling of boundary conditions
+    if (idx < index.max_index()){
+      cells[idx].insert(shared);
+    }
+    //    } else {
+    //      spdlog::warn("a particle has positions that is out of bounds {} {} {}", shared->position[0], shared->position[1], shared->position[2]);
+    //    }
+  }
+
+  // TODO use an arena allocator for all shared_ptr so that they will be sequential in memory
+  std::vector<std::shared_ptr<Particle>> store{};
   std::vector<cell> cells;
-  I index = I(dim);
+  I index;
   double cutoff;
 };
 

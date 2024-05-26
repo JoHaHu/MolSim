@@ -202,14 +202,14 @@ auto ParticleLoader::recognize_double_triplet(std::istreambuf_iterator<char> &bu
      */
 auto ParticleLoader::recognize_dimension_triplet(
     std::istreambuf_iterator<char> &buf) -> std::optional<std::array<int, 3>> {
-  spdlog::trace("Starting to recognize a dimension triplet");
+  spdlog::trace("Starting to recognize a dim triplet");
   recognize_whitespace(buf);
   const auto first = *recognize_int(buf);
   recognize_whitespace(buf);
   const auto second = *recognize_int(buf);
   recognize_whitespace(buf);
   const auto third = *recognize_int(buf);
-  spdlog::debug("Recognized dimension triplet: ({}, {}, {})", first, second, third);
+  spdlog::debug("Recognized dim triplet: ({}, {}, {})", first, second, third);
   return {{first, second, third}};
 }
 

@@ -31,15 +31,15 @@ auto main(int argc, char *argv[]) -> int {
 
   auto [particles, force_model] = particle_loader.load_particles();
 
-  auto particle_container = container::linked_cell<container::index::simple_index>({70, 70, 70}, 3.0);
-
-  for (auto p : particles) {
-    particle_container.insert(p);
-  }
-
+  auto particle_container = container::linked_cell<container::index::simple_index>({180, 90, 20}, 3.0);
+//  auto particle_container = std::vector<Particle>();
   auto unique_plotter = std::make_unique<simulator::io::VTKPlotter>(config);
 
   auto container = container::particle_container(particle_container);
+
+  for (auto &p : particles) {
+    container.insert(p);
+  }
 
   simulator::physics::force_model physics;
   switch (force_model) {

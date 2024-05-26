@@ -108,21 +108,21 @@ target_compile_options(MolSim
 if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -g -O0 -fno-omit-frame-pointer>
+            $<$<CXX_COMPILER_ID:Clang>: -g -O1 -fno-omit-frame-pointer>
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -g -O0 -fno-omit-frame-pointer>
+            $<$<CXX_COMPILER_ID:Clang>: -g -O1 -fno-omit-frame-pointer>
     )
 elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize >
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize >
             $<$<CXX_COMPILER_ID:GNU>: -O3 >
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize >
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize >
             $<$<CXX_COMPILER_ID:CNU>: -O3>
     )
 endif ()

@@ -17,6 +17,10 @@ class combination_iterator {
     if (i2 != end) {
       i2++;
     }
+    // If after incrementing it i2 is at the end, the range only contains 1 element, so there are no combinations
+    if (i2 == end) {
+      i1 = end;
+    }
   }
 
   using difference_type = std::ptrdiff_t;

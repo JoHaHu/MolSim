@@ -7,6 +7,8 @@
 class CombinationIteratorTest : public ::testing::Test {
 };
 
+
+
 // Tests that a combination iterator iterates over all unique permutations of a given range
 TEST_F(CombinationIteratorTest, correct_order_of_combination) {
 
@@ -53,6 +55,17 @@ TEST_F(CombinationIteratorTest, correct_order_of_combination) {
 
 TEST_F(CombinationIteratorTest, correct_number_of_combination) {
   size_t n = 1024;
+  auto vec = std::vector<int>(n);
+  auto combs = vec
+      | container::combination
+      | std::views::transform([](auto) { return 1; });
+  EXPECT_EQ(combs.size(), (n * (n - 1)) / 2);
+  auto sum = std::ranges::fold_left(combs, 0, std::plus<>());
+  EXPECT_EQ(sum, (n * (n - 1)) / 2);
+}
+
+TEST_F(CombinationIteratorTest, single_element_array_no_combination) {
+  size_t n = 1;
   auto vec = std::vector<int>(n);
   auto combs = vec
       | container::combination

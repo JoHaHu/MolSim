@@ -42,11 +42,22 @@ struct particle_container {
                                         var);
   }
 
-  auto size() -> int {
-    return 0;
+  auto size() -> size_t {
+    return std::visit([](auto &c) { return c.size(); }, var);
   }
 
-  void insert(Particle &&p) {
+  void insert(Particle &p) {
+    std::visit(overloads{
+                   [&p](std::vector<Particle> &container) { container.emplace_back(p); },
+                   [&p](linked_cell<index::simple_index> &container) { container.insert(p); }},
+               var);
+  }
+
+  void update_positions() {
+    std::visit(overloads{
+                   [](std::vector<Particle> &container) {},
+                   [](linked_cell<index::simple_index> &container) { container.fix_positions(); }},
+               var);
   }
 
  private:
