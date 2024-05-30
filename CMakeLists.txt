@@ -108,11 +108,11 @@ target_compile_options(MolSim
 if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O1 -fno-omit-frame-pointer>
+            $<$<CXX_COMPILER_ID:Clang>: -O1 -Wstrict-overflow -fno-omit-frame-pointer>
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>:  -O1 -fno-omit-frame-pointer>
+            $<$<CXX_COMPILER_ID:Clang>:  -O1 -Wstrict-overflow -fno-omit-frame-pointer>
     )
 elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
     target_compile_options(simulator

@@ -44,7 +44,7 @@ class simple_index : public std::ranges::view_interface<simple_index> {
           std::ranges::iota_view<size_t, size_t>>;
 
  private:
-  std::array<double, 3> boundary;
+  std::array<double, 3> bounds;
   double width;
   View view;
   std::array<size_t, 3> dim;
@@ -52,7 +52,7 @@ class simple_index : public std::ranges::view_interface<simple_index> {
  public:
   simple_index() = delete;
 
-  explicit simple_index(std::array<double, 3> boundary, double width) : boundary(boundary), width(width) {
+  explicit simple_index(std::array<double, 3> boundary, double width) : bounds(boundary), width(width) {
     auto [x, y, z] = boundary;
 
     dim = {(size_t) std::ceil(x / width) + 2,
@@ -60,9 +60,9 @@ class simple_index : public std::ranges::view_interface<simple_index> {
            (size_t) std::ceil(z / width) + 2};
 
     view = std::views::cartesian_product(
-        std::views::iota(0UL, dim[0]-2),
-        std::views::iota(0UL, dim[1]-2),
-        std::views::iota(0UL, dim[2]-2));
+        std::views::iota(0UL, dim[0] - 2),
+        std::views::iota(0UL, dim[1] - 2),
+        std::views::iota(0UL, dim[2] - 2));
   }
 
   auto begin() -> auto {
@@ -76,6 +76,9 @@ class simple_index : public std::ranges::view_interface<simple_index> {
     return dim;
   }
 
+  auto boundary() -> auto {
+    return bounds;
+  }
   constexpr auto position_to_index(std::array<double, 3> position) -> size_t {
     auto [x, y, z] = position;
 
@@ -88,7 +91,7 @@ class simple_index : public std::ranges::view_interface<simple_index> {
 
   constexpr auto dimension_to_index(std::array<size_t, 3> coords) -> size_t {
     auto [x, y, z] = coords;
-    return (x + 1) + (y + 1) * dim[0] + (z + 1) * dim[0] * dim[1];
+    return (x + 1) + ((y + 1) * dim[0]) + ((z + 1) * dim[0] * dim[1]);
   }
   constexpr auto index_to_dimension(size_t index) -> std::array<size_t, 3> {
     auto z = index / (dim[0] * dim[1]);
@@ -108,13 +111,13 @@ class simple_index : public std::ranges::view_interface<simple_index> {
 
 static_assert(Index<simple_index>);
 
-/**
- * A indexing scheme using space filling curves, specifically a compact version of the 3 dimensional Hilbert curve with different order each side
- * */
-class hilbert_index : public std::ranges::view_interface<hilbert_index> {
- private:
- public:
-};
+///**
+// * A indexing scheme using space filling curves, specifically a compact version of the 3 dimensional Hilbert curve with different order each side
+// * */
+//class hilbert_index : public std::ranges::view_interface<hilbert_index> {
+// private:
+// public:
+//};
 
 //static_assert(Index<HilbertIndex>);
 

@@ -120,8 +120,7 @@ class Simulator {
                      }
                    }},
                linear);
-    // Updates positions according to boundary conditions
-    particles.update_positions();
+
   }
   /**
   * @brief Calculates forces between particles.
@@ -187,11 +186,15 @@ class Simulator {
 
     while (current_time < end_time) {
       calculate_position();
+      // refreshed the internal datastructure of the particle container
+      particles.refresh();
       calculate_force();
       calculate_velocity();
 
+
+
       iteration++;
-      if (iteration % interval == 0 && IO) {
+      if (IO && iteration % interval == 0) {
         plotter->plotParticles(particles, iteration);
         spdlog::debug("Iteration {} plotted.", iteration);
       }

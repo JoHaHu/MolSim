@@ -57,7 +57,7 @@ struct particle_container {
                var);
   }
 
-  void update_positions() {
+  void refresh() {
     std::visit(overloads{
                    [](std::vector<Particle> &container) {},
                    [](std::shared_ptr<linked_cell<index::simple_index>> &container) { container->fix_positions(); }},
