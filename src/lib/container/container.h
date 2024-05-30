@@ -7,7 +7,7 @@
 #include <vector>
 namespace container {
 
-using particle_container_variant = std::variant<std::vector<Particle>, container::linked_cell<index::simple_index>>;
+using particle_container_variant = std::variant<std::vector<Particle>, std::shared_ptr<container::linked_cell<index::simple_index>>>;
 
 struct particle_container {
  public:
@@ -30,7 +30,7 @@ struct particle_container {
   auto linear() -> linear_variant {
     return std::visit<linear_variant>(overloads{
                                           [](std::vector<Particle> &container) { return std::ranges::ref_view(container); },
-                                          [](linked_cell<index::simple_index> &container) { return container.linear(); },
+                                          [](std::shared_ptr<linked_cell<index::simple_index>> &container) { return container->linear(); },
                                       },
                                       var);
   }
@@ -38,25 +38,29 @@ struct particle_container {
   auto pairwise() -> pairwise_variant {
     return std::visit<pairwise_variant>(overloads{
                                             [](std::vector<Particle> &container) { return container | combination; },
-                                            [](linked_cell<index::simple_index> &container) { return container.pairwise(); }},
+                                            [](std::shared_ptr<linked_cell<index::simple_index>> &container) { return container->pairwise(); }},
                                         var);
   }
 
   auto size() -> size_t {
-    return std::visit([](auto &c) { return c.size(); }, var);
+    return std::visit(overloads{
+                          [](std::vector<Particle> &c) { return c.size(); },
+                          [](std::shared_ptr<linked_cell<index::simple_index>> &c) { return c->size(); },
+                      },
+                      var);
   }
 
   void insert(Particle &p) {
     std::visit(overloads{
                    [&p](std::vector<Particle> &container) { container.emplace_back(p); },
-                   [&p](linked_cell<index::simple_index> &container) { container.insert(p); }},
+                   [&p](std::shared_ptr<linked_cell<index::simple_index>> &container) { container->insert(p); }},
                var);
   }
 
   void update_positions() {
     std::visit(overloads{
                    [](std::vector<Particle> &container) {},
-                   [](linked_cell<index::simple_index> &container) { container.fix_positions(); }},
+                   [](std::shared_ptr<linked_cell<index::simple_index>> &container) { container->fix_positions(); }},
                var);
   }
 
