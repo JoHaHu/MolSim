@@ -18,10 +18,7 @@ template<typename T>
 concept physics = requires(T type, Particle const &particle1, Particle const &particle2) {
   // TODO use operator() instead
   { type.calculate_force(particle1, particle2) } -> std::convertible_to<std::array<double, 3>>;
-
 };
-
-
 
 template<physics... p>
 using force_model_variant = std::variant<p...>;

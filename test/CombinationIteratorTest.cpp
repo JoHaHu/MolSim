@@ -7,8 +7,6 @@
 class CombinationIteratorTest : public ::testing::Test {
 };
 
-
-
 // Tests that a combination iterator iterates over all unique permutations of a given range
 TEST_F(CombinationIteratorTest, correct_order_of_combination) {
 

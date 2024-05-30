@@ -13,7 +13,6 @@ class shared_view : public std::ranges::view_interface<shared_view<R>> {
   shared_view() = default;
   explicit shared_view(std::shared_ptr<R> &&range) : range(std::move(range)) {}
 
-
   using iterator = std::ranges::iterator_t<R>;
   using sentinel = std::ranges::sentinel_t<R>;
 

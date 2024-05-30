@@ -11,7 +11,6 @@ TEST_F(IndexTest, index_conversions_including_boundaries) {
 
   auto idx = container::index::simple_index(bounds, 1);
 
-
   EXPECT_EQ(idx.size(), 27);
   auto test = idx.index_to_dimension(2 + 1 * 5 + 2 * 5 * 5);
   auto res = std::array<size_t, 3>({1, 0, 1});
