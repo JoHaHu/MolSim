@@ -77,7 +77,7 @@ class Simulator {
         config(config),
         start_time(config->start_time),
         end_time(config->end_time),
-        delta_t(config->delta_t){};
+        delta_t(config->delta_t) {};
 
   /*! <p> Function for position calculation </p>
    *
@@ -120,7 +120,6 @@ class Simulator {
                      }
                    }},
                linear);
-
   }
   /**
   * @brief Calculates forces between particles.
@@ -190,8 +189,6 @@ class Simulator {
       particles.refresh();
       calculate_force();
       calculate_velocity();
-
-
 
       iteration++;
       if (IO && iteration % interval == 0) {
