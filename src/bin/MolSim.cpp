@@ -1,6 +1,5 @@
 #include <spdlog/spdlog.h>
 #include <variant>
-#include <vector>
 
 #include "config/config.h"
 #include "simulator/Simulator.h"
@@ -25,14 +24,12 @@ auto main(int argc, char *argv[]) -> int {
   auto config = config::Config::parse_config(argc, argv);
   LoggerManager::setup_logger(config);
 
-  auto startTime = std::chrono::high_resolution_clock::now();
-
   auto particle_loader = simulator::io::ParticleLoader(config);
 
   auto [particles, force_model] = particle_loader.load_particles();
 
-  auto particle_container = container::linked_cell<container::index::simple_index>::make_linked_cell({180, 90, 1}, 3.0, container::boundary_condition::outflow);
-  // auto particle_container = std::vector<Particle>();
+  auto particle_container = container::linked_cell<container::index::simple_index>::make_linked_cell({140, 90, 1}, 3.0, container::boundary_condition::outflow, particles.size());
+  //  auto particle_container = std::vector<Particle>();
   auto unique_plotter = std::make_unique<simulator::io::VTKPlotter>(config);
 
   auto container = container::particle_container(particle_container);
@@ -52,6 +49,8 @@ auto main(int argc, char *argv[]) -> int {
   }
 
   auto simulator = simulator::Simulator(std::move(container), physics, std::move(unique_plotter), config);
+
+  auto startTime = std::chrono::high_resolution_clock::now();
 
   if (config->io_interval == 0) {
     simulator.run<false>();

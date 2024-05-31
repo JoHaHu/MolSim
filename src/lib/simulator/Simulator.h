@@ -1,5 +1,9 @@
 #pragma once
 
+#if !defined(SPDLOG_ACTIVE_LEVEL)
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
+#endif
+
 #include "Particle.h"
 #include "config/config.h"
 #include "container/container.h"
@@ -29,7 +33,7 @@ class Simulator {
   double start_time;
   double end_time;
   double delta_t;
-  int iteration;
+  unsigned long iteration = 0;
 
   auto calculate_position_particle(Particle &particle) const {
     particle.position = particle.position + delta_t * particle.velocity + pow(delta_t, 2) * (1 / (2 * particle.mass)) * particle.old_force;
@@ -88,7 +92,7 @@ class Simulator {
 
     auto linear = particles.linear();
 
-    std::visit(overloads{
+    std::visit(overloaded{
                    [this](std::ranges::ref_view<std::vector<Particle>> &range) {
                      for (auto &particle : range) {
                        calculate_position_particle(particle);
@@ -108,7 +112,7 @@ class Simulator {
   auto calculate_velocity() -> void {
     spdlog::debug("Updating velocities");
     auto linear = particles.linear();
-    std::visit(overloads{
+    std::visit(overloaded{
                    [this](std::ranges::ref_view<std::vector<Particle>> &range) {
                      for (auto &particle : range) {
                        calculate_velocity_particle(particle);
@@ -131,34 +135,22 @@ class Simulator {
     spdlog::debug("Starting force calculation");
 
     auto linear = particles.linear();
-    std::visit(overloads{
-                   [this](std::ranges::ref_view<std::vector<Particle>> &range) {
-                     for (auto &particle : range) {
-                       calculate_old_force_particle(particle);
-                     }
-                   },
-                   [this](auto &range) {
-                     for (const auto &particle : range) {
-                       calculate_old_force_particle(*particle);
-                     }
-                   }},
-               linear);
+    std::visit(
+        [this](auto &range) {
+          for (auto &particle : range) {
+            calculate_old_force_particle(particle);
+          }
+        },
+        linear);
 
     auto comb = particles.pairwise();
-    std::visit(overloads{
-                   [this](container::combination_view<std::ranges::ref_view<std::vector<Particle>>> &range) {
-                     for (auto pair : range) {
-                       calculate_force_particle_pair(pair);
-                     }
-                   },
-                   [this](auto &range) {
-                     for (const auto pair : range) {
-                       auto [p1, p2] = pair;
-                       calculate_force_particle_pair({*p1, *p2});
-                     }
-                   }},
-               comb);
-
+    std::visit(
+        [this](auto &range) {
+          for (auto pair : range) {
+            calculate_force_particle_pair(pair);
+          }
+        },
+        comb);
     spdlog::trace("Force calculation completed.");
   };
 
@@ -196,7 +188,7 @@ class Simulator {
         spdlog::debug("Iteration {} plotted.", iteration);
       }
 
-      spdlog::info("Iteration {} finished.", iteration);
+      spdlog::debug("Iteration {} finished.", iteration);
 
       current_time += delta_t;
     }

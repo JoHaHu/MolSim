@@ -33,7 +33,7 @@ class VTKPlotter final : public Plotter {
 
     auto linear = container.linear();
 
-    std::visit(overloads{
+    std::visit(overloaded{
                    [this](std::ranges::ref_view<std::vector<Particle>> &range) {
                      for (auto &particle : range) {
                        vtk_writer.plotParticle(particle);

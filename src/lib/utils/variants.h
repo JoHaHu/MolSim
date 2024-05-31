@@ -3,6 +3,6 @@
 #include <variant>
 
 template<class... Ts>
-struct overloads : Ts... {
+struct overloaded : Ts... {
   using Ts::operator()...;
 };
