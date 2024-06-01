@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+    <!-- Root element definition -->
+    <xs:element name="Data">
+        <xs:complexType>
+            <xs:sequence>
+                <!-- Base name element -->
+                <xs:element name="name" type="xs:string"/>
+
+                <!-- Write frequency element -->
+                <xs:element name="output_write_frequency">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:positiveInteger"/>
+                    </xs:simpleType>
+                </xs:element>
+
+                <!-- Simulation parameters -->
+                <xs:element name="t_end" type="xs:double"/>
+                <xs:element name="delta_t" type="xs:double"/>
+                <xs:element name="epsilon" type="xs:double"/>
+                <xs:element name="sigma" type="xs:double"/>
+
+                <!-- Cuboid description parameters -->
+                <xs:element name="lower_left_front_coordinate" type="IntArray"/>
+                <xs:element name="dimensional_particle_numbers" type="IntArray"/>
+                <xs:element name="distance_h" type="xs:double"/>
+                <xs:element name="mass_m" type="xs:double"/>
+                <xs:element name="initial_velocity" type="IntArray"/>
+                <xs:element name="average_brownian_motion" type="IntArray"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Definition of IntArray as an array of 3 integers -->
+    <xs:complexType name="IntArray">
+        <xs:sequence>
+            <xs:element name="value" type="xs:int" maxOccurs="3" minOccurs="3"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
