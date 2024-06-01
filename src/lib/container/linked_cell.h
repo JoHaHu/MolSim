@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Particle.h"
+#include "arena.h"
 #include "combination.h"
 #include "container.h"
 #include "index.h"
@@ -110,9 +111,12 @@ class linked_cell {
 
  public:
   linked_cell() = delete;
-  explicit linked_cell(const std::array<double, 3> &domain, double cutoff, boundary_condition bc, unsigned int number_of_particles) : index(I(domain, cutoff)), cutoff(cutoff), bc(bc) {
+  explicit linked_cell(const std::array<double, 3> &domain, double cutoff, boundary_condition bc, unsigned int number_of_particles)
+      : arena(number_of_particles),
+        index(I(domain, cutoff)),
+        cutoff(cutoff),
+        bc(bc) {
     auto dim = index.dimension();
-    store.reserve(number_of_particles);
     cells.reserve(dim[0] * dim[1] * dim[2]);
   };
 
@@ -151,7 +155,7 @@ class linked_cell {
   }
 
   auto linear() -> auto {
-    return std::ranges::ref_view(store);
+    return arena.range();
   }
 
   auto pairwise() -> auto {
@@ -167,12 +171,12 @@ class linked_cell {
   }
 
   auto insert(Particle &particle) {
-    auto &inserted = store.emplace_back(particle);
+    auto &inserted = arena.emplace_back(particle);
     insert_into_cell(inserted);
   }
 
   auto size() {
-    return linear().size();
+    return arena.size();
   }
 
   // TODO better fixup than completly replace
@@ -183,12 +187,13 @@ class linked_cell {
     });
 
     if (bc == boundary_condition::outflow) {
-      erase_if(store, [this](Particle &p) {
+      std::ranges::for_each(arena.range_entries(), [this](container::arena<Particle>::entry &entry) {
+        auto &p = entry.data;
         const auto [pos_x, pos_y, pos_z] = p.position;
         const auto [bound_x, bound_y, bound_z] = index.boundary();
 
         const auto condition = pos_x < 0 || pos_y < 0 || pos_z < 0 || pos_x > bound_x || pos_y > bound_y || pos_z > bound_z;
-        return condition;
+        entry.active = !condition;
       });
     }
     spdlog::trace("fixed positions");
@@ -198,7 +203,6 @@ class linked_cell {
   auto insert_into_cell(Particle &particle) {
 
     auto idx = index.position_to_index(particle.position);
-    // TODO proper handling of boundary conditions
     if (idx < index.max_index()) {
       cells[idx].insert(particle);
     } else {
@@ -206,8 +210,7 @@ class linked_cell {
     }
   }
 
-  // TODO use an arena allocator for all shared_ptr so that they will be sequential in memory
-  std::vector<Particle> store{};
+  container::arena<Particle> arena;
   std::vector<cell<I>> cells;
   I index;
   double cutoff;

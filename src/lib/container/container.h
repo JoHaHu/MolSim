@@ -12,7 +12,8 @@ using particle_container_variant = std::variant<std::vector<Particle>, std::shar
 struct particle_container {
  public:
   using linear_variant = std::variant<
-      std::ranges::ref_view<std::vector<Particle>>>;
+      std::ranges::ref_view<std::vector<Particle>>,
+      decltype(std::declval<container::linked_cell<index::simple_index>>().linear())>;
 
   using pairwise_variant = std::variant<
       container::combination_view<std::ranges::ref_view<std::vector<Particle>>>,

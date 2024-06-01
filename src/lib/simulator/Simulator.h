@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined(SPDLOG_ACTIVE_LEVEL)
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
-#endif
-
 #include "Particle.h"
 #include "config/config.h"
 #include "container/container.h"
@@ -37,13 +33,13 @@ class Simulator {
 
   auto calculate_position_particle(Particle &particle) const {
     particle.position = particle.position + delta_t * particle.velocity + pow(delta_t, 2) * (1 / (2 * particle.mass)) * particle.old_force;
-    spdlog::trace("Particle position updated: ({}, {}, {})", particle.position[0], particle.position[1],
-                  particle.position[2]);
+    SPDLOG_TRACE("Particle position updated: ({}, {}, {})", particle.position[0], particle.position[1],
+                 particle.position[2]);
   }
   auto calculate_velocity_particle(Particle &particle) const {
     particle.velocity = particle.velocity + delta_t * (1 / (2 * particle.mass)) * (particle.old_force + particle.force);
-    spdlog::trace("Particle velocity updated: ({}, {}, {})", particle.velocity[0], particle.velocity[1],
-                  particle.velocity[2]);
+    SPDLOG_TRACE("Particle velocity updated: ({}, {}, {})", particle.velocity[0], particle.velocity[1],
+                 particle.velocity[2]);
   }
 
   void calculate_old_force_particle(Particle &particle) {
@@ -59,9 +55,9 @@ class Simulator {
 
     particle1.force = particle1.force + force;
     particle2.force = particle2.force - force;
-    spdlog::trace("Force updated for particle pair: ({}, {}, {}) - ({}, {}, {})", particle1.force[0],
-                  particle1.force[1], particle1.force[2], particle2.force[0], particle2.force[1],
-                  particle2.force[2]);
+    SPDLOG_TRACE("Force updated for particle pair: ({}, {}, {}) - ({}, {}, {})", particle1.force[0],
+                 particle1.force[1], particle1.force[2], particle2.force[0], particle2.force[1],
+                 particle2.force[2]);
   }
 
  public:
@@ -88,42 +84,32 @@ class Simulator {
    * calculates the position for all particles, takes no arguments and has no return value
    */
   auto calculate_position() -> void {
-    spdlog::debug("Updating positions");
+    SPDLOG_DEBUG("Updating positions");
 
     auto linear = particles.linear();
 
-    std::visit(overloaded{
-                   [this](std::ranges::ref_view<std::vector<Particle>> &range) {
-                     for (auto &particle : range) {
-                       calculate_position_particle(particle);
-                     }
-                   },
-                   [this](auto &range) {
-                     for (const auto &particle : range) {
-                       calculate_position_particle(*particle);
-                     }
-                   }},
-               linear);
+    std::visit(
+        [this](auto &range) {
+          for (auto &particle : range) {
+            calculate_position_particle(particle);
+          }
+        },
+        linear);
   }
 
   /*! <p> Function for velocity calculation </p>
   * calculates the velocity for all particles, takes no arguments and has no return value
   */
   auto calculate_velocity() -> void {
-    spdlog::debug("Updating velocities");
+    SPDLOG_DEBUG("Updating velocities");
     auto linear = particles.linear();
-    std::visit(overloaded{
-                   [this](std::ranges::ref_view<std::vector<Particle>> &range) {
-                     for (auto &particle : range) {
-                       calculate_velocity_particle(particle);
-                     }
-                   },
-                   [this](auto &range) {
-                     for (const auto &particle : range) {
-                       calculate_velocity_particle(*particle);
-                     }
-                   }},
-               linear);
+    std::visit(
+        [this](auto &range) {
+          for (auto &particle : range) {
+            calculate_velocity_particle(particle);
+          }
+        },
+        linear);
   }
   /**
   * @brief Calculates forces between particles.
@@ -132,7 +118,7 @@ class Simulator {
   */
 
   auto calculate_force() -> void {
-    spdlog::debug("Starting force calculation");
+    SPDLOG_DEBUG("Starting force calculation");
 
     auto linear = particles.linear();
     std::visit(
@@ -151,7 +137,7 @@ class Simulator {
           }
         },
         comb);
-    spdlog::trace("Force calculation completed.");
+    SPDLOG_TRACE("Force calculation completed.");
   };
 
   /**
@@ -172,7 +158,7 @@ class Simulator {
 
     if (IO) {
       plotter->plotParticles(particles, iteration);
-      spdlog::debug("Iteration {} plotted.", iteration);
+      SPDLOG_DEBUG("Iteration {} plotted.", iteration);
     }
 
     while (current_time < end_time) {
@@ -185,10 +171,10 @@ class Simulator {
       iteration++;
       if (IO && iteration % interval == 0) {
         plotter->plotParticles(particles, iteration);
-        spdlog::debug("Iteration {} plotted.", iteration);
+        SPDLOG_DEBUG("Iteration {} plotted.", iteration);
       }
 
-      spdlog::debug("Iteration {} finished.", iteration);
+      SPDLOG_DEBUG("Iteration {} finished.", iteration);
 
       current_time += delta_t;
     }

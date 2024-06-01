@@ -1,3 +1,7 @@
+#if !defined(SPDLOG_ACTIVE_LEVEL)
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
+#endif
+
 #include <spdlog/spdlog.h>
 #include <variant>
 
@@ -44,7 +48,7 @@ auto main(int argc, char *argv[]) -> int {
       physics = {simulator::physics::Gravity()};
       break;
     case simulator::physics::ForceModel::LennardJones:
-      physics = {simulator::physics::LennardJones()};
+      physics = {simulator::physics::LennardJones(3.0, 1, 5)};
       break;
   }
 

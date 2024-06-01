@@ -18,8 +18,6 @@ namespace simulator::physics {
        * @return std::array<double, 3> The calculated force vector.
        */
 auto LennardJones::calculate_force(const Particle &particle1, const Particle &particle2) -> std::array<double, 3> {
-  const auto epsilon = 5;
-  const auto sigma = 1;
 
   SPDLOG_TRACE("Entering LennardJones calculate_force");
 
@@ -37,6 +35,10 @@ auto LennardJones::calculate_force(const Particle &particle1, const Particle &pa
     SPDLOG_WARN("Zero distance between particles encountered. This should not be possible.");
   }
 
+  if (norm > cutoff) {
+    return {0.0, 0.0, 0.0};
+  }
+
   const auto sigma_over_norm_3 = (sigma / norm) * (sigma / norm) * (sigma / norm);
   const auto sigma_over_norm_6 = sigma_over_norm_3 * sigma_over_norm_3;
   const auto sigma_over_norm_12 = sigma_over_norm_6 * sigma_over_norm_6;
@@ -49,4 +51,7 @@ auto LennardJones::calculate_force(const Particle &particle1, const Particle &pa
 
   return force;
 }
+LennardJones::LennardJones(double cutoff, double sigma, double epsilon) : epsilon(epsilon), sigma(sigma), cutoff(cutoff) {
+}
+
 }// namespace simulator::physics
