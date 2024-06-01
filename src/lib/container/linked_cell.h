@@ -22,9 +22,6 @@
 
 namespace container {
 
-//template<typename T>
-//concept boundary_condition = requires();
-
 enum class boundary_condition : std::uint8_t {
   outflow,
   reflecting
@@ -48,6 +45,7 @@ class cell {
   using product_range = std::vector<std::ranges::cartesian_product_view<
       particle_vector,
       particle_vector>>;
+
   using pairwise_range = ranges::concat_view<container::combination_view<particle_vector>, std::ranges::join_view<std::ranges::owning_view<product_range>>>;
 
   cell() = default;
@@ -151,6 +149,48 @@ class linked_cell {
     return cells
         | std::views::filter(&cell<I>::is_boundary)
         | std::views::transform(&cell<I>::linear)
+        | std::views::join;
+  }
+  auto ghosts() -> auto {
+    return cells
+        | std::views::filter([this](auto &cell) {
+             return cell.is_boundary() && bc == boundary_condition::reflecting;
+           })
+        | std::views::transform(&cell<I>::linear)
+        | std::views::join
+        | std::views::transform([this](Particle &p) {
+             std::vector<std::tuple<std::reference_wrapper<Particle>, Particle>> res;
+
+             auto [pos_x, pos_y, pos_z] = p.position;
+             auto [bound_x, bound_y, bound_z] = index.boundary();
+             auto diff = index.boundary() - p.position;
+             auto [diff_x, diff_y, diff_z] = diff;
+             // TODO sigma
+             const double sigma = 1.0;
+             const double distance = std::pow(2, 1 / 6.0) * sigma;
+
+             if (diff_x <= distance && diff_x > 0) {
+               res.emplace_back(p, Particle({bound_x + diff_x, pos_y, pos_z}, {0, 0, 0}, 0, 0));
+             }
+             if (diff_y <= distance && diff_y > 0) {
+               res.emplace_back(p, Particle({pos_x, bound_y + diff_y, pos_z}, {0, 0, 0}, 0, 0));
+             }
+             //             if (diff_z <= distance && diff_z > 0) {
+             //               res.emplace_back(p, Particle({pos_x, pos_y, bound_z + diff_z}, {0, 0, 0}, 0, 0));
+             //             }
+
+             if (pos_x <= distance && pos_x > 0) {
+               res.emplace_back(p, Particle({-pos_x, pos_y, pos_z}, {0, 0, 0}, 0, 0));
+             }
+             if (pos_y <= distance && pos_y > 0) {
+               res.emplace_back(p, Particle({pos_x, -pos_y, pos_z}, {0, 0, 0}, 0, 0));
+             }
+             //             if (pos_z <= distance && pos_z > 0) {
+             //               res.emplace_back(p, Particle({pos_x, pos_y, -pos_z}, {0, 0, 0}, 0, 0));
+             //             }
+
+             return std::move(res);
+           })
         | std::views::join;
   }
 

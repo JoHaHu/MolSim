@@ -32,7 +32,7 @@ auto main(int argc, char *argv[]) -> int {
 
   auto [particles, force_model] = particle_loader.load_particles();
 
-  auto particle_container = container::linked_cell<container::index::simple_index>::make_linked_cell({140, 90, 1}, 3.0, container::boundary_condition::outflow, particles.size());
+  auto particle_container = container::linked_cell<container::index::simple_index>::make_linked_cell({140, 90, 1}, 3.0, container::boundary_condition::reflecting, particles.size());
   //  auto particle_container = std::vector<Particle>();
   auto unique_plotter = std::make_unique<simulator::io::VTKPlotter>(config);
 

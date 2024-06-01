@@ -15,6 +15,7 @@ concept Index =
     && requires(T t, std::array<double, 3> pos, std::array<size_t, 3> dim, std::array<long, 3> offset, size_t index, double width) {
          { T(pos, width) };
          { t.dimension() } -> std::convertible_to<std::array<size_t, 3>>;
+         { t.boundary() } -> std::convertible_to<std::array<double, 3>>;
          { t.position_to_index(pos) } -> std::convertible_to<size_t>;
          { t.dimension_to_index(dim) } -> std::convertible_to<size_t>;
          { t.offset(index, offset) } -> std::convertible_to<size_t>;

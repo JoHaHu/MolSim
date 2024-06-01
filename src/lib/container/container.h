@@ -22,8 +22,11 @@ struct particle_container {
       container::combination_view<std::ranges::ref_view<std::vector<Particle>>>,
       decltype(std::declval<container::linked_cell<index::simple_index>>().halo())>;
   using boundary_variant = std::variant<
-      container::combination_view<std::ranges::ref_view<std::vector<Particle>>>,
+      std::ranges::empty_view<std::reference_wrapper<Particle>>,
       decltype(std::declval<container::linked_cell<index::simple_index>>().boundary())>;
+  using ghost_variant = std::variant<
+      std::ranges::empty_view<std::tuple<std::reference_wrapper<Particle>, Particle>>,
+      decltype(std::declval<container::linked_cell<index::simple_index>>().ghosts())>;
 
   explicit particle_container(const particle_container_variant &&var) : var(var) {}
 
@@ -48,6 +51,21 @@ struct particle_container {
                           [](std::shared_ptr<linked_cell<index::simple_index>> &c) { return c->size(); },
                       },
                       var);
+  }
+
+  auto boundary() -> boundary_variant {
+    return std::visit<boundary_variant>(overloaded{
+                                            [](std::vector<Particle> &container) { return std::ranges::empty_view<std::reference_wrapper<Particle>>(); },
+                                            [](std::shared_ptr<linked_cell<index::simple_index>> &container) { return container->boundary(); },
+                                        },
+                                        var);
+  }
+  auto ghosts() -> ghost_variant {
+    return std::visit<ghost_variant>(overloaded{
+                                         [](std::vector<Particle> &container) { return std::ranges::empty_view<std::tuple<std::reference_wrapper<Particle>, Particle>>(); },
+                                         [](std::shared_ptr<linked_cell<index::simple_index>> &container) { return container->ghosts(); },
+                                     },
+                                     var);
   }
 
   void insert(Particle &p) {
