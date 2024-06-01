@@ -226,8 +226,9 @@ namespace xml_schema
 
 // Forward declarations.
 //
-class IntArray;
-class Data;
+class cuboidType;
+class intArray;
+class SimulationInput;
 class output_write_frequency;
 
 #include <memory>    // ::std::unique_ptr
@@ -244,7 +245,136 @@ class output_write_frequency;
 
 #include <xsd/cxx/xml/dom/parsing-header.hxx>
 
-class IntArray: public ::xml_schema::type
+class cuboidType: public ::xml_schema::type
+{
+  public:
+  // lower_left_front_coordinate
+  //
+  typedef ::intArray lower_left_front_coordinate_type;
+  typedef ::xsd::cxx::tree::traits< lower_left_front_coordinate_type, char > lower_left_front_coordinate_traits;
+
+  const lower_left_front_coordinate_type&
+  lower_left_front_coordinate () const;
+
+  lower_left_front_coordinate_type&
+  lower_left_front_coordinate ();
+
+  void
+  lower_left_front_coordinate (const lower_left_front_coordinate_type& x);
+
+  void
+  lower_left_front_coordinate (::std::unique_ptr< lower_left_front_coordinate_type > p);
+
+  // dimensional_particle_numbers
+  //
+  typedef ::intArray dimensional_particle_numbers_type;
+  typedef ::xsd::cxx::tree::traits< dimensional_particle_numbers_type, char > dimensional_particle_numbers_traits;
+
+  const dimensional_particle_numbers_type&
+  dimensional_particle_numbers () const;
+
+  dimensional_particle_numbers_type&
+  dimensional_particle_numbers ();
+
+  void
+  dimensional_particle_numbers (const dimensional_particle_numbers_type& x);
+
+  void
+  dimensional_particle_numbers (::std::unique_ptr< dimensional_particle_numbers_type > p);
+
+  // distance_h
+  //
+  typedef ::xml_schema::double_ distance_h_type;
+  typedef ::xsd::cxx::tree::traits< distance_h_type, char, ::xsd::cxx::tree::schema_type::double_ > distance_h_traits;
+
+  const distance_h_type&
+  distance_h () const;
+
+  distance_h_type&
+  distance_h ();
+
+  void
+  distance_h (const distance_h_type& x);
+
+  // mass_m
+  //
+  typedef ::xml_schema::double_ mass_m_type;
+  typedef ::xsd::cxx::tree::traits< mass_m_type, char, ::xsd::cxx::tree::schema_type::double_ > mass_m_traits;
+
+  const mass_m_type&
+  mass_m () const;
+
+  mass_m_type&
+  mass_m ();
+
+  void
+  mass_m (const mass_m_type& x);
+
+  // initial_velocity
+  //
+  typedef ::intArray initial_velocity_type;
+  typedef ::xsd::cxx::tree::traits< initial_velocity_type, char > initial_velocity_traits;
+
+  const initial_velocity_type&
+  initial_velocity () const;
+
+  initial_velocity_type&
+  initial_velocity ();
+
+  void
+  initial_velocity (const initial_velocity_type& x);
+
+  void
+  initial_velocity (::std::unique_ptr< initial_velocity_type > p);
+
+  // Constructors.
+  //
+  cuboidType (const lower_left_front_coordinate_type&,
+              const dimensional_particle_numbers_type&,
+              const distance_h_type&,
+              const mass_m_type&,
+              const initial_velocity_type&);
+
+  cuboidType (::std::unique_ptr< lower_left_front_coordinate_type >,
+              ::std::unique_ptr< dimensional_particle_numbers_type >,
+              const distance_h_type&,
+              const mass_m_type&,
+              ::std::unique_ptr< initial_velocity_type >);
+
+  cuboidType (const ::xercesc::DOMElement& e,
+              ::xml_schema::flags f = 0,
+              ::xml_schema::container* c = 0);
+
+  cuboidType (const cuboidType& x,
+              ::xml_schema::flags f = 0,
+              ::xml_schema::container* c = 0);
+
+  virtual cuboidType*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  cuboidType&
+  operator= (const cuboidType& x);
+
+  virtual 
+  ~cuboidType ();
+
+  // Implementation.
+  //
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< lower_left_front_coordinate_type > lower_left_front_coordinate_;
+  ::xsd::cxx::tree::one< dimensional_particle_numbers_type > dimensional_particle_numbers_;
+  ::xsd::cxx::tree::one< distance_h_type > distance_h_;
+  ::xsd::cxx::tree::one< mass_m_type > mass_m_;
+  ::xsd::cxx::tree::one< initial_velocity_type > initial_velocity_;
+};
+
+class intArray: public ::xml_schema::type
 {
   public:
   // value
@@ -266,25 +396,25 @@ class IntArray: public ::xml_schema::type
 
   // Constructors.
   //
-  IntArray ();
+  intArray ();
 
-  IntArray (const ::xercesc::DOMElement& e,
+  intArray (const ::xercesc::DOMElement& e,
             ::xml_schema::flags f = 0,
             ::xml_schema::container* c = 0);
 
-  IntArray (const IntArray& x,
+  intArray (const intArray& x,
             ::xml_schema::flags f = 0,
             ::xml_schema::container* c = 0);
 
-  virtual IntArray*
+  virtual intArray*
   _clone (::xml_schema::flags f = 0,
           ::xml_schema::container* c = 0) const;
 
-  IntArray&
-  operator= (const IntArray& x);
+  intArray&
+  operator= (const intArray& x);
 
   virtual 
-  ~IntArray ();
+  ~intArray ();
 
   // Implementation.
   //
@@ -297,25 +427,25 @@ class IntArray: public ::xml_schema::type
   value_sequence value_;
 };
 
-class Data: public ::xml_schema::type
+class SimulationInput: public ::xml_schema::type
 {
   public:
-  // name
+  // baseName
   //
-  typedef ::xml_schema::string name_type;
-  typedef ::xsd::cxx::tree::traits< name_type, char > name_traits;
+  typedef ::xml_schema::string baseName_type;
+  typedef ::xsd::cxx::tree::traits< baseName_type, char > baseName_traits;
 
-  const name_type&
-  name () const;
+  const baseName_type&
+  baseName () const;
 
-  name_type&
-  name ();
-
-  void
-  name (const name_type& x);
+  baseName_type&
+  baseName ();
 
   void
-  name (::std::unique_ptr< name_type > p);
+  baseName (const baseName_type& x);
+
+  void
+  baseName (::std::unique_ptr< baseName_type > p);
 
   // output_write_frequency
   //
@@ -390,89 +520,10 @@ class Data: public ::xml_schema::type
   void
   sigma (const sigma_type& x);
 
-  // lower_left_front_coordinate
-  //
-  typedef ::IntArray lower_left_front_coordinate_type;
-  typedef ::xsd::cxx::tree::traits< lower_left_front_coordinate_type, char > lower_left_front_coordinate_traits;
-
-  const lower_left_front_coordinate_type&
-  lower_left_front_coordinate () const;
-
-  lower_left_front_coordinate_type&
-  lower_left_front_coordinate ();
-
-  void
-  lower_left_front_coordinate (const lower_left_front_coordinate_type& x);
-
-  void
-  lower_left_front_coordinate (::std::unique_ptr< lower_left_front_coordinate_type > p);
-
-  // dimensional_particle_numbers
-  //
-  typedef ::IntArray dimensional_particle_numbers_type;
-  typedef ::xsd::cxx::tree::traits< dimensional_particle_numbers_type, char > dimensional_particle_numbers_traits;
-
-  const dimensional_particle_numbers_type&
-  dimensional_particle_numbers () const;
-
-  dimensional_particle_numbers_type&
-  dimensional_particle_numbers ();
-
-  void
-  dimensional_particle_numbers (const dimensional_particle_numbers_type& x);
-
-  void
-  dimensional_particle_numbers (::std::unique_ptr< dimensional_particle_numbers_type > p);
-
-  // distance_h
-  //
-  typedef ::xml_schema::double_ distance_h_type;
-  typedef ::xsd::cxx::tree::traits< distance_h_type, char, ::xsd::cxx::tree::schema_type::double_ > distance_h_traits;
-
-  const distance_h_type&
-  distance_h () const;
-
-  distance_h_type&
-  distance_h ();
-
-  void
-  distance_h (const distance_h_type& x);
-
-  // mass_m
-  //
-  typedef ::xml_schema::double_ mass_m_type;
-  typedef ::xsd::cxx::tree::traits< mass_m_type, char, ::xsd::cxx::tree::schema_type::double_ > mass_m_traits;
-
-  const mass_m_type&
-  mass_m () const;
-
-  mass_m_type&
-  mass_m ();
-
-  void
-  mass_m (const mass_m_type& x);
-
-  // initial_velocity
-  //
-  typedef ::IntArray initial_velocity_type;
-  typedef ::xsd::cxx::tree::traits< initial_velocity_type, char > initial_velocity_traits;
-
-  const initial_velocity_type&
-  initial_velocity () const;
-
-  initial_velocity_type&
-  initial_velocity ();
-
-  void
-  initial_velocity (const initial_velocity_type& x);
-
-  void
-  initial_velocity (::std::unique_ptr< initial_velocity_type > p);
-
   // average_brownian_motion
   //
-  typedef ::IntArray average_brownian_motion_type;
-  typedef ::xsd::cxx::tree::traits< average_brownian_motion_type, char > average_brownian_motion_traits;
+  typedef ::xml_schema::double_ average_brownian_motion_type;
+  typedef ::xsd::cxx::tree::traits< average_brownian_motion_type, char, ::xsd::cxx::tree::schema_type::double_ > average_brownian_motion_traits;
 
   const average_brownian_motion_type&
   average_brownian_motion () const;
@@ -483,54 +534,50 @@ class Data: public ::xml_schema::type
   void
   average_brownian_motion (const average_brownian_motion_type& x);
 
+  // Cuboid
+  //
+  typedef ::cuboidType Cuboid_type;
+  typedef ::xsd::cxx::tree::sequence< Cuboid_type > Cuboid_sequence;
+  typedef Cuboid_sequence::iterator Cuboid_iterator;
+  typedef Cuboid_sequence::const_iterator Cuboid_const_iterator;
+  typedef ::xsd::cxx::tree::traits< Cuboid_type, char > Cuboid_traits;
+
+  const Cuboid_sequence&
+  Cuboid () const;
+
+  Cuboid_sequence&
+  Cuboid ();
+
   void
-  average_brownian_motion (::std::unique_ptr< average_brownian_motion_type > p);
+  Cuboid (const Cuboid_sequence& s);
 
   // Constructors.
   //
-  Data (const name_type&,
-        const output_write_frequency_type&,
-        const t_end_type&,
-        const delta_t_type&,
-        const epsilon_type&,
-        const sigma_type&,
-        const lower_left_front_coordinate_type&,
-        const dimensional_particle_numbers_type&,
-        const distance_h_type&,
-        const mass_m_type&,
-        const initial_velocity_type&,
-        const average_brownian_motion_type&);
+  SimulationInput (const baseName_type&,
+                   const output_write_frequency_type&,
+                   const t_end_type&,
+                   const delta_t_type&,
+                   const epsilon_type&,
+                   const sigma_type&,
+                   const average_brownian_motion_type&);
 
-  Data (const name_type&,
-        const output_write_frequency_type&,
-        const t_end_type&,
-        const delta_t_type&,
-        const epsilon_type&,
-        const sigma_type&,
-        ::std::unique_ptr< lower_left_front_coordinate_type >,
-        ::std::unique_ptr< dimensional_particle_numbers_type >,
-        const distance_h_type&,
-        const mass_m_type&,
-        ::std::unique_ptr< initial_velocity_type >,
-        ::std::unique_ptr< average_brownian_motion_type >);
+  SimulationInput (const ::xercesc::DOMElement& e,
+                   ::xml_schema::flags f = 0,
+                   ::xml_schema::container* c = 0);
 
-  Data (const ::xercesc::DOMElement& e,
-        ::xml_schema::flags f = 0,
-        ::xml_schema::container* c = 0);
+  SimulationInput (const SimulationInput& x,
+                   ::xml_schema::flags f = 0,
+                   ::xml_schema::container* c = 0);
 
-  Data (const Data& x,
-        ::xml_schema::flags f = 0,
-        ::xml_schema::container* c = 0);
-
-  virtual Data*
+  virtual SimulationInput*
   _clone (::xml_schema::flags f = 0,
           ::xml_schema::container* c = 0) const;
 
-  Data&
-  operator= (const Data& x);
+  SimulationInput&
+  operator= (const SimulationInput& x);
 
   virtual 
-  ~Data ();
+  ~SimulationInput ();
 
   // Implementation.
   //
@@ -540,18 +587,14 @@ class Data: public ::xml_schema::type
          ::xml_schema::flags);
 
   protected:
-  ::xsd::cxx::tree::one< name_type > name_;
+  ::xsd::cxx::tree::one< baseName_type > baseName_;
   ::xsd::cxx::tree::one< output_write_frequency_type > output_write_frequency_;
   ::xsd::cxx::tree::one< t_end_type > t_end_;
   ::xsd::cxx::tree::one< delta_t_type > delta_t_;
   ::xsd::cxx::tree::one< epsilon_type > epsilon_;
   ::xsd::cxx::tree::one< sigma_type > sigma_;
-  ::xsd::cxx::tree::one< lower_left_front_coordinate_type > lower_left_front_coordinate_;
-  ::xsd::cxx::tree::one< dimensional_particle_numbers_type > dimensional_particle_numbers_;
-  ::xsd::cxx::tree::one< distance_h_type > distance_h_;
-  ::xsd::cxx::tree::one< mass_m_type > mass_m_;
-  ::xsd::cxx::tree::one< initial_velocity_type > initial_velocity_;
   ::xsd::cxx::tree::one< average_brownian_motion_type > average_brownian_motion_;
+  Cuboid_sequence Cuboid_;
 };
 
 class output_write_frequency: public ::xsd::cxx::tree::fundamental_base< ::xml_schema::positive_integer, char, ::xml_schema::simple_type >
@@ -600,95 +643,95 @@ class output_write_frequency: public ::xsd::cxx::tree::fundamental_base< ::xml_s
 // Parse a URI or a local file.
 //
 
-::std::unique_ptr< ::Data >
-Data_ (const ::std::string& uri,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (const ::std::string& uri,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::Data >
-Data_ (const ::std::string& uri,
-       ::xml_schema::error_handler& eh,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (const ::std::string& uri,
+                  ::xml_schema::error_handler& eh,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::Data >
-Data_ (const ::std::string& uri,
-       ::xercesc::DOMErrorHandler& eh,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (const ::std::string& uri,
+                  ::xercesc::DOMErrorHandler& eh,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
 // Parse std::istream.
 //
 
-::std::unique_ptr< ::Data >
-Data_ (::std::istream& is,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (::std::istream& is,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::Data >
-Data_ (::std::istream& is,
-       ::xml_schema::error_handler& eh,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (::std::istream& is,
+                  ::xml_schema::error_handler& eh,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::Data >
-Data_ (::std::istream& is,
-       ::xercesc::DOMErrorHandler& eh,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (::std::istream& is,
+                  ::xercesc::DOMErrorHandler& eh,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::Data >
-Data_ (::std::istream& is,
-       const ::std::string& id,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (::std::istream& is,
+                  const ::std::string& id,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::Data >
-Data_ (::std::istream& is,
-       const ::std::string& id,
-       ::xml_schema::error_handler& eh,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (::std::istream& is,
+                  const ::std::string& id,
+                  ::xml_schema::error_handler& eh,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::Data >
-Data_ (::std::istream& is,
-       const ::std::string& id,
-       ::xercesc::DOMErrorHandler& eh,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (::std::istream& is,
+                  const ::std::string& id,
+                  ::xercesc::DOMErrorHandler& eh,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
 // Parse xercesc::InputSource.
 //
 
-::std::unique_ptr< ::Data >
-Data_ (::xercesc::InputSource& is,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (::xercesc::InputSource& is,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::Data >
-Data_ (::xercesc::InputSource& is,
-       ::xml_schema::error_handler& eh,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (::xercesc::InputSource& is,
+                  ::xml_schema::error_handler& eh,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::Data >
-Data_ (::xercesc::InputSource& is,
-       ::xercesc::DOMErrorHandler& eh,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (::xercesc::InputSource& is,
+                  ::xercesc::DOMErrorHandler& eh,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
 // Parse xercesc::DOMDocument.
 //
 
-::std::unique_ptr< ::Data >
-Data_ (const ::xercesc::DOMDocument& d,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (const ::xercesc::DOMDocument& d,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::Data >
-Data_ (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
-       ::xml_schema::flags f = 0,
-       const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::SimulationInput >
+SimulationInput_ (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
+                  ::xml_schema::flags f = 0,
+                  const ::xml_schema::properties& p = ::xml_schema::properties ());
 
 #include <xsd/cxx/post.hxx>
 

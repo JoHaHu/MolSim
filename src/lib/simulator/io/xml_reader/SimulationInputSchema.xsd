@@ -4,11 +4,11 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 
     <!-- Root element definition -->
-    <xs:element name="Data">
+    <xs:element name="SimulationInput">
         <xs:complexType>
             <xs:sequence>
                 <!-- Base name element -->
-                <xs:element name="name" type="xs:string"/>
+                <xs:element name="baseName" type="xs:string"/>
 
                 <!-- Write frequency element -->
                 <xs:element name="output_write_frequency">
@@ -22,20 +22,31 @@
                 <xs:element name="delta_t" type="xs:double"/>
                 <xs:element name="epsilon" type="xs:double"/>
                 <xs:element name="sigma" type="xs:double"/>
+                <xs:element name="average_brownian_motion" type="xs:double"/>
 
-                <!-- Cuboid description parameters -->
-                <xs:element name="lower_left_front_coordinate" type="IntArray"/>
-                <xs:element name="dimensional_particle_numbers" type="IntArray"/>
-                <xs:element name="distance_h" type="xs:double"/>
-                <xs:element name="mass_m" type="xs:double"/>
-                <xs:element name="initial_velocity" type="IntArray"/>
-                <xs:element name="average_brownian_motion" type="IntArray"/>
+                <!-- Single or multiple cuboids with their own parameters -->
+                <xs:element name="Cuboid" type="cuboidType" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
 
+
+    <!-- Definition of BodyType containing 4 integer arrays and 2 doubles -->
+    <xs:complexType name="cuboidType">
+        <xs:sequence>
+            <!-- Cuboid description parameters -->
+            <xs:element name="lower_left_front_coordinate" type="intArray"/>
+            <xs:element name="dimensional_particle_numbers" type="intArray"/>
+            <xs:element name="distance_h" type="xs:double"/>
+            <xs:element name="mass_m" type="xs:double"/>
+            <xs:element name="initial_velocity" type="intArray"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+
     <!-- Definition of IntArray as an array of 3 integers -->
-    <xs:complexType name="IntArray">
+    <xs:complexType name="intArray">
         <xs:sequence>
             <xs:element name="value" type="xs:int" maxOccurs="3" minOccurs="3"/>
         </xs:sequence>
