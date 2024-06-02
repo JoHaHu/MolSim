@@ -1,0 +1,8 @@
+//
+// Created by Julius on 02.06.2024.
+//
+
+#ifndef BOUNDARYCONDITIONS_H
+#define BOUNDARYCONDITIONS_H
+
+#endif //BOUNDARYCONDITIONS_H
