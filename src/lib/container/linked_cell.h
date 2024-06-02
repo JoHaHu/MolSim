@@ -85,29 +85,6 @@ class cell {
       boundary_condition::none,
       boundary_condition::none,
       boundary_condition::none};
-
-  template<index::Index I>
-  static auto create_range(linked_cell<I> &lc, std::tuple<size_t, size_t, size_t> idx) -> auto {
-    auto [x, y, z] = idx;
-    auto cell_idx = lc.index.dimension_to_index({x, y, z});
-    auto cartesian_products = product_range();
-
-    cell &cell = lc.cells[cell_idx];
-    if (cell.type == cell_type::inner || cell.type == cell_type::inner_and_halo) {
-      for (int x = -1; x <= 1; ++x) {
-        for (int y = -1; y <= 1; ++y) {
-          cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {x, y, 1})].linear());
-        }
-      }
-      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {1, -1, 0})].linear());
-      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {1, 0, 0})].linear());
-      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {1, 1, 0})].linear());
-      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {0, 1, 0})].linear());
-    }
-
-    auto joined = std::move(cartesian_products) | std::views::join;
-    return pairwise_range(cell.linear() | combination, std::move(joined));
-  }
 };
 
 template<index::Index I>
@@ -133,9 +110,33 @@ class linked_cell {
       if (x == 0 || y == 0 || z == 0 || x == dim[0] - 1 || y == dim[1] - 1 || z == dim[2] - 1) {
         c.type = cell_type::inner_and_halo;
       }
-      c.range = cell::create_range(*this, {x, y, z});
+      c.range = create_range(*this, {x, y, z});
     }
   };
+
+  static auto create_range(linked_cell &lc, std::tuple<size_t, size_t, size_t> idx) -> auto {
+    auto [x, y, z] = idx;
+    auto cell_idx = lc.index.dimension_to_index({x, y, z});
+
+    cell &cell = lc.cells[cell_idx];
+    if (cell.type == cell_type::inner || cell.type == cell_type::inner_and_halo) {
+      auto cartesian_products = cell::product_range();
+      for (int x = -1; x <= 1; ++x) {
+        for (int y = -1; y <= 1; ++y) {
+          cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {x, y, 1})].linear());
+        }
+      }
+      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {1, -1, 0})].linear());
+      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {1, 0, 0})].linear());
+      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {1, 1, 0})].linear());
+      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {0, 1, 0})].linear());
+
+      auto joined = std::move(cartesian_products) | std::views::join;
+      return std::optional(cell::pairwise_range(cell.linear() | combination, std::move(joined)));
+    }
+
+    return std::optional<cell::pairwise_range>();
+  }
 
   auto boundary() -> auto {
     return cells
