@@ -181,17 +181,6 @@ class linked_cell {
     std::ranges::for_each(arena.range_entries(), [this](container::arena<Particle>::entry &p) {
       insert_into_cell(p);
     });
-    // Always remove all out of bounds particle
-    // TODO fix this if we implement periodic boundary conditions
-    std::ranges::for_each(arena.range_entries(), [this](container::arena<Particle>::entry &entry) {
-      auto &p = entry.data;
-      const auto [pos_x, pos_y, pos_z] = p.position;
-      const auto [bound_x, bound_y, bound_z] = index.boundary();
-
-      const auto condition = pos_x < 0 || pos_y < 0 || pos_z < 0 || pos_x > bound_x || pos_y > bound_y || pos_z > bound_z;
-      entry.active = !condition;
-    });
-
     spdlog::trace("fixed positions");
   }
 
