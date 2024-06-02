@@ -43,7 +43,7 @@ class cell {
   friend class linked_cell;
 
  public:
-  using particle_vector = std::ranges::ref_view<std::vector<std::reference_wrapper<Particle>>>;
+  using particle_vector = std::ranges::transform_view<std::ranges::ref_view<std::vector<std::reference_wrapper<arena<Particle>::entry>>>, decltype(&arena<Particle>::entry::data)>;
   using product_range = std::vector<std::ranges::cartesian_product_view<
       particle_vector,
       particle_vector>>;
@@ -51,10 +51,11 @@ class cell {
   using pairwise_range = ranges::concat_view<container::combination_view<particle_vector>, std::ranges::join_view<std::ranges::owning_view<product_range>>>;
 
   cell() = default;
-  explicit cell(std::vector<std::reference_wrapper<Particle>> &&particles, cell_type type, size_t idx) : particles(std::move(particles)), type(type), idx(idx) {};
+  explicit cell(std::vector<std::reference_wrapper<arena<Particle>::entry>> &&particles, cell_type type, size_t idx) : particles(std::move(particles)), type(type), idx(idx) {};
 
   auto linear() -> auto {
-    return std::ranges::ref_view(particles);
+    return particles
+        | std::views::transform(&container::arena<Particle>::entry::data);
   }
   auto pairwise() -> auto {
     return range;
@@ -64,7 +65,7 @@ class cell {
     return type == cell_type::inner_and_halo || type == cell_type::halo;
   }
 
-  auto insert(Particle &particle) {
+  auto insert(arena<Particle>::entry &particle) {
     particles.emplace_back(particle);
   }
 
@@ -73,7 +74,7 @@ class cell {
   }
 
  private:
-  std::vector<std::reference_wrapper<Particle>> particles;
+  std::vector<std::reference_wrapper<arena<Particle>::entry>> particles;
   cell_type type = cell_type::inner;
   shared_view<pairwise_range> range;
   size_t idx{};
@@ -129,7 +130,7 @@ class linked_cell {
 
     auto dim = ptr->index.dimension();
     for (size_t i = 0; i < dim[0] * dim[1] * dim[2]; ++i) {
-      ptr->cells.emplace_back(std::vector<std::reference_wrapper<Particle>>(), cell_type::inner, i);
+      ptr->cells.emplace_back(std::vector<std::reference_wrapper<container::arena<Particle>::entry>>(), cell_type::inner, i);
     }
 
     for (auto i : ptr->index) {
@@ -150,7 +151,8 @@ class linked_cell {
   }
 
   auto linear() -> auto {
-    return arena.range();
+    return arena.range_entries()
+        | std::views::transform(&container::arena<Particle>::entry::data);
   }
 
   auto pairwise() -> auto {
@@ -176,7 +178,7 @@ class linked_cell {
 
   auto fix_positions() {
     std::ranges::for_each(cells, &cell::clear);
-    std::ranges::for_each(linear(), [this](Particle &p) {
+    std::ranges::for_each(arena.range_entries(), [this](container::arena<Particle>::entry &p) {
       insert_into_cell(p);
     });
     // Always remove all out of bounds particle
@@ -194,13 +196,13 @@ class linked_cell {
   }
 
  private:
-  auto insert_into_cell(Particle &particle) {
+  auto insert_into_cell(arena<Particle>::entry &particle) {
 
-    auto idx = index.position_to_index(particle.position);
+    auto idx = index.position_to_index(particle.data.position);
     if (idx < index.max_index()) {
       cells[idx].insert(particle);
     } else {
-      spdlog::warn("a particle has positions that is out of bounds {} {} {}", particle.position[0], particle.position[1], particle.position[2]);
+      spdlog::warn("a particle has positions that is out of bounds {} {} {}", particle.data.position[0], particle.data.position[1], particle.data.position[2]);
     }
   }
 

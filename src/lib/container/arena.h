@@ -22,19 +22,13 @@ class arena {
     allocation.reserve(size);
   }
 
-  auto range() -> auto {
-    return allocation
-        | std::views::filter(&entry::active)
-        | std::views::transform([](auto &entry) -> auto & { return entry.data; });
-  }
   auto range_entries() -> auto {
     return allocation
         | std::views::filter(&entry::active);
   }
 
   auto emplace_back(Particle &particle) -> auto & {
-    auto &inserted = allocation.emplace_back(particle, true);
-    return inserted.data;
+    return allocation.emplace_back(particle, true);
   }
 
   auto size() -> size_t {
