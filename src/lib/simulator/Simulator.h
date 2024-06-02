@@ -138,15 +138,7 @@ class Simulator {
         },
         comb);
 
-    auto ghosts = particles.ghosts();
-    std::visit(
-        [this](auto &range) {
-          for (auto &pair : range) {
-            auto [p1, p2] = pair;
-            calculate_force_particle_pair({p1, p2});
-          }
-        },
-        ghosts);
+    // TODO apply boundary conditions here
 
     SPDLOG_TRACE("Force calculation completed.");
   };

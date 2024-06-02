@@ -35,7 +35,7 @@ auto LennardJones::calculate_force(const Particle &particle1, const Particle &pa
     SPDLOG_WARN("Zero distance between particles encountered. This should not be possible.");
   }
 
-  if (norm > cutoff) {
+  if (norm > cutoff) [[likely]] {
     return {0.0, 0.0, 0.0};
   }
 

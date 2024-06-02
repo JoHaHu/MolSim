@@ -24,7 +24,9 @@ namespace container {
 
 enum class boundary_condition : std::uint8_t {
   outflow,
-  reflecting
+  reflecting,
+  //  periodic,
+  none
 };
 
 enum class cell_type : std::uint8_t {
@@ -36,9 +38,9 @@ enum class cell_type : std::uint8_t {
 template<index::Index I>
 class linked_cell;
 
-template<index::Index I>
 class cell {
-  friend class linked_cell<I>;
+  template<index::Index I>
+  friend class linked_cell;
 
  public:
   using particle_vector = std::ranges::ref_view<std::vector<std::reference_wrapper<Particle>>>;
@@ -49,9 +51,7 @@ class cell {
   using pairwise_range = ranges::concat_view<container::combination_view<particle_vector>, std::ranges::join_view<std::ranges::owning_view<product_range>>>;
 
   cell() = default;
-  explicit cell(
-      std::vector<std::reference_wrapper<Particle>> &&particles,
-      cell_type type) : particles(std::move(particles)), type(type) {};
+  explicit cell(std::vector<std::reference_wrapper<Particle>> &&particles, cell_type type, size_t idx) : particles(std::move(particles)), type(type), idx(idx) {};
 
   auto linear() -> auto {
     return std::ranges::ref_view(particles);
@@ -60,16 +60,14 @@ class cell {
     return range;
   };
 
-  constexpr auto is_halo() -> bool {
+  constexpr auto is_boundary() -> bool {
     return type == cell_type::inner_and_halo || type == cell_type::halo;
   }
 
-  constexpr auto is_boundary() -> bool {
-    return type == cell_type::inner_and_halo;
-  }
   auto insert(Particle &particle) {
     particles.emplace_back(particle);
   }
+
   auto clear() {
     particles.clear();
   }
@@ -78,7 +76,16 @@ class cell {
   std::vector<std::reference_wrapper<Particle>> particles;
   cell_type type = cell_type::inner;
   shared_view<pairwise_range> range;
+  size_t idx{};
+  std::array<boundary_condition, 6> boundary = {
+      boundary_condition::none,
+      boundary_condition::none,
+      boundary_condition::none,
+      boundary_condition::none,
+      boundary_condition::none,
+      boundary_condition::none};
 
+  template<index::Index I>
   static auto create_range(std::shared_ptr<linked_cell<I>> lc, std::tuple<size_t, size_t, size_t> idx) -> auto {
     auto [x, y, z] = idx;
     auto cell_idx = lc->index.dimension_to_index({x, y, z});
@@ -105,15 +112,14 @@ class cell {
 
 template<index::Index I>
 class linked_cell {
-  friend class cell<I>;
+  friend class cell;
 
  public:
   linked_cell() = delete;
   explicit linked_cell(const std::array<double, 3> &domain, double cutoff, boundary_condition bc, unsigned int number_of_particles)
       : arena(number_of_particles),
         index(I(domain, cutoff)),
-        cutoff(cutoff),
-        bc(bc) {
+        cutoff(cutoff) {
     auto dim = index.dimension();
     cells.reserve(dim[0] * dim[1] * dim[2]);
   };
@@ -123,7 +129,7 @@ class linked_cell {
 
     auto dim = ptr->index.dimension();
     for (size_t i = 0; i < dim[0] * dim[1] * dim[2]; ++i) {
-      ptr->cells.emplace_back(std::vector<std::reference_wrapper<Particle>>(), cell_type::inner);
+      ptr->cells.emplace_back(std::vector<std::reference_wrapper<Particle>>(), cell_type::inner, i);
     }
 
     for (auto i : ptr->index) {
@@ -132,66 +138,15 @@ class linked_cell {
       if (x == 0 || y == 0 || z == 0 || x == dim[0] - 1 || y == dim[1] - 1 || z == dim[2] - 1) {
         c.type = cell_type::inner_and_halo;
       }
-      c.range = shared_view(cell<I>::create_range(ptr, {x, y, z}));
+      c.range = shared_view(cell::create_range(ptr, {x, y, z}));
     }
 
     return ptr;
   }
 
-  auto halo() -> auto {
-    return cells
-        | std::views::filter(&cell<I>::is_halo)
-        | std::views::transform(&cell<I>::linear)
-        | std::views::join;
-  }
-
   auto boundary() -> auto {
     return cells
-        | std::views::filter(&cell<I>::is_boundary)
-        | std::views::transform(&cell<I>::linear)
-        | std::views::join;
-  }
-  auto ghosts() -> auto {
-    return cells
-        | std::views::filter([this](auto &cell) {
-             return cell.is_boundary() && bc == boundary_condition::reflecting;
-           })
-        | std::views::transform(&cell<I>::linear)
-        | std::views::join
-        | std::views::transform([this](Particle &p) {
-             std::vector<std::tuple<std::reference_wrapper<Particle>, Particle>> res;
-
-             auto [pos_x, pos_y, pos_z] = p.position;
-             auto [bound_x, bound_y, bound_z] = index.boundary();
-             auto diff = index.boundary() - p.position;
-             auto [diff_x, diff_y, diff_z] = diff;
-             // TODO sigma
-             const double sigma = 1.0;
-             const double distance = std::pow(2, 1 / 6.0) * sigma;
-
-             if (diff_x <= distance && diff_x > 0) {
-               res.emplace_back(p, Particle({bound_x + diff_x, pos_y, pos_z}, {0, 0, 0}, 0, 0));
-             }
-             if (diff_y <= distance && diff_y > 0) {
-               res.emplace_back(p, Particle({pos_x, bound_y + diff_y, pos_z}, {0, 0, 0}, 0, 0));
-             }
-             //             if (diff_z <= distance && diff_z > 0) {
-             //               res.emplace_back(p, Particle({pos_x, pos_y, bound_z + diff_z}, {0, 0, 0}, 0, 0));
-             //             }
-
-             if (pos_x <= distance && pos_x > 0) {
-               res.emplace_back(p, Particle({-pos_x, pos_y, pos_z}, {0, 0, 0}, 0, 0));
-             }
-             if (pos_y <= distance && pos_y > 0) {
-               res.emplace_back(p, Particle({pos_x, -pos_y, pos_z}, {0, 0, 0}, 0, 0));
-             }
-             //             if (pos_z <= distance && pos_z > 0) {
-             //               res.emplace_back(p, Particle({pos_x, pos_y, -pos_z}, {0, 0, 0}, 0, 0));
-             //             }
-
-             return std::move(res);
-           })
-        | std::views::join;
+        | std::views::filter(&cell::is_boundary);
   }
 
   auto linear() -> auto {
@@ -204,7 +159,7 @@ class linked_cell {
         | std::views::transform([this](std::tuple<size_t, size_t, size_t> idx) {
              auto [x, y, z] = idx;
              auto cell_idx = index.dimension_to_index({x, y, z});
-             cell<I> &cell = cells[cell_idx];
+             cell &cell = cells[cell_idx];
              return cell.pairwise();
            })
         | std::views::join;
@@ -219,23 +174,22 @@ class linked_cell {
     return arena.size();
   }
 
-  // TODO better fixup than completly replace
   auto fix_positions() {
-    std::ranges::for_each(cells, &cell<I>::clear);
+    std::ranges::for_each(cells, &cell::clear);
     std::ranges::for_each(linear(), [this](Particle &p) {
       insert_into_cell(p);
     });
+    // Always remove all out of bounds particle
+    // TODO fix this if we implement periodic boundary conditions
+    std::ranges::for_each(arena.range_entries(), [this](container::arena<Particle>::entry &entry) {
+      auto &p = entry.data;
+      const auto [pos_x, pos_y, pos_z] = p.position;
+      const auto [bound_x, bound_y, bound_z] = index.boundary();
 
-    if (bc == boundary_condition::outflow) {
-      std::ranges::for_each(arena.range_entries(), [this](container::arena<Particle>::entry &entry) {
-        auto &p = entry.data;
-        const auto [pos_x, pos_y, pos_z] = p.position;
-        const auto [bound_x, bound_y, bound_z] = index.boundary();
+      const auto condition = pos_x < 0 || pos_y < 0 || pos_z < 0 || pos_x > bound_x || pos_y > bound_y || pos_z > bound_z;
+      entry.active = !condition;
+    });
 
-        const auto condition = pos_x < 0 || pos_y < 0 || pos_z < 0 || pos_x > bound_x || pos_y > bound_y || pos_z > bound_z;
-        entry.active = !condition;
-      });
-    }
     spdlog::trace("fixed positions");
   }
 
@@ -251,10 +205,9 @@ class linked_cell {
   }
 
   container::arena<Particle> arena;
-  std::vector<cell<I>> cells;
+  std::vector<cell> cells;
   I index;
   double cutoff;
-  boundary_condition bc;
 };
 
 }// namespace container
