@@ -174,160 +174,160 @@ value (const value_sequence& s)
 }
 
 
-// SimulationInput
+// Data
 //
 
-const SimulationInput::baseName_type& SimulationInput::
-baseName () const
+const Data::base_name_type& Data::
+base_name () const
 {
-  return this->baseName_.get ();
+  return this->base_name_.get ();
 }
 
-SimulationInput::baseName_type& SimulationInput::
-baseName ()
+Data::base_name_type& Data::
+base_name ()
 {
-  return this->baseName_.get ();
+  return this->base_name_.get ();
 }
 
-void SimulationInput::
-baseName (const baseName_type& x)
+void Data::
+base_name (const base_name_type& x)
 {
-  this->baseName_.set (x);
+  this->base_name_.set (x);
 }
 
-void SimulationInput::
-baseName (::std::unique_ptr< baseName_type > x)
+void Data::
+base_name (::std::unique_ptr< base_name_type > x)
 {
-  this->baseName_.set (std::move (x));
+  this->base_name_.set (std::move (x));
 }
 
-const SimulationInput::output_write_frequency_type& SimulationInput::
+const Data::output_write_frequency_type& Data::
 output_write_frequency () const
 {
   return this->output_write_frequency_.get ();
 }
 
-SimulationInput::output_write_frequency_type& SimulationInput::
+Data::output_write_frequency_type& Data::
 output_write_frequency ()
 {
   return this->output_write_frequency_.get ();
 }
 
-void SimulationInput::
+void Data::
 output_write_frequency (const output_write_frequency_type& x)
 {
   this->output_write_frequency_.set (x);
 }
 
-void SimulationInput::
+void Data::
 output_write_frequency (::std::unique_ptr< output_write_frequency_type > x)
 {
   this->output_write_frequency_.set (std::move (x));
 }
 
-const SimulationInput::t_end_type& SimulationInput::
+const Data::t_end_type& Data::
 t_end () const
 {
   return this->t_end_.get ();
 }
 
-SimulationInput::t_end_type& SimulationInput::
+Data::t_end_type& Data::
 t_end ()
 {
   return this->t_end_.get ();
 }
 
-void SimulationInput::
+void Data::
 t_end (const t_end_type& x)
 {
   this->t_end_.set (x);
 }
 
-const SimulationInput::delta_t_type& SimulationInput::
+const Data::delta_t_type& Data::
 delta_t () const
 {
   return this->delta_t_.get ();
 }
 
-SimulationInput::delta_t_type& SimulationInput::
+Data::delta_t_type& Data::
 delta_t ()
 {
   return this->delta_t_.get ();
 }
 
-void SimulationInput::
+void Data::
 delta_t (const delta_t_type& x)
 {
   this->delta_t_.set (x);
 }
 
-const SimulationInput::epsilon_type& SimulationInput::
+const Data::epsilon_type& Data::
 epsilon () const
 {
   return this->epsilon_.get ();
 }
 
-SimulationInput::epsilon_type& SimulationInput::
+Data::epsilon_type& Data::
 epsilon ()
 {
   return this->epsilon_.get ();
 }
 
-void SimulationInput::
+void Data::
 epsilon (const epsilon_type& x)
 {
   this->epsilon_.set (x);
 }
 
-const SimulationInput::sigma_type& SimulationInput::
+const Data::sigma_type& Data::
 sigma () const
 {
   return this->sigma_.get ();
 }
 
-SimulationInput::sigma_type& SimulationInput::
+Data::sigma_type& Data::
 sigma ()
 {
   return this->sigma_.get ();
 }
 
-void SimulationInput::
+void Data::
 sigma (const sigma_type& x)
 {
   this->sigma_.set (x);
 }
 
-const SimulationInput::average_brownian_motion_type& SimulationInput::
+const Data::average_brownian_motion_type& Data::
 average_brownian_motion () const
 {
   return this->average_brownian_motion_.get ();
 }
 
-SimulationInput::average_brownian_motion_type& SimulationInput::
+Data::average_brownian_motion_type& Data::
 average_brownian_motion ()
 {
   return this->average_brownian_motion_.get ();
 }
 
-void SimulationInput::
+void Data::
 average_brownian_motion (const average_brownian_motion_type& x)
 {
   this->average_brownian_motion_.set (x);
 }
 
-const SimulationInput::Cuboid_sequence& SimulationInput::
+const Data::Cuboid_sequence& Data::
 Cuboid () const
 {
   return this->Cuboid_;
 }
 
-SimulationInput::Cuboid_sequence& SimulationInput::
+Data::Cuboid_sequence& Data::
 Cuboid ()
 {
   return this->Cuboid_;
 }
 
-void SimulationInput::
+void Data::
 Cuboid (const Cuboid_sequence& s)
 {
   this->Cuboid_ = s;
@@ -624,19 +624,19 @@ intArray::
 {
 }
 
-// SimulationInput
+// Data
 //
 
-SimulationInput::
-SimulationInput (const baseName_type& baseName,
-                 const output_write_frequency_type& output_write_frequency,
-                 const t_end_type& t_end,
-                 const delta_t_type& delta_t,
-                 const epsilon_type& epsilon,
-                 const sigma_type& sigma,
-                 const average_brownian_motion_type& average_brownian_motion)
+Data::
+Data (const base_name_type& base_name,
+      const output_write_frequency_type& output_write_frequency,
+      const t_end_type& t_end,
+      const delta_t_type& delta_t,
+      const epsilon_type& epsilon,
+      const sigma_type& sigma,
+      const average_brownian_motion_type& average_brownian_motion)
 : ::xml_schema::type (),
-  baseName_ (baseName, this),
+  base_name_ (base_name, this),
   output_write_frequency_ (output_write_frequency, this),
   t_end_ (t_end, this),
   delta_t_ (delta_t, this),
@@ -647,12 +647,12 @@ SimulationInput (const baseName_type& baseName,
 {
 }
 
-SimulationInput::
-SimulationInput (const SimulationInput& x,
-                 ::xml_schema::flags f,
-                 ::xml_schema::container* c)
+Data::
+Data (const Data& x,
+      ::xml_schema::flags f,
+      ::xml_schema::container* c)
 : ::xml_schema::type (x, f, c),
-  baseName_ (x.baseName_, f, this),
+  base_name_ (x.base_name_, f, this),
   output_write_frequency_ (x.output_write_frequency_, f, this),
   t_end_ (x.t_end_, f, this),
   delta_t_ (x.delta_t_, f, this),
@@ -663,12 +663,12 @@ SimulationInput (const SimulationInput& x,
 {
 }
 
-SimulationInput::
-SimulationInput (const ::xercesc::DOMElement& e,
-                 ::xml_schema::flags f,
-                 ::xml_schema::container* c)
+Data::
+Data (const ::xercesc::DOMElement& e,
+      ::xml_schema::flags f,
+      ::xml_schema::container* c)
 : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
-  baseName_ (this),
+  base_name_ (this),
   output_write_frequency_ (this),
   t_end_ (this),
   delta_t_ (this),
@@ -684,7 +684,7 @@ SimulationInput (const ::xercesc::DOMElement& e,
   }
 }
 
-void SimulationInput::
+void Data::
 parse (::xsd::cxx::xml::dom::parser< char >& p,
        ::xml_schema::flags f)
 {
@@ -694,16 +694,16 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
     const ::xsd::cxx::xml::qualified_name< char > n (
       ::xsd::cxx::xml::dom::name< char > (i));
 
-    // baseName
+    // base_name
     //
-    if (n.name () == "baseName" && n.namespace_ ().empty ())
+    if (n.name () == "base_name" && n.namespace_ ().empty ())
     {
-      ::std::unique_ptr< baseName_type > r (
-        baseName_traits::create (i, f, this));
+      ::std::unique_ptr< base_name_type > r (
+        base_name_traits::create (i, f, this));
 
-      if (!baseName_.present ())
+      if (!base_name_.present ())
       {
-        this->baseName_.set (::std::move (r));
+        this->base_name_.set (::std::move (r));
         continue;
       }
     }
@@ -791,10 +791,10 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
     break;
   }
 
-  if (!baseName_.present ())
+  if (!base_name_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
-      "baseName",
+      "base_name",
       "");
   }
 
@@ -841,20 +841,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   }
 }
 
-SimulationInput* SimulationInput::
+Data* Data::
 _clone (::xml_schema::flags f,
         ::xml_schema::container* c) const
 {
-  return new class SimulationInput (*this, f, c);
+  return new class Data (*this, f, c);
 }
 
-SimulationInput& SimulationInput::
-operator= (const SimulationInput& x)
+Data& Data::
+operator= (const Data& x)
 {
   if (this != &x)
   {
     static_cast< ::xml_schema::type& > (*this) = x;
-    this->baseName_ = x.baseName_;
+    this->base_name_ = x.base_name_;
     this->output_write_frequency_ = x.output_write_frequency_;
     this->t_end_ = x.t_end_;
     this->delta_t_ = x.delta_t_;
@@ -867,8 +867,8 @@ operator= (const SimulationInput& x)
   return *this;
 }
 
-SimulationInput::
-~SimulationInput ()
+Data::
+~Data ()
 {
 }
 
@@ -930,10 +930,10 @@ output_write_frequency::
 #include <xsd/cxx/xml/sax/std-input-source.hxx>
 #include <xsd/cxx/tree/error-handler.hxx>
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (const ::std::string& u,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (const ::std::string& u,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   ::xsd::cxx::xml::auto_initializer i (
     (f & ::xml_schema::flags::dont_initialize) == 0,
@@ -947,16 +947,16 @@ SimulationInput_ (const ::std::string& u,
 
   h.throw_if_failed< ::xsd::cxx::tree::parsing< char > > ();
 
-  return ::std::unique_ptr< ::SimulationInput > (
-    ::SimulationInput_ (
+  return ::std::unique_ptr< ::Data > (
+    ::Data_ (
       std::move (d), f | ::xml_schema::flags::own_dom, p));
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (const ::std::string& u,
-                  ::xml_schema::error_handler& h,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (const ::std::string& u,
+       ::xml_schema::error_handler& h,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   ::xsd::cxx::xml::auto_initializer i (
     (f & ::xml_schema::flags::dont_initialize) == 0,
@@ -969,16 +969,16 @@ SimulationInput_ (const ::std::string& u,
   if (!d.get ())
     throw ::xsd::cxx::tree::parsing< char > ();
 
-  return ::std::unique_ptr< ::SimulationInput > (
-    ::SimulationInput_ (
+  return ::std::unique_ptr< ::Data > (
+    ::Data_ (
       std::move (d), f | ::xml_schema::flags::own_dom, p));
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (const ::std::string& u,
-                  ::xercesc::DOMErrorHandler& h,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (const ::std::string& u,
+       ::xercesc::DOMErrorHandler& h,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
     ::xsd::cxx::xml::dom::parse< char > (
@@ -987,92 +987,92 @@ SimulationInput_ (const ::std::string& u,
   if (!d.get ())
     throw ::xsd::cxx::tree::parsing< char > ();
 
-  return ::std::unique_ptr< ::SimulationInput > (
-    ::SimulationInput_ (
+  return ::std::unique_ptr< ::Data > (
+    ::Data_ (
       std::move (d), f | ::xml_schema::flags::own_dom, p));
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::std::istream& is,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (::std::istream& is,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   ::xsd::cxx::xml::auto_initializer i (
     (f & ::xml_schema::flags::dont_initialize) == 0,
     (f & ::xml_schema::flags::keep_dom) == 0);
 
   ::xsd::cxx::xml::sax::std_input_source isrc (is);
-  return ::SimulationInput_ (isrc, f, p);
+  return ::Data_ (isrc, f, p);
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::std::istream& is,
-                  ::xml_schema::error_handler& h,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (::std::istream& is,
+       ::xml_schema::error_handler& h,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   ::xsd::cxx::xml::auto_initializer i (
     (f & ::xml_schema::flags::dont_initialize) == 0,
     (f & ::xml_schema::flags::keep_dom) == 0);
 
   ::xsd::cxx::xml::sax::std_input_source isrc (is);
-  return ::SimulationInput_ (isrc, h, f, p);
+  return ::Data_ (isrc, h, f, p);
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::std::istream& is,
-                  ::xercesc::DOMErrorHandler& h,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (::std::istream& is,
+       ::xercesc::DOMErrorHandler& h,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   ::xsd::cxx::xml::sax::std_input_source isrc (is);
-  return ::SimulationInput_ (isrc, h, f, p);
+  return ::Data_ (isrc, h, f, p);
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::std::istream& is,
-                  const ::std::string& sid,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (::std::istream& is,
+       const ::std::string& sid,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   ::xsd::cxx::xml::auto_initializer i (
     (f & ::xml_schema::flags::dont_initialize) == 0,
     (f & ::xml_schema::flags::keep_dom) == 0);
 
   ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-  return ::SimulationInput_ (isrc, f, p);
+  return ::Data_ (isrc, f, p);
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::std::istream& is,
-                  const ::std::string& sid,
-                  ::xml_schema::error_handler& h,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (::std::istream& is,
+       const ::std::string& sid,
+       ::xml_schema::error_handler& h,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   ::xsd::cxx::xml::auto_initializer i (
     (f & ::xml_schema::flags::dont_initialize) == 0,
     (f & ::xml_schema::flags::keep_dom) == 0);
 
   ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-  return ::SimulationInput_ (isrc, h, f, p);
+  return ::Data_ (isrc, h, f, p);
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::std::istream& is,
-                  const ::std::string& sid,
-                  ::xercesc::DOMErrorHandler& h,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (::std::istream& is,
+       const ::std::string& sid,
+       ::xercesc::DOMErrorHandler& h,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-  return ::SimulationInput_ (isrc, h, f, p);
+  return ::Data_ (isrc, h, f, p);
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::xercesc::InputSource& i,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (::xercesc::InputSource& i,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   ::xsd::cxx::tree::error_handler< char > h;
 
@@ -1082,16 +1082,16 @@ SimulationInput_ (::xercesc::InputSource& i,
 
   h.throw_if_failed< ::xsd::cxx::tree::parsing< char > > ();
 
-  return ::std::unique_ptr< ::SimulationInput > (
-    ::SimulationInput_ (
+  return ::std::unique_ptr< ::Data > (
+    ::Data_ (
       std::move (d), f | ::xml_schema::flags::own_dom, p));
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::xercesc::InputSource& i,
-                  ::xml_schema::error_handler& h,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (::xercesc::InputSource& i,
+       ::xml_schema::error_handler& h,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
     ::xsd::cxx::xml::dom::parse< char > (
@@ -1100,16 +1100,16 @@ SimulationInput_ (::xercesc::InputSource& i,
   if (!d.get ())
     throw ::xsd::cxx::tree::parsing< char > ();
 
-  return ::std::unique_ptr< ::SimulationInput > (
-    ::SimulationInput_ (
+  return ::std::unique_ptr< ::Data > (
+    ::Data_ (
       std::move (d), f | ::xml_schema::flags::own_dom, p));
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::xercesc::InputSource& i,
-                  ::xercesc::DOMErrorHandler& h,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (::xercesc::InputSource& i,
+       ::xercesc::DOMErrorHandler& h,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
     ::xsd::cxx::xml::dom::parse< char > (
@@ -1118,23 +1118,23 @@ SimulationInput_ (::xercesc::InputSource& i,
   if (!d.get ())
     throw ::xsd::cxx::tree::parsing< char > ();
 
-  return ::std::unique_ptr< ::SimulationInput > (
-    ::SimulationInput_ (
+  return ::std::unique_ptr< ::Data > (
+    ::Data_ (
       std::move (d), f | ::xml_schema::flags::own_dom, p));
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (const ::xercesc::DOMDocument& doc,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties& p)
+::std::unique_ptr< ::Data >
+Data_ (const ::xercesc::DOMDocument& doc,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties& p)
 {
   if (f & ::xml_schema::flags::keep_dom)
   {
     ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
       static_cast< ::xercesc::DOMDocument* > (doc.cloneNode (true)));
 
-    return ::std::unique_ptr< ::SimulationInput > (
-      ::SimulationInput_ (
+    return ::std::unique_ptr< ::Data > (
+      ::Data_ (
         std::move (d), f | ::xml_schema::flags::own_dom, p));
   }
 
@@ -1142,11 +1142,11 @@ SimulationInput_ (const ::xercesc::DOMDocument& doc,
   const ::xsd::cxx::xml::qualified_name< char > n (
     ::xsd::cxx::xml::dom::name< char > (e));
 
-  if (n.name () == "SimulationInput" &&
+  if (n.name () == "Data" &&
       n.namespace_ () == "")
   {
-    ::std::unique_ptr< ::SimulationInput > r (
-      ::xsd::cxx::tree::traits< ::SimulationInput, char >::create (
+    ::std::unique_ptr< ::Data > r (
+      ::xsd::cxx::tree::traits< ::Data, char >::create (
         e, f, 0));
     return r;
   }
@@ -1154,14 +1154,14 @@ SimulationInput_ (const ::xercesc::DOMDocument& doc,
   throw ::xsd::cxx::tree::unexpected_element < char > (
     n.name (),
     n.namespace_ (),
-    "SimulationInput",
+    "Data",
     "");
 }
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
-                  ::xml_schema::flags f,
-                  const ::xml_schema::properties&)
+::std::unique_ptr< ::Data >
+Data_ (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
+       ::xml_schema::flags f,
+       const ::xml_schema::properties&)
 {
   ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > c (
     ((f & ::xml_schema::flags::keep_dom) &&
@@ -1180,11 +1180,11 @@ SimulationInput_ (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
                      (c.get () ? &c : &d),
                      0);
 
-  if (n.name () == "SimulationInput" &&
+  if (n.name () == "Data" &&
       n.namespace_ () == "")
   {
-    ::std::unique_ptr< ::SimulationInput > r (
-      ::xsd::cxx::tree::traits< ::SimulationInput, char >::create (
+    ::std::unique_ptr< ::Data > r (
+      ::xsd::cxx::tree::traits< ::Data, char >::create (
         e, f, 0));
     return r;
   }
@@ -1192,8 +1192,361 @@ SimulationInput_ (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
   throw ::xsd::cxx::tree::unexpected_element < char > (
     n.name (),
     n.namespace_ (),
-    "SimulationInput",
+    "Data",
     "");
+}
+
+#include <ostream>
+#include <xsd/cxx/tree/error-handler.hxx>
+#include <xsd/cxx/xml/dom/serialization-source.hxx>
+
+void
+Data_ (::std::ostream& o,
+       const ::Data& s,
+       const ::xml_schema::namespace_infomap& m,
+       const ::std::string& e,
+       ::xml_schema::flags f)
+{
+  ::xsd::cxx::xml::auto_initializer i (
+    (f & ::xml_schema::flags::dont_initialize) == 0);
+
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::Data_ (s, m, f));
+
+  ::xsd::cxx::tree::error_handler< char > h;
+
+  ::xsd::cxx::xml::dom::ostream_format_target t (o);
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
+  }
+}
+
+void
+Data_ (::std::ostream& o,
+       const ::Data& s,
+       ::xml_schema::error_handler& h,
+       const ::xml_schema::namespace_infomap& m,
+       const ::std::string& e,
+       ::xml_schema::flags f)
+{
+  ::xsd::cxx::xml::auto_initializer i (
+    (f & ::xml_schema::flags::dont_initialize) == 0);
+
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::Data_ (s, m, f));
+  ::xsd::cxx::xml::dom::ostream_format_target t (o);
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    throw ::xsd::cxx::tree::serialization< char > ();
+  }
+}
+
+void
+Data_ (::std::ostream& o,
+       const ::Data& s,
+       ::xercesc::DOMErrorHandler& h,
+       const ::xml_schema::namespace_infomap& m,
+       const ::std::string& e,
+       ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::Data_ (s, m, f));
+  ::xsd::cxx::xml::dom::ostream_format_target t (o);
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    throw ::xsd::cxx::tree::serialization< char > ();
+  }
+}
+
+void
+Data_ (::xercesc::XMLFormatTarget& t,
+       const ::Data& s,
+       const ::xml_schema::namespace_infomap& m,
+       const ::std::string& e,
+       ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::Data_ (s, m, f));
+
+  ::xsd::cxx::tree::error_handler< char > h;
+
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
+  }
+}
+
+void
+Data_ (::xercesc::XMLFormatTarget& t,
+       const ::Data& s,
+       ::xml_schema::error_handler& h,
+       const ::xml_schema::namespace_infomap& m,
+       const ::std::string& e,
+       ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::Data_ (s, m, f));
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    throw ::xsd::cxx::tree::serialization< char > ();
+  }
+}
+
+void
+Data_ (::xercesc::XMLFormatTarget& t,
+       const ::Data& s,
+       ::xercesc::DOMErrorHandler& h,
+       const ::xml_schema::namespace_infomap& m,
+       const ::std::string& e,
+       ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::Data_ (s, m, f));
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    throw ::xsd::cxx::tree::serialization< char > ();
+  }
+}
+
+void
+Data_ (::xercesc::DOMDocument& d,
+       const ::Data& s,
+       ::xml_schema::flags)
+{
+  ::xercesc::DOMElement& e (*d.getDocumentElement ());
+  const ::xsd::cxx::xml::qualified_name< char > n (
+    ::xsd::cxx::xml::dom::name< char > (e));
+
+  if (n.name () == "Data" &&
+      n.namespace_ () == "")
+  {
+    e << s;
+  }
+  else
+  {
+    throw ::xsd::cxx::tree::unexpected_element < char > (
+      n.name (),
+      n.namespace_ (),
+      "Data",
+      "");
+  }
+}
+
+::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument >
+Data_ (const ::Data& s,
+       const ::xml_schema::namespace_infomap& m,
+       ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::xsd::cxx::xml::dom::serialize< char > (
+      "Data",
+      "",
+      m, f));
+
+  ::Data_ (*d, s, f);
+  return d;
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const cuboidType& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // lower_left_front_coordinate
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "lower_left_front_coordinate",
+        e));
+
+    s << i.lower_left_front_coordinate ();
+  }
+
+  // dimensional_particle_numbers
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "dimensional_particle_numbers",
+        e));
+
+    s << i.dimensional_particle_numbers ();
+  }
+
+  // distance_h
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "distance_h",
+        e));
+
+    s << ::xml_schema::as_double(i.distance_h ());
+  }
+
+  // mass_m
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "mass_m",
+        e));
+
+    s << ::xml_schema::as_double(i.mass_m ());
+  }
+
+  // initial_velocity
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "initial_velocity",
+        e));
+
+    s << i.initial_velocity ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const intArray& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // value
+  //
+  for (intArray::value_const_iterator
+       b (i.value ().begin ()), n (i.value ().end ());
+       b != n; ++b)
+  {
+    const intArray::value_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "value",
+        e));
+
+    s << x;
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const Data& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // base_name
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "base_name",
+        e));
+
+    s << i.base_name ();
+  }
+
+  // output_write_frequency
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "output_write_frequency",
+        e));
+
+    s << i.output_write_frequency ();
+  }
+
+  // t_end
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "t_end",
+        e));
+
+    s << ::xml_schema::as_double(i.t_end ());
+  }
+
+  // delta_t
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "delta_t",
+        e));
+
+    s << ::xml_schema::as_double(i.delta_t ());
+  }
+
+  // epsilon
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "epsilon",
+        e));
+
+    s << ::xml_schema::as_double(i.epsilon ());
+  }
+
+  // sigma
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "sigma",
+        e));
+
+    s << ::xml_schema::as_double(i.sigma ());
+  }
+
+  // average_brownian_motion
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "average_brownian_motion",
+        e));
+
+    s << ::xml_schema::as_double(i.average_brownian_motion ());
+  }
+
+  // Cuboid
+  //
+  for (Data::Cuboid_const_iterator
+       b (i.Cuboid ().begin ()), n (i.Cuboid ().end ());
+       b != n; ++b)
+  {
+    const Data::Cuboid_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "Cuboid",
+        e));
+
+    s << x;
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const output_write_frequency& i)
+{
+  e << static_cast< const ::xsd::cxx::tree::fundamental_base< ::xml_schema::positive_integer, char, ::xml_schema::simple_type >& > (i);
+}
+
+void
+operator<< (::xercesc::DOMAttr& a, const output_write_frequency& i)
+{
+  a << static_cast< const ::xsd::cxx::tree::fundamental_base< ::xml_schema::positive_integer, char, ::xml_schema::simple_type >& > (i);
+}
+
+void
+operator<< (::xml_schema::list_stream& l,
+            const output_write_frequency& i)
+{
+  l << static_cast< const ::xsd::cxx::tree::fundamental_base< ::xml_schema::positive_integer, char, ::xml_schema::simple_type >& > (i);
 }
 
 #include <xsd/cxx/post.hxx>

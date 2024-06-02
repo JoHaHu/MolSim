@@ -53,9 +53,11 @@
 
 #include <xsd/cxx/config.hxx>
 
+/**
 #if (LIBXSD_VERSION != 400002000000000L)
 #error XSD runtime version mismatch
 #endif
+**/
 
 #include <xsd/cxx/pre.hxx>
 
@@ -82,6 +84,21 @@
 #include <xsd/cxx/tree/parsing/float.hxx>
 #include <xsd/cxx/tree/parsing/double.hxx>
 #include <xsd/cxx/tree/parsing/decimal.hxx>
+
+#include <xsd/cxx/xml/dom/serialization-header.hxx>
+#include <xsd/cxx/tree/serialization.hxx>
+#include <xsd/cxx/tree/serialization/byte.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-byte.hxx>
+#include <xsd/cxx/tree/serialization/short.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-short.hxx>
+#include <xsd/cxx/tree/serialization/int.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-int.hxx>
+#include <xsd/cxx/tree/serialization/long.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-long.hxx>
+#include <xsd/cxx/tree/serialization/boolean.hxx>
+#include <xsd/cxx/tree/serialization/float.hxx>
+#include <xsd/cxx/tree/serialization/double.hxx>
+#include <xsd/cxx/tree/serialization/decimal.hxx>
 
 namespace xml_schema
 {
@@ -179,6 +196,16 @@ namespace xml_schema
   typedef ::xsd::cxx::tree::entities< char, simple_type, entity > entities;
 
   typedef ::xsd::cxx::tree::content_order content_order;
+  // Namespace information and list stream. Used in
+  // serialization functions.
+  //
+  typedef ::xsd::cxx::xml::dom::namespace_info< char > namespace_info;
+  typedef ::xsd::cxx::xml::dom::namespace_infomap< char > namespace_infomap;
+  typedef ::xsd::cxx::tree::list_stream< char > list_stream;
+  typedef ::xsd::cxx::tree::as_double< double_ > as_double;
+  typedef ::xsd::cxx::tree::as_decimal< decimal > as_decimal;
+  typedef ::xsd::cxx::tree::facet facet;
+
   // Flags and properties.
   //
   typedef ::xsd::cxx::tree::flags flags;
@@ -202,6 +229,7 @@ namespace xml_schema
   typedef ::xsd::cxx::tree::unexpected_enumerator< char > unexpected_enumerator;
   typedef ::xsd::cxx::tree::expected_text_content< char > expected_text_content;
   typedef ::xsd::cxx::tree::no_prefix_mapping< char > no_prefix_mapping;
+  typedef ::xsd::cxx::tree::serialization< char > serialization;
 
   // Error handler callback interface.
   //
@@ -228,7 +256,7 @@ namespace xml_schema
 //
 class cuboidType;
 class intArray;
-class SimulationInput;
+class Data;
 class output_write_frequency;
 
 #include <memory>    // ::std::unique_ptr
@@ -427,25 +455,25 @@ class intArray: public ::xml_schema::type
   value_sequence value_;
 };
 
-class SimulationInput: public ::xml_schema::type
+class Data: public ::xml_schema::type
 {
   public:
-  // baseName
+  // base_name
   //
-  typedef ::xml_schema::string baseName_type;
-  typedef ::xsd::cxx::tree::traits< baseName_type, char > baseName_traits;
+  typedef ::xml_schema::string base_name_type;
+  typedef ::xsd::cxx::tree::traits< base_name_type, char > base_name_traits;
 
-  const baseName_type&
-  baseName () const;
+  const base_name_type&
+  base_name () const;
 
-  baseName_type&
-  baseName ();
-
-  void
-  baseName (const baseName_type& x);
+  base_name_type&
+  base_name ();
 
   void
-  baseName (::std::unique_ptr< baseName_type > p);
+  base_name (const base_name_type& x);
+
+  void
+  base_name (::std::unique_ptr< base_name_type > p);
 
   // output_write_frequency
   //
@@ -553,31 +581,31 @@ class SimulationInput: public ::xml_schema::type
 
   // Constructors.
   //
-  SimulationInput (const baseName_type&,
-                   const output_write_frequency_type&,
-                   const t_end_type&,
-                   const delta_t_type&,
-                   const epsilon_type&,
-                   const sigma_type&,
-                   const average_brownian_motion_type&);
+  Data (const base_name_type&,
+        const output_write_frequency_type&,
+        const t_end_type&,
+        const delta_t_type&,
+        const epsilon_type&,
+        const sigma_type&,
+        const average_brownian_motion_type&);
 
-  SimulationInput (const ::xercesc::DOMElement& e,
-                   ::xml_schema::flags f = 0,
-                   ::xml_schema::container* c = 0);
+  Data (const ::xercesc::DOMElement& e,
+        ::xml_schema::flags f = 0,
+        ::xml_schema::container* c = 0);
 
-  SimulationInput (const SimulationInput& x,
-                   ::xml_schema::flags f = 0,
-                   ::xml_schema::container* c = 0);
+  Data (const Data& x,
+        ::xml_schema::flags f = 0,
+        ::xml_schema::container* c = 0);
 
-  virtual SimulationInput*
+  virtual Data*
   _clone (::xml_schema::flags f = 0,
           ::xml_schema::container* c = 0) const;
 
-  SimulationInput&
-  operator= (const SimulationInput& x);
+  Data&
+  operator= (const Data& x);
 
   virtual 
-  ~SimulationInput ();
+  ~Data ();
 
   // Implementation.
   //
@@ -587,7 +615,7 @@ class SimulationInput: public ::xml_schema::type
          ::xml_schema::flags);
 
   protected:
-  ::xsd::cxx::tree::one< baseName_type > baseName_;
+  ::xsd::cxx::tree::one< base_name_type > base_name_;
   ::xsd::cxx::tree::one< output_write_frequency_type > output_write_frequency_;
   ::xsd::cxx::tree::one< t_end_type > t_end_;
   ::xsd::cxx::tree::one< delta_t_type > delta_t_;
@@ -643,95 +671,190 @@ class output_write_frequency: public ::xsd::cxx::tree::fundamental_base< ::xml_s
 // Parse a URI or a local file.
 //
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (const ::std::string& uri,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (const ::std::string& uri,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (const ::std::string& uri,
-                  ::xml_schema::error_handler& eh,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (const ::std::string& uri,
+       ::xml_schema::error_handler& eh,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (const ::std::string& uri,
-                  ::xercesc::DOMErrorHandler& eh,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (const ::std::string& uri,
+       ::xercesc::DOMErrorHandler& eh,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
 // Parse std::istream.
 //
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::std::istream& is,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (::std::istream& is,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::std::istream& is,
-                  ::xml_schema::error_handler& eh,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (::std::istream& is,
+       ::xml_schema::error_handler& eh,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::std::istream& is,
-                  ::xercesc::DOMErrorHandler& eh,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (::std::istream& is,
+       ::xercesc::DOMErrorHandler& eh,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::std::istream& is,
-                  const ::std::string& id,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (::std::istream& is,
+       const ::std::string& id,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::std::istream& is,
-                  const ::std::string& id,
-                  ::xml_schema::error_handler& eh,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (::std::istream& is,
+       const ::std::string& id,
+       ::xml_schema::error_handler& eh,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::std::istream& is,
-                  const ::std::string& id,
-                  ::xercesc::DOMErrorHandler& eh,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (::std::istream& is,
+       const ::std::string& id,
+       ::xercesc::DOMErrorHandler& eh,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
 // Parse xercesc::InputSource.
 //
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::xercesc::InputSource& is,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (::xercesc::InputSource& is,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::xercesc::InputSource& is,
-                  ::xml_schema::error_handler& eh,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (::xercesc::InputSource& is,
+       ::xml_schema::error_handler& eh,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::xercesc::InputSource& is,
-                  ::xercesc::DOMErrorHandler& eh,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (::xercesc::InputSource& is,
+       ::xercesc::DOMErrorHandler& eh,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
 // Parse xercesc::DOMDocument.
 //
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (const ::xercesc::DOMDocument& d,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (const ::xercesc::DOMDocument& d,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::unique_ptr< ::SimulationInput >
-SimulationInput_ (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
-                  ::xml_schema::flags f = 0,
-                  const ::xml_schema::properties& p = ::xml_schema::properties ());
+::std::unique_ptr< ::Data >
+Data_ (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
+       ::xml_schema::flags f = 0,
+       const ::xml_schema::properties& p = ::xml_schema::properties ());
+
+#include <iosfwd>
+
+#include <xercesc/dom/DOMDocument.hpp>
+#include <xercesc/dom/DOMErrorHandler.hpp>
+#include <xercesc/framework/XMLFormatter.hpp>
+
+#include <xsd/cxx/xml/dom/auto-ptr.hxx>
+
+// Serialize to std::ostream.
+//
+
+void
+Data_ (::std::ostream& os,
+       const ::Data& x, 
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       const ::std::string& e = "UTF-8",
+       ::xml_schema::flags f = 0);
+
+void
+Data_ (::std::ostream& os,
+       const ::Data& x, 
+       ::xml_schema::error_handler& eh,
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       const ::std::string& e = "UTF-8",
+       ::xml_schema::flags f = 0);
+
+void
+Data_ (::std::ostream& os,
+       const ::Data& x, 
+       ::xercesc::DOMErrorHandler& eh,
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       const ::std::string& e = "UTF-8",
+       ::xml_schema::flags f = 0);
+
+// Serialize to xercesc::XMLFormatTarget.
+//
+
+void
+Data_ (::xercesc::XMLFormatTarget& ft,
+       const ::Data& x, 
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       const ::std::string& e = "UTF-8",
+       ::xml_schema::flags f = 0);
+
+void
+Data_ (::xercesc::XMLFormatTarget& ft,
+       const ::Data& x, 
+       ::xml_schema::error_handler& eh,
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       const ::std::string& e = "UTF-8",
+       ::xml_schema::flags f = 0);
+
+void
+Data_ (::xercesc::XMLFormatTarget& ft,
+       const ::Data& x, 
+       ::xercesc::DOMErrorHandler& eh,
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       const ::std::string& e = "UTF-8",
+       ::xml_schema::flags f = 0);
+
+// Serialize to an existing xercesc::DOMDocument.
+//
+
+void
+Data_ (::xercesc::DOMDocument& d,
+       const ::Data& x,
+       ::xml_schema::flags f = 0);
+
+// Serialize to a new xercesc::DOMDocument.
+//
+
+::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument >
+Data_ (const ::Data& x, 
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       ::xml_schema::flags f = 0);
+
+void
+operator<< (::xercesc::DOMElement&, const cuboidType&);
+
+void
+operator<< (::xercesc::DOMElement&, const intArray&);
+
+void
+operator<< (::xercesc::DOMElement&, const Data&);
+
+void
+operator<< (::xercesc::DOMElement&, const output_write_frequency&);
+
+void
+operator<< (::xercesc::DOMAttr&, const output_write_frequency&);
+
+void
+operator<< (::xml_schema::list_stream&,
+            const output_write_frequency&);
 
 #include <xsd/cxx/post.hxx>
 

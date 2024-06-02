@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
     <!-- Root element definition -->
-    <xs:element name="SimulationInput">
+    <xs:element name="Data">
         <xs:complexType>
             <xs:sequence>
                 <!-- Base name element -->
-                <xs:element name="baseName" type="xs:string"/>
+                <xs:element name="base_name" type="xs:string"/>
 
                 <!-- Write frequency element -->
                 <xs:element name="output_write_frequency">

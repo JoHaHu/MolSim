@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<SimulationInput>
+<Data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
     <!-- Simple name element -->
-    <baseName>ExampleName</baseName>
-    <!-- Positive integer frequency element -->
+    <base_name>ExampleName</base_name>
+    <!-- Output write frequency (positive integer) -->
     <output_write_frequency>100</output_write_frequency>
-    <!-- Four different double values -->
+    <!-- Four double values for the simulation parameters -->
     <t_end>5</t_end>
     <delta_t>0.0002</delta_t>
     <epsilon>5</epsilon>
     <sigma>1</sigma>
     <average_brownian_motion>0.1</average_brownian_motion>
-    <!-- Multiple bodies -->
+
+    <!-- Multiple cuboids -->
     <Cuboid>
         <lower_left_front_coordinate>
             <value>0</value>
@@ -23,13 +24,13 @@
             <value>8</value>
             <value>1</value>
         </dimensional_particle_numbers>
+        <distance_h>1.1225</distance_h>
+        <mass_m>1</mass_m>
         <initial_velocity>
             <value>0</value>
             <value>0</value>
             <value>0</value>
         </initial_velocity>
-        <distance_h>1.1225</distance_h>
-        <mass_m>1</mass_m>
     </Cuboid>
     <Cuboid>
         <lower_left_front_coordinate>
@@ -42,12 +43,12 @@
             <value>8</value>
             <value>1</value>
         </dimensional_particle_numbers>
+        <distance_h>3.3</distance_h>
+        <mass_m>4.4</mass_m>
         <initial_velocity>
             <value>0</value>
             <value>-10</value>
             <value>0</value>
         </initial_velocity>
-        <distance_h>3.3</distance_h>
-        <mass_m>4.4</mass_m>
     </Cuboid>
-</SimulationInput>
+</Data>

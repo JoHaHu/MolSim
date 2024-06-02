@@ -9,6 +9,7 @@
 #include "simulator/physics/Gravity.h"
 #include "simulator/physics/LennardJones.h"
 #include "utils/LoggerManager.h"
+#include "simulator/io/xml_reader/XMLFileReader.h"
 
 /**
  * Main entry point of the MolSim particle simulation program.
@@ -23,6 +24,9 @@ auto main(int argc, char *argv[]) -> int {
 
   auto config = config::Config::parse_config(argc, argv);
   LoggerManager::setup_logger(config);
+
+  // Calling XMLFileReader to read from the input XML
+  printXMLData("../input/eingabe-falling-drop.xml");
 
   auto startTime = std::chrono::high_resolution_clock::now();
 
