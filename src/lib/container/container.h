@@ -7,7 +7,7 @@
 #include <vector>
 namespace container {
 
-using particle_container_variant = std::variant<std::vector<Particle>, std::shared_ptr<container::linked_cell<index::simple_index>>>;
+using particle_container_variant = std::variant<std::vector<Particle>, container::linked_cell<index::simple_index>>;
 
 struct particle_container {
  public:
@@ -23,12 +23,12 @@ struct particle_container {
       std::ranges::empty_view<cell>,
       decltype(std::declval<container::linked_cell<index::simple_index>>().boundary())>;
 
-  explicit particle_container(const particle_container_variant &&var) : var(var) {}
+  explicit particle_container(particle_container_variant &&var) : var(std::move(var)) {}
 
   auto linear() -> linear_variant {
     return std::visit<linear_variant>(overloaded{
                                           [](std::vector<Particle> &container) { return std::ranges::ref_view(container); },
-                                          [](std::shared_ptr<linked_cell<index::simple_index>> &container) { return container->linear(); },
+                                          [](linked_cell<index::simple_index> &container) { return container.linear(); },
                                       },
                                       var);
   }
@@ -36,14 +36,14 @@ struct particle_container {
   auto pairwise() -> pairwise_variant {
     return std::visit<pairwise_variant>(overloaded{
                                             [](std::vector<Particle> &container) { return container | combination; },
-                                            [](std::shared_ptr<linked_cell<index::simple_index>> &container) { return container->pairwise(); }},
+                                            [](linked_cell<index::simple_index> &container) { return container.pairwise(); }},
                                         var);
   }
 
   auto size() -> size_t {
     return std::visit(overloaded{
                           [](std::vector<Particle> &c) { return c.size(); },
-                          [](std::shared_ptr<linked_cell<index::simple_index>> &c) { return c->size(); },
+                          [](linked_cell<index::simple_index> &c) { return c.size(); },
                       },
                       var);
   }
@@ -51,7 +51,7 @@ struct particle_container {
   auto boundary() -> boundary_variant {
     return std::visit<boundary_variant>(overloaded{
                                             [](std::vector<Particle> &container) { return std::ranges::empty_view<cell>(); },
-                                            [](std::shared_ptr<linked_cell<index::simple_index>> &container) { return container->boundary(); },
+                                            [](linked_cell<index::simple_index> &container) { return container.boundary(); },
                                         },
                                         var);
   }
@@ -59,14 +59,14 @@ struct particle_container {
   void insert(Particle &p) {
     std::visit(overloaded{
                    [&p](std::vector<Particle> &container) { container.emplace_back(p); },
-                   [&p](std::shared_ptr<linked_cell<index::simple_index>> &container) { container->insert(p); }},
+                   [&p](linked_cell<index::simple_index> &container) { container.insert(p); }},
                var);
   }
 
   void refresh() {
     std::visit(overloaded{
                    [](std::vector<Particle> &container) {},
-                   [](std::shared_ptr<linked_cell<index::simple_index>> &container) { container->fix_positions(); }},
+                   [](linked_cell<index::simple_index> &container) { container.fix_positions(); }},
                var);
   }
 

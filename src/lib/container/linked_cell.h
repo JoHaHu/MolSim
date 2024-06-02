@@ -57,8 +57,8 @@ class cell {
     return particles
         | std::views::transform(&container::arena<Particle>::entry::data);
   }
-  auto pairwise() -> auto {
-    return range;
+  auto pairwise() -> auto & {
+    return *range;
   };
 
   constexpr auto is_boundary() -> bool {
@@ -76,7 +76,7 @@ class cell {
  private:
   std::vector<std::reference_wrapper<arena<Particle>::entry>> particles;
   cell_type type = cell_type::inner;
-  shared_view<pairwise_range> range;
+  std::optional<pairwise_range> range;
   size_t idx{};
   std::array<boundary_condition, 6> boundary = {
       boundary_condition::none,
@@ -87,27 +87,26 @@ class cell {
       boundary_condition::none};
 
   template<index::Index I>
-  static auto create_range(std::shared_ptr<linked_cell<I>> lc, std::tuple<size_t, size_t, size_t> idx) -> auto {
+  static auto create_range(linked_cell<I> &lc, std::tuple<size_t, size_t, size_t> idx) -> auto {
     auto [x, y, z] = idx;
-    auto cell_idx = lc->index.dimension_to_index({x, y, z});
+    auto cell_idx = lc.index.dimension_to_index({x, y, z});
     auto cartesian_products = product_range();
 
-    cell &cell = lc->cells[cell_idx];
+    cell &cell = lc.cells[cell_idx];
     if (cell.type == cell_type::inner || cell.type == cell_type::inner_and_halo) {
       for (int x = -1; x <= 1; ++x) {
         for (int y = -1; y <= 1; ++y) {
-          auto prod = std::views::cartesian_product(cell.linear(), lc->cells[lc->index.offset(cell_idx, {x, y, 1})].linear());
-          cartesian_products.emplace_back(prod);
+          cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {x, y, 1})].linear());
         }
       }
-      cartesian_products.emplace_back(cell.linear(), lc->cells[lc->index.offset(cell_idx, {1, -1, 0})].linear());
-      cartesian_products.emplace_back(cell.linear(), lc->cells[lc->index.offset(cell_idx, {1, 0, 0})].linear());
-      cartesian_products.emplace_back(cell.linear(), lc->cells[lc->index.offset(cell_idx, {1, 1, 0})].linear());
-      cartesian_products.emplace_back(cell.linear(), lc->cells[lc->index.offset(cell_idx, {0, 1, 0})].linear());
+      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {1, -1, 0})].linear());
+      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {1, 0, 0})].linear());
+      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {1, 1, 0})].linear());
+      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {0, 1, 0})].linear());
     }
 
     auto joined = std::move(cartesian_products) | std::views::join;
-    return std::make_shared<pairwise_range>(cell.linear() | combination, std::move(joined));
+    return pairwise_range(cell.linear() | combination, std::move(joined));
   }
 };
 
@@ -123,27 +122,20 @@ class linked_cell {
         cutoff(cutoff) {
     auto dim = index.dimension();
     cells.reserve(dim[0] * dim[1] * dim[2]);
-  };
 
-  static auto make_linked_cell(const std::array<double, 3> &domain, double cutoff, boundary_condition bc, unsigned long number_of_particles) -> std::shared_ptr<linked_cell<I>> {
-    auto ptr = std::make_shared<linked_cell<I>>(domain, cutoff, bc, number_of_particles);
-
-    auto dim = ptr->index.dimension();
     for (size_t i = 0; i < dim[0] * dim[1] * dim[2]; ++i) {
-      ptr->cells.emplace_back(std::vector<std::reference_wrapper<container::arena<Particle>::entry>>(), cell_type::inner, i);
+      this->cells.emplace_back(std::vector<std::reference_wrapper<container::arena<Particle>::entry>>(), cell_type::inner, i);
     }
 
-    for (auto i : ptr->index) {
+    for (auto i : this->index) {
       auto [x, y, z] = i;
-      auto &c = ptr->cells[ptr->index.dimension_to_index({x, y, z})];
+      auto &c = this->cells[this->index.dimension_to_index({x, y, z})];
       if (x == 0 || y == 0 || z == 0 || x == dim[0] - 1 || y == dim[1] - 1 || z == dim[2] - 1) {
         c.type = cell_type::inner_and_halo;
       }
-      c.range = shared_view(cell::create_range(ptr, {x, y, z}));
+      c.range = cell::create_range(*this, {x, y, z});
     }
-
-    return ptr;
-  }
+  };
 
   auto boundary() -> auto {
     return cells
@@ -158,7 +150,7 @@ class linked_cell {
   auto pairwise() -> auto {
 
     return index
-        | std::views::transform([this](std::tuple<size_t, size_t, size_t> idx) {
+        | std::views::transform([this](std::tuple<size_t, size_t, size_t> idx) -> auto & {
              auto [x, y, z] = idx;
              auto cell_idx = index.dimension_to_index({x, y, z});
              cell &cell = cells[cell_idx];
