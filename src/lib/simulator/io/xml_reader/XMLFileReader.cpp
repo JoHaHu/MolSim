@@ -3,19 +3,19 @@
 //
 
 #include "XMLFileReader.h"
-#include <iostream>
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/dom/DOM.hpp>
 #include "SimulationInputSchema.hxx"
+#include <iostream>
 #include <spdlog/spdlog.h>
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
 
 using namespace xercesc;
 
-void printXMLData(const std::string& xmlFilePath) {
+void printXMLData(const std::string &xmlFilePath) {
   try {
     XMLPlatformUtils::Initialize();
-  } catch (const XMLException& e) {
-    char* message = XMLString::transcode(e.getMessage());
+  } catch (const XMLException &exception) {
+    char *message = XMLString::transcode(exception.getMessage());
     spdlog::warn("Error during XML file initialization!\n");
     SPDLOG_INFO(message);
     return;
@@ -28,16 +28,14 @@ void printXMLData(const std::string& xmlFilePath) {
 
     // Log the input values so the user can confirm their correctness
     SPDLOG_INFO("Passing the following parameters to the simulator: ");
-    SPDLOG_INFO(data->base_name() + ": output frequency: " + std::to_string(data->output_write_frequency()) +
-                " | t_end value: " + std::to_string(data->t_end()) + " | delta_t value: " + std::to_string(data->delta_t()) +
-                " | epsilon value: " + std::to_string(data->epsilon()) + " | sigma value: " + std::to_string(data->sigma()));
+    SPDLOG_INFO(data->base_name() + ": output frequency: " + std::to_string(data->output_write_frequency()) + " | t_end value: " + std::to_string(data->t_end()) + " | delta_t value: " + std::to_string(data->delta_t()) + " | epsilon value: " + std::to_string(data->epsilon()) + " | sigma value: " + std::to_string(data->sigma()));
 
     // Iterate through all cuboid elements
-    for (const auto&cuboid : data->Cuboid()) {
+    for (const auto &cuboid : data->Cuboid()) {
       std::string logOutput = "Cuboid with specs: coordinate x: [";
 
       auto count = 0;
-      for (const auto& arr : cuboid.lower_left_front_coordinate().value()) {
+      for (const auto &arr : cuboid.lower_left_front_coordinate().value()) {
         logOutput.append(std::to_string(arr));
         if (count++ < 2) {
           logOutput.append(", ");
@@ -45,18 +43,18 @@ void printXMLData(const std::string& xmlFilePath) {
       }
       logOutput.append("] | particles per dimension: [");
 
-      for (const auto& arr : cuboid.dimensional_particle_numbers().value()) {
+      for (const auto &arr : cuboid.dimensional_particle_numbers().value()) {
         logOutput.append(std::to_string(arr));
-        auto const commaConst5 = 5; // because 5 is a magic number
+        auto const commaConst5 = 5;// because 5 is a magic number
         if (count++ < commaConst5) {
           logOutput.append(", ");
         }
       }
       logOutput.append("] | initial velocity v: [");
 
-      for (const auto& arr : cuboid.initial_velocity().value()) {
+      for (const auto &arr : cuboid.initial_velocity().value()) {
         logOutput.append(std::to_string(arr));
-        auto const commaConst8 = 8; // because 8 is a magic number
+        auto const commaConst8 = 8;// because 8 is a magic number
         if (count++ < commaConst8) {
           logOutput.append(", ");
         }
@@ -68,11 +66,9 @@ void printXMLData(const std::string& xmlFilePath) {
 
       SPDLOG_INFO(logOutput);
     }
-  } catch (const xml_schema::exception& e) {
+  } catch (const xml_schema::exception &exception) {
     spdlog::warn("An error has occurred! Please look at the exception details here:\n");
-    std::cerr << e << '\n';
+    std::cerr << exception << '\n';
   }
-
   XMLPlatformUtils::Terminate();
 }
-
