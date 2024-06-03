@@ -1,5 +1,4 @@
-//#include "Particle.h"
-#include "container/linked_cell.h"
+#include "Particle.h"
 #include <gtest/gtest.h>
 
 class LinkedCellsTest : public ::testing::Test {

@@ -5,8 +5,8 @@
 
 class ParticleTest : public ::testing::Test {
  public:
+  std::vector<Particle> particles{}, particles2{};
   container::particle_container container, container2;
-  std::vector<Particle> particles, particles2;
 
   // custom ParticleContainer constructor with capacity 10 because there is no default otherwise
   ParticleTest() : container(particles), container2(particles2) {}
@@ -193,18 +193,19 @@ TEST_F(ParticleTest, iterator_pair_building_simple) {
 TEST_F(ParticleTest, iterator_pair_building_large) {
 
   auto inner_test = [](container::particle_container &p, long expected) {
+    auto range = p.pairwise();
     std::visit(
         [expected](auto &r) {
           auto pair = r.begin();
           auto count = 0;
 
-          while (pair != r.pair()) {
+          while (pair != r.end()) {
             pair++;
             count++;
           }
           EXPECT_EQ(expected, count);
         },
-        p.pairwise());
+        range);
   };
 
   auto amount_of_pairs1 = 3;

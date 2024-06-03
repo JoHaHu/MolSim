@@ -22,7 +22,6 @@ file(GLOB_RECURSE MY_SRC
         "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.cpp"
         # we use cxx extension to exclude generated files from clang-tidy
         "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.cxx"
-        # header don't need to be included but this might be necessary for some IDEs
         "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.h"
         # we use hxx extension to exclude generated files from clang-tidy
         "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.hxx"
@@ -34,17 +33,17 @@ add_library(simulator
 )
 
 target_include_directories(simulator
-        PUBLIC
+        PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/libxsd
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/lib
+        PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/lib"
 )
 
 target_link_libraries(simulator
-        # stuff that is used in headers and source files
         PUBLIC
-        xerces-c
         spdlog::spdlog
         range-v3::range-v3
+        xerces-c
 )
 
 target_compile_features(simulator
@@ -52,8 +51,7 @@ target_compile_features(simulator
         cxx_std_23
 )
 
-# activate all compiler warnings. Clean up your code :P
-# depending on the compiler different flags are used
+
 target_compile_options(simulator
         PRIVATE
         $<$<CXX_COMPILER_ID:GNU>:-Wall -march=native>
@@ -81,7 +79,6 @@ target_include_directories(MolSim
         ${SIMULATOR_INCLUDES}
 )
 target_link_libraries(MolSim
-        # stuff that is used in headers and source files
         PRIVATE
         simulator
 )
@@ -93,8 +90,7 @@ if (result)
     set_property(TARGET simulator PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif ()
 
-# activate all compiler warnings. Clean up your code :P
-# depending on the compiler different flags are used
+
 target_compile_options(MolSim
         PRIVATE
         $<$<CXX_COMPILER_ID:GNU>:-Wall -g -march=native>
