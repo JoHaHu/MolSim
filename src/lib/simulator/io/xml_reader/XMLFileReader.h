@@ -8,6 +8,6 @@
 #include <string>
 
 // Declaration of the printXMLData function
-void printXMLData(const std::string& xmlFilePath);
+void printXMLData(const std::string &xmlFilePath);
 
 #endif//PSEMOLDYN_GROUPD_XMLFILEREADER_H
