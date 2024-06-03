@@ -14,7 +14,7 @@
  *
  * @param level The log level to set for the logger.
  */
-void LoggerManager::setup_logger(std::shared_ptr<config::Config> config) {
+void LoggerManager::setup_logger(const config::Config &config) {
   try {
     // Read environment variable
     spdlog::cfg::load_env_levels();
