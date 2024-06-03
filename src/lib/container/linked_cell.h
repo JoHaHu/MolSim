@@ -51,7 +51,7 @@ class cell {
   using pairwise_range = ranges::concat_view<container::combination_view<particle_vector>, std::ranges::join_view<std::ranges::owning_view<product_range>>>;
 
   cell() = default;
-  explicit cell(std::vector<std::reference_wrapper<arena<Particle>::entry>> &&particles, cell_type type, size_t idx) : particles(std::move(particles)), type(type), idx(idx) {};
+  explicit cell(std::vector<std::reference_wrapper<arena<Particle>::entry>> &&particles, cell_type type, size_t idx) : particles(std::move(particles)), type(type), idx(idx){};
 
   auto linear() -> auto {
     return particles
@@ -120,7 +120,9 @@ class linked_cell {
 
     cell &cell = lc.cells[cell_idx];
     if (cell.type == cell_type::inner || cell.type == cell_type::inner_and_halo) {
+
       auto cartesian_products = cell::product_range();
+      cartesian_products.reserve(13);
       for (int x = -1; x <= 1; ++x) {
         for (int y = -1; y <= 1; ++y) {
           cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {x, y, 1})].linear());

@@ -1,6 +1,3 @@
-#if !defined(SPDLOG_ACTIVE_LEVEL)
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
-#endif
 
 #include <spdlog/spdlog.h>
 #include <variant>

@@ -112,8 +112,12 @@ if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>:  -O1 -Wstrict-overflow -fno-omit-frame-pointer>
+            $<$<CXX_COMPILER_ID:Clang>: -O1 -Wstrict-overflow -fno-omit-frame-pointer>
     )
+    target_compile_definitions(MolSim
+            PRIVATE
+            SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
+
 elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
     target_compile_options(simulator
             PRIVATE
@@ -125,6 +129,10 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
             $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize >
             $<$<CXX_COMPILER_ID:CNU>: -O3>
     )
+    target_compile_definitions(MolSim
+            PRIVATE
+            SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+
 endif ()
 
 
