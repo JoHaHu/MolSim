@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
+    <!-- Simple name element -->
+    <base_name>ExampleName</base_name>
+    <!-- Output write frequency (positive integer) -->
+    <output_write_frequency>100</output_write_frequency>
+    <!-- Four double values for the simulation parameters -->
+    <t_end>5</t_end>
+    <delta_t>0.0002</delta_t>
+    <epsilon>5</epsilon>
+    <sigma>1</sigma>
+    <average_brownian_motion>0.1</average_brownian_motion>
+
+    <!-- Multiple cuboids -->
+    <Cuboid>
+        <lower_left_front_coordinate>
+            <value>0</value>
+            <value>0</value>
+            <value>0</value>
+        </lower_left_front_coordinate>
+        <dimensional_particle_numbers>
+            <value>13</value>
+            <value>5</value>
+            <value>20</value>
+        </dimensional_particle_numbers>
+        <distance_h>3.43</distance_h>
+        <mass_m>2</mass_m>
+        <initial_velocity>
+            <value>1</value>
+            <value>1</value>
+            <value>1</value>
+        </initial_velocity>
+    </Cuboid>
+    <Cuboid>
+        <lower_left_front_coordinate>
+            <value>-15</value>
+            <value>10</value>
+            <value>2</value>
+        </lower_left_front_coordinate>
+        <dimensional_particle_numbers>
+            <value>4</value>
+            <value>2</value>
+            <value>6</value>
+        </dimensional_particle_numbers>
+        <distance_h>2.3</distance_h>
+        <mass_m>4</mass_m>
+        <initial_velocity>
+            <value>1</value>
+            <value>2</value>
+            <value>3</value>
+        </initial_velocity>
+    </Cuboid>
+    <Cuboid>
+        <lower_left_front_coordinate>
+            <value>1</value>
+            <value>2</value>
+            <value>3</value>
+        </lower_left_front_coordinate>
+        <dimensional_particle_numbers>
+            <value>5</value>
+            <value>6</value>
+            <value>7</value>
+        </dimensional_particle_numbers>
+        <distance_h>2.332</distance_h>
+        <mass_m>1.234</mass_m>
+        <initial_velocity>
+            <value>-1</value>
+            <value>-5</value>
+            <value>3</value>
+        </initial_velocity>
+    </Cuboid>
+</Data>

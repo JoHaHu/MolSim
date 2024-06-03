@@ -34,6 +34,7 @@ auto main(int argc, char *argv[]) -> int {
 
   auto startTime = std::chrono::high_resolution_clock::now();
 
+  // TODO: integrate sim_config into simulation call --> actually passing values that were passed by the XML
   auto particle_loader = simulator::io::ParticleLoader(config);
 
   auto [particle_container, force_model] = particle_loader.load_particles();
