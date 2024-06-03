@@ -3,7 +3,6 @@
 //
 
 #include "SimConfigXML.h"
-
 #include "spdlog/spdlog.h"
 #include <utility>
 
@@ -33,8 +32,7 @@ SimConfigXML::SimConfigXML(std::string name, int output_frequency, double t_end,
       epsilon(epsilon),
       sigma(sigma),
       average_brownian_motion(av_brown_motion),
-      cuboids(std::move(cuboids)) {}
-
+      cuboids(std::move(cuboids)){};
 
 // Static function to create and return a shared_ptr to SimConfigXML
 auto SimConfigXML::store_config_values(std::string name, int output_frequency, double t_end, double delta_t, double epsilon, double sigma, double av_brown_motion, std::vector<Cuboid> cuboids) -> std::shared_ptr<SimConfigXML> {
