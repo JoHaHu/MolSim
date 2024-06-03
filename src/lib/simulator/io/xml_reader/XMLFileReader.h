@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-
 class XMLFileReader {
 
  public:
