@@ -51,7 +51,7 @@ class cell {
   using pairwise_range = ranges::concat_view<container::combination_view<particle_vector>, std::ranges::join_view<std::ranges::owning_view<product_range>>>;
 
   cell() = default;
-  explicit cell(std::vector<std::reference_wrapper<arena<Particle>::entry>> &&particles, cell_type type, size_t idx) : particles(std::move(particles)), type(type), idx(idx){};
+  explicit cell(std::vector<std::reference_wrapper<arena<Particle>::entry>> &&particles, cell_type type, size_t idx) : particles(std::move(particles)), type(type), idx(idx) {};
 
   auto linear() -> auto {
     return particles
