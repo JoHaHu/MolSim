@@ -9,12 +9,11 @@
 
 #include <iostream>
 #include <memory>
-#include <vector>
-#include <tuple>
 #include <string>
+#include <tuple>
+#include <vector>
 
 using Cuboid = std::tuple<std::array<int, 3>, std::array<int, 3>, double, double, std::array<int, 3>>;
-
 
 /**
  * All supported runtime configurations
@@ -77,8 +76,6 @@ class SimConfigXML {
    * the seed for the rng
    * */
   int seed{};
-
 };
 
-
-#endif // SIM_CONFIG_XML_H
+#endif// SIM_CONFIG_XML_H
