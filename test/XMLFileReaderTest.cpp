@@ -22,7 +22,6 @@ class XMLFileReaderTest : public ::testing::Test {
   const double epsilon = 5;
   const double sigma = 1;
 
-
   // Helper function to print std::array if necessary (for more detailed debugging)
   template<typename T, std::size_t N>
   static void printArray(const std::array<T, N> &arr) {
