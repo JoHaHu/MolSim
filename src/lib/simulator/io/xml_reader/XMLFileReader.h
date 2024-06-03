@@ -2,12 +2,18 @@
 // Created by TimSc on 02.06.2024.
 //
 
-#ifndef PSEMOLDYN_GROUPD_XMLFILEREADER_H
-#define PSEMOLDYN_GROUPD_XMLFILEREADER_H
-
+#include "../../../config/SimConfigXML.h"
+#include <iostream>
+#include <memory>
 #include <string>
 
-// Declaration of the printXMLData function
-void printXMLData(const std::string &xmlFilePath);
 
-#endif//PSEMOLDYN_GROUPD_XMLFILEREADER_H
+class XMLFileReader {
+
+ public:
+  /**
+   * function to parse the data from the given XML using the XSD library and logging the values to the console
+   * for the user to confirm. The data is also saved here for further calculation and simulation
+   */
+  static auto parseXMLData(const std::string &xmlFilePath) -> std::shared_ptr<SimConfigXML>;
+};
