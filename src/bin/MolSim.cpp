@@ -23,7 +23,7 @@
 auto main(int argc, char *argv[]) -> int {
 
   auto config = config::Config::parse_config(argc, argv);
-  LoggerManager::setup_logger(config);
+  LoggerManager::setup_logger(*config);
 
   auto particle_loader = simulator::io::ParticleLoader(config);
 
