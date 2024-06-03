@@ -3,7 +3,6 @@
 //
 
 #include "XMLFileReader.h"
-#include "../../../config/SimConfigXML.h"
 #include "SimulationInputSchema.hxx"
 #include <iostream>
 #include <spdlog/spdlog.h>
@@ -105,8 +104,10 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
 
       // Create an instance of Cuboid
       // append the cuboid to the vector of cuboids for the config
-      auto temp_cuboid = Cuboid(arr_lower_left_coordinate, arr_dimensional_particle_numbers, cuboid.distance_h(), cuboid.mass_m(), arr_initial_velocity);
-      cuboids.push_back(temp_cuboid);
+      auto dist_h = (double) cuboid.distance_h();
+      auto mass_m = (double) cuboid.mass_m();
+      auto temp_cuboid = Cuboid(arr_lower_left_coordinate, arr_dimensional_particle_numbers, dist_h, mass_m, arr_initial_velocity);
+      cuboids.emplace_back(temp_cuboid);
     }
 
     // create sim_config object to store all the parameters

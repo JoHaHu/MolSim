@@ -7,11 +7,14 @@
 #include "utils/ArrayUtils.h"
 #include <array>
 #include <gtest/gtest.h>
+#include <tuple>
 
 class XMLFileReaderTest : public ::testing::Test {
  public:
-
+  /**
   // CONSTANTS (to be changed when values in XML or input files are changed)
+  **/
+
   const std::string base_name = "ExampleName";
   const int output_frequency = 100;
   const double end_time = 5;
@@ -19,12 +22,33 @@ class XMLFileReaderTest : public ::testing::Test {
   const double epsilon = 5;
   const double sigma = 1;
 
-  const std::array<int, 3> coordinates_x1 = {0, 0 , 0};
-  const std::array<int, 3> particles_x1 = {40, 8 , 1};
-  const std::array<int, 3> velocity_x1 = {0, 0 , 0};
+  // values for the first cuboid
+  const std::array<int, 3> coordinates_x1 = {0, 0, 0};
+  const std::array<int, 3> particles_x1 = {40, 8, 1};
+  const std::array<int, 3> velocity_x1 = {0, 0, 0};
+  double dist_h_x1 = 1.1225;
+  double mass_m_x1 = 1;
 
+  // values for the second cuboid
+  const std::array<int, 3> coordinates_x2 = {15, 15, 0};
+  const std::array<int, 3> particles_x2 = {8, 8, 1};
+  const std::array<int, 3> velocity_x2 = {0, -10, 0};
+  double dist_h_x2 = 3.3;
+  double mass_m_x2 = 4.4;
+
+  // Helper function to print std::array if necessary
+  template<typename T, std::size_t N>
+  static void printArray(const std::array<T, N> &arr) {
+    std::cout << "[";
+    for (std::size_t i = 0; i < N; ++i) {
+      std::cout << arr[i];
+      if (i < N - 1) {
+        std::cout << ", ";
+      }
+    }
+    std::cout << "]" << '\n';
+  }
 };
-
 
 /**
  * Test: input_test
@@ -46,25 +70,23 @@ TEST_F(XMLFileReaderTest, input_test) {
   EXPECT_TRUE(config->epsilon == epsilon);
 
   // checking size of the cuboids vector which should in this case contain 2 cuboids
-  EXPECT_EQ(config->cuboids.size(), 2);
+  // -> if not, further testing can be aborted to not cause indexing errors
+  ASSERT_EQ(config->cuboids.size(), 2);
 
-  int array_count = 0;
+  auto cuboid = config->cuboids.at(0);
+  EXPECT_TRUE(coordinates_x1 == get<0>(cuboid));
+  EXPECT_TRUE(particles_x1 == get<1>(cuboid));
+  EXPECT_TRUE(dist_h_x1 == get<2>(cuboid));
+  EXPECT_TRUE(mass_m_x1 == get<3>(cuboid));
+  EXPECT_TRUE(velocity_x1 == get<4>(cuboid));
 
-  for (const auto &elem : config->cuboids) {
-    if (typeid(elem) == typeid(std::array<int, 3>)) {
-      std::array<int, 3> array = (const std::array<int, 3> &) elem;
-      switch (array_count) {
-        case 0:
-          EXPECT_TRUE(std::equal(array.begin(), array.end(), coordinates_x1.begin()));
-        case 1:
-          EXPECT_TRUE(std::equal(array.begin(), array.end(), particles_x1.begin()));
-        case 2:
-          EXPECT_TRUE(std::equal(array.begin(), array.end(), velocity_x1.begin()));
-      }
-      array_count++;
-    }
-    else {
+  cuboid = config->cuboids.at(1);
+  EXPECT_TRUE(coordinates_x2 == get<0>(cuboid));
+  EXPECT_TRUE(particles_x2 == get<1>(cuboid));
+  EXPECT_TRUE(dist_h_x2 == get<2>(cuboid));
+  EXPECT_TRUE(mass_m_x2 == get<3>(cuboid));
+  EXPECT_TRUE(velocity_x2 == get<4>(cuboid));
 
-    }
-  }
-}
+  // to iterate over a tuple and print out the values ==> for more detailed debugging
+  //std::apply([](auto &&...args) { ((std::cout << args << '\n'), ...); }, cuboid);
+};
