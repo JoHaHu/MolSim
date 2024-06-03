@@ -105,7 +105,7 @@ target_compile_options(MolSim
 
 
 # Configure Debug and Release specific options
-if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_options(simulator
             PRIVATE
             $<$<CXX_COMPILER_ID:Clang>: -O1 -Wstrict-overflow -fno-omit-frame-pointer>
@@ -114,11 +114,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
             PRIVATE
             $<$<CXX_COMPILER_ID:Clang>: -O1 -Wstrict-overflow -fno-omit-frame-pointer>
     )
-    target_compile_definitions(MolSim
-            PRIVATE
-            SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
+    target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
+    target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
 
-elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
+elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(simulator
             PRIVATE
             $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize >
@@ -129,9 +128,9 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
             $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize >
             $<$<CXX_COMPILER_ID:CNU>: -O3>
     )
-    target_compile_definitions(MolSim
-            PRIVATE
-            SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+    target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+    target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+
 
 endif ()
 

@@ -2,12 +2,12 @@
 #include "simulator/physics/Gravity.h"
 #include "utils/ArrayUtils.h"
 #include <array>
-#include <cmath>
 #include <gtest/gtest.h>
 
 class PlanetaryCalculationTest : public ::testing::Test {
  public:
   Particle particleA, particleB, particleC, particleD;
+  simulator::physics::Gravity gravity;
 
   void SetUp() override {
 
@@ -32,6 +32,8 @@ class PlanetaryCalculationTest : public ::testing::Test {
     particleB = Particle(coordinatesB, velocityB, 4.0, 0);
     particleC = Particle(coordinatesC, velocityC, 10.0, 0);
     particleD = Particle(coordinatesD, velocityD, 1005.34, 0);
+
+    gravity = simulator::physics::Gravity();
   }
 };
 
@@ -45,7 +47,7 @@ class PlanetaryCalculationTest : public ::testing::Test {
 TEST_F(PlanetaryCalculationTest, force_calculation_same_particles) {
   SetUp();
 
-  auto calculated_force = simulator::physics::Gravity::calculate_force(particleA, particleA);
+  auto calculated_force = gravity.calculate_force(particleA, particleA);
   std::array<double, 3> zero_force = {0.0, 0.0, 0.0};
 
   EXPECT_EQ(calculated_force, zero_force);
@@ -62,7 +64,7 @@ TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
   SetUp();
 
   // force between particleA and particleB
-  auto calculated_force = simulator::physics::Gravity::calculate_force(particleA, particleB);
+  auto calculated_force = gravity.calculate_force(particleA, particleB);
 
   // calculating force by hand and checking if the return is the expected result
   // for each axis (x, y and z are meant as axes here)
@@ -71,13 +73,13 @@ TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
   auto y_difference = 1.0;
   auto z_difference = 2.0;
 
-  const Container auto position_difference = std::array<double, 3>({x_difference, y_difference, z_difference});
+  const auto position_difference = std::array<double, 3>({x_difference, y_difference, z_difference});
 
   // L2-norm = sqrt(1² + 1² + 2²) = 2.449489743
   // multiplied mass of particles = 1.0 * 4.0 = 4.0
   // (L2-norm)³ = 14.69693846
 
-  const Container auto actual_force = 4.0 / 14.69693846 * position_difference;
+  const auto actual_force = 4.0 / 14.69693846 * position_difference;
 
   // check if each axis force is exact enough (based on the manually computed numbers)
   // in this case 6 digits accuracy should be enough
@@ -96,7 +98,7 @@ TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
 TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   SetUp();
 
-  auto calculated_force = simulator::physics::Gravity::calculate_force(particleA, particleD);
+  auto calculated_force = gravity.calculate_force(particleA, particleD);
 
   // calculating value differences for each axis by hand (x, y and z are meant as axes here)
 
@@ -115,7 +117,7 @@ TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   // multiplied mass of particles = 1.0 * 1005.34 = 1005.34
   // (L2-norm)³ = 58802662.352711186
 
-  const Container auto actual_force = 1005.34 / 58802662.352711186 * position_difference;
+  const auto actual_force = 1005.34 / 58802662.352711186 * position_difference;
 
   // check if each axis force is exact enough (based on the manually computed numbers)
   // in this case 7 digits accuracy is enough
