@@ -2,8 +2,6 @@
 // Created by template from MolSim
 //
 
-#include <spdlog/spdlog.h>
-#include <vector>
 #include "config/config.h"
 #include "simulator/Simulator.h"
 #include "simulator/io/ParticleLoader.h"
@@ -13,6 +11,8 @@
 #include "simulator/physics/Gravity.h"
 #include "simulator/physics/LennardJones.h"
 #include "utils/LoggerManager.h"
+#include <spdlog/spdlog.h>
+#include <vector>
 
 /**
  * Main entry point of the MolSim particle simulation program.
