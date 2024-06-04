@@ -1,45 +1,33 @@
 #pragma once
 
 #include "Particle.h"
+#include "boundary.h"
 #include "index.h"
 #include "linked_cell.h"
 #include "utils/variants.h"
 #include <ranges>
 #include <vector>
-
 namespace container {
 
 using particle_container_variant = std::variant<std::vector<Particle>, linked_cell<index::simple_index>>;
 
 struct particle_container {
  public:
-  using linear_variant = std::variant<
-      std::ranges::ref_view<std::vector<Particle>>,
-      decltype(std::declval<linked_cell<index::simple_index>>().linear())>;
-
-  using pairwise_variant = std::variant<
-      container::combination_view<std::ranges::ref_view<std::vector<Particle>>>,
-      decltype(std::declval<linked_cell<index::simple_index>>().pairwise())>;
-
-  using boundary_variant = std::variant<
-      std::ranges::empty_view<cell>,
-      decltype(std::declval<linked_cell<index::simple_index>>().boundary())>;
-
   explicit particle_container(particle_container_variant &&var) : var(std::move(var)) {}
 
-  auto linear() -> linear_variant {
-    return std::visit<linear_variant>(overloaded{
-                                          [](std::vector<Particle> &container) { return std::ranges::ref_view(container); },
-                                          [](linked_cell<index::simple_index> &container) { return container.linear(); },
-                                      },
-                                      var);
+  auto linear(std::function<void(Particle &)> const &f) {
+    std::visit(overloaded{
+                   [&f](std::vector<Particle> &container) { std::ranges::for_each(container, f); },
+                   [&f](linked_cell<index::simple_index> &container) { std::ranges::for_each(container.linear(), f); },
+               },
+               var);
   }
 
-  auto pairwise() -> pairwise_variant {
-    return std::visit<pairwise_variant>(overloaded{
-                                            [](std::vector<Particle> &container) { return container | combination; },
-                                            [](linked_cell<index::simple_index> &container) { return container.pairwise(); }},
-                                        var);
+  auto pairwise(std::function<void(std::tuple<Particle &, Particle &>)> const &f) {
+    std::visit(overloaded{
+                   [&f](std::vector<Particle> &container) { std::ranges::for_each(container | combination, f); },
+                   [&f](linked_cell<index::simple_index> &container) { std::ranges::for_each(container.pairwise(), f); }},
+               var);
   }
 
   auto size() -> size_t {
@@ -50,12 +38,14 @@ struct particle_container {
                       var);
   }
 
-  auto boundary() -> boundary_variant {
-    return std::visit<boundary_variant>(overloaded{
-                                            [](std::vector<Particle> &container) { return std::ranges::empty_view<cell>(); },
-                                            [](linked_cell<index::simple_index> &container) { return container.boundary(); },
-                                        },
-                                        var);
+  auto boundary(std::function<void(std::tuple<Particle &, Particle &>)> const &f) {
+    std::visit(overloaded{
+                   [](std::vector<Particle> &container) {},
+                   [&f](linked_cell<index::simple_index> &container) {
+                     boundary::calculate_boundary_condition(container, f);
+                   },
+               },
+               var);
   }
 
   void insert(Particle &p) {

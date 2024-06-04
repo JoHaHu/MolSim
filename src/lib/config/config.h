@@ -41,6 +41,7 @@ class Config {
    * the seed for the rng
    * */
   int seed{};
+
   /**
    * the number of simulation step after which output files are generated
    * */
@@ -50,6 +51,10 @@ class Config {
    * prints the help message
    */
   static auto print_usage() -> void;
+
+  struct cuboid {
+    std::array<double, 3> coords;
+  };
 };
 
 }// namespace config

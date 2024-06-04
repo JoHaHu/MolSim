@@ -29,10 +29,18 @@ enum class boundary_condition : std::uint8_t {
   none
 };
 
+enum class orientation : std::uint8_t {
+  front,
+  back,
+  left,
+  right,
+  bottom,
+  top
+};
+
 enum class cell_type : std::uint8_t {
   inner,
-  inner_and_halo,
-  halo
+  boundary,
 };
 
 template<index::Index I>
@@ -51,7 +59,10 @@ class cell {
   using pairwise_range = ranges::concat_view<container::combination_view<particle_vector>, std::ranges::join_view<std::ranges::owning_view<product_range>>>;
 
   cell() = default;
-  explicit cell(std::vector<std::reference_wrapper<arena<Particle>::entry>> &&particles, cell_type type, size_t idx) : particles(std::move(particles)), type(type), idx(idx) {};
+  explicit cell(std::vector<std::reference_wrapper<arena<Particle>::entry>> &&particles,
+                cell_type type,
+                std::array<size_t, 3> idx,
+                std::array<double, 3> widths) : particles(std::move(particles)), type(type), idx(idx), widths(widths) {};
 
   auto linear() -> auto {
     return particles
@@ -62,7 +73,7 @@ class cell {
   };
 
   constexpr auto is_boundary() -> bool {
-    return type == cell_type::inner_and_halo || type == cell_type::halo;
+    return type == cell_type::boundary;
   }
 
   auto insert(arena<Particle>::entry &particle) {
@@ -73,11 +84,12 @@ class cell {
     particles.clear();
   }
 
- private:
+ public:
   std::vector<std::reference_wrapper<arena<Particle>::entry>> particles;
   cell_type type = cell_type::inner;
   std::optional<pairwise_range> range;
-  size_t idx{};
+  std::array<size_t, 3> idx{};
+  std::array<double, 3> widths{};
   std::array<boundary_condition, 6> boundary = {
       boundary_condition::none,
       boundary_condition::none,
@@ -93,51 +105,87 @@ class linked_cell {
 
  public:
   linked_cell() = delete;
-  explicit linked_cell(const std::array<double, 3> &domain, double cutoff, boundary_condition bc, unsigned int number_of_particles)
+  explicit linked_cell(const std::array<double, 3> &domain, double cutoff, std::array<boundary_condition, 6> bc, unsigned int number_of_particles, double sigma)
       : arena(number_of_particles),
+        bc(bc),
         index(I(domain, cutoff)),
-        cutoff(cutoff) {
-    auto dim = index.dimension();
+        sigma(sigma) {
+    auto dim = index.dimension;
+    auto widths = index.width;
     cells.reserve(dim[0] * dim[1] * dim[2]);
 
-    for (size_t i = 0; i < dim[0] * dim[1] * dim[2]; ++i) {
-      this->cells.emplace_back(std::vector<std::reference_wrapper<container::arena<Particle>::entry>>(), cell_type::inner, i);
+    auto range = std::views::cartesian_product(
+        std::views::iota(0UL, dim[0]),
+        std::views::iota(0UL, dim[1]),
+        std::views::iota(0UL, dim[2]));
+
+    for (auto [x, y, z] : range) {
+      this->cells.emplace_back(std::vector<std::reference_wrapper<container::arena<Particle>::entry>>(), cell_type::inner, std::array<size_t, 3>({x, y, z}), widths);
     }
 
-    for (auto i : this->index) {
-      auto [x, y, z] = i;
-      auto &c = this->cells[this->index.dimension_to_index({x, y, z})];
-      if (x == 0 || y == 0 || z == 0 || x == dim[0] - 1 || y == dim[1] - 1 || z == dim[2] - 1) {
-        c.type = cell_type::inner_and_halo;
+    // sort cells by order defined by the index
+    std::ranges::sort(cells, [this](auto &cell1, auto &cell2) -> bool {
+      return index.dimension_to_index(cell1.idx) < index.dimension_to_index(cell2.idx);
+    });
+
+    for (auto &c : cells) {
+      auto [x, y, z] = c.idx;
+      if (x == 0) {
+        c.type = cell_type::boundary;
+        c.boundary[(size_t) orientation::left] = bc[(size_t) orientation::left];
       }
+      if (x == dim[0] - 1) {
+        c.type = cell_type::boundary;
+        c.boundary[(size_t) orientation::right] = bc[(size_t) orientation::right];
+      }
+      if (y == 0) {
+        c.type = cell_type::boundary;
+        c.boundary[(size_t) orientation::bottom] = bc[(size_t) orientation::bottom];
+      }
+      if (y == dim[1] - 1) {
+        c.type = cell_type::boundary;
+        c.boundary[(size_t) orientation::top] = bc[(size_t) orientation::top];
+      }
+      if (z == 0) {
+        c.type = cell_type::boundary;
+        c.boundary[(size_t) orientation::back] = bc[(size_t) orientation::back];
+      }
+      if (z == dim[2] - 1) {
+        c.type = cell_type::boundary;
+        c.boundary[(size_t) orientation::front] = bc[(size_t) orientation::front];
+      }
+
       c.range = create_range(*this, {x, y, z});
     }
   };
 
-  static auto create_range(linked_cell &lc, std::tuple<size_t, size_t, size_t> idx) -> auto {
-    auto [x, y, z] = idx;
-    auto cell_idx = lc.index.dimension_to_index({x, y, z});
+  static auto create_range(linked_cell &lc, std::array<size_t, 3> idx) -> auto {
+    auto cell_idx = lc.index.dimension_to_index(idx);
 
     cell &cell = lc.cells[cell_idx];
-    if (cell.type == cell_type::inner || cell.type == cell_type::inner_and_halo) {
 
-      auto cartesian_products = cell::product_range();
-      cartesian_products.reserve(13);
-      for (int x = -1; x <= 1; ++x) {
-        for (int y = -1; y <= 1; ++y) {
-          cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {x, y, 1})].linear());
+    auto [radius_x, radius_y, radius_z] = lc.index.radius;
+
+    auto cartesian_products = cell::product_range();
+
+    for (long x = -(long) radius_x; x <= (long) radius_x; ++x) {
+      for (long y = -(long) radius_y; y <= (long) radius_y; ++y) {
+        for (long z = -(long) radius_z; z <= (long) radius_z; ++z) {
+          if (x != 0 || y != 0 || z != 0) {
+            if (z > 0 || x > 0 || (x >= 0 && z >= 0 && y > 0)) {
+              auto other_index = lc.index.offset(cell_idx, {x, y, z});
+              // checks that cell is not out of bounds and not the same cell
+              if (other_index < lc.cells.size() && other_index != cell_idx) {
+                cartesian_products.emplace_back(cell.linear(), lc.cells[other_index].linear());
+              }
+            }
+          }
         }
       }
-      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {1, -1, 0})].linear());
-      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {1, 0, 0})].linear());
-      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {1, 1, 0})].linear());
-      cartesian_products.emplace_back(cell.linear(), lc.cells[lc.index.offset(cell_idx, {0, 1, 0})].linear());
-
-      auto joined = std::move(cartesian_products) | std::views::join;
-      return std::optional(cell::pairwise_range(cell.linear() | combination, std::move(joined)));
     }
-
-    return std::optional<cell::pairwise_range>();
+    cartesian_products.shrink_to_fit();
+    auto joined = std::move(cartesian_products) | std::views::join;
+    return std::optional(cell::pairwise_range(cell.linear() | combination, std::move(joined)));
   }
 
   auto boundary() -> auto {
@@ -152,13 +200,8 @@ class linked_cell {
 
   auto pairwise() -> auto {
 
-    return index
-        | std::views::transform([this](std::tuple<size_t, size_t, size_t> idx) -> auto & {
-             auto [x, y, z] = idx;
-             auto cell_idx = index.dimension_to_index({x, y, z});
-             cell &cell = cells[cell_idx];
-             return cell.pairwise();
-           })
+    return cells
+        | std::views::transform(&cell::pairwise)
         | std::views::join;
   }
 
@@ -183,7 +226,7 @@ class linked_cell {
   auto insert_into_cell(arena<Particle>::entry &particle) {
 
     auto idx = index.position_to_index(particle.data.position);
-    if (idx < index.max_index()) {
+    if (idx < cells.size()) {
       cells[idx].insert(particle);
     } else {
       spdlog::warn("a particle has positions that is out of bounds {} {} {}", particle.data.position[0], particle.data.position[1], particle.data.position[2]);
@@ -192,8 +235,11 @@ class linked_cell {
 
   container::arena<Particle> arena;
   std::vector<cell> cells;
+  std::array<boundary_condition, 6> bc;
+
+ public:
   I index;
-  double cutoff;
+  double sigma;
 };
 
 }// namespace container

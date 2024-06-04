@@ -86,15 +86,7 @@ class Simulator {
   auto calculate_position() -> void {
     SPDLOG_DEBUG("Updating positions");
 
-    auto linear = particles.linear();
-
-    std::visit(
-        [this](auto &range) {
-          for (auto &particle : range) {
-            calculate_position_particle(particle);
-          }
-        },
-        linear);
+    particles.linear([this](auto &p) { calculate_position_particle(p); });
   }
 
   /*! <p> Function for velocity calculation </p>
@@ -102,14 +94,7 @@ class Simulator {
   */
   auto calculate_velocity() -> void {
     SPDLOG_DEBUG("Updating velocities");
-    auto linear = particles.linear();
-    std::visit(
-        [this](auto &range) {
-          for (auto &particle : range) {
-            calculate_velocity_particle(particle);
-          }
-        },
-        linear);
+    particles.linear([this](auto &p) { calculate_velocity_particle(p); });
   }
   /**
   * @brief Calculates forces between particles.
@@ -120,23 +105,8 @@ class Simulator {
   auto calculate_force() -> void {
     SPDLOG_DEBUG("Starting force calculation");
 
-    auto linear = particles.linear();
-    std::visit(
-        [this](auto &range) {
-          for (auto &particle : range) {
-            calculate_old_force_particle(particle);
-          }
-        },
-        linear);
-
-    auto comb = particles.pairwise();
-    std::visit(
-        [this](auto &range) {
-          for (auto pair : range) {
-            calculate_force_particle_pair(pair);
-          }
-        },
-        comb);
+    particles.linear([this](auto &p) { calculate_old_force_particle(p); });
+    particles.pairwise([this](auto p) { calculate_force_particle_pair(p); });
 
     // TODO apply boundary conditions here
 
@@ -166,18 +136,7 @@ class Simulator {
 
     while (current_time < end_time) {
       calculate_position();
-      // Always remove all out of bounds particle
-      // TODO fix this with boundary conditions
-
-      // std::ranges::for_each(particles.boundary(), [](container::arena<Particle>::entry &entry) {
-      //   auto &p = entry.data;
-      //   const auto [pos_x, pos_y, pos_z] = p.position;
-      //   const auto [bound_x, bound_y, bound_z] = index.boundary();
-      //
-      //   const auto condition = pos_x < 0 || pos_y < 0 || pos_z < 0 || pos_x > bound_x || pos_y > bound_y || pos_z > bound_z;
-      //   entry.active = !condition;
-      //  });
-
+      particles.boundary([this](auto p) { calculate_force_particle_pair(p); });
       // refreshed the internal datastructure of the particle container
       particles.refresh();
       calculate_force();

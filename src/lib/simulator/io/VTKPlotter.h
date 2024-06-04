@@ -30,17 +30,7 @@ class VTKPlotter final : public Plotter {
     std::string out_name(config->output_filename);
 
     vtk_writer.initializeOutput(container.size());
-
-    auto linear = container.linear();
-
-    std::visit(
-
-        [this](auto &range) {
-          for (auto &particle : range) {
-            vtk_writer.plotParticle(particle);
-          }
-        },
-        linear);
+    container.linear([this](auto &p) { vtk_writer.plotParticle(p); });
     vtk_writer.writeFile(out_name, iteration);
   };
 
