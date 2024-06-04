@@ -56,9 +56,17 @@ auto ParticleLoader::load_particles() -> std::tuple<std::vector<Particle>, simul
     }
   }
 
-  if (config->generate_disk) {
+  bool generate_disk = false;
+  double disk_center_x;
+  double disk_center_y;
+  double disk_initial_vx;
+  double disk_initial_vy;
+  int disk_radius_molecules;
+  double disk_meshwidth;
+
+  if (generate_disk) {
     spdlog::info("Generating particles in a disk configuration.");
-    std::vector<Particle> disk_particles = generate_disk_particles(config->disk_center_x, config->disk_center_y, config->disk_initial_vx, config->disk_initial_vy, config->disk_radius_molecules, config->disk_meshwidth);
+    std::vector<Particle> disk_particles = generate_disk_particles(disk_center_x, disk_center_y, disk_initial_vx, disk_initial_vy, disk_radius_molecules, disk_meshwidth);
     spdlog::debug("Generated {} particles in a disk configuration.", disk_particles.size());
     for (auto &particle : disk_particles) {
       particles.emplace_back(particle);
