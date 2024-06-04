@@ -43,7 +43,7 @@ make doc_doxygen
 cd ${BUILD_DIR}
 make
 ./MolSim --help
-SPDLOG_LEVEL=info ./MolSim --input <input> --output <output> --start_time <start_time> --end_time <t_end> --delta_t <delta_t> --seed <seed> --io_interval <io_interval> --generate_disk --disk_center_x <disk_center_x> --disk_center_y <disk_center_y> --disk_initial_vx <disk_initial_vx> --disk_initial_vy <disk_initial_vy> --disk_radius_molecules <disk_radius_molecules> --disk_meshwidth <disk_meshwidth>
+SPDLOG_LEVEL=info ./MolSim --input <input> --output <output> --start_time <start_time> --end_time <t_end> --delta_t <delta_t> --seed <seed> --io_interval <io_interval>
 ```
 
 ## Tests
