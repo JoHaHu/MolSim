@@ -104,12 +104,8 @@ class Simulator {
 
   auto calculate_force() -> void {
     SPDLOG_DEBUG("Starting force calculation");
-
     particles.linear([this](auto &p) { calculate_old_force_particle(p); });
     particles.pairwise([this](auto p) { calculate_force_particle_pair(p); });
-
-    // TODO apply boundary conditions here
-
     SPDLOG_TRACE("Force calculation completed.");
   };
 
