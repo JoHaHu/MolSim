@@ -4,12 +4,11 @@
 
 class LennardJonesPotentialTest : public ::testing::Test {
  public:
-  //  double epsilon = 5.0;
-  //  double sigma = 1;
   simulator::physics::LennardJones ljf;
 
   void SetUp() override {
-    ljf = simulator::physics::LennardJones();
+    // Set a high cutoff for this test
+    ljf = simulator::physics::LennardJones(100.0);
   }
 };
 
