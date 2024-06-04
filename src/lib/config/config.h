@@ -46,15 +46,6 @@ class Config {
          * the number of simulation step after which output files are generated
          * */
   int io_interval{};
-
-  bool generate_disk = false;
-  double disk_center_x = 0.0;
-  double disk_center_y = 0.0;
-  double disk_initial_vx = 0.0;
-  double disk_initial_vy = 0.0;
-  int disk_radius_molecules = 10;
-  double disk_meshwidth = 1.0;
-
   /**
          * prints the help message
          */
