@@ -35,10 +35,13 @@ class ParticleLoader {
 
  public:
   explicit ParticleLoader(const std::shared_ptr<config::Config> &config);
+
   /**
    * Load particles based on a input file and returns a particle container and the used force model
    * */
   auto load_particles() -> std::tuple<std::vector<Particle>, physics::ForceModel>;
+
+  std::vector<Particle> generate_disk_particles(double disk_center_x, double disk_center_y, double disk_initial_vx, double disk_initial_vy, int disk_radius_molecules, double disk_meshwidth);
 };
 
 }// namespace simulator::io

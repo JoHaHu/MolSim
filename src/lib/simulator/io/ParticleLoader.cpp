@@ -15,13 +15,13 @@ ParticleLoader::ParticleLoader(const std::shared_ptr<config::Config> &config) : 
 }
 
 /**
-    * @brief Loads particles from the input file.
-    *
-    * Reads the input file specified in the config, recognizes comments, headers, and force models,
-    * and generates particles accordingly. Logs the process at various levels.
-    *
-    * @return std::tuple<ParticleContainer, simulator::physics::ForceModel> The loaded particles and the force model.
-    */
+        * @brief Loads particles from the input file.
+        *
+        * Reads the input file specified in the config, recognizes comments, headers, and force models,
+        * and generates particles accordingly. Logs the process at various levels.
+        *
+        * @return std::tuple<ParticleContainer, simulator::physics::ForceModel> The loaded particles and the force model.
+        */
 auto ParticleLoader::load_particles() -> std::tuple<std::vector<Particle>, simulator::physics::ForceModel> {
   spdlog::info("Reading file {}", config->input_filename);
   auto input = std::ifstream(config->input_filename);
@@ -55,16 +55,61 @@ auto ParticleLoader::load_particles() -> std::tuple<std::vector<Particle>, simul
       break;
     }
   }
+
+  if (config->generate_disk) {
+    spdlog::info("Generating particles in a disk configuration.");
+    std::vector<Particle> disk_particles = generate_disk_particles(config->disk_center_x, config->disk_center_y, config->disk_initial_vx, config->disk_initial_vy, config->disk_radius_molecules, config->disk_meshwidth);
+    spdlog::debug("Generated {} particles in a disk configuration.", disk_particles.size());
+    for (auto &particle : disk_particles) {
+      particles.emplace_back(particle);
+    }
+  }
+
   spdlog::debug("File {} read successfully.", config->input_filename);
   return {particles, model};
 }
 
 /**
-    * @brief Recognizes the force model from the input buffer.
-    *
-    * @param buf Input buffer iterator.
-    * @return std::optional<physics::ForceModel> The recognized force model or an empty optional if unrecognized.
-    */
+        * @brief Generates particles arranged in a disk configuration.
+        *
+        * This method generates particles within a disk of a specified radius. The disk
+        * is centered at (centerX, centerY) and each particle is given an initial velocity
+        * (initialVx, initialVy). The density of the particles is controlled by the meshwidth,
+        * which determines the spacing between adjacent particles. The number of particles
+        * along the radius is specified by radiusMolecules.
+        *
+        * @param centerX The x-coordinate of the center of the disk.
+        * @param centerY The y-coordinate of the center of the disk.
+        * @param initialVx The initial velocity in the x-direction for all particles.
+        * @param initialVy The initial velocity in the y-direction for all particles.
+        * @param radiusMolecules The radius of the disk in terms of the number of molecules.
+        * @param meshwidth The distance between adjacent particles.
+        * @return std::vector<Particle> A vector containing the generated particles.
+        */
+std::vector<Particle> ParticleLoader::generate_disk_particles(double centerX, double centerY, double initialVx,
+                                                              double initialVy, int radiusMolecules,
+                                                              double meshwidth) {
+  std::vector<Particle> particles;
+  double radius = radiusMolecules * meshwidth;
+  for (int i = -radiusMolecules; i <= radiusMolecules; ++i) {
+    for (int j = -radiusMolecules; j <= radiusMolecules; ++j) {
+      double x = i * meshwidth;
+      double y = j * meshwidth;
+      if (x * x + y * y <= radius * radius) {
+        particles.emplace_back(std::array<double, 3>{centerX + x, centerY + y, 0.0},
+                               std::array<double, 3>{initialVx, initialVy, 0.0}, 1.0, 0);
+      }
+    }
+  }
+  return particles;
+}
+
+/**
+        * @brief Recognizes the force model from the input buffer.
+        *
+        * @param buf Input buffer iterator.
+        * @return std::optional<physics::ForceModel> The recognized force model or an empty optional if unrecognized.
+        */
 auto ParticleLoader::recognize_force_model(
     std::istreambuf_iterator<char> &buf) -> std::optional<physics::ForceModel> {
   spdlog::trace("Starting to recognize force model");
@@ -132,14 +177,14 @@ auto ParticleLoader::recognize_int(std::istreambuf_iterator<char> &buf) -> std::
 }
 
 /**
-    * @brief Extracts and parses a double value from an input stream buffer.
-    *
-    * @param buf Iterator into the input stream buffer.
-    * @return std::optional<double> The parsed double, or std::nullopt if:
-    *        - end of buffer reached prematurely
-    *        - parsed value is NaN or infinite
-    *        - parsing error occurs
-    */
+        * @brief Extracts and parses a double value from an input stream buffer.
+        *
+        * @param buf Iterator into the input stream buffer.
+        * @return std::optional<double> The parsed double, or std::nullopt if:
+        *        - end of buffer reached prematurely
+        *        - parsed value is NaN or infinite
+        *        - parsing error occurs
+        */
 auto ParticleLoader::recognize_double(std::istreambuf_iterator<char> &buf) -> std::optional<double> {
   recognize_whitespace(buf);
   if (buf == std::istreambuf_iterator<char>()) return {};
@@ -164,11 +209,11 @@ auto ParticleLoader::recognize_double(std::istreambuf_iterator<char> &buf) -> st
 }
 
 /**
-    * @brief Recognizes a triplet of doubles from the input buffer.
-    *
-    * @param buf Input buffer iterator.
-    * @return std::optional<std::array<double, 3>> The recognized triplet or an empty optional if not recognized.
-    */
+        * @brief Recognizes a triplet of doubles from the input buffer.
+        *
+        * @param buf Input buffer iterator.
+        * @return std::optional<std::array<double, 3>> The recognized triplet or an empty optional if not recognized.
+        */
 auto ParticleLoader::recognize_double_triplet(std::istreambuf_iterator<char> &buf)
     -> std::optional<std::array<double, 3>> {
   spdlog::trace("Starting to recognize a double triplet");
@@ -195,11 +240,11 @@ auto ParticleLoader::recognize_double_triplet(std::istreambuf_iterator<char> &bu
 }
 
 /**
-     * @brief Recognizes a triplet of integers from the input buffer.
-     *
-     * @param buf Input buffer iterator.
-     * @return std::optional<std::array<int, 3>> The recognized triplet or an empty optional if not recognized.
-     */
+         * @brief Recognizes a triplet of integers from the input buffer.
+         *
+         * @param buf Input buffer iterator.
+         * @return std::optional<std::array<int, 3>> The recognized triplet or an empty optional if not recognized.
+         */
 auto ParticleLoader::recognize_dimension_triplet(
     std::istreambuf_iterator<char> &buf) -> std::optional<std::array<int, 3>> {
   spdlog::trace("Starting to recognize a dim triplet");
@@ -214,11 +259,11 @@ auto ParticleLoader::recognize_dimension_triplet(
 }
 
 /**
-     * @brief Recognizes a cuboid structure from the input buffer.
-     *
-     * @param buf Input buffer iterator.
-     * @return std::optional<cuboid_t> The recognized cuboid or an empty optional if not recognized.
-     */
+         * @brief Recognizes a cuboid structure from the input buffer.
+         *
+         * @param buf Input buffer iterator.
+         * @return std::optional<cuboid_t> The recognized cuboid or an empty optional if not recognized.
+         */
 auto ParticleLoader::recognize_cuboid(std::istreambuf_iterator<char> &buf) -> std::optional<cuboid_t> {
   spdlog::trace("Starting to recognize a cuboid");
   recognize_whitespace(buf);
@@ -238,11 +283,11 @@ auto ParticleLoader::recognize_cuboid(std::istreambuf_iterator<char> &buf) -> st
 }
 
 /**
-     * @brief Recognizes a planet structure from the input buffer.
-     *
-     * @param buf Input buffer iterator.
-     * @return std::optional<Particle> The recognized planet or an empty optional if not recognized.
-     */
+         * @brief Recognizes a planet structure from the input buffer.
+         *
+         * @param buf Input buffer iterator.
+         * @return std::optional<Particle> The recognized planet or an empty optional if not recognized.
+         */
 auto ParticleLoader::recognize_planet(std::istreambuf_iterator<char> &buf) -> std::optional<Particle> {
   spdlog::trace("Starting to recognize a planet");
   recognize_whitespace(buf);
@@ -276,11 +321,11 @@ auto ParticleLoader::recognize_planet(std::istreambuf_iterator<char> &buf) -> st
 }
 
 /**
-     * @brief Parses particles affected by gravity from the input buffer.
-     *
-     * @param buf Input buffer iterator.
-     * @return std::optional<std::vector<Particle>> The parsed particles or an empty optional if parsing fails.
-     */
+         * @brief Parses particles affected by gravity from the input buffer.
+         *
+         * @param buf Input buffer iterator.
+         * @return std::optional<std::vector<Particle>> The parsed particles or an empty optional if parsing fails.
+         */
 auto ParticleLoader::parse_gravity(std::istreambuf_iterator<char> &buf) -> std::optional<std::vector<Particle>> {
   spdlog::trace("Starting to parse gravity particles");
   auto particles = std::vector<Particle>();
@@ -301,11 +346,11 @@ auto ParticleLoader::parse_gravity(std::istreambuf_iterator<char> &buf) -> std::
 }
 
 /**
-     * @brief Parses cuboid structures from the input buffer.
-     *
-     * @param buf Input buffer iterator.
-     * @return std::optional<std::vector<cuboid_t>> The parsed cuboids or an empty optional if parsing fails.
-     */
+         * @brief Parses cuboid structures from the input buffer.
+         *
+         * @param buf Input buffer iterator.
+         * @return std::optional<std::vector<cuboid_t>> The parsed cuboids or an empty optional if parsing fails.
+         */
 auto ParticleLoader::parse_cuboids(std::istreambuf_iterator<char> &buf) -> std::optional<std::vector<cuboid_t>> {
   spdlog::trace("Starting to parse cuboids");
   auto particles = std::vector<cuboid_t>();
@@ -329,15 +374,15 @@ auto ParticleLoader::parse_cuboids(std::istreambuf_iterator<char> &buf) -> std::
 static constexpr const double brownian_motion = 0.1;
 
 /**
-    * @brief Generates particles from a list of cuboids using the given seed.
-    *
-    * Iterates through each cuboid and generates particles based on its dimensions and properties.
-    * Logs the progress at various levels.
-    *
-    * @param cuboids A vector of cuboid_t structures containing cuboid properties.
-    * @param seed The seed used for random number generation.
-    * @return std::vector<Particle> The generated particles.
-    */
+        * @brief Generates particles from a list of cuboids using the given seed.
+        *
+        * Iterates through each cuboid and generates particles based on its dimensions and properties.
+        * Logs the progress at various levels.
+        *
+        * @param cuboids A vector of cuboid_t structures containing cuboid properties.
+        * @param seed The seed used for random number generation.
+        * @return std::vector<Particle> The generated particles.
+        */
 auto ParticleLoader::generate_cuboids(const std::vector<cuboid_t> &cuboids, auto seed) -> std::vector<Particle> {
   auto particles = std::vector<Particle>();
 
