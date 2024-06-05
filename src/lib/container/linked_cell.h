@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "orientation.h"
 #include "range/v3/view/concat.hpp"
 #include "spdlog/spdlog.h"
 
@@ -27,15 +28,6 @@ enum class boundary_condition : std::uint8_t {
   reflecting,
   //  periodic,
   none
-};
-
-enum class orientation : std::uint8_t {
-  front,
-  back,
-  left,
-  right,
-  bottom,
-  top
 };
 
 enum class cell_type : std::uint8_t {
@@ -65,7 +57,7 @@ class cell {
   explicit cell(std::vector<std::reference_wrapper<arena<Particle>::entry>> &&particles,
                 cell_type type,
                 std::array<size_t, 3> idx,
-                std::array<double, 3> widths) : particles(std::move(particles)), type(type), idx(idx), widths(widths) {};
+                std::array<double, 3> widths) : particles(std::move(particles)), type(type), idx(idx), widths(widths){};
   /**
    * a linear range over the particles
    * */
@@ -152,27 +144,27 @@ class linked_cell {
       auto [x, y, z] = c.idx;
       if (x == 0) {
         c.type = cell_type::boundary;
-        c.boundary[(size_t) orientation::left] = bc[(size_t) orientation::left];
+        c.boundary[(size_t) boundary::orientation::left] = bc[(size_t) boundary::orientation::left];
       }
       if (x == dim[0] - 1) {
         c.type = cell_type::boundary;
-        c.boundary[(size_t) orientation::right] = bc[(size_t) orientation::right];
+        c.boundary[(size_t) boundary::orientation::right] = bc[(size_t) boundary::orientation::right];
       }
       if (y == 0) {
         c.type = cell_type::boundary;
-        c.boundary[(size_t) orientation::bottom] = bc[(size_t) orientation::bottom];
+        c.boundary[(size_t) boundary::orientation::bottom] = bc[(size_t) boundary::orientation::bottom];
       }
       if (y == dim[1] - 1) {
         c.type = cell_type::boundary;
-        c.boundary[(size_t) orientation::top] = bc[(size_t) orientation::top];
+        c.boundary[(size_t) boundary::orientation::top] = bc[(size_t) boundary::orientation::top];
       }
       if (z == 0) {
         c.type = cell_type::boundary;
-        c.boundary[(size_t) orientation::back] = bc[(size_t) orientation::back];
+        c.boundary[(size_t) boundary::orientation::back] = bc[(size_t) boundary::orientation::back];
       }
       if (z == dim[2] - 1) {
         c.type = cell_type::boundary;
-        c.boundary[(size_t) orientation::front] = bc[(size_t) orientation::front];
+        c.boundary[(size_t) boundary::orientation::front] = bc[(size_t) boundary::orientation::front];
       }
 
       c.range = create_range(*this, {x, y, z});
@@ -289,5 +281,30 @@ class linked_cell {
   double sigma;
   double cutoff;
 };
+
+/**
+ * a function to apply all up to 6 boundary conditions to a all boundary cell of a linked container
+ * */
+template<index::Index I>
+static void calculate_boundary_condition(linked_cell<I> &lc,
+                                         std::function<void(std::tuple<Particle &, Particle &>)> const &force_calculation
+
+) {
+
+  std::ranges::for_each(lc.boundary(), [&lc, &force_calculation](cell &cell) {
+    for (auto [side, b] : std::views::enumerate(cell.boundary)) {
+      auto o = boundary::orientation(side);
+      switch (b) {
+        case boundary_condition::outflow:
+          std::ranges::for_each(cell.particles, [&lc, &o](auto &e) { outflow(lc, e, o); });
+          break;
+        case boundary_condition::reflecting:
+          std::ranges::for_each(cell.linear(), [&lc, &o, &force_calculation](auto &p) { reflecting(lc, p, o, force_calculation); });
+          break;
+        case boundary_condition::none: break;
+      }
+    }
+  });
+}
 
 }// namespace container

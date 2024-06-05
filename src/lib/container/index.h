@@ -1,6 +1,5 @@
 #pragma once
 
-#include "linked_cell.h"
 #include "utils/ArrayUtils.h"
 #include <array>
 #include <cmath>
@@ -31,8 +30,8 @@ struct row_major_index {
  public:
   std::array<double, 3> boundary;
   std::array<double, 3> width;
-  std::array<size_t, 3> dimension;
-  std::array<size_t, 3> radius;
+  std::array<size_t, 3> dimension{};
+  std::array<size_t, 3> radius{};
 
  public:
   row_major_index() = delete;

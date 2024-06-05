@@ -1,7 +1,10 @@
 #pragma once
 
+#include "arena.h"
+#include "cmath"
 #include "container.h"
 #include "linked_cell.h"
+#include "orientation.h"
 #include <variant>
 
 namespace container::boundary {
@@ -90,31 +93,6 @@ static void reflecting(auto &lc, auto &p, orientation o, auto fc) {
       }
       break;
   }
-}
-
-/**
- * a function to apply all up to 6 boundary conditions to a all boundary cell of a linked container
- * */
-template<index::Index I>
-static void calculate_boundary_condition(linked_cell<I> &lc,
-                                         std::function<void(std::tuple<Particle &, Particle &>)> const &force_calculation
-
-) {
-
-  std::ranges::for_each(lc.boundary(), [&lc, &force_calculation](cell &cell) {
-    for (auto [side, b] : std::views::enumerate(cell.boundary)) {
-      auto o = orientation(side);
-      switch (b) {
-        case boundary_condition::outflow:
-          std::ranges::for_each(cell.particles, [&lc, &o](auto &e) { outflow(lc, e, o); });
-          break;
-        case boundary_condition::reflecting:
-          std::ranges::for_each(cell.linear(), [&lc, &o, &force_calculation](auto &p) { reflecting(lc, p, o, force_calculation); });
-          break;
-        case boundary_condition::none: break;
-      }
-    }
-  });
 }
 
 }// namespace container::boundary

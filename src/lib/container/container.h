@@ -58,7 +58,7 @@ struct particle_container {
     std::visit(overloaded{
                    [](std::vector<Particle> &container) {},
                    [&f](auto &container) {
-                     boundary::calculate_boundary_condition(container, f);
+                     calculate_boundary_condition(container, f);
                    },
                },
                var);
