@@ -3,7 +3,7 @@
 #include "ParticleContainer.h"
 #include "Plotter.h"
 #include "VTKWriter.h"
-#include "config/config.h"
+#include "config/OldConfig.h"
 
 namespace simulator::io {
 

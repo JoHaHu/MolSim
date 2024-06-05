@@ -3,52 +3,111 @@
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-    <!-- Root element definition -->
+    <!-- Define the root element -->
     <xs:element name="Data">
         <xs:complexType>
             <xs:sequence>
-                <!-- Base name element -->
-                <xs:element name="base_name" type="xs:string"/>
-
-                <!-- Write frequency element -->
-                <xs:element name="output_write_frequency">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:positiveInteger"/>
-                    </xs:simpleType>
+                <!-- Header element with attributes globally defined for the whole simulation -->
+                <xs:element name="header">
+                    <xs:complexType>
+                        <xs:attribute name="base_name" type="xs:string" use="required"/>
+                        <xs:attribute name="t_end" type="xs:double" use="required"/>
+                        <xs:attribute name="output_frequency" type="xs:double" use="required"/>
+                        <xs:attribute name="output_file_name" type="xs:string" use="required"/>
+                        <xs:attribute name="seed" type="xs:int" use="required"/>
+                    </xs:complexType>
                 </xs:element>
 
-                <!-- Simulation parameters -->
-                <xs:element name="t_end" type="xs:double"/>
-                <xs:element name="delta_t" type="xs:double"/>
-                <xs:element name="epsilon" type="xs:double"/>
-                <xs:element name="sigma" type="xs:double"/>
-                <xs:element name="average_brownian_motion" type="xs:double"/>
+                <!-- Choice of simulation type -->
+                <xs:choice>
+                    <!-- Gravity simulation -->
+                    <xs:element name="gravity">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="total_bodies" type="xs:double"/>
+                                <xs:element name="celestial_body" type="celestial_body" maxOccurs="unbounded"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
 
-                <!-- Single or multiple cuboids with their own parameters -->
-                <xs:element name="Cuboid" type="cuboidType" minOccurs="0" maxOccurs="unbounded"/>
+                    <!-- Lennard-Jones simulation -->
+                    <xs:element name="lennard_jones">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <!-- Constants that are set globally for the simulation and not specific to any cuboid or disc -->
+                                <xs:element name="settings">
+                                    <xs:complexType>
+                                        <xs:attribute name="delta_t" type="xs:double" use="required"/>
+                                        <xs:attribute name="sigma" type="xs:double" use="required"/>
+                                        <xs:attribute name="epsilon" type="xs:double" use="required"/>
+                                        <xs:attribute name="mass_m" type="xs:double" use="required"/>
+                                        <xs:attribute name="distance_h" type="xs:double" use="required"/>
+                                        <xs:attribute name="brown_motion" type="xs:double" use="required"/>
+                                    </xs:complexType>
+                                </xs:element>
+
+                                <!-- Choice between cuboids and discs -->
+                                <xs:choice>
+                                    <xs:element name="cuboids">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="Cuboid" type="cuboid" maxOccurs="unbounded"/>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="discs">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="Disc" type="disc" maxOccurs="unbounded"/>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:choice>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:choice>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
 
-
-    <!-- Definition of BodyType containing 4 integer arrays and 2 doubles -->
-    <xs:complexType name="cuboidType">
+    <!-- Definition of intArray as an array of 3 integers -->
+    <xs:complexType name="double_array">
         <xs:sequence>
-            <!-- Cuboid description parameters -->
-            <xs:element name="lower_left_front_coordinate" type="intArray"/>
-            <xs:element name="dimensional_particle_numbers" type="intArray"/>
-            <xs:element name="distance_h" type="xs:double"/>
-            <xs:element name="mass_m" type="xs:double"/>
-            <xs:element name="initial_velocity" type="intArray"/>
+            <xs:element name="value" type="xs:double" maxOccurs="3" minOccurs="3"/>
         </xs:sequence>
     </xs:complexType>
 
-
-
-    <!-- Definition of IntArray as an array of 3 integers -->
-    <xs:complexType name="intArray">
+    <!-- Definition of celestial body described by 2 integer arrays and 1 double -->
+    <xs:complexType name="celestial_body">
         <xs:sequence>
-            <xs:element name="value" type="xs:int" maxOccurs="3" minOccurs="3"/>
+            <!-- Disc description parameters -->
+            <xs:element name="coordinate" type="double_array"/>
+            <xs:element name="velocity" type="double_array"/>
+            <xs:element name="mass" type="xs:double"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Definition of cuboid described by 3 integer arrays -->
+    <xs:complexType name="cuboid">
+        <xs:sequence>
+            <!-- Cuboid description parameters -->
+            <xs:element name="coordinate"
+                        type="double_array"/>  <!-- coordinate is defined as the lower left front particle coordinate -->
+            <xs:element name="particle_counts" type="double_array"/>
+            <xs:element name="velocity" type="double_array"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Definition of disc described by 2 integer arrays and 1 double -->
+    <xs:complexType name="disc">
+        <xs:sequence>
+            <!-- Disc description parameters -->
+            <xs:element name="coordinate"
+                        type="double_array"/>  <!-- coordinate is defined as the center particle coordinate -->
+            <xs:element name="velocity" type="double_array"/>
+            <xs:element name="radius"
+                        type="xs:int"/>  <!-- radius is defined as the amount of particle along the radius of the disc -->
         </xs:sequence>
     </xs:complexType>
 

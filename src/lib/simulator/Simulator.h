@@ -2,7 +2,7 @@
 
 #include "Particle.h"
 #include "ParticleContainer.h"
-#include "config/config.h"
+#include "config/OldConfig.h"
 #include "simulator/io/Plotter.h"
 #include "utils/ArrayUtils.h"
 #include <cmath>

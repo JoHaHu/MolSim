@@ -254,10 +254,17 @@ namespace xml_schema
 
 // Forward declarations.
 //
-class cuboidType;
-class intArray;
+class double_array;
+class celestial_body;
+class cuboid;
+class disc;
 class Data;
-class output_write_frequency;
+class header;
+class gravity;
+class lennard_jones;
+class settings;
+class cuboids;
+class discs;
 
 #include <memory>    // ::std::unique_ptr
 #include <limits>    // std::numeric_limits
@@ -273,145 +280,16 @@ class output_write_frequency;
 
 #include <xsd/cxx/xml/dom/parsing-header.hxx>
 
-class cuboidType: public ::xml_schema::type
-{
-  public:
-  // lower_left_front_coordinate
-  //
-  typedef ::intArray lower_left_front_coordinate_type;
-  typedef ::xsd::cxx::tree::traits< lower_left_front_coordinate_type, char > lower_left_front_coordinate_traits;
-
-  const lower_left_front_coordinate_type&
-  lower_left_front_coordinate () const;
-
-  lower_left_front_coordinate_type&
-  lower_left_front_coordinate ();
-
-  void
-  lower_left_front_coordinate (const lower_left_front_coordinate_type& x);
-
-  void
-  lower_left_front_coordinate (::std::unique_ptr< lower_left_front_coordinate_type > p);
-
-  // dimensional_particle_numbers
-  //
-  typedef ::intArray dimensional_particle_numbers_type;
-  typedef ::xsd::cxx::tree::traits< dimensional_particle_numbers_type, char > dimensional_particle_numbers_traits;
-
-  const dimensional_particle_numbers_type&
-  dimensional_particle_numbers () const;
-
-  dimensional_particle_numbers_type&
-  dimensional_particle_numbers ();
-
-  void
-  dimensional_particle_numbers (const dimensional_particle_numbers_type& x);
-
-  void
-  dimensional_particle_numbers (::std::unique_ptr< dimensional_particle_numbers_type > p);
-
-  // distance_h
-  //
-  typedef ::xml_schema::double_ distance_h_type;
-  typedef ::xsd::cxx::tree::traits< distance_h_type, char, ::xsd::cxx::tree::schema_type::double_ > distance_h_traits;
-
-  const distance_h_type&
-  distance_h () const;
-
-  distance_h_type&
-  distance_h ();
-
-  void
-  distance_h (const distance_h_type& x);
-
-  // mass_m
-  //
-  typedef ::xml_schema::double_ mass_m_type;
-  typedef ::xsd::cxx::tree::traits< mass_m_type, char, ::xsd::cxx::tree::schema_type::double_ > mass_m_traits;
-
-  const mass_m_type&
-  mass_m () const;
-
-  mass_m_type&
-  mass_m ();
-
-  void
-  mass_m (const mass_m_type& x);
-
-  // initial_velocity
-  //
-  typedef ::intArray initial_velocity_type;
-  typedef ::xsd::cxx::tree::traits< initial_velocity_type, char > initial_velocity_traits;
-
-  const initial_velocity_type&
-  initial_velocity () const;
-
-  initial_velocity_type&
-  initial_velocity ();
-
-  void
-  initial_velocity (const initial_velocity_type& x);
-
-  void
-  initial_velocity (::std::unique_ptr< initial_velocity_type > p);
-
-  // Constructors.
-  //
-  cuboidType (const lower_left_front_coordinate_type&,
-              const dimensional_particle_numbers_type&,
-              const distance_h_type&,
-              const mass_m_type&,
-              const initial_velocity_type&);
-
-  cuboidType (::std::unique_ptr< lower_left_front_coordinate_type >,
-              ::std::unique_ptr< dimensional_particle_numbers_type >,
-              const distance_h_type&,
-              const mass_m_type&,
-              ::std::unique_ptr< initial_velocity_type >);
-
-  cuboidType (const ::xercesc::DOMElement& e,
-              ::xml_schema::flags f = 0,
-              ::xml_schema::container* c = 0);
-
-  cuboidType (const cuboidType& x,
-              ::xml_schema::flags f = 0,
-              ::xml_schema::container* c = 0);
-
-  virtual cuboidType*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
-
-  cuboidType&
-  operator= (const cuboidType& x);
-
-  virtual 
-  ~cuboidType ();
-
-  // Implementation.
-  //
-  protected:
-  void
-  parse (::xsd::cxx::xml::dom::parser< char >&,
-         ::xml_schema::flags);
-
-  protected:
-  ::xsd::cxx::tree::one< lower_left_front_coordinate_type > lower_left_front_coordinate_;
-  ::xsd::cxx::tree::one< dimensional_particle_numbers_type > dimensional_particle_numbers_;
-  ::xsd::cxx::tree::one< distance_h_type > distance_h_;
-  ::xsd::cxx::tree::one< mass_m_type > mass_m_;
-  ::xsd::cxx::tree::one< initial_velocity_type > initial_velocity_;
-};
-
-class intArray: public ::xml_schema::type
+class double_array: public ::xml_schema::type
 {
   public:
   // value
   //
-  typedef ::xml_schema::int_ value_type;
+  typedef ::xml_schema::double_ value_type;
   typedef ::xsd::cxx::tree::sequence< value_type > value_sequence;
   typedef value_sequence::iterator value_iterator;
   typedef value_sequence::const_iterator value_const_iterator;
-  typedef ::xsd::cxx::tree::traits< value_type, char > value_traits;
+  typedef ::xsd::cxx::tree::traits< value_type, char, ::xsd::cxx::tree::schema_type::double_ > value_traits;
 
   const value_sequence&
   value () const;
@@ -424,25 +302,25 @@ class intArray: public ::xml_schema::type
 
   // Constructors.
   //
-  intArray ();
+  double_array ();
 
-  intArray (const ::xercesc::DOMElement& e,
-            ::xml_schema::flags f = 0,
-            ::xml_schema::container* c = 0);
+  double_array (const ::xercesc::DOMElement& e,
+                ::xml_schema::flags f = 0,
+                ::xml_schema::container* c = 0);
 
-  intArray (const intArray& x,
-            ::xml_schema::flags f = 0,
-            ::xml_schema::container* c = 0);
+  double_array (const double_array& x,
+                ::xml_schema::flags f = 0,
+                ::xml_schema::container* c = 0);
 
-  virtual intArray*
+  virtual double_array*
   _clone (::xml_schema::flags f = 0,
           ::xml_schema::container* c = 0) const;
 
-  intArray&
-  operator= (const intArray& x);
+  double_array&
+  operator= (const double_array& x);
 
   virtual 
-  ~intArray ();
+  ~double_array ();
 
   // Implementation.
   //
@@ -455,139 +333,352 @@ class intArray: public ::xml_schema::type
   value_sequence value_;
 };
 
-class Data: public ::xml_schema::type
+class celestial_body: public ::xml_schema::type
 {
   public:
-  // base_name
+  // coordinate
   //
-  typedef ::xml_schema::string base_name_type;
-  typedef ::xsd::cxx::tree::traits< base_name_type, char > base_name_traits;
+  typedef ::double_array coordinate_type;
+  typedef ::xsd::cxx::tree::traits< coordinate_type, char > coordinate_traits;
 
-  const base_name_type&
-  base_name () const;
+  const coordinate_type&
+  coordinate () const;
 
-  base_name_type&
-  base_name ();
-
-  void
-  base_name (const base_name_type& x);
+  coordinate_type&
+  coordinate ();
 
   void
-  base_name (::std::unique_ptr< base_name_type > p);
+  coordinate (const coordinate_type& x);
 
-  // output_write_frequency
+  void
+  coordinate (::std::unique_ptr< coordinate_type > p);
+
+  // velocity
   //
-  typedef ::output_write_frequency output_write_frequency_type;
-  typedef ::xsd::cxx::tree::traits< output_write_frequency_type, char > output_write_frequency_traits;
+  typedef ::double_array velocity_type;
+  typedef ::xsd::cxx::tree::traits< velocity_type, char > velocity_traits;
 
-  const output_write_frequency_type&
-  output_write_frequency () const;
+  const velocity_type&
+  velocity () const;
 
-  output_write_frequency_type&
-  output_write_frequency ();
-
-  void
-  output_write_frequency (const output_write_frequency_type& x);
+  velocity_type&
+  velocity ();
 
   void
-  output_write_frequency (::std::unique_ptr< output_write_frequency_type > p);
+  velocity (const velocity_type& x);
 
-  // t_end
+  void
+  velocity (::std::unique_ptr< velocity_type > p);
+
+  // mass
   //
-  typedef ::xml_schema::double_ t_end_type;
-  typedef ::xsd::cxx::tree::traits< t_end_type, char, ::xsd::cxx::tree::schema_type::double_ > t_end_traits;
+  typedef ::xml_schema::double_ mass_type;
+  typedef ::xsd::cxx::tree::traits< mass_type, char, ::xsd::cxx::tree::schema_type::double_ > mass_traits;
 
-  const t_end_type&
-  t_end () const;
+  const mass_type&
+  mass () const;
 
-  t_end_type&
-  t_end ();
-
-  void
-  t_end (const t_end_type& x);
-
-  // delta_t
-  //
-  typedef ::xml_schema::double_ delta_t_type;
-  typedef ::xsd::cxx::tree::traits< delta_t_type, char, ::xsd::cxx::tree::schema_type::double_ > delta_t_traits;
-
-  const delta_t_type&
-  delta_t () const;
-
-  delta_t_type&
-  delta_t ();
+  mass_type&
+  mass ();
 
   void
-  delta_t (const delta_t_type& x);
-
-  // epsilon
-  //
-  typedef ::xml_schema::double_ epsilon_type;
-  typedef ::xsd::cxx::tree::traits< epsilon_type, char, ::xsd::cxx::tree::schema_type::double_ > epsilon_traits;
-
-  const epsilon_type&
-  epsilon () const;
-
-  epsilon_type&
-  epsilon ();
-
-  void
-  epsilon (const epsilon_type& x);
-
-  // sigma
-  //
-  typedef ::xml_schema::double_ sigma_type;
-  typedef ::xsd::cxx::tree::traits< sigma_type, char, ::xsd::cxx::tree::schema_type::double_ > sigma_traits;
-
-  const sigma_type&
-  sigma () const;
-
-  sigma_type&
-  sigma ();
-
-  void
-  sigma (const sigma_type& x);
-
-  // average_brownian_motion
-  //
-  typedef ::xml_schema::double_ average_brownian_motion_type;
-  typedef ::xsd::cxx::tree::traits< average_brownian_motion_type, char, ::xsd::cxx::tree::schema_type::double_ > average_brownian_motion_traits;
-
-  const average_brownian_motion_type&
-  average_brownian_motion () const;
-
-  average_brownian_motion_type&
-  average_brownian_motion ();
-
-  void
-  average_brownian_motion (const average_brownian_motion_type& x);
-
-  // Cuboid
-  //
-  typedef ::cuboidType Cuboid_type;
-  typedef ::xsd::cxx::tree::sequence< Cuboid_type > Cuboid_sequence;
-  typedef Cuboid_sequence::iterator Cuboid_iterator;
-  typedef Cuboid_sequence::const_iterator Cuboid_const_iterator;
-  typedef ::xsd::cxx::tree::traits< Cuboid_type, char > Cuboid_traits;
-
-  const Cuboid_sequence&
-  Cuboid () const;
-
-  Cuboid_sequence&
-  Cuboid ();
-
-  void
-  Cuboid (const Cuboid_sequence& s);
+  mass (const mass_type& x);
 
   // Constructors.
   //
-  Data (const base_name_type&,
-        const output_write_frequency_type&,
-        const t_end_type&,
-        const delta_t_type&,
-        const epsilon_type&,
-        const sigma_type&,
-        const average_brownian_motion_type&);
+  celestial_body (const coordinate_type&,
+                  const velocity_type&,
+                  const mass_type&);
+
+  celestial_body (::std::unique_ptr< coordinate_type >,
+                  ::std::unique_ptr< velocity_type >,
+                  const mass_type&);
+
+  celestial_body (const ::xercesc::DOMElement& e,
+                  ::xml_schema::flags f = 0,
+                  ::xml_schema::container* c = 0);
+
+  celestial_body (const celestial_body& x,
+                  ::xml_schema::flags f = 0,
+                  ::xml_schema::container* c = 0);
+
+  virtual celestial_body*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  celestial_body&
+  operator= (const celestial_body& x);
+
+  virtual 
+  ~celestial_body ();
+
+  // Implementation.
+  //
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< coordinate_type > coordinate_;
+  ::xsd::cxx::tree::one< velocity_type > velocity_;
+  ::xsd::cxx::tree::one< mass_type > mass_;
+};
+
+class cuboid: public ::xml_schema::type
+{
+  public:
+  // coordinate
+  //
+  typedef ::double_array coordinate_type;
+  typedef ::xsd::cxx::tree::traits< coordinate_type, char > coordinate_traits;
+
+  const coordinate_type&
+  coordinate () const;
+
+  coordinate_type&
+  coordinate ();
+
+  void
+  coordinate (const coordinate_type& x);
+
+  void
+  coordinate (::std::unique_ptr< coordinate_type > p);
+
+  // particle_counts
+  //
+  typedef ::double_array particle_counts_type;
+  typedef ::xsd::cxx::tree::traits< particle_counts_type, char > particle_counts_traits;
+
+  const particle_counts_type&
+  particle_counts () const;
+
+  particle_counts_type&
+  particle_counts ();
+
+  void
+  particle_counts (const particle_counts_type& x);
+
+  void
+  particle_counts (::std::unique_ptr< particle_counts_type > p);
+
+  // velocity
+  //
+  typedef ::double_array velocity_type;
+  typedef ::xsd::cxx::tree::traits< velocity_type, char > velocity_traits;
+
+  const velocity_type&
+  velocity () const;
+
+  velocity_type&
+  velocity ();
+
+  void
+  velocity (const velocity_type& x);
+
+  void
+  velocity (::std::unique_ptr< velocity_type > p);
+
+  // Constructors.
+  //
+  cuboid (const coordinate_type&,
+          const particle_counts_type&,
+          const velocity_type&);
+
+  cuboid (::std::unique_ptr< coordinate_type >,
+          ::std::unique_ptr< particle_counts_type >,
+          ::std::unique_ptr< velocity_type >);
+
+  cuboid (const ::xercesc::DOMElement& e,
+          ::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0);
+
+  cuboid (const cuboid& x,
+          ::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0);
+
+  virtual cuboid*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  cuboid&
+  operator= (const cuboid& x);
+
+  virtual 
+  ~cuboid ();
+
+  // Implementation.
+  //
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< coordinate_type > coordinate_;
+  ::xsd::cxx::tree::one< particle_counts_type > particle_counts_;
+  ::xsd::cxx::tree::one< velocity_type > velocity_;
+};
+
+class disc: public ::xml_schema::type
+{
+  public:
+  // coordinate
+  //
+  typedef ::double_array coordinate_type;
+  typedef ::xsd::cxx::tree::traits< coordinate_type, char > coordinate_traits;
+
+  const coordinate_type&
+  coordinate () const;
+
+  coordinate_type&
+  coordinate ();
+
+  void
+  coordinate (const coordinate_type& x);
+
+  void
+  coordinate (::std::unique_ptr< coordinate_type > p);
+
+  // velocity
+  //
+  typedef ::double_array velocity_type;
+  typedef ::xsd::cxx::tree::traits< velocity_type, char > velocity_traits;
+
+  const velocity_type&
+  velocity () const;
+
+  velocity_type&
+  velocity ();
+
+  void
+  velocity (const velocity_type& x);
+
+  void
+  velocity (::std::unique_ptr< velocity_type > p);
+
+  // radius
+  //
+  typedef ::xml_schema::int_ radius_type;
+  typedef ::xsd::cxx::tree::traits< radius_type, char > radius_traits;
+
+  const radius_type&
+  radius () const;
+
+  radius_type&
+  radius ();
+
+  void
+  radius (const radius_type& x);
+
+  // Constructors.
+  //
+  disc (const coordinate_type&,
+        const velocity_type&,
+        const radius_type&);
+
+  disc (::std::unique_ptr< coordinate_type >,
+        ::std::unique_ptr< velocity_type >,
+        const radius_type&);
+
+  disc (const ::xercesc::DOMElement& e,
+        ::xml_schema::flags f = 0,
+        ::xml_schema::container* c = 0);
+
+  disc (const disc& x,
+        ::xml_schema::flags f = 0,
+        ::xml_schema::container* c = 0);
+
+  virtual disc*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  disc&
+  operator= (const disc& x);
+
+  virtual 
+  ~disc ();
+
+  // Implementation.
+  //
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< coordinate_type > coordinate_;
+  ::xsd::cxx::tree::one< velocity_type > velocity_;
+  ::xsd::cxx::tree::one< radius_type > radius_;
+};
+
+class Data: public ::xml_schema::type
+{
+  public:
+  // header
+  //
+  typedef ::header header_type;
+  typedef ::xsd::cxx::tree::traits< header_type, char > header_traits;
+
+  const header_type&
+  header () const;
+
+  header_type&
+  header ();
+
+  void
+  header (const header_type& x);
+
+  void
+  header (::std::unique_ptr< header_type > p);
+
+  // gravity
+  //
+  typedef ::gravity gravity_type;
+  typedef ::xsd::cxx::tree::optional< gravity_type > gravity_optional;
+  typedef ::xsd::cxx::tree::traits< gravity_type, char > gravity_traits;
+
+  const gravity_optional&
+  gravity () const;
+
+  gravity_optional&
+  gravity ();
+
+  void
+  gravity (const gravity_type& x);
+
+  void
+  gravity (const gravity_optional& x);
+
+  void
+  gravity (::std::unique_ptr< gravity_type > p);
+
+  // lennard_jones
+  //
+  typedef ::lennard_jones lennard_jones_type;
+  typedef ::xsd::cxx::tree::optional< lennard_jones_type > lennard_jones_optional;
+  typedef ::xsd::cxx::tree::traits< lennard_jones_type, char > lennard_jones_traits;
+
+  const lennard_jones_optional&
+  lennard_jones () const;
+
+  lennard_jones_optional&
+  lennard_jones ();
+
+  void
+  lennard_jones (const lennard_jones_type& x);
+
+  void
+  lennard_jones (const lennard_jones_optional& x);
+
+  void
+  lennard_jones (::std::unique_ptr< lennard_jones_type > p);
+
+  // Constructors.
+  //
+  Data (const header_type&);
+
+  Data (::std::unique_ptr< header_type >);
 
   Data (const ::xercesc::DOMElement& e,
         ::xml_schema::flags f = 0,
@@ -615,51 +706,532 @@ class Data: public ::xml_schema::type
          ::xml_schema::flags);
 
   protected:
-  ::xsd::cxx::tree::one< base_name_type > base_name_;
-  ::xsd::cxx::tree::one< output_write_frequency_type > output_write_frequency_;
-  ::xsd::cxx::tree::one< t_end_type > t_end_;
-  ::xsd::cxx::tree::one< delta_t_type > delta_t_;
-  ::xsd::cxx::tree::one< epsilon_type > epsilon_;
-  ::xsd::cxx::tree::one< sigma_type > sigma_;
-  ::xsd::cxx::tree::one< average_brownian_motion_type > average_brownian_motion_;
-  Cuboid_sequence Cuboid_;
+  ::xsd::cxx::tree::one< header_type > header_;
+  gravity_optional gravity_;
+  lennard_jones_optional lennard_jones_;
 };
 
-class output_write_frequency: public ::xsd::cxx::tree::fundamental_base< ::xml_schema::positive_integer, char, ::xml_schema::simple_type >
+class header: public ::xml_schema::type
 {
   public:
+  // base_name
+  //
+  typedef ::xml_schema::string base_name_type;
+  typedef ::xsd::cxx::tree::traits< base_name_type, char > base_name_traits;
+
+  const base_name_type&
+  base_name () const;
+
+  base_name_type&
+  base_name ();
+
+  void
+  base_name (const base_name_type& x);
+
+  void
+  base_name (::std::unique_ptr< base_name_type > p);
+
+  // t_end
+  //
+  typedef ::xml_schema::double_ t_end_type;
+  typedef ::xsd::cxx::tree::traits< t_end_type, char, ::xsd::cxx::tree::schema_type::double_ > t_end_traits;
+
+  const t_end_type&
+  t_end () const;
+
+  t_end_type&
+  t_end ();
+
+  void
+  t_end (const t_end_type& x);
+
+  // output_frequency
+  //
+  typedef ::xml_schema::double_ output_frequency_type;
+  typedef ::xsd::cxx::tree::traits< output_frequency_type, char, ::xsd::cxx::tree::schema_type::double_ > output_frequency_traits;
+
+  const output_frequency_type&
+  output_frequency () const;
+
+  output_frequency_type&
+  output_frequency ();
+
+  void
+  output_frequency (const output_frequency_type& x);
+
+  // output_file_name
+  //
+  typedef ::xml_schema::string output_file_name_type;
+  typedef ::xsd::cxx::tree::traits< output_file_name_type, char > output_file_name_traits;
+
+  const output_file_name_type&
+  output_file_name () const;
+
+  output_file_name_type&
+  output_file_name ();
+
+  void
+  output_file_name (const output_file_name_type& x);
+
+  void
+  output_file_name (::std::unique_ptr< output_file_name_type > p);
+
+  // seed
+  //
+  typedef ::xml_schema::int_ seed_type;
+  typedef ::xsd::cxx::tree::traits< seed_type, char > seed_traits;
+
+  const seed_type&
+  seed () const;
+
+  seed_type&
+  seed ();
+
+  void
+  seed (const seed_type& x);
+
   // Constructors.
   //
-  output_write_frequency (const ::xml_schema::positive_integer&);
+  header (const base_name_type&,
+          const t_end_type&,
+          const output_frequency_type&,
+          const output_file_name_type&,
+          const seed_type&);
 
-  output_write_frequency (const ::xercesc::DOMElement& e,
-                          ::xml_schema::flags f = 0,
-                          ::xml_schema::container* c = 0);
+  header (const ::xercesc::DOMElement& e,
+          ::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0);
 
-  output_write_frequency (const ::xercesc::DOMAttr& a,
-                          ::xml_schema::flags f = 0,
-                          ::xml_schema::container* c = 0);
+  header (const header& x,
+          ::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0);
 
-  output_write_frequency (const ::std::string& s,
-                          const ::xercesc::DOMElement* e,
-                          ::xml_schema::flags f = 0,
-                          ::xml_schema::container* c = 0);
-
-  output_write_frequency (const output_write_frequency& x,
-                          ::xml_schema::flags f = 0,
-                          ::xml_schema::container* c = 0);
-
-  virtual output_write_frequency*
+  virtual header*
   _clone (::xml_schema::flags f = 0,
           ::xml_schema::container* c = 0) const;
 
-#ifdef XSD_CXX11
-  output_write_frequency&
-  operator= (const output_write_frequency&) = default;
-#endif
+  header&
+  operator= (const header& x);
 
   virtual 
-  ~output_write_frequency ();
+  ~header ();
+
+  // Implementation.
+  //
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< base_name_type > base_name_;
+  ::xsd::cxx::tree::one< t_end_type > t_end_;
+  ::xsd::cxx::tree::one< output_frequency_type > output_frequency_;
+  ::xsd::cxx::tree::one< output_file_name_type > output_file_name_;
+  ::xsd::cxx::tree::one< seed_type > seed_;
+};
+
+class gravity: public ::xml_schema::type
+{
+  public:
+  // total_bodies
+  //
+  typedef ::xml_schema::double_ total_bodies_type;
+  typedef ::xsd::cxx::tree::traits< total_bodies_type, char, ::xsd::cxx::tree::schema_type::double_ > total_bodies_traits;
+
+  const total_bodies_type&
+  total_bodies () const;
+
+  total_bodies_type&
+  total_bodies ();
+
+  void
+  total_bodies (const total_bodies_type& x);
+
+  // celestial_body
+  //
+  typedef ::celestial_body celestial_body_type;
+  typedef ::xsd::cxx::tree::sequence< celestial_body_type > celestial_body_sequence;
+  typedef celestial_body_sequence::iterator celestial_body_iterator;
+  typedef celestial_body_sequence::const_iterator celestial_body_const_iterator;
+  typedef ::xsd::cxx::tree::traits< celestial_body_type, char > celestial_body_traits;
+
+  const celestial_body_sequence&
+  celestial_body () const;
+
+  celestial_body_sequence&
+  celestial_body ();
+
+  void
+  celestial_body (const celestial_body_sequence& s);
+
+  // Constructors.
+  //
+  gravity (const total_bodies_type&);
+
+  gravity (const ::xercesc::DOMElement& e,
+           ::xml_schema::flags f = 0,
+           ::xml_schema::container* c = 0);
+
+  gravity (const gravity& x,
+           ::xml_schema::flags f = 0,
+           ::xml_schema::container* c = 0);
+
+  virtual gravity*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  gravity&
+  operator= (const gravity& x);
+
+  virtual 
+  ~gravity ();
+
+  // Implementation.
+  //
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< total_bodies_type > total_bodies_;
+  celestial_body_sequence celestial_body_;
+};
+
+class lennard_jones: public ::xml_schema::type
+{
+  public:
+  // settings
+  //
+  typedef ::settings settings_type;
+  typedef ::xsd::cxx::tree::traits< settings_type, char > settings_traits;
+
+  const settings_type&
+  settings () const;
+
+  settings_type&
+  settings ();
+
+  void
+  settings (const settings_type& x);
+
+  void
+  settings (::std::unique_ptr< settings_type > p);
+
+  // cuboids
+  //
+  typedef ::cuboids cuboids_type;
+  typedef ::xsd::cxx::tree::optional< cuboids_type > cuboids_optional;
+  typedef ::xsd::cxx::tree::traits< cuboids_type, char > cuboids_traits;
+
+  const cuboids_optional&
+  cuboids () const;
+
+  cuboids_optional&
+  cuboids ();
+
+  void
+  cuboids (const cuboids_type& x);
+
+  void
+  cuboids (const cuboids_optional& x);
+
+  void
+  cuboids (::std::unique_ptr< cuboids_type > p);
+
+  // discs
+  //
+  typedef ::discs discs_type;
+  typedef ::xsd::cxx::tree::optional< discs_type > discs_optional;
+  typedef ::xsd::cxx::tree::traits< discs_type, char > discs_traits;
+
+  const discs_optional&
+  discs () const;
+
+  discs_optional&
+  discs ();
+
+  void
+  discs (const discs_type& x);
+
+  void
+  discs (const discs_optional& x);
+
+  void
+  discs (::std::unique_ptr< discs_type > p);
+
+  // Constructors.
+  //
+  lennard_jones (const settings_type&);
+
+  lennard_jones (::std::unique_ptr< settings_type >);
+
+  lennard_jones (const ::xercesc::DOMElement& e,
+                 ::xml_schema::flags f = 0,
+                 ::xml_schema::container* c = 0);
+
+  lennard_jones (const lennard_jones& x,
+                 ::xml_schema::flags f = 0,
+                 ::xml_schema::container* c = 0);
+
+  virtual lennard_jones*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  lennard_jones&
+  operator= (const lennard_jones& x);
+
+  virtual 
+  ~lennard_jones ();
+
+  // Implementation.
+  //
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< settings_type > settings_;
+  cuboids_optional cuboids_;
+  discs_optional discs_;
+};
+
+class settings: public ::xml_schema::type
+{
+  public:
+  // delta_t
+  //
+  typedef ::xml_schema::double_ delta_t_type;
+  typedef ::xsd::cxx::tree::traits< delta_t_type, char, ::xsd::cxx::tree::schema_type::double_ > delta_t_traits;
+
+  const delta_t_type&
+  delta_t () const;
+
+  delta_t_type&
+  delta_t ();
+
+  void
+  delta_t (const delta_t_type& x);
+
+  // sigma
+  //
+  typedef ::xml_schema::double_ sigma_type;
+  typedef ::xsd::cxx::tree::traits< sigma_type, char, ::xsd::cxx::tree::schema_type::double_ > sigma_traits;
+
+  const sigma_type&
+  sigma () const;
+
+  sigma_type&
+  sigma ();
+
+  void
+  sigma (const sigma_type& x);
+
+  // epsilon
+  //
+  typedef ::xml_schema::double_ epsilon_type;
+  typedef ::xsd::cxx::tree::traits< epsilon_type, char, ::xsd::cxx::tree::schema_type::double_ > epsilon_traits;
+
+  const epsilon_type&
+  epsilon () const;
+
+  epsilon_type&
+  epsilon ();
+
+  void
+  epsilon (const epsilon_type& x);
+
+  // mass_m
+  //
+  typedef ::xml_schema::double_ mass_m_type;
+  typedef ::xsd::cxx::tree::traits< mass_m_type, char, ::xsd::cxx::tree::schema_type::double_ > mass_m_traits;
+
+  const mass_m_type&
+  mass_m () const;
+
+  mass_m_type&
+  mass_m ();
+
+  void
+  mass_m (const mass_m_type& x);
+
+  // distance_h
+  //
+  typedef ::xml_schema::double_ distance_h_type;
+  typedef ::xsd::cxx::tree::traits< distance_h_type, char, ::xsd::cxx::tree::schema_type::double_ > distance_h_traits;
+
+  const distance_h_type&
+  distance_h () const;
+
+  distance_h_type&
+  distance_h ();
+
+  void
+  distance_h (const distance_h_type& x);
+
+  // brown_motion
+  //
+  typedef ::xml_schema::double_ brown_motion_type;
+  typedef ::xsd::cxx::tree::traits< brown_motion_type, char, ::xsd::cxx::tree::schema_type::double_ > brown_motion_traits;
+
+  const brown_motion_type&
+  brown_motion () const;
+
+  brown_motion_type&
+  brown_motion ();
+
+  void
+  brown_motion (const brown_motion_type& x);
+
+  // Constructors.
+  //
+  settings (const delta_t_type&,
+            const sigma_type&,
+            const epsilon_type&,
+            const mass_m_type&,
+            const distance_h_type&,
+            const brown_motion_type&);
+
+  settings (const ::xercesc::DOMElement& e,
+            ::xml_schema::flags f = 0,
+            ::xml_schema::container* c = 0);
+
+  settings (const settings& x,
+            ::xml_schema::flags f = 0,
+            ::xml_schema::container* c = 0);
+
+  virtual settings*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  settings&
+  operator= (const settings& x);
+
+  virtual 
+  ~settings ();
+
+  // Implementation.
+  //
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< delta_t_type > delta_t_;
+  ::xsd::cxx::tree::one< sigma_type > sigma_;
+  ::xsd::cxx::tree::one< epsilon_type > epsilon_;
+  ::xsd::cxx::tree::one< mass_m_type > mass_m_;
+  ::xsd::cxx::tree::one< distance_h_type > distance_h_;
+  ::xsd::cxx::tree::one< brown_motion_type > brown_motion_;
+};
+
+class cuboids: public ::xml_schema::type
+{
+  public:
+  // Cuboid
+  //
+  typedef ::cuboid Cuboid_type;
+  typedef ::xsd::cxx::tree::sequence< Cuboid_type > Cuboid_sequence;
+  typedef Cuboid_sequence::iterator Cuboid_iterator;
+  typedef Cuboid_sequence::const_iterator Cuboid_const_iterator;
+  typedef ::xsd::cxx::tree::traits< Cuboid_type, char > Cuboid_traits;
+
+  const Cuboid_sequence&
+  Cuboid () const;
+
+  Cuboid_sequence&
+  Cuboid ();
+
+  void
+  Cuboid (const Cuboid_sequence& s);
+
+  // Constructors.
+  //
+  cuboids ();
+
+  cuboids (const ::xercesc::DOMElement& e,
+           ::xml_schema::flags f = 0,
+           ::xml_schema::container* c = 0);
+
+  cuboids (const cuboids& x,
+           ::xml_schema::flags f = 0,
+           ::xml_schema::container* c = 0);
+
+  virtual cuboids*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  cuboids&
+  operator= (const cuboids& x);
+
+  virtual 
+  ~cuboids ();
+
+  // Implementation.
+  //
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  Cuboid_sequence Cuboid_;
+};
+
+class discs: public ::xml_schema::type
+{
+  public:
+  // Disc
+  //
+  typedef ::disc Disc_type;
+  typedef ::xsd::cxx::tree::sequence< Disc_type > Disc_sequence;
+  typedef Disc_sequence::iterator Disc_iterator;
+  typedef Disc_sequence::const_iterator Disc_const_iterator;
+  typedef ::xsd::cxx::tree::traits< Disc_type, char > Disc_traits;
+
+  const Disc_sequence&
+  Disc () const;
+
+  Disc_sequence&
+  Disc ();
+
+  void
+  Disc (const Disc_sequence& s);
+
+  // Constructors.
+  //
+  discs ();
+
+  discs (const ::xercesc::DOMElement& e,
+         ::xml_schema::flags f = 0,
+         ::xml_schema::container* c = 0);
+
+  discs (const discs& x,
+         ::xml_schema::flags f = 0,
+         ::xml_schema::container* c = 0);
+
+  virtual discs*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  discs&
+  operator= (const discs& x);
+
+  virtual 
+  ~discs ();
+
+  // Implementation.
+  //
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  Disc_sequence Disc_;
 };
 
 #include <iosfwd>
@@ -838,23 +1410,37 @@ Data_ (const ::Data& x,
        ::xml_schema::flags f = 0);
 
 void
-operator<< (::xercesc::DOMElement&, const cuboidType&);
+operator<< (::xercesc::DOMElement&, const double_array&);
 
 void
-operator<< (::xercesc::DOMElement&, const intArray&);
+operator<< (::xercesc::DOMElement&, const celestial_body&);
+
+void
+operator<< (::xercesc::DOMElement&, const cuboid&);
+
+void
+operator<< (::xercesc::DOMElement&, const disc&);
 
 void
 operator<< (::xercesc::DOMElement&, const Data&);
 
 void
-operator<< (::xercesc::DOMElement&, const output_write_frequency&);
+operator<< (::xercesc::DOMElement&, const header&);
 
 void
-operator<< (::xercesc::DOMAttr&, const output_write_frequency&);
+operator<< (::xercesc::DOMElement&, const gravity&);
 
 void
-operator<< (::xml_schema::list_stream&,
-            const output_write_frequency&);
+operator<< (::xercesc::DOMElement&, const lennard_jones&);
+
+void
+operator<< (::xercesc::DOMElement&, const settings&);
+
+void
+operator<< (::xercesc::DOMElement&, const cuboids&);
+
+void
+operator<< (::xercesc::DOMElement&, const discs&);
 
 #include <xsd/cxx/post.hxx>
 
