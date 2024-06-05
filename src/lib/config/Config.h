@@ -20,8 +20,8 @@
    * definition of an enum class that gives information about the desired simulation
    * */
 using SimulationType = enum class SimulationType {
-    Gravity,
-    LennardJones
+  Gravity,
+  LennardJones
 };
 
 /**
@@ -68,12 +68,12 @@ class Config {
   /**
    * an enum value that gives information about the desired simulation type
    * */
-   SimulationType simulation_type{};
+  SimulationType simulation_type{};
 
   /**
    * an enum value that gives information about the desired simulated body type in Lennard Jones
    * */
-   BodyType body_type{};
+  BodyType body_type{};
 
   /**
    * the total amount of celestial bodies in the gravitational planetary simulation
@@ -110,7 +110,6 @@ class Config {
    * */
   double brownian_motion{};
 
-
   /**
    * a vector that can store multiple celestial bodies for simulation defined in the CelestialBody class
    * */
@@ -131,7 +130,5 @@ class Config {
    * */
   int seed{};
 };
-
-
 
 #endif// SIM_CONFIG_XML_H
