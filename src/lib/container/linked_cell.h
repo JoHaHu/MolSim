@@ -46,6 +46,9 @@ enum class cell_type : std::uint8_t {
 template<index::Index I>
 class linked_cell;
 
+/**
+ * A cell in the linked cell datastructure
+ * */
 class cell {
   template<index::Index I>
   friend class linked_cell;
@@ -63,11 +66,17 @@ class cell {
                 cell_type type,
                 std::array<size_t, 3> idx,
                 std::array<double, 3> widths) : particles(std::move(particles)), type(type), idx(idx), widths(widths) {};
-
+  /**
+   * a linear range over the particles
+   * */
   auto linear() -> auto {
     return particles
         | std::views::transform(&container::arena<Particle>::entry::data);
   }
+
+  /**
+   * a pairwise range over the particles, uses a cached range initialized at the start of the program
+   * */
   auto pairwise() -> auto & {
     return *range;
   };
@@ -76,10 +85,16 @@ class cell {
     return type == cell_type::boundary;
   }
 
+  /**
+   * inserts a new particle into the cell
+   * */
   auto insert(arena<Particle>::entry &particle) {
     particles.emplace_back(particle);
   }
 
+  /**
+   * clears the cell
+   * */
   auto clear() {
     particles.clear();
   }
@@ -99,6 +114,10 @@ class cell {
       boundary_condition::none};
 };
 
+/**
+ * The linked cell container class
+ * the Index template parameter can be used to change the iteration order of the LinkedCell.
+ * */
 template<index::Index I>
 class linked_cell {
   friend class cell;
@@ -109,7 +128,8 @@ class linked_cell {
       : arena(number_of_particles),
         bc(bc),
         index(I(domain, cutoff)),
-        sigma(sigma) {
+        sigma(sigma),
+        cutoff(cutoff) {
     auto dim = index.dimension;
     auto widths = index.width;
     cells.reserve(dim[0] * dim[1] * dim[2]);
@@ -159,6 +179,10 @@ class linked_cell {
     }
   };
 
+  /**
+   * Creates the range for a cell, containing the neighbours needed to calculate forces and respects Newtons 3. Law
+   * Can be calculated once at the start and then be reused
+   * */
   static auto create_range(linked_cell &lc, std::array<size_t, 3> idx) -> auto {
     auto cell_idx = lc.index.dimension_to_index(idx);
 
@@ -172,10 +196,11 @@ class linked_cell {
       for (long y = -(long) radius_y; y <= (long) radius_y; ++y) {
         for (long z = -(long) radius_z; z <= (long) radius_z; ++z) {
           if (x != 0 || y != 0 || z != 0) {
-            if (z > 0 || x > 0 || (x >= 0 && z >= 0 && y > 0)) {
-              auto other_index = lc.index.offset(cell_idx, {x, y, z});
+            if (z > 0 || (x > 0 && z >= 0) || (x >= 0 && z >= 0 && y > 0)) {
+              auto other_index = lc.index.offset(idx, {x, y, z});
               // checks that cell is not out of bounds and not the same cell
-              if (other_index < lc.cells.size() && other_index != cell_idx) {
+              // TODO calculate min distance between the two cells to skip if not reachable within cutoff distance
+              if (other_index < lc.cells.size() && other_index != cell_idx && lc.index.min_distance(idx, lc.cells[other_index].idx) <= lc.cutoff) {
                 cartesian_products.emplace_back(cell.linear(), lc.cells[other_index].linear());
               }
             }
@@ -188,16 +213,25 @@ class linked_cell {
     return std::optional(cell::pairwise_range(cell.linear() | combination, std::move(joined)));
   }
 
+  /**
+   * a range over the boundary cells
+   * */
   auto boundary() -> auto {
     return cells
         | std::views::filter(&cell::is_boundary);
   }
 
+  /**
+   * returns a linear range of Particles, stored in arena entries
+   * */
   auto linear() -> auto {
     return arena.range_entries()
         | std::views::transform(&container::arena<Particle>::entry::data);
   }
 
+  /**
+   * returns a range with pairs of Particles
+   * */
   auto pairwise() -> auto {
 
     return cells
@@ -205,15 +239,25 @@ class linked_cell {
         | std::views::join;
   }
 
+  /**
+   * inserts a new particle into the arena and the into the cells
+   * */
   auto insert(Particle &particle) {
     auto &inserted = arena.emplace_back(particle);
     insert_into_cell(inserted);
   }
 
+  /**
+   * Returns the number of particles in the arena. O(n), because it gets counted each time
+   * */
   auto size() {
     return arena.size();
   }
 
+  /**
+   * Clear all cells and reinserts all particles into the cells.
+   * Better than updating positions when changes are made, because the vectors get resized/reorderd a lot when only single elements get removed
+   * */
   auto fix_positions() {
     std::ranges::for_each(cells, &cell::clear);
     std::ranges::for_each(arena.range_entries(), [this](container::arena<Particle>::entry &p) {
@@ -223,6 +267,9 @@ class linked_cell {
   }
 
  private:
+  /**
+   * Inserts a reference to a particle in a arena into it's cell
+   * */
   auto insert_into_cell(arena<Particle>::entry &particle) {
 
     auto idx = index.position_to_index(particle.data.position);
@@ -240,6 +287,7 @@ class linked_cell {
  public:
   I index;
   double sigma;
+  double cutoff;
 };
 
 }// namespace container

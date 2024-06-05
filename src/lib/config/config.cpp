@@ -54,16 +54,14 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
 
   const std::string short_options = "ho:i:d:s:e:r:l:";
   const std::array<option, 16> long_options = {
-    {
-      {"output", required_argument, nullptr, 'o'},
-      {"input", required_argument, nullptr, 'i'},
-      {"help", no_argument, nullptr, '?'},
-      {"delta_t", required_argument, nullptr, 'd'},
-      {"start_time", required_argument, nullptr, 's'},
-      {"seed", required_argument, nullptr, 'r'},
-      {"end_time", required_argument, nullptr, 'e'},
-      {"io_interval", required_argument, nullptr, 'l'}
-    }};
+      {{"output", required_argument, nullptr, 'o'},
+       {"input", required_argument, nullptr, 'i'},
+       {"help", no_argument, nullptr, '?'},
+       {"delta_t", required_argument, nullptr, 'd'},
+       {"start_time", required_argument, nullptr, 's'},
+       {"seed", required_argument, nullptr, 'r'},
+       {"end_time", required_argument, nullptr, 'e'},
+       {"io_interval", required_argument, nullptr, 'l'}}};
 
   while (true) {
     const auto opt = getopt_long(argc, argv, short_options.c_str(), long_options.data(), nullptr);

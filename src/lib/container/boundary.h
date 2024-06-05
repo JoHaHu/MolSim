@@ -6,6 +6,9 @@
 
 namespace container::boundary {
 
+/**
+ * function to apply outflow boundary condition
+ * */
 static void outflow(auto &lc, arena<Particle>::entry &entry, orientation o) {
 
   auto &p = entry.data;
@@ -36,6 +39,9 @@ static void outflow(auto &lc, arena<Particle>::entry &entry, orientation o) {
   entry.active = !condition;
 }
 
+/**
+ * function to apply reflecting boundary condition
+ * */
 static void reflecting(auto &lc, auto &p, orientation o, auto fc) {
   auto [pos_x, pos_y, pos_z] = p.position;
   auto [bound_x, bound_y, bound_z] = lc.index.boundary;
@@ -86,6 +92,9 @@ static void reflecting(auto &lc, auto &p, orientation o, auto fc) {
   }
 }
 
+/**
+ * a function to apply all up to 6 boundary conditions to a all boundary cell of a linked container
+ * */
 template<index::Index I>
 static void calculate_boundary_condition(linked_cell<I> &lc,
                                          std::function<void(std::tuple<Particle &, Particle &>)> const &force_calculation

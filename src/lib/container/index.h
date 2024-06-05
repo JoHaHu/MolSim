@@ -1,5 +1,7 @@
 #pragma once
 
+#include "linked_cell.h"
+#include "utils/ArrayUtils.h"
 #include <array>
 #include <cmath>
 #include <concepts>
@@ -10,7 +12,7 @@ namespace container::index {
 
 template<typename T>
 concept Index =
-    requires(T t, std::array<double, 3> pos, std::array<size_t, 3> dim, std::array<long, 3> offset, size_t index, double width) {
+    requires(T t, std::array<double, 3> pos, std::array<size_t, 3> dim, std::array<long, 3> offset, double width) {
       { T(pos, width) };
       { t.radius } -> std::convertible_to<std::array<size_t, 3>>;
       { t.dimension } -> std::convertible_to<std::array<size_t, 3>>;
@@ -18,20 +20,14 @@ concept Index =
       { t.boundary } -> std::convertible_to<std::array<double, 3>>;
       { t.position_to_index(pos) } -> std::convertible_to<size_t>;
       { t.dimension_to_index(dim) } -> std::convertible_to<size_t>;
-      { t.offset(index, offset) } -> std::convertible_to<size_t>;
+      { t.offset(dim, offset) } -> std::convertible_to<size_t>;
+      { t.min_distance(dim, dim) } -> std::convertible_to<double>;
     };
 
 /**
  * A simple index iterating over dimensions in xyz-order
  * */
-struct simple_index : public std::ranges::view_interface<simple_index> {
-
-  using View =
-      std::ranges::cartesian_product_view<
-          std::ranges::iota_view<size_t, size_t>,
-          std::ranges::iota_view<size_t, size_t>,
-          std::ranges::iota_view<size_t, size_t>>;
-
+struct row_major_index {
  public:
   std::array<double, 3> boundary;
   std::array<double, 3> width;
@@ -39,18 +35,15 @@ struct simple_index : public std::ranges::view_interface<simple_index> {
   std::array<size_t, 3> radius;
 
  public:
-  simple_index() = delete;
+  row_major_index() = delete;
 
-  explicit simple_index(std::array<double, 3> boundary, double cutoff) : boundary(boundary), width({cutoff, cutoff, cutoff}) {
+  explicit row_major_index(std::array<double, 3> boundary, double cutoff) : boundary(boundary), width({cutoff, cutoff, cutoff}) {
     auto [x, y, z] = boundary;
 
     dimension = {(size_t) std::ceil(x / width[0]),
                  (size_t) std::ceil(y / width[1]),
                  (size_t) std::ceil(z / width[2])};
-    radius = {
-        (size_t) std::ceil(cutoff / width[0]),
-        (size_t) std::ceil(cutoff / width[1]),
-        (size_t) std::ceil(cutoff / width[2])};
+    radius = {1, 1, 1};
   }
 
   constexpr auto position_to_index(std::array<double, 3> position) -> size_t {
@@ -68,22 +61,295 @@ struct simple_index : public std::ranges::view_interface<simple_index> {
     return x + y * dimension[0] + z * dimension[0] * dimension[1];
   }
 
-  constexpr auto offset(size_t index, std::array<long, 3> offset) -> size_t {
-    auto [x, y, z] = offset;
-    return index + x + y * dimension[0] + z * dimension[0] * dimension[1];
+  constexpr auto offset(std::array<size_t, 3> dim, std::array<long, 3> offset) -> size_t {
+    auto off = std::array<size_t, 3>({(dim[0] + offset[0]),
+                                      (dim[1] + offset[1]),
+                                      (dim[2] + offset[2])});
+    return dimension_to_index(off);
+  }
+
+  constexpr auto min_distance(std::array<size_t, 3> dim1, std::array<size_t, 3> dim2) -> double {
+    auto distances = std::vector<double>();
+
+    for (auto [x, y, z] : std::views::cartesian_product(
+             std::views::iota(0, 2),
+             std::views::iota(0, 2),
+             std::views::iota(0, 2))) {
+      distances.emplace_back(
+          distance({dim1[0] + x, dim1[1] + y, dim1[2] + z}, dim2));
+    }
+
+    double min = std::ranges::min(distances);
+    return min;
+  }
+  auto distance(std::array<size_t, 3> dim1, std::array<size_t, 3> dim2) -> double {
+    auto diff = std::array<double, 3>({
+        (double) std::abs(static_cast<long>(dim1[0]) - static_cast<long>(dim2[0])) * width[0],
+        (double) std::abs(static_cast<long>(dim1[1]) - static_cast<long>(dim2[1])) * width[1],
+        (double) std::abs(static_cast<long>(dim1[2]) - static_cast<long>(dim2[2])) * width[2],
+    });
+    return ArrayUtils::L2Norm(diff);
   }
 };
 
-static_assert(Index<simple_index>);
+static_assert(Index<row_major_index>);
+/**
+ * A simple index iterating over dimensions in xyz-order
+ * */
+struct half_index {
+ public:
+  std::array<double, 3> boundary;
+  std::array<double, 3> width;
+  std::array<size_t, 3> dimension;
+  std::array<size_t, 3> radius;
 
-///**
-// * A indexing scheme using space filling curves, specifically a compact version of the 3 dimensional Hilbert curve with different order each side
-// * */
-//class hilbert_index : public std::ranges::view_interface<hilbert_index> {
-// private:
-// public:
-//};
+ public:
+  half_index() = delete;
 
-//static_assert(Index<HilbertIndex>);
+  explicit half_index(std::array<double, 3> boundary, double cutoff) : boundary(boundary), width({cutoff / 2, cutoff / 2, cutoff / 2}) {
+    auto [x, y, z] = boundary;
+
+    dimension = {(size_t) std::ceil(x / width[0]),
+                 (size_t) std::ceil(y / width[1]),
+                 (size_t) std::ceil(z / width[2])};
+    radius = {2, 2, 2};
+  }
+
+  constexpr auto position_to_index(std::array<double, 3> position) -> size_t {
+    auto [x, y, z] = position;
+
+    std::array<size_t, 3> dim = {(size_t) std::floor(x / width[0]),
+                                 (size_t) std::floor(y / width[1]),
+                                 (size_t) std::floor(z / width[2])};
+
+    return dimension_to_index(dim);
+  }
+
+  constexpr auto dimension_to_index(std::array<size_t, 3> coords) -> size_t {
+    auto [x, y, z] = coords;
+    return x + y * dimension[0] + z * dimension[0] * dimension[1];
+  }
+
+  constexpr auto offset(std::array<size_t, 3> dim, std::array<long, 3> offset) -> size_t {
+    auto off = std::array<size_t, 3>({(dim[0] + offset[0]),
+                                      (dim[1] + offset[1]),
+                                      (dim[2] + offset[2])});
+    return dimension_to_index(off);
+  }
+
+  constexpr auto min_distance(std::array<size_t, 3> dim1, std::array<size_t, 3> dim2) -> double {
+    auto distances = std::vector<double>();
+
+    for (auto [x, y, z] : std::views::cartesian_product(
+             std::views::iota(0, 2),
+             std::views::iota(0, 2),
+             std::views::iota(0, 2))) {
+      distances.emplace_back(
+          distance({dim1[0] + x, dim1[1] + y, dim1[2] + z}, dim2));
+    }
+
+    double min = std::ranges::min(distances);
+    return min;
+  }
+  auto distance(std::array<size_t, 3> dim1, std::array<size_t, 3> dim2) -> double {
+    auto diff = std::array<double, 3>({
+        (double) std::abs(static_cast<long>(dim1[0]) - static_cast<long>(dim2[0])) * width[0],
+        (double) std::abs(static_cast<long>(dim1[1]) - static_cast<long>(dim2[1])) * width[1],
+        (double) std::abs(static_cast<long>(dim1[2]) - static_cast<long>(dim2[2])) * width[2],
+    });
+    return ArrayUtils::L2Norm(diff);
+  }
+};
+
+static_assert(Index<half_index>);
+
+/**
+ * A indexing scheme using space a filling curve, specifically the morton curve
+ * */
+class morton_index {
+ public:
+  std::array<double, 3> boundary;
+  std::array<size_t, 3> dimension;
+  std::array<double, 3> width;
+  std::array<size_t, 3> radius;
+  std::array<size_t, 3> log;
+
+ public:
+  morton_index() = delete;
+
+  explicit morton_index(std::array<double, 3> boundary, double cutoff) : boundary(boundary) {
+    auto [x, y, z] = boundary;
+    dimension = {
+        std::bit_ceil((size_t) std::ceil(boundary[0] / cutoff)),
+        std::bit_ceil((size_t) std::ceil(boundary[1] / cutoff)),
+        std::bit_ceil((size_t) std::ceil(boundary[2] / cutoff))};
+
+    width = {
+        x / (double) dimension[0],
+        y / (double) dimension[1],
+        z / (double) dimension[2],
+    };
+
+    radius = {
+        static_cast<unsigned long>(std::ceil(cutoff / width[0])),
+        static_cast<unsigned long>(std::ceil(cutoff / width[1])),
+        static_cast<unsigned long>(std::ceil(cutoff / width[2]))};
+
+    log = {
+        static_cast<unsigned long>((std::bit_width(dimension[0] - 1))),
+        static_cast<unsigned long>(std::bit_width(dimension[1] - 1)),
+        static_cast<unsigned long>(std::bit_width(dimension[2] - 1)),
+    };
+  }
+
+  constexpr auto position_to_index(std::array<double, 3> position) -> size_t {
+    auto [x, y, z] = position;
+
+    std::array<size_t, 3> dim = {(size_t) std::floor(x / width[0]),
+                                 (size_t) std::floor(y / width[1]),
+                                 (size_t) std::floor(z / width[2])};
+
+    return dimension_to_index(dim);
+  }
+
+  constexpr auto dimension_to_index(std::array<size_t, 3> coords) -> size_t {
+    auto [x, y, z] = coords;
+
+    auto max_log = std::max({log[0], log[1], log[2]});
+    size_t result = 0;
+    auto i = 0;
+    auto bit_position = 0;
+    while (i < max_log) {
+      if (i < log[0]) {
+        result |= (x & (1 << i)) << (bit_position - i);
+        bit_position++;
+      }
+      if (i < log[1]) {
+        result |= (y & (1 << i)) << (bit_position - i);
+        bit_position++;
+      }
+      if (i < log[2]) {
+        result |= (z & (1 << i)) << (bit_position - i);
+        bit_position++;
+      }
+      i++;
+    }
+    return result;
+  }
+
+  constexpr auto offset(std::array<size_t, 3> dim, std::array<long, 3> offset) -> size_t {
+    auto off = std::array<size_t, 3>({(dim[0] + offset[0]),
+                                      (dim[1] + offset[1]),
+                                      (dim[2] + offset[2])});
+    if (std::bit_width(off[0]) > log[0] || std::bit_width(off[1]) > log[1] || std::bit_width(off[2]) > log[2]) {
+      return SIZE_MAX;
+    }
+    return dimension_to_index(off);
+  }
+  constexpr auto min_distance(std::array<size_t, 3> dim1, std::array<size_t, 3> dim2) -> double {
+    auto distances = std::vector<double>();
+
+    for (auto [x, y, z] : std::views::cartesian_product(
+             std::views::iota(0, 2),
+             std::views::iota(0, 2),
+             std::views::iota(0, 2))) {
+      distances.emplace_back(
+          distance({dim1[0] + x, dim1[1] + y, dim1[2] + z}, dim2));
+    }
+
+    double min = std::ranges::min(distances);
+    return min;
+  }
+  auto distance(std::array<size_t, 3> dim1, std::array<size_t, 3> dim2) -> double {
+    auto diff = std::array<double, 3>({
+        (double) std::abs(static_cast<long>(dim1[0]) - static_cast<long>(dim2[0])) * width[0],
+        (double) std::abs(static_cast<long>(dim1[1]) - static_cast<long>(dim2[1])) * width[1],
+        (double) std::abs(static_cast<long>(dim1[2]) - static_cast<long>(dim2[2])) * width[2],
+    });
+    return ArrayUtils::L2Norm(diff);
+  }
+};
+
+static_assert(Index<morton_index>);
+
+/**
+ * A test scheme using space a filling curve, specifically the morton curve
+ * */
+class power_index {
+ public:
+  std::array<double, 3> boundary;
+  std::array<size_t, 3> dimension;
+  std::array<double, 3> width;
+  std::array<size_t, 3> radius;
+
+ public:
+  power_index() = delete;
+
+  explicit power_index(std::array<double, 3> boundary, double cutoff) : boundary(boundary) {
+    auto [x, y, z] = boundary;
+    dimension = {
+        std::bit_ceil((size_t) std::ceil(boundary[0] / cutoff)),
+        std::bit_ceil((size_t) std::ceil(boundary[1] / cutoff)),
+        std::bit_ceil((size_t) std::ceil(boundary[2] / cutoff))};
+
+    width = {
+        x / (double) dimension[0],
+        y / (double) dimension[1],
+        z / (double) dimension[2],
+    };
+
+    radius = {
+        static_cast<unsigned long>(std::ceil(cutoff / width[0])),
+        static_cast<unsigned long>(std::ceil(cutoff / width[1])),
+        static_cast<unsigned long>(std::ceil(cutoff / width[2]))};
+  }
+
+  constexpr auto position_to_index(std::array<double, 3> position) -> size_t {
+    auto [x, y, z] = position;
+
+    std::array<size_t, 3> dim = {(size_t) std::floor(x / width[0]),
+                                 (size_t) std::floor(y / width[1]),
+                                 (size_t) std::floor(z / width[2])};
+
+    return dimension_to_index(dim);
+  }
+
+  constexpr auto dimension_to_index(std::array<size_t, 3> coords) -> size_t {
+    auto [x, y, z] = coords;
+    return x + y * dimension[0] + z * dimension[0] * dimension[1];
+  }
+
+  constexpr auto offset(std::array<size_t, 3> dim, std::array<long, 3> offset) -> size_t {
+    auto off = std::array<size_t, 3>({(dim[0] + offset[0]),
+                                      (dim[1] + offset[1]),
+                                      (dim[2] + offset[2])});
+    return dimension_to_index(off);
+  }
+
+  constexpr auto min_distance(std::array<size_t, 3> dim1, std::array<size_t, 3> dim2) -> double {
+    auto distances = std::vector<double>();
+
+    for (auto [x, y, z] : std::views::cartesian_product(
+             std::views::iota(0, 2),
+             std::views::iota(0, 2),
+             std::views::iota(0, 2))) {
+      distances.emplace_back(
+          distance({dim1[0] + x, dim1[1] + y, dim1[2] + z}, dim2));
+    }
+
+    double min = std::ranges::min(distances);
+    return min;
+  }
+  auto distance(std::array<size_t, 3> dim1, std::array<size_t, 3> dim2) -> double {
+    auto diff = std::array<double, 3>({
+        (double) std::abs(static_cast<long>(dim1[0]) - static_cast<long>(dim2[0])) * width[0],
+        (double) std::abs(static_cast<long>(dim1[1]) - static_cast<long>(dim2[1])) * width[1],
+        (double) std::abs(static_cast<long>(dim1[2]) - static_cast<long>(dim2[2])) * width[2],
+    });
+    return ArrayUtils::L2Norm(diff);
+  }
+};
+
+static_assert(Index<power_index>);
 
 }// namespace container::index

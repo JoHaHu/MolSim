@@ -29,13 +29,13 @@ auto main(int argc, char *argv[]) -> int {
 
   auto [particles, force_model] = particle_loader.load_particles();
 
-  auto particle_container = container::linked_cell<container::index::simple_index>(
-      {140, 90, 1},
+  auto particle_container = container::linked_cell<container::index::row_major_index>(
+      {180, 90, 3},
       3.0,
       {container::boundary_condition::outflow,
        container::boundary_condition::outflow,
-       container::boundary_condition::outflow,
-       container::boundary_condition::outflow,
+       container::boundary_condition::reflecting,
+       container::boundary_condition::reflecting,
        container::boundary_condition::reflecting,
        container::boundary_condition::reflecting},
       particles.size(), 1.0);

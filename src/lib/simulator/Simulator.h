@@ -48,7 +48,6 @@ class Simulator {
   }
 
   auto calculate_force_particle_pair(std::tuple<Particle &, Particle &> pair) {
-
     auto [particle1, particle2] = pair;
 
     const auto force = physics::calculate_force(physics, particle1, particle2);

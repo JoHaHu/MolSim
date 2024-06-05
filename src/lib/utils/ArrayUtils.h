@@ -115,7 +115,7 @@ inline auto elementWiseScalarOp(const Scalar &lhs, const C &rhs,
      * @return sqrt(sum_i(c[i]*c[i])).
      */
 template<std::ranges::forward_range C>
-auto inline L2Norm(const C &c) {
+auto constexpr L2Norm(const C &c) {
   return std::sqrt(std::accumulate(std::cbegin(c), std::cend(c), 0.0, [](auto a, auto b) { return a + b * b; }));
 }
 }// namespace ArrayUtils
