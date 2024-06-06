@@ -27,7 +27,7 @@ class arena {
         | std::views::filter(&entry::active);
   }
 
-  auto emplace_back(Particle &particle) -> auto & {
+  auto emplace_back(Particle &&particle) -> auto & {
     return allocation.emplace_back(particle, true);
   }
 

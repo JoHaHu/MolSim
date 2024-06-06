@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-namespace container::boundary {
+namespace container {
 
 enum class orientation : uint8_t {
   front,

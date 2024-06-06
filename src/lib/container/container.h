@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Particle.h"
-#include "boundary.h"
 #include "index.h"
 #include "linked_cell.h"
 #include "utils/variants.h"
@@ -67,10 +66,10 @@ struct particle_container {
   /**
    * Inserts boundary conditions into the container
    * */
-  void insert(Particle &p) {
+  void insert(Particle &&p) {
     std::visit(overloaded{
                    [&p](std::vector<Particle> &container) { container.emplace_back(p); },
-                   [&p](auto &container) { container.insert(p); }},
+                   [&p](auto &container) { container.insert(std::move(p)); }},
                var);
   }
 

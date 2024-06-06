@@ -144,27 +144,27 @@ class linked_cell {
       auto [x, y, z] = c.idx;
       if (x == 0) {
         c.type = cell_type::boundary;
-        c.boundary[(size_t) boundary::orientation::left] = bc[(size_t) boundary::orientation::left];
+        c.boundary[(size_t) orientation::left] = bc[(size_t) orientation::left];
       }
       if (x == dim[0] - 1) {
         c.type = cell_type::boundary;
-        c.boundary[(size_t) boundary::orientation::right] = bc[(size_t) boundary::orientation::right];
+        c.boundary[(size_t) orientation::right] = bc[(size_t) orientation::right];
       }
       if (y == 0) {
         c.type = cell_type::boundary;
-        c.boundary[(size_t) boundary::orientation::bottom] = bc[(size_t) boundary::orientation::bottom];
+        c.boundary[(size_t) orientation::bottom] = bc[(size_t) orientation::bottom];
       }
       if (y == dim[1] - 1) {
         c.type = cell_type::boundary;
-        c.boundary[(size_t) boundary::orientation::top] = bc[(size_t) boundary::orientation::top];
+        c.boundary[(size_t) orientation::top] = bc[(size_t) orientation::top];
       }
       if (z == 0) {
         c.type = cell_type::boundary;
-        c.boundary[(size_t) boundary::orientation::back] = bc[(size_t) boundary::orientation::back];
+        c.boundary[(size_t) orientation::back] = bc[(size_t) orientation::back];
       }
       if (z == dim[2] - 1) {
         c.type = cell_type::boundary;
-        c.boundary[(size_t) boundary::orientation::front] = bc[(size_t) boundary::orientation::front];
+        c.boundary[(size_t) orientation::front] = bc[(size_t) orientation::front];
       }
 
       c.range = create_range(*this, {x, y, z});
@@ -234,8 +234,8 @@ class linked_cell {
   /**
    * inserts a new particle into the arena and the into the cells
    * */
-  auto insert(Particle &particle) {
-    auto &inserted = arena.emplace_back(particle);
+  auto insert(Particle &&particle) {
+    auto &inserted = arena.emplace_back(std::move(particle));
     insert_into_cell(inserted);
   }
 
@@ -293,18 +293,107 @@ static void calculate_boundary_condition(linked_cell<I> &lc,
 
   std::ranges::for_each(lc.boundary(), [&lc, &force_calculation](cell &cell) {
     for (auto [side, b] : std::views::enumerate(cell.boundary)) {
-      auto o = boundary::orientation(side);
+      auto o = orientation(side);
       switch (b) {
         case boundary_condition::outflow:
-          std::ranges::for_each(cell.particles, [&lc, &o](auto &e) { outflow(lc, e, o); });
+          std::ranges::for_each(cell.particles, [&lc, &o](auto &e) { outflow<I>(lc, e, o); });
           break;
         case boundary_condition::reflecting:
-          std::ranges::for_each(cell.linear(), [&lc, &o, &force_calculation](auto &p) { reflecting(lc, p, o, force_calculation); });
+          std::ranges::for_each(cell.linear(), [&lc, &o, &force_calculation](auto &p) { reflecting<I>(lc, p, o, force_calculation); });
           break;
         case boundary_condition::none: break;
       }
     }
   });
+}
+
+/**
+ * function to apply outflow boundary condition
+ * */
+template<index::Index I>
+static void outflow(linked_cell<I> &lc, arena<Particle>::entry &entry, orientation o) {
+
+  auto &p = entry.data;
+  const auto [pos_x, pos_y, pos_z] = p.position;
+  const auto [bound_x, bound_y, bound_z] = lc.index.boundary;
+
+  bool condition = false;
+  switch (o) {
+    case orientation::front:
+      condition |= pos_z > bound_z;
+      break;
+    case orientation::back:
+      condition |= pos_z < 0;
+      break;
+    case orientation::left:
+      condition |= pos_x < 0;
+      break;
+    case orientation::right:
+      condition |= pos_x > bound_x;
+      break;
+    case orientation::bottom:
+      condition |= pos_y < 0;
+      break;
+    case orientation::top:
+      condition |= pos_y > bound_y;
+      break;
+  }
+  entry.active &= !condition;
+}
+
+/**
+ * function to apply reflecting boundary condition
+ * */
+
+template<index::Index I>
+static void reflecting(linked_cell<I> &lc, auto &p, orientation o, auto fc) {
+  auto [pos_x, pos_y, pos_z] = p.position;
+  auto [bound_x, bound_y, bound_z] = lc.index.boundary;
+  auto diff = lc.index.boundary - p.position;
+  auto [diff_x, diff_y, diff_z] = diff;
+
+  const double sigma = lc.sigma;
+  const double distance = std::pow(2, 1 / 6.0) * sigma;
+
+  switch (o) {
+    case orientation::front:
+      if (diff_z <= distance && diff_z > 0) {
+        auto ghost = Particle({pos_x, pos_y, bound_z + diff_z}, {0, 0, 0}, 0, 0);
+        fc({p, ghost});
+      }
+      break;
+    case orientation::back:
+      if (pos_z <= distance && pos_z > 0) {
+        auto ghost = Particle({pos_x, pos_y, -pos_z}, {0, 0, 0}, 0, 0);
+        fc({p, ghost});
+      }
+      break;
+
+    case orientation::left:
+      if (pos_x <= distance && pos_x > 0) {
+        auto ghost = Particle({-pos_x, pos_y, pos_z}, {0, 0, 0}, 0, 0);
+        fc({p, ghost});
+      }
+      break;
+    case orientation::right:
+      if (diff_x <= distance && diff_x > 0) {
+        auto ghost = Particle({bound_x + diff_x, pos_y, pos_z}, {0, 0, 0}, 0, 0);
+        fc({p, ghost});
+      }
+      break;
+    case orientation::bottom:
+      if (pos_y <= distance && pos_y > 0) {
+        auto ghost = Particle({pos_x, -pos_y, pos_z}, {0, 0, 0}, 0, 0);
+        fc({p, ghost});
+      }
+      break;
+    case orientation::top:
+      if (diff_y <= distance && diff_y > 0) {
+        auto ghost = Particle({pos_x, bound_y + diff_y, pos_z}, {0, 0, 0}, 0, 0);
+        fc({p, ghost});
+      }
+      break;
+  }
 }
 
 }// namespace container

@@ -45,7 +45,7 @@ auto main(int argc, char *argv[]) -> int {
   auto container = container::particle_container(std::move(particle_container));
 
   for (auto &p : particles) {
-    container.insert(p);
+    container.insert(std::move(p));
   }
 
   simulator::physics::force_model physics;
