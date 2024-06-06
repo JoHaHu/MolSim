@@ -630,12 +630,14 @@ class header;
 class linked_cells;
 class gravity;
 class lennard_jones;
+class boundary_conditions;
 class settings;
 class cuboids;
 class discs;
 class spheres;
 class tori;
 class double_helices;
+class boundary_condition;
 
 #include <memory>    // ::std::unique_ptr
 #include <limits>    // std::numeric_limits
@@ -3801,6 +3803,64 @@ class linked_cells: public ::xml_schema::type
   //@}
 
   /**
+   * @name boundary_conditions
+   *
+   * @brief Accessor and modifier functions for the %boundary_conditions
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::boundary_conditions boundary_conditions_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< boundary_conditions_type, char > boundary_conditions_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const boundary_conditions_type&
+  boundary_conditions () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  boundary_conditions_type&
+  boundary_conditions ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  boundary_conditions (const boundary_conditions_type& x);
+
+  /**
+   * @brief Set the element value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  boundary_conditions (::std::unique_ptr< boundary_conditions_type > p);
+
+  //@}
+
+  /**
    * @name Constructors
    */
   //@{
@@ -3809,7 +3869,8 @@ class linked_cells: public ::xml_schema::type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  linked_cells (const domain_size_type&);
+  linked_cells (const domain_size_type&,
+                const boundary_conditions_type&);
 
   /**
    * @brief Create an instance from the ultimate base and
@@ -3819,7 +3880,8 @@ class linked_cells: public ::xml_schema::type
    * This constructor will try to use the passed values directly
    * instead of making copies.
    */
-  linked_cells (::std::unique_ptr< domain_size_type >);
+  linked_cells (::std::unique_ptr< domain_size_type >,
+                ::std::unique_ptr< boundary_conditions_type >);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -3892,6 +3954,7 @@ class linked_cells: public ::xml_schema::type
 
   protected:
   ::xsd::cxx::tree::one< domain_size_type > domain_size_;
+  ::xsd::cxx::tree::one< boundary_conditions_type > boundary_conditions_;
 
   //@endcond
 };
@@ -4716,6 +4779,164 @@ class lennard_jones: public ::xml_schema::type
   spheres_optional spheres_;
   tori_optional tori_;
   double_helices_optional double_helices_;
+
+  //@endcond
+};
+
+/**
+ * @brief Class corresponding to the %boundary_conditions schema type.
+ *
+ * @nosubgrouping
+ */
+class boundary_conditions: public ::xml_schema::type
+{
+  public:
+  /**
+   * @name boundary_condition
+   *
+   * @brief Accessor and modifier functions for the %boundary_condition
+   * sequence element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::boundary_condition boundary_condition_type;
+
+  /**
+   * @brief Element sequence container type.
+   */
+  typedef ::xsd::cxx::tree::sequence< boundary_condition_type > boundary_condition_sequence;
+
+  /**
+   * @brief Element iterator type.
+   */
+  typedef boundary_condition_sequence::iterator boundary_condition_iterator;
+
+  /**
+   * @brief Element constant iterator type.
+   */
+  typedef boundary_condition_sequence::const_iterator boundary_condition_const_iterator;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< boundary_condition_type, char > boundary_condition_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element
+   * sequence.
+   *
+   * @return A constant reference to the sequence container.
+   */
+  const boundary_condition_sequence&
+  boundary_condition () const;
+
+  /**
+   * @brief Return a read-write reference to the element sequence.
+   *
+   * @return A reference to the sequence container.
+   */
+  boundary_condition_sequence&
+  boundary_condition ();
+
+  /**
+   * @brief Copy elements from a given sequence.
+   *
+   * @param s A sequence to copy elements from.
+   *
+   * For each element in @a s this function makes a copy and adds it 
+   * to the sequence. Note that this operation completely changes the 
+   * sequence and all old elements will be lost.
+   */
+  void
+  boundary_condition (const boundary_condition_sequence& s);
+
+  //@}
+
+  /**
+   * @name Constructors
+   */
+  //@{
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes.
+   */
+  boundary_conditions ();
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  boundary_conditions (const ::xercesc::DOMElement& e,
+                       ::xml_schema::flags f = 0,
+                       ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  boundary_conditions (const boundary_conditions& x,
+                       ::xml_schema::flags f = 0,
+                       ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual boundary_conditions*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  /**
+   * @brief Copy assignment operator.
+   *
+   * @param x An instance to make a copy of.
+   * @return A reference to itself.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  boundary_conditions&
+  operator= (const boundary_conditions& x);
+
+  //@}
+
+  /**
+   * @brief Destructor.
+   */
+  virtual 
+  ~boundary_conditions ();
+
+  // Implementation.
+  //
+
+  //@cond
+
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  boundary_condition_sequence boundary_condition_;
 
   //@endcond
 };
@@ -5956,6 +6177,158 @@ class double_helices: public ::xml_schema::type
   //@endcond
 };
 
+/**
+ * @brief Class corresponding to the %boundary_condition schema type.
+ *
+ * @nosubgrouping
+ */
+class boundary_condition: public ::xml_schema::type
+{
+  public:
+  /**
+   * @name type
+   *
+   * @brief Accessor and modifier functions for the %type
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::string type_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< type_type, char > type_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const type_type&
+  type () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  type_type&
+  type ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  type (const type_type& x);
+
+  /**
+   * @brief Set the attribute value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  type (::std::unique_ptr< type_type > p);
+
+  //@}
+
+  /**
+   * @name Constructors
+   */
+  //@{
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes.
+   */
+  boundary_condition (const type_type&);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  boundary_condition (const ::xercesc::DOMElement& e,
+                      ::xml_schema::flags f = 0,
+                      ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  boundary_condition (const boundary_condition& x,
+                      ::xml_schema::flags f = 0,
+                      ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual boundary_condition*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  /**
+   * @brief Copy assignment operator.
+   *
+   * @param x An instance to make a copy of.
+   * @return A reference to itself.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  boundary_condition&
+  operator= (const boundary_condition& x);
+
+  //@}
+
+  /**
+   * @brief Destructor.
+   */
+  virtual 
+  ~boundary_condition ();
+
+  // Implementation.
+  //
+
+  //@cond
+
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< type_type > type_;
+
+  //@endcond
+};
+
 #include <iosfwd>
 
 #include <xercesc/sax/InputSource.hpp>
@@ -6439,6 +6812,9 @@ void
 operator<< (::xercesc::DOMElement&, const lennard_jones&);
 
 void
+operator<< (::xercesc::DOMElement&, const boundary_conditions&);
+
+void
 operator<< (::xercesc::DOMElement&, const settings&);
 
 void
@@ -6455,6 +6831,9 @@ operator<< (::xercesc::DOMElement&, const tori&);
 
 void
 operator<< (::xercesc::DOMElement&, const double_helices&);
+
+void
+operator<< (::xercesc::DOMElement&, const boundary_condition&);
 
 #include <xsd/cxx/post.hxx>
 

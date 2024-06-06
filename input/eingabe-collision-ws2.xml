@@ -12,6 +12,14 @@
             <value>90</value>
             <value>3</value>
         </domain_size>
+        <boundary_conditions>
+            <boundary_condition type="outflow"/>
+            <boundary_condition type="outflow"/>
+            <boundary_condition type="reflecting"/>
+            <boundary_condition type="reflecting"/>
+            <boundary_condition type="outflow"/>
+            <boundary_condition type="outflow"/>
+        </boundary_conditions>
     </linked_cells>
 
     <lennard_jones>

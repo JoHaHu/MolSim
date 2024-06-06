@@ -3,6 +3,7 @@
 #include <variant>
 
 #include "config/Config.h"
+#include "container/boundary.h"
 #include "simulator/Simulator.h"
 #include "simulator/io/ParticleGenerator.h"
 #include "simulator/io/VTKPlotter.h"
@@ -52,7 +53,8 @@ auto main(int argc, char *argv[]) -> int {
     case ParticleContainerType::LinkedCells:
       auto lc = container::linked_cell<container::index::row_major_index>(
           config->domain_size,
-          config->cutoff_radius, {container::boundary_condition::outflow, container::boundary_condition::outflow, container::boundary_condition::outflow, container::boundary_condition::outflow, container::boundary_condition::outflow, container::boundary_condition::outflow},
+          config->cutoff_radius,
+          config->boundary_conditions,
           particles.size(), config->sigma);
 
       pc = container::particle_container(std::move(lc));

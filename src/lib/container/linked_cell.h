@@ -17,21 +17,12 @@
 #include <utility>
 #include <vector>
 
+#include "boundary.h"
 #include "orientation.h"
 #include "range/v3/view/concat.hpp"
 #include "spdlog/spdlog.h"
 
 namespace container {
-
-/**
- * @brief Enum for defining different types of boundary conditions.
- */
-enum class boundary_condition : std::uint8_t {
-  outflow,
-  reflecting,
-  //  periodic,
-  none
-};
 
 /**
  * @brief Enum for defining different types of cells.
@@ -105,13 +96,13 @@ class cell {
   std::optional<pairwise_range> range;
   std::array<size_t, 3> idx{};
   std::array<double, 3> widths{};
-  std::array<boundary_condition, 6> boundary = {
-      boundary_condition::none,
-      boundary_condition::none,
-      boundary_condition::none,
-      boundary_condition::none,
-      boundary_condition::none,
-      boundary_condition::none};
+  std::array<BoundaryCondition, 6> boundary = {
+      BoundaryCondition::none,
+      BoundaryCondition::none,
+      BoundaryCondition::none,
+      BoundaryCondition::none,
+      BoundaryCondition::none,
+      BoundaryCondition::none};
 };
 
 /**
@@ -124,7 +115,7 @@ class linked_cell {
 
  public:
   linked_cell() = delete;
-  explicit linked_cell(const std::array<double, 3> &domain, double cutoff, std::array<boundary_condition, 6> bc, unsigned int number_of_particles, double sigma)
+  explicit linked_cell(const std::array<double, 3> &domain, double cutoff, std::array<BoundaryCondition, 6> bc, unsigned int number_of_particles, double sigma)
       : arena(number_of_particles),
         bc(bc),
         index(I(domain, cutoff)),
@@ -282,7 +273,7 @@ class linked_cell {
 
   container::arena<Particle> arena;
   std::vector<cell> cells;
-  std::array<boundary_condition, 6> bc;
+  std::array<BoundaryCondition, 6> bc;
 
  public:
   I index;
@@ -303,13 +294,13 @@ static void calculate_boundary_condition(linked_cell<I> &lc,
     for (auto [side, b] : std::views::enumerate(cell.boundary)) {
       auto o = orientation(side);
       switch (b) {
-        case boundary_condition::outflow:
+        case BoundaryCondition::outflow:
           std::ranges::for_each(cell.particles, [&lc, &o](auto &e) { outflow<I>(lc, e, o); });
           break;
-        case boundary_condition::reflecting:
+        case BoundaryCondition::reflecting:
           std::ranges::for_each(cell.linear(), [&lc, &o, &force_calculation](auto &p) { reflecting<I>(lc, p, o, force_calculation); });
           break;
-        case boundary_condition::none: break;
+        case BoundaryCondition::none: break;
       }
     }
   });

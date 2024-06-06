@@ -1,4 +1,5 @@
 #include "Particle.h"
+#include "boundary.h"
 #include "container/container.h"
 #include <gtest/gtest.h>
 
@@ -18,12 +19,12 @@ class LinkedCellsTest : public ::testing::Test {
         {1.0, 1.0, 1.0},
         1.0,
         {
-            container::boundary_condition::outflow,
-            container::boundary_condition::outflow,
-            container::boundary_condition::outflow,
-            container::boundary_condition::outflow,
-            container::boundary_condition::outflow,
-            container::boundary_condition::outflow,
+            BoundaryCondition::outflow,
+            BoundaryCondition::outflow,
+            BoundaryCondition::outflow,
+            BoundaryCondition::outflow,
+            BoundaryCondition::outflow,
+            BoundaryCondition::outflow,
         },
         1,
         1.0);
@@ -33,12 +34,12 @@ class LinkedCellsTest : public ::testing::Test {
         {1.0, 1.0, 1.0},
         1.0,
         {
-            container::boundary_condition::reflecting,
-            container::boundary_condition::reflecting,
-            container::boundary_condition::reflecting,
-            container::boundary_condition::reflecting,
-            container::boundary_condition::reflecting,
-            container::boundary_condition::reflecting,
+            BoundaryCondition::reflecting,
+            BoundaryCondition::reflecting,
+            BoundaryCondition::reflecting,
+            BoundaryCondition::reflecting,
+            BoundaryCondition::reflecting,
+            BoundaryCondition::reflecting,
         },
         1,
         0.25);

@@ -1,5 +1,6 @@
 #include "XMLFileReader.h"
 #include "SimulationInputSchema.hxx"
+#include "container/boundary.h"
 #include <iostream>
 #include <memory>
 #include <ranges>
@@ -59,10 +60,28 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
         domain_size_vector.push_back(arr);
       }
       std::array<double, 3> arr_domain_size{};
-      if (domain_size_vector.size() == domain_size_vector.size()) {
+      if (domain_size_vector.size() == arr_domain_size.size()) {
         std::copy(domain_size_vector.begin(), domain_size_vector.end(), arr_domain_size.begin());
       }
       config.domain_size = arr_domain_size;
+
+      // Parsing array of domain size (volume)
+      const auto &boundary_conditions = data->linked_cells()->boundary_conditions();
+      std::vector<BoundaryCondition> boundary_conditions_vec;
+      for (const auto &arr : boundary_conditions.boundary_condition()) {
+        BoundaryCondition bc = BoundaryCondition::none;
+        if (arr.type() == "outflow") {
+          bc = BoundaryCondition::outflow;
+        } else if (arr.type() == "reflecting") {
+          bc = BoundaryCondition::reflecting;
+        }
+        boundary_conditions_vec.push_back(bc);
+      }
+      std::array<BoundaryCondition, 6> arr_boundary_conditions{};
+      if (boundary_conditions_vec.size() == arr_boundary_conditions.size()) {
+        std::copy(boundary_conditions_vec.begin(), boundary_conditions_vec.end(), arr_boundary_conditions.begin());
+      }
+      config.boundary_conditions = arr_boundary_conditions;
 
       // Vector
     } else if (data->vector().present()) {

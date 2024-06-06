@@ -6,16 +6,13 @@
 #include "DoubleHelix.h"
 #include "Sphere.h"
 #include "Torus.h"
+#include "container/boundary.h"
 #include "simulator/physics/ForceModel.h"
 #include <array>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
-
-/**
- * definition of an enum class that gives information about the desired simulation
- */
 
 /**
  * definition of an enum class that gives information about the desired ParticleLoader
@@ -89,6 +86,8 @@ class Config {
    * an array to store the domain size for the linked-cells algorithm
    */
   std::array<double, 3> domain_size{};
+
+  std::array<BoundaryCondition, 6> boundary_conditions;
 
   /**
    * the total amount of celestial bodies in the gravitational planetary simulation

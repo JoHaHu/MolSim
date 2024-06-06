@@ -885,6 +885,30 @@ domain_size (::std::unique_ptr< domain_size_type > x)
   this->domain_size_.set (std::move (x));
 }
 
+const linked_cells::boundary_conditions_type& linked_cells::
+boundary_conditions () const
+{
+  return this->boundary_conditions_.get ();
+}
+
+linked_cells::boundary_conditions_type& linked_cells::
+boundary_conditions ()
+{
+  return this->boundary_conditions_.get ();
+}
+
+void linked_cells::
+boundary_conditions (const boundary_conditions_type& x)
+{
+  this->boundary_conditions_.set (x);
+}
+
+void linked_cells::
+boundary_conditions (::std::unique_ptr< boundary_conditions_type > x)
+{
+  this->boundary_conditions_.set (std::move (x));
+}
+
 
 // gravity
 //
@@ -1134,6 +1158,28 @@ double_helices (::std::unique_ptr< double_helices_type > x)
 }
 
 
+// boundary_conditions
+//
+
+const boundary_conditions::boundary_condition_sequence& boundary_conditions::
+boundary_condition () const
+{
+  return this->boundary_condition_;
+}
+
+boundary_conditions::boundary_condition_sequence& boundary_conditions::
+boundary_condition ()
+{
+  return this->boundary_condition_;
+}
+
+void boundary_conditions::
+boundary_condition (const boundary_condition_sequence& s)
+{
+  this->boundary_condition_ = s;
+}
+
+
 // settings
 //
 
@@ -1377,6 +1423,34 @@ void double_helices::
 double_helix (const double_helix_sequence& s)
 {
   this->double_helix_ = s;
+}
+
+
+// boundary_condition
+//
+
+const boundary_condition::type_type& boundary_condition::
+type () const
+{
+  return this->type_.get ();
+}
+
+boundary_condition::type_type& boundary_condition::
+type ()
+{
+  return this->type_.get ();
+}
+
+void boundary_condition::
+type (const type_type& x)
+{
+  this->type_.set (x);
+}
+
+void boundary_condition::
+type (::std::unique_ptr< type_type > x)
+{
+  this->type_.set (std::move (x));
 }
 
 
@@ -2913,16 +2987,20 @@ header::
 //
 
 linked_cells::
-linked_cells (const domain_size_type& domain_size)
+linked_cells (const domain_size_type& domain_size,
+              const boundary_conditions_type& boundary_conditions)
 : ::xml_schema::type (),
-  domain_size_ (domain_size, this)
+  domain_size_ (domain_size, this),
+  boundary_conditions_ (boundary_conditions, this)
 {
 }
 
 linked_cells::
-linked_cells (::std::unique_ptr< domain_size_type > domain_size)
+linked_cells (::std::unique_ptr< domain_size_type > domain_size,
+              ::std::unique_ptr< boundary_conditions_type > boundary_conditions)
 : ::xml_schema::type (),
-  domain_size_ (std::move (domain_size), this)
+  domain_size_ (std::move (domain_size), this),
+  boundary_conditions_ (std::move (boundary_conditions), this)
 {
 }
 
@@ -2931,7 +3009,8 @@ linked_cells (const linked_cells& x,
               ::xml_schema::flags f,
               ::xml_schema::container* c)
 : ::xml_schema::type (x, f, c),
-  domain_size_ (x.domain_size_, f, this)
+  domain_size_ (x.domain_size_, f, this),
+  boundary_conditions_ (x.boundary_conditions_, f, this)
 {
 }
 
@@ -2940,7 +3019,8 @@ linked_cells (const ::xercesc::DOMElement& e,
               ::xml_schema::flags f,
               ::xml_schema::container* c)
 : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
-  domain_size_ (this)
+  domain_size_ (this),
+  boundary_conditions_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -2973,6 +3053,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // boundary_conditions
+    //
+    if (n.name () == "boundary_conditions" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< boundary_conditions_type > r (
+        boundary_conditions_traits::create (i, f, this));
+
+      if (!boundary_conditions_.present ())
+      {
+        this->boundary_conditions_.set (::std::move (r));
+        continue;
+      }
+    }
+
     break;
   }
 
@@ -2980,6 +3074,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   {
     throw ::xsd::cxx::tree::expected_element< char > (
       "domain_size",
+      "");
+  }
+
+  if (!boundary_conditions_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "boundary_conditions",
       "");
   }
 }
@@ -2998,6 +3099,7 @@ operator= (const linked_cells& x)
   {
     static_cast< ::xml_schema::type& > (*this) = x;
     this->domain_size_ = x.domain_size_;
+    this->boundary_conditions_ = x.boundary_conditions_;
   }
 
   return *this;
@@ -3332,6 +3434,88 @@ operator= (const lennard_jones& x)
 
 lennard_jones::
 ~lennard_jones ()
+{
+}
+
+// boundary_conditions
+//
+
+boundary_conditions::
+boundary_conditions ()
+: ::xml_schema::type (),
+  boundary_condition_ (this)
+{
+}
+
+boundary_conditions::
+boundary_conditions (const boundary_conditions& x,
+                     ::xml_schema::flags f,
+                     ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  boundary_condition_ (x.boundary_condition_, f, this)
+{
+}
+
+boundary_conditions::
+boundary_conditions (const ::xercesc::DOMElement& e,
+                     ::xml_schema::flags f,
+                     ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  boundary_condition_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, false);
+    this->parse (p, f);
+  }
+}
+
+void boundary_conditions::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  for (; p.more_content (); p.next_content (false))
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // boundary_condition
+    //
+    if (n.name () == "boundary_condition" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< boundary_condition_type > r (
+        boundary_condition_traits::create (i, f, this));
+
+      this->boundary_condition_.push_back (::std::move (r));
+      continue;
+    }
+
+    break;
+  }
+}
+
+boundary_conditions* boundary_conditions::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class boundary_conditions (*this, f, c);
+}
+
+boundary_conditions& boundary_conditions::
+operator= (const boundary_conditions& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->boundary_condition_ = x.boundary_condition_;
+  }
+
+  return *this;
+}
+
+boundary_conditions::
+~boundary_conditions ()
 {
 }
 
@@ -3932,6 +4116,88 @@ operator= (const double_helices& x)
 
 double_helices::
 ~double_helices ()
+{
+}
+
+// boundary_condition
+//
+
+boundary_condition::
+boundary_condition (const type_type& type)
+: ::xml_schema::type (),
+  type_ (type, this)
+{
+}
+
+boundary_condition::
+boundary_condition (const boundary_condition& x,
+                    ::xml_schema::flags f,
+                    ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  type_ (x.type_, f, this)
+{
+}
+
+boundary_condition::
+boundary_condition (const ::xercesc::DOMElement& e,
+                    ::xml_schema::flags f,
+                    ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  type_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, false, false, true);
+    this->parse (p, f);
+  }
+}
+
+void boundary_condition::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  while (p.more_attributes ())
+  {
+    const ::xercesc::DOMAttr& i (p.next_attribute ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    if (n.name () == "type" && n.namespace_ ().empty ())
+    {
+      this->type_.set (type_traits::create (i, f, this));
+      continue;
+    }
+  }
+
+  if (!type_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "type",
+      "");
+  }
+}
+
+boundary_condition* boundary_condition::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class boundary_condition (*this, f, c);
+}
+
+boundary_condition& boundary_condition::
+operator= (const boundary_condition& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->type_ = x.type_;
+  }
+
+  return *this;
+}
+
+boundary_condition::
+~boundary_condition ()
 {
 }
 
@@ -4825,6 +5091,17 @@ operator<< (::xercesc::DOMElement& e, const linked_cells& i)
 
     s << i.domain_size ();
   }
+
+  // boundary_conditions
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "boundary_conditions",
+        e));
+
+    s << i.boundary_conditions ();
+  }
 }
 
 void
@@ -4945,6 +5222,28 @@ operator<< (::xercesc::DOMElement& e, const lennard_jones& i)
         e));
 
     s << *i.double_helices ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const boundary_conditions& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // boundary_condition
+  //
+  for (boundary_conditions::boundary_condition_const_iterator
+       b (i.boundary_condition ().begin ()), n (i.boundary_condition ().end ());
+       b != n; ++b)
+  {
+    const boundary_conditions::boundary_condition_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "boundary_condition",
+        e));
+
+    s << x;
   }
 }
 
@@ -5138,6 +5437,23 @@ operator<< (::xercesc::DOMElement& e, const double_helices& i)
         e));
 
     s << x;
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const boundary_condition& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // type
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "type",
+        e));
+
+    a << i.type ();
   }
 }
 
