@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CMakeSharedSettings">
     <configurations>
-      <configuration PROFILE_NAME="Release-System" ENABLED="true" GENERATION_DIR="build-release" CONFIG_NAME="Release" TOOLCHAIN_NAME="System" GENERATION_OPTIONS="-G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON" />
-      <configuration PROFILE_NAME="Debug-System" ENABLED="true" GENERATION_DIR="build-debug" CONFIG_NAME="Debug" TOOLCHAIN_NAME="System" GENERATION_OPTIONS="-G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON" />
-     </configurations>
+      <configuration PROFILE_NAME="Release" ENABLED="true" GENERATION_DIR="build-release" CONFIG_NAME="Release" GENERATION_OPTIONS="-G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON" />
+      <configuration PROFILE_NAME="Debug" ENABLED="true" GENERATION_DIR="build-debug" CONFIG_NAME="Debug" GENERATION_OPTIONS="-G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON" />
+    </configurations>
   </component>
 </project>
