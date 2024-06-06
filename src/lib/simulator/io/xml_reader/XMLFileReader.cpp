@@ -357,8 +357,8 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
         }
         config.double_helices = temp_helices;
       }
-      return std::make_shared<config::Config>(config);
     }
+    return std::make_shared<config::Config>(config);
 
   } catch (const xml_schema::exception &exception) {
     SPDLOG_WARN("An error has occurred! Please look at the exception details here:\n");

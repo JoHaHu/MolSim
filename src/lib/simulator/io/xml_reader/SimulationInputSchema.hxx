@@ -3884,16 +3884,6 @@ class linked_cells: public ::xml_schema::type
                 ::std::unique_ptr< boundary_conditions_type >);
 
   /**
-   * @brief Create an instance from the ultimate base and
-   * initializers for required elements and attributes
-   * (::std::unique_ptr version).
-   *
-   * This constructor will try to use the passed values directly
-   * instead of making copies.
-   */
-  linked_cells (::std::unique_ptr< domain_size_type >);
-
-  /**
    * @brief Create an instance from a DOM element.
    *
    * @param e A DOM element to extract the data from.
