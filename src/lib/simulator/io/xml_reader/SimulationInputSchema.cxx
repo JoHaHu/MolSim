@@ -3005,6 +3005,13 @@ linked_cells (::std::unique_ptr< domain_size_type > domain_size,
 }
 
 linked_cells::
+linked_cells (::std::unique_ptr< domain_size_type > domain_size)
+: ::xml_schema::type (),
+  domain_size_ (std::move (domain_size), this)
+{
+}
+
+linked_cells::
 linked_cells (const linked_cells& x,
               ::xml_schema::flags f,
               ::xml_schema::container* c)

@@ -104,8 +104,7 @@
                                     <xs:element name="double_helices">
                                         <xs:complexType>
                                             <xs:sequence>
-                                                <xs:element name="double_helix" type="double_helix"
-                                                            maxOccurs="unbounded"/>
+                                                <xs:element name="double_helix" type="double_helix" maxOccurs="unbounded"/>
                                             </xs:sequence>
                                         </xs:complexType>
                                     </xs:element>

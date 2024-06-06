@@ -354,18 +354,11 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
             spdlog::warn("There was an error while parsing the values for the cuboids.");
             return nullptr;
           }
-
-          auto temp_helix = DoubleHelix(arr_coordinate, arr_velocity, radius, pitch, height);
-          temp_helices.emplace_back(temp_helix);
         }
-        config.double_helices = temp_helices;
+        catch (const xml_schema::exception &exception) {
+          spdlog::warn("An error has occurred! Please look at the exception details here:\n");
+          std::cerr << exception << '\n';
+        }
+        XMLPlatformUtils::Terminate();
+        return nullptr;
       }
-    }
-    return std::make_shared<config::Config>(config);
-  } catch (const xml_schema::exception &exception) {
-    spdlog::warn("An error has occurred! Please look at the exception details here:\n");
-    std::cerr << exception << '\n';
-  }
-  XMLPlatformUtils::Terminate();
-  return nullptr;
-}
