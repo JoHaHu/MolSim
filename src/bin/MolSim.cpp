@@ -30,10 +30,8 @@ auto main(int argc, char *argv[]) -> int {
 
   auto particles = particle_loader.load_particles();
 
-
   auto container = container::particle_container(particles);
   auto plotter = std::make_unique<simulator::io::VTKPlotter>(config);
-
 
   for (auto &p : particles) {
     container.insert(std::move(p));
