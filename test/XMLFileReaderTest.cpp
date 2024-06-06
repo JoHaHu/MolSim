@@ -114,7 +114,7 @@ TEST_F(XMLFileReaderTest, input_test_cuboids) {
   const std::array<double, 3> particles_x2 = {8, 8, 1};
   const std::array<double, 3> velocity_x2 = {0, -10, 0};
 
-  auto config = XMLFileReader::parseXMLData("../../input/eingabe-collision-ws2.xml");
+  auto config = XMLFileReader::parseXMLData("../../input/eingabe-collision-ws.xml");
 
   // confirming correctness of header data
   EXPECT_TRUE(config->base_name == base_name);

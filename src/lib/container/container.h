@@ -8,7 +8,7 @@
 #include <vector>
 namespace container {
 
- /**
+/**
  * @brief A variant-based particle container supporting multiple underlying data structures.
  */
 using particle_container_variant = std::variant<std::vector<Particle>,
@@ -21,8 +21,7 @@ struct particle_container {
  public:
   explicit particle_container(particle_container_variant &&var) : var(std::move(var)) {}
 
-
- /**
+  /**
   * @brief Applies a function to each particle in the container.
   *
   * @param f Function to apply to each particle.
@@ -35,7 +34,7 @@ struct particle_container {
                var);
   }
 
- /**
+  /**
   * @brief Applies a function to each pair of particles in the container.
   *
   * @param f Function to apply to each pair of particles.
@@ -47,7 +46,7 @@ struct particle_container {
                var);
   }
 
- /**
+  /**
   * @brief Returns the number of particles in the container.
   *
   * @return Size of the container.
@@ -60,7 +59,7 @@ struct particle_container {
                       var);
   }
 
- /**
+  /**
   * @brief Applies boundary conditions to the container.
   *
   * @param f Function to apply for boundary conditions.
@@ -75,7 +74,7 @@ struct particle_container {
                var);
   }
 
- /**
+  /**
   * @brief Inserts a particle into the container.
   *
   * @param p Particle to insert.
@@ -87,7 +86,7 @@ struct particle_container {
                var);
   }
 
- /**
+  /**
   * @brief Updates internal data structures after position recalculations.
   */
   void refresh() {

@@ -72,7 +72,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
     // Gravity Model
     if (data->gravity().present()) {
 
-      config.simulation_type = ForceModel::Gravity;
+      config.simulation_type = simulator::physics::ForceModel::Gravity;
 
       std::vector<CelestialBody> temp_bodies;
       // Iterate through all celestial bodies
@@ -118,7 +118,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
     if (data->lennard_jones().present()) {
 
       // parsing settings of Lennard Jones force simulation model
-      config.simulation_type = ForceModel::LennardJones;
+      config.simulation_type = simulator::physics::ForceModel::LennardJones;
       config.delta_t = data->lennard_jones()->settings().delta_t();
       config.sigma = data->lennard_jones()->settings().sigma();
       config.epsilon = data->lennard_jones()->settings().epsilon();
@@ -341,9 +341,8 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
         }
         config.double_helices = temp_helices;
       }
-      return std::make_shared<config::Config>(config);
     }
-
+    return std::make_shared<config::Config>(config);
   } catch (const xml_schema::exception &exception) {
     spdlog::warn("An error has occurred! Please look at the exception details here:\n");
     std::cerr << exception << '\n';

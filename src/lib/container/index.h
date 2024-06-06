@@ -9,7 +9,7 @@
 
 namespace container::index {
 
-  /**
+/**
  * @brief Concept to define an Index with required methods.
  */
 template<typename T>
@@ -26,7 +26,7 @@ concept Index =
       { t.min_distance(dim, dim) } -> std::convertible_to<double>;
     };
 
-  /**
+/**
    * @brief Simple index iterating over dimensions in xyz-order.
    */
 struct row_major_index {
@@ -129,7 +129,7 @@ struct row_major_index {
 };
 
 static_assert(Index<row_major_index>);
-  /**
+/**
    * @brief Simple index iterating over dimensions in xyz-order with half-sized cells.
    */
 struct half_index {
@@ -199,7 +199,7 @@ struct half_index {
 
 static_assert(Index<half_index>);
 
-  /**
+/**
    * @brief Indexing scheme using a space-filling curve, specifically the Morton curve.
    */
 class morton_index {
@@ -308,7 +308,7 @@ class morton_index {
 
 static_assert(Index<morton_index>);
 
-  /**
+/**
    * @brief Test scheme using a space-filling curve, specifically the Morton curve.
    */
 class power_index {
