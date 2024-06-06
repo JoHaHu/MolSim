@@ -2,10 +2,11 @@
 #include <spdlog/spdlog.h>
 #include <variant>
 
-#include "config/config.h"
+#include "config/Config.h"
 #include "simulator/Simulator.h"
-#include "simulator/io/ParticleLoader.h"
+#include "simulator/io/ParticleGenerator.h"
 #include "simulator/io/VTKPlotter.h"
+#include "simulator/io/xml_reader/XMLFileReader.h"
 #include "simulator/physics/ForceModel.h"
 #include "simulator/physics/Gravity.h"
 #include "simulator/physics/LennardJones.h"
@@ -25,31 +26,21 @@ auto main(int argc, char *argv[]) -> int {
   auto config = config::Config::parse_config(argc, argv);
   LoggerManager::setup_logger(*config);
 
-  auto particle_loader = simulator::io::ParticleLoader(config);
+  auto particle_loader = simulator::io::ParticleGenerator(config);
 
-  auto [particles, force_model] = particle_loader.load_particles();
+  auto particles = particle_loader.load_particles();
 
-  auto particle_container = container::linked_cell<container::index::row_major_index>(
-      {180, 90, 3},
-      3.0,
-      {container::boundary_condition::outflow,
-       container::boundary_condition::outflow,
-       container::boundary_condition::reflecting,
-       container::boundary_condition::reflecting,
-       container::boundary_condition::reflecting,
-       container::boundary_condition::reflecting},
-      particles.size(), 1.0);
-  //  auto particle_container = std::vector<Particle>();
-  auto unique_plotter = std::make_unique<simulator::io::VTKPlotter>(config);
 
-  auto container = container::particle_container(std::move(particle_container));
+  auto container = container::particle_container(particles);
+  auto plotter = std::make_unique<simulator::io::VTKPlotter>(config);
+
 
   for (auto &p : particles) {
     container.insert(std::move(p));
   }
 
   simulator::physics::force_model physics;
-  switch (force_model) {
+  switch (config->simulation_type) {
     case simulator::physics::ForceModel::Gravity:
       physics = {simulator::physics::Gravity()};
       break;
@@ -58,11 +49,11 @@ auto main(int argc, char *argv[]) -> int {
       break;
   }
 
-  auto simulator = simulator::Simulator(std::move(container), physics, std::move(unique_plotter), config);
+  auto simulator = simulator::Simulator(std::move(container), physics, std::move(plotter), config);
 
   auto startTime = std::chrono::high_resolution_clock::now();
 
-  if (config->io_interval == 0) {
+  if (config->output_frequency == 0) {
     simulator.run<false>();
   } else {
     simulator.run<true>();

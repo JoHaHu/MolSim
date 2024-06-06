@@ -2,7 +2,7 @@
 
 #include "Plotter.h"
 #include "VTKWriter.h"
-#include "config/config.h"
+#include "config/Config.h"
 #include <utility>
 #include <variant>
 

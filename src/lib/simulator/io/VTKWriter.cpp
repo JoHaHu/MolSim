@@ -45,7 +45,6 @@ void VTKWriter::initializeOutput(int numParticles) {
 void VTKWriter::writeFile(const std::string &filename, int iteration) {
   std::stringstream strstr;
   strstr << filename << "_" << std::setfill('0') << std::setw(4) << iteration << ".vtu";
-
   std::ofstream file(strstr.str().c_str());
   VTKFile(file, *vtkFile);
   // Early release of memory resources

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Particle.h"
-#include "config/config.h"
+#include "config/Config.h"
 #include "container/container.h"
 #include "simulator/io/Plotter.h"
 #include "simulator/physics/ForceModel.h"
@@ -26,7 +26,6 @@ class Simulator {
   std::unique_ptr<io::Plotter> plotter;
   std::shared_ptr<config::Config> config;
 
-  double start_time;
   double end_time;
   double delta_t;
   unsigned long iteration = 0;
@@ -74,7 +73,6 @@ class Simulator {
         physics(physics),
         plotter(std::move(plotter)),
         config(config),
-        start_time(config->start_time),
         end_time(config->end_time),
         delta_t(config->delta_t) {};
 
@@ -117,9 +115,9 @@ class Simulator {
   template<bool IO>
   auto run() -> void {
     spdlog::info("Running simulation...");
-    double current_time = start_time;
+    double current_time = 0;
     iteration = 0;
-    auto interval = config->io_interval;
+    auto interval = config->output_frequency;
 
     calculate_force();
     // Plot initial position and forces

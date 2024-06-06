@@ -43,7 +43,7 @@ make doc_doxygen
 cd ${BUILD_DIR}
 make
 ./MolSim --help
-SPDLOG_LEVEL=info ./MolSim --input <input> --output <output> --start_time <start_time> --end_time <t_end> --delta_t <delta_t> --seed <seed> --io_interval <io_interval>
+SPDLOG_LEVEL=info ./MolSim --input <input_xml_file>
 ```
 
 ## Tests
