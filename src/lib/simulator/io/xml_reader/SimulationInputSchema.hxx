@@ -3488,7 +3488,7 @@ class header: public ::xml_schema::type
   /**
    * @brief Attribute type.
    */
-  typedef ::positive_double output_frequency_type;
+  typedef ::positive_int output_frequency_type;
 
   /**
    * @brief Attribute traits type.
@@ -3753,7 +3753,7 @@ class linked_cells: public ::xml_schema::type
   /**
    * @brief Element type.
    */
-  typedef ::positive_double domain_size_type;
+  typedef ::double_array domain_size_type;
 
   /**
    * @brief Element traits type.
@@ -3810,6 +3810,16 @@ class linked_cells: public ::xml_schema::type
    * initializers for required elements and attributes.
    */
   linked_cells (const domain_size_type&);
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes
+   * (::std::unique_ptr version).
+   *
+   * This constructor will try to use the passed values directly
+   * instead of making copies.
+   */
+  linked_cells (::std::unique_ptr< domain_size_type >);
 
   /**
    * @brief Create an instance from a DOM element.
