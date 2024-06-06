@@ -5,8 +5,6 @@
 #include <memory>
 #include <optional>
 
-#include "config/Config.h"
-
 namespace simulator::io {
 
 /*!
@@ -27,22 +25,22 @@ class ParticleGenerator {
 
   auto generate_cuboids(const std::vector<Cuboid> &, auto seed, std::vector<Particle> &particles);
 
-  std::vector<Particle> generate_disk_particles(double centerX, double centerY, double initialVx, double initialVy,
-                                                int radiusMolecules, double meshwidth, unsigned int seed);
+  auto generate_disk_particles(double centerX, double centerY, double initialVx, double initialVy,
+                               int radiusMolecules, double meshwidth, unsigned int seed) -> std::vector<Particle>;
 
-  std::vector<Particle> generate_sphere_particles(double centerX, double centerY, double centerZ, double initialVx,
-                                                  double initialVy, double initialVz, int radiusMolecules,
-                                                  double meshwidth, unsigned int seed);
+  auto generate_sphere_particles(double centerX, double centerY, double centerZ, double initialVx,
+                                 double initialVy, double initialVz, int radiusMolecules,
+                                 double meshwidth, unsigned int seed) -> std::vector<Particle>;
 
-  std::vector<Particle> generate_torus_particles(double centerX, double centerY, double centerZ, double initialVx,
-                                                 double initialVy, double initialVz, double majorRadius,
-                                                 double minorRadius, double meshwidth, unsigned int seed);
+  auto generate_torus_particles(double centerX, double centerY, double centerZ, double initialVx,
+                                double initialVy, double initialVz, double majorRadius,
+                                double minorRadius, double meshwidth, unsigned int seed) -> std::vector<Particle>;
 
-  std::vector<Particle> generate_double_helix_particles(double centerX, double centerY, double centerZ,
-                                                        double initialVx,
-                                                        double initialVy, double initialVz, double helixRadius,
-                                                        double helixPitch, double helixHeight, double meshwidth,
-                                                        unsigned int seed);
+  auto generate_double_helix_particles(double centerX, double centerY, double centerZ,
+                                       double initialVx,
+                                       double initialVy, double initialVz, double helixRadius,
+                                       double helixPitch, double helixHeight, double meshwidth,
+                                       unsigned int seed) -> std::vector<Particle>;
 };
 
 }// namespace simulator::io

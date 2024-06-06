@@ -135,7 +135,7 @@ class Config {
    * Static function to create the config by calling the respective constructors, setting the values and returning a shared_ptr to the config object
    */
   static auto store_config_values(simulator::physics::ForceModel simulationType, BodyType bodyType, std::string &baseName, double endTime,
-                                  double outputFrequency, std::string &outputFilename, int totalBodies, double deltaT,
+                                  long outputFrequency, std::string &outputFilename, int totalBodies, double deltaT,
                                   double inputSigma, double inputEpsilon, double massM, double distanceH,
                                   double averageBrownianMotion, std::vector<CelestialBody> celestialBodies,
                                   std::vector<Cuboid> cuboidVector, std::vector<Disc> discVector,
