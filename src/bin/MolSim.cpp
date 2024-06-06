@@ -25,7 +25,7 @@
  */
 auto main(int argc, char *argv[]) -> int {
 
-  auto config = config::Config::parse_config(argc, argv);
+  auto config = OldConfig::OldConfig::parse_config(argc, argv);
   LoggerManager::setup_logger(config);
 
   // Calling XMLFileReader to read from the input XML

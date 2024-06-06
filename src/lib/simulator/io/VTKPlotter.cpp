@@ -23,7 +23,7 @@ auto VTKPlotter::plotParticles(ParticleContainer &particle_container, int iterat
   vtk_writer.writeFile(out_name, iteration);
 }
 
-VTKPlotter::VTKPlotter(const std::shared_ptr<config::Config> &config) : config(config) {}
+VTKPlotter::VTKPlotter(const std::shared_ptr<OldConfig::OldConfig> &config) : config(config) {}
 
 VTKPlotter::~VTKPlotter() = default;
 }// namespace simulator::io

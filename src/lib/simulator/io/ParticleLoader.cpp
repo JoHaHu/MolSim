@@ -11,7 +11,7 @@
 
 namespace simulator::io {
 // this parser is implemented just for fun, next week we will switch to a xml filereader
-ParticleLoader::ParticleLoader(const std::shared_ptr<config::Config> &config) : config(config) {
+ParticleLoader::ParticleLoader(const std::shared_ptr<OldConfig::OldConfig> &config) : config(config) {
 }
 
 /**

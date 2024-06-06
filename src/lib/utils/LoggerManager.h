@@ -10,5 +10,5 @@ class LoggerManager {
  public:
   LoggerManager() = delete;
   // TODO remove the class and only keep a static function
-  static void setup_logger(std::shared_ptr<config::Config> config);
+  static void setup_logger(const std::shared_ptr<OldConfig::OldConfig> &config);
 };

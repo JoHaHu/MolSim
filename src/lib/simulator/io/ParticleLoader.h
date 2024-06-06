@@ -13,7 +13,7 @@ namespace simulator::io {
  */
 class ParticleLoader {
  private:
-  std::shared_ptr<config::Config> config;
+  std::shared_ptr<OldConfig::OldConfig> config;
 
   using cuboid_t = std::tuple<std::array<double, 3>, std::array<double, 3>, std::array<int, 3>, double, double, double>;
 
@@ -34,7 +34,7 @@ class ParticleLoader {
   static auto recognize_end_of_file(std::istreambuf_iterator<char> &buf) -> bool;
 
  public:
-  explicit ParticleLoader(const std::shared_ptr<config::Config> &config);
+  explicit ParticleLoader(const std::shared_ptr<OldConfig::OldConfig> &config);
   /**
    * Load particles based on a input file and returns a particle container and the used force model
    * */

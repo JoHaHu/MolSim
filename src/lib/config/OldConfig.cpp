@@ -4,7 +4,7 @@
 #include <getopt.h>
 #include <string>
 
-void config::Config::print_usage() {
+void OldConfig::OldConfig::print_usage() {
   std::cout << "Usage: MolSim [options]\n"
                "--output\t-o\t\t specify output file\n"
                "--input\t\t-i\t\t specify input file\n"
@@ -36,7 +36,7 @@ void config::Config::print_usage() {
  * - -e, --end_time <value>    : Set the end time (double).
  * - -l, --io_interval <value> : Set the plot interval (int), 0 disables plotting.
  */
-auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Config> {// NOLINT(*-avoid-c-arrays)
+auto OldConfig::OldConfig::parse_config(int argc, char *argv[]) -> std::shared_ptr<OldConfig> {// NOLINT(*-avoid-c-arrays)
   double start_time = 0.0;
   double end_time = 1000.0;// NOLINT(*-avoid-magic-numbers)
   double delta_t = 0.014;  // NOLINT(*-avoid-magic-numbers)
@@ -94,7 +94,7 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
     }
   };
 
-  auto config = Config();
+  auto config = OldConfig();
   config.output_filename = output_file;
   config.input_filename = input_file;
   config.end_time = end_time;
@@ -103,5 +103,5 @@ auto config::Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Con
   config.seed = seed;
   config.io_interval = io_interval;
 
-  return std::make_shared<Config>(config);
+  return std::make_shared<OldConfig>(config);
 }

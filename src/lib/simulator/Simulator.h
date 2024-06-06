@@ -32,7 +32,7 @@ class Simulator {
  private:
   ParticleContainer particles;
   std::unique_ptr<io::Plotter> plotter;
-  std::shared_ptr<config::Config> config;
+  std::shared_ptr<OldConfig::OldConfig> config;
 
   double start_time;
   double end_time;
@@ -47,7 +47,7 @@ class Simulator {
   explicit Simulator(
       ParticleContainer particles,
       std::unique_ptr<io::Plotter> plotter,
-      const std::shared_ptr<config::Config> &config);
+      const std::shared_ptr<OldConfig::OldConfig> &config);
 
   /**
   * @brief Runs the simulation.
@@ -80,7 +80,7 @@ class Simulator {
 
 Simulator::Simulator(
     ParticleContainer particles, std::unique_ptr<io::Plotter> plotter,
-    const std::shared_ptr<config::Config> &config)
+    const std::shared_ptr<OldConfig::OldConfig> &config)
     : particles(std::move(particles)), plotter(std::move(plotter)), config(config), start_time(config->start_time),
       end_time(config->end_time), delta_t(config->delta_t) {
 }

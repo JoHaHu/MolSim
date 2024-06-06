@@ -3,20 +3,20 @@
 #include <iostream>
 #include <memory>
 
-namespace config {
+namespace OldConfig {
 
 /**
  * All supported runtime configurations
  * */
-class Config {
+class OldConfig {
  private:
-  Config() = default;
+  OldConfig() = default;
 
  public:
   /**
    * build a config from provided cmdline arguments.
    * */
-  auto static parse_config(int argc, char *argv[]) -> std::shared_ptr<Config>;
+  auto static parse_config(int argc, char *argv[]) -> std::shared_ptr<OldConfig>;
   /**
    * not used right now
    * */
