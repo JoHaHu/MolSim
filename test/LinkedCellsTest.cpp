@@ -9,7 +9,7 @@ class LinkedCellsTest : public ::testing::Test {
   container::particle_container outflow_pc;
   container::particle_container reflecting_pc;
   LinkedCellsTest() : outflow_pc(container::particle_container(std::vector<Particle>())),
-                      reflecting_pc(container::particle_container(std::vector<Particle>())){};
+                      reflecting_pc(container::particle_container(std::vector<Particle>())) {};
 
  protected:
   void SetUp() override {
