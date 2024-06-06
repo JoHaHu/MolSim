@@ -2,7 +2,6 @@
 #include "simulator/physics/Gravity.h"
 #include "utils/ArrayUtils.h"
 #include <array>
-#include <cmath>
 #include <gtest/gtest.h>
 
 class PlanetaryCalculationTest : public ::testing::Test {

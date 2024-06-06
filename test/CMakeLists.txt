@@ -1,4 +1,5 @@
-add_executable(Test Test.cpp ParticleTest.cpp PlanetaryCalculationTest.cpp LennardJonesPotentialTest.cpp)
+add_executable(Test Test.cpp ParticleTest.cpp PlanetaryCalculationTest.cpp LennardJonesPotentialTest.cpp
+        XMLFileReaderTest.cpp)
 
 include(CheckIPOSupported)
 check_ipo_supported(RESULT result)
@@ -24,7 +25,6 @@ target_compile_options(Test
         $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>
         $<$<CXX_COMPILER_ID:Clang>:-Wall -march=native>
 )
-
 
 target_link_options(
         Test
