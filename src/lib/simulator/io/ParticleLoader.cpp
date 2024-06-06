@@ -4,14 +4,16 @@
 
 #include "Particle.h"
 #include "ParticleLoader.h"
+#include "config/Config.h"
 #include "spdlog/spdlog.h"
 #include "utils/ArrayUtils.h"
 #include "utils/LoggerManager.h"
 #include "utils/MaxwellBoltzmannDistribution.h"
 
 namespace simulator::io {
-// this parser is implemented just for fun, next week we will switch to a xml filereader
-ParticleLoader::ParticleLoader(const std::shared_ptr<OldConfig::OldConfig> &config) : config(config) {
+static constexpr const double brownian_motion = 0.1;
+
+ParticleLoader::ParticleLoader(const std::shared_ptr<config::Config> &config) : config(config) {
 }
 
 /**
@@ -22,7 +24,7 @@ ParticleLoader::ParticleLoader(const std::shared_ptr<OldConfig::OldConfig> &conf
     *
     * @return std::tuple<ParticleContainer, simulator::physics::ForceModel> The loaded particles and the force model.
     */
-auto ParticleLoader::load_particles() -> std::tuple<ParticleContainer, simulator::physics::ForceModel> {
+auto ParticleLoader::load_particles() -> std::tuple<ParticleContainer, ForceModel> {
   spdlog::info("Reading file {}", config->input_filename);
   auto input = std::ifstream(config->input_filename);
   auto input_buf = std::istreambuf_iterator<char>(input);
@@ -31,12 +33,12 @@ auto ParticleLoader::load_particles() -> std::tuple<ParticleContainer, simulator
     spdlog::trace("Recognized a comment in the input file.");
   }
 
-  const auto [model, length] = *recognize_header(input_buf);
-  spdlog::debug("Recognized header: Model = {}, Length = {}", static_cast<int>(model), length);
+  const auto model = config->simulation_type;
+  spdlog::debug("Recognized header: Model = {}", static_cast<int>(model));
 
   ParticleContainer particles(0);
   switch (model) {
-    case physics::ForceModel::LennardJones: {
+    case ForceModel::LennardJones: {
       spdlog::info("Processing Lennard-Jones model.");
       const auto cuboids = *parse_cuboids(input_buf);
       spdlog::debug("Parsed {} cuboids.", cuboids.size());
@@ -47,7 +49,7 @@ auto ParticleLoader::load_particles() -> std::tuple<ParticleContainer, simulator
       particles = ParticleContainer(p);
       break;
     }
-    case physics::ForceModel::Gravity: {
+    case ForceModel::Gravity: {
       spdlog::info("Processing Gravity model.");
       const auto p = *parse_gravity(input_buf);
       spdlog::debug("Parsed {} particles for Gravity model.", p.size());
@@ -60,35 +62,215 @@ auto ParticleLoader::load_particles() -> std::tuple<ParticleContainer, simulator
 }
 
 /**
-    * @brief Recognizes the force model from the input buffer.
-    *
-    * @param buf Input buffer iterator.
-    * @return std::optional<physics::ForceModel> The recognized force model or an empty optional if unrecognized.
-    */
-auto ParticleLoader::recognize_force_model(
-    std::istreambuf_iterator<char> &buf) -> std::optional<physics::ForceModel> {
-  spdlog::trace("Starting to recognize force model");
+            * @brief Generates particles arranged in a disk configuration.
+            *
+            * This method generates particles within a disk of a specified radius. The disk
+            * is centered at (centerX, centerY) and each particle is given an initial velocity
+            * (initialVx, initialVy). The density of the particles is controlled by the meshwidth,
+            * which determines the spacing between adjacent particles. The number of particles
+            * along the radius is specified by radiusMolecules.
+            *
+            * @param centerX The x-coordinate of the center of the disk.
+            * @param centerY The y-coordinate of the center of the disk.
+            * @param initialVx The initial velocity in the x-direction for all particles.
+            * @param initialVy The initial velocity in the y-direction for all particles.
+            * @param radiusMolecules The radius of the disk in terms of the number of molecules.
+            * @param meshwidth The distance between adjacent particles.
+            * @return std::vector<Particle> A vector containing the generated particles.
+            */
+std::vector<Particle> ParticleLoader::generate_disk_particles(double centerX, double centerY, double initialVx,
+                                                              double initialVy, int radiusMolecules,
+                                                              double meshwidth, unsigned int seed) {
+  std::vector<Particle> particles;
+  double radius = radiusMolecules * meshwidth;
 
-  recognize_whitespace(buf);
+  for (int i = -radiusMolecules; i <= radiusMolecules; ++i) {
+    for (int j = -radiusMolecules; j <= radiusMolecules; ++j) {
+      double x = i * meshwidth;
+      double y = j * meshwidth;
+      if (x * x + y * y <= radius * radius) {
+        std::array<double, 3> position = {centerX + x, centerY + y, 0.0};
+        std::array<double, 3> velocity = {0.0, 0.0, 0.0};
 
-  auto tmp = std::ostringstream();
-  while ((isalpha(*buf) != 0) || *buf == '-') {
-    tmp << *buf;
-    buf++;
+        std::array<double, 3> velocity2D = maxwellBoltzmannDistributedVelocity(brownian_motion, 2, seed);
+        velocity[0] = velocity2D[0] + initialVx;
+        velocity[1] = velocity2D[1] + initialVy;
+        velocity[2] = 0.0;
+
+        particles.emplace_back(position, velocity, 1.0, 0);
+      }
+    }
   }
-  std::string model_str = tmp.str();
 
-  if (model_str == "lennard-jones") {
-    spdlog::debug("Force model identified as Lennard-Jones");
-    return {physics::ForceModel::LennardJones};
-  }
-  if (model_str == "gravity") {
-    spdlog::debug("Force model identified as Gravity");
-    return {physics::ForceModel::Gravity};
+  particles.shrink_to_fit();
+  return particles;
+}
+
+/**
+   * @brief Generates particles arranged in a sphere configuration.
+   *
+   * This method generates particles within a sphere of a specified radius. The sphere
+   * is centered at (centerX, centerY, centerZ) and each particle is given an initial velocity
+   * (initialVx, initialVy, initialVz). The density of the particles is controlled by the meshwidth,
+   * which determines the spacing between adjacent particles. The number of particles
+   * along the radius is specified by radiusMolecules.
+   *
+   * @param centerX The x-coordinate of the center of the sphere.
+   * @param centerY The y-coordinate of the center of the sphere.
+   * @param centerZ The z-coordinate of the center of the sphere.
+   * @param initialVx The initial velocity in the x-direction for all particles.
+   * @param initialVy The initial velocity in the y-direction for all particles.
+   * @param initialVz The initial velocity in the z-direction for all particles.
+   * @param radiusMolecules The radius of the sphere in terms of the number of molecules.
+   * @param meshwidth The distance between adjacent particles.
+   * @return std::vector<Particle> A vector containing the generated particles.
+   */
+std::vector<Particle> ParticleLoader::generate_sphere_particles(double centerX, double centerY, double centerZ,
+                                                                double initialVx, double initialVy,
+                                                                double initialVz,
+                                                                int radiusMolecules, double meshwidth,
+                                                                unsigned int seed) {
+  std::vector<Particle> particles;
+  double radius = radiusMolecules * meshwidth;
+
+  for (int i = -radiusMolecules; i <= radiusMolecules; ++i) {
+    for (int j = -radiusMolecules; j <= radiusMolecules; ++j) {
+      for (int k = -radiusMolecules; k <= radiusMolecules; ++k) {
+        double x = i * meshwidth;
+        double y = j * meshwidth;
+        double z = k * meshwidth;
+        if (x * x + y * y + z * z <= radius * radius) {
+          std::array<double, 3> position = {centerX + x, centerY + y, centerZ + z};
+          std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity(brownian_motion, 3, seed);
+          velocity[0] += initialVx;
+          velocity[1] += initialVy;
+          velocity[2] += initialVz;
+
+          particles.emplace_back(position, velocity, 1.0, 0);
+        }
+      }
+    }
   }
 
-  spdlog::warn("Unrecognized force model string: {}", model_str);
-  return {};
+  particles.shrink_to_fit();
+  return particles;
+}
+
+/**
+ * @brief Generates particles arranged in a torus configuration.
+ *
+ * This method generates particles within a torus of specified major and minor radii. The torus
+ * is centered at (centerX, centerY, centerZ) and each particle is given an initial velocity
+ * (initialVx, initialVy, initialVz). The density of the particles is controlled by the meshwidth,
+ * which determines the spacing between adjacent particles.
+ *
+ * @param centerX The x-coordinate of the center of the torus.
+ * @param centerY The y-coordinate of the center of the torus.
+ * @param centerZ The z-coordinate of the center of the torus.
+ * @param initialVx The initial velocity in the x-direction for all particles.
+ * @param initialVy The initial velocity in the y-direction for all particles.
+ * @param initialVz The initial velocity in the z-direction for all particles.
+ * @param majorRadius The major radius of the torus (distance from the center of the tube to the center of the torus).
+ * @param minorRadius The minor radius of the torus (radius of the tube).
+ * @param meshwidth The distance between adjacent particles.
+ * @return std::vector<Particle> A vector containing the generated particles.
+ */
+std::vector<Particle> ParticleLoader::generate_torus_particles(double centerX, double centerY, double centerZ,
+                                                               double initialVx, double initialVy, double initialVz,
+                                                               double majorRadius, double minorRadius,
+                                                               double meshwidth,
+                                                               unsigned int seed) {
+  std::vector<Particle> particles;
+
+  // Loop over the angular coordinates
+  for (double theta = 0; theta < 2 * M_PI; theta += 4 * meshwidth / majorRadius) {
+    for (double phi = 0; phi < 2 * M_PI; phi += meshwidth / minorRadius) {
+      double x = (majorRadius + minorRadius * cos(phi)) * cos(theta);
+      double y = (majorRadius + minorRadius * cos(phi)) * sin(theta);
+      double z = minorRadius * sin(phi);
+
+      std::array<double, 3> position = {centerX + x, centerY + y, centerZ + z};
+      std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity(brownian_motion, 3, seed);
+      velocity[0] += initialVx;
+      velocity[1] += initialVy;
+      velocity[2] += initialVz;
+
+      particles.emplace_back(position, velocity, 1.0, 0);
+    }
+  }
+  particles.shrink_to_fit();
+  return particles;
+}
+
+/**
+ * @brief Generates particles arranged in a double helix configuration.
+ *
+ * This method generates particles within a double helix with specified radius, pitch, and height. The double helix
+ * is centered at (centerX, centerY, centerZ) and each particle is given an initial velocity
+ * (initialVx, initialVy, initialVz). The density of the particles is controlled by the meshwidth,
+ * which determines the spacing between adjacent particles along the helix.
+ *
+ * @param centerX The x-coordinate of the center of the double helix.
+ * @param centerY The y-coordinate of the center of the double helix.
+ * @param centerZ The z-coordinate of the center of the double helix.
+ * @param initialVx The initial velocity in the x-direction for all particles.
+ * @param initialVy The initial velocity in the y-direction for all particles.
+ * @param initialVz The initial velocity in the z-direction for all particles.
+ * @param helixRadius The radius of the helix (distance from the center of the helix to the path of the particles).
+ * @param helixPitch The pitch of the helix (distance between consecutive turns of the helix along the z-axis).
+ * @param helixHeight The total height of the helix (distance covered along the z-axis).
+ * @param meshwidth The distance between adjacent particles along the helix path.
+ * @param seed The seed for random number generation, used in velocity distribution.
+ * @return std::vector<Particle> A vector containing the generated particles.
+ */
+std::vector<Particle> ParticleLoader::generate_double_helix_particles(
+    double centerX, double centerY, double centerZ,
+    double initialVx, double initialVy, double initialVz,
+    double helixRadius, double helixPitch, double helixHeight,
+    double meshwidth, unsigned int seed) {
+
+  if (helixRadius <= 0 || helixPitch <= 0 || helixHeight <= 0 || meshwidth <= 0) {
+    spdlog::error("Invalid parameters for double helix generation.");
+    return {};
+  }
+
+  std::vector<Particle> particles;
+
+  double numTurns = helixHeight / helixPitch;
+  double thetaIncrement = 12 * meshwidth / helixRadius;
+
+  // First helix
+  for (double theta = 0; theta < numTurns * 2 * M_PI; theta += thetaIncrement) {
+    double x = helixRadius * cos(theta);
+    double y = helixRadius * sin(theta);
+    double z = helixPitch * theta / (2 * M_PI);
+
+    std::array<double, 3> position = {centerX + x, centerY + y, centerZ + z};
+    std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity(brownian_motion, 3, seed);
+    velocity[0] += initialVx;
+    velocity[1] += initialVy;
+    velocity[2] += initialVz + 1;
+
+    particles.emplace_back(position, velocity, 1.0, particles.size());
+  }
+
+  // Second helix
+  for (double theta = 0; theta < numTurns * 2 * M_PI; theta += thetaIncrement) {
+    double x = helixRadius * cos(theta + M_PI);
+    double y = helixRadius * sin(theta + M_PI);
+    double z = helixPitch * theta / (2 * M_PI);
+
+    std::array<double, 3> position = {centerX + x, centerY + y, centerZ + z};
+    std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity(brownian_motion, 3, seed);
+    velocity[0] += initialVx;
+    velocity[1] += initialVy;
+    velocity[2] += initialVz - 1;
+
+    particles.emplace_back(position, velocity, 1.0, particles.size());
+  }
+
+  particles.shrink_to_fit();
+  return particles;
 }
 
 auto ParticleLoader::recognize_comment(std::istreambuf_iterator<char> &buf) -> bool {
@@ -108,16 +290,6 @@ auto ParticleLoader::recognize_whitespace(std::istreambuf_iterator<char> &buf) -
     return true;
   }
   return false;
-}
-
-auto ParticleLoader::recognize_header(
-    std::istreambuf_iterator<char> &buf) -> std::optional<std::tuple<physics::ForceModel, int>> {
-  recognize_whitespace(buf);
-  const auto force = *recognize_force_model(buf);
-  recognize_whitespace(buf);
-  const auto length = *recognize_int(buf);
-  recognize_end_of_line(buf);
-  return {{force, length}};
 }
 
 auto ParticleLoader::recognize_int(std::istreambuf_iterator<char> &buf) -> std::optional<int> {
@@ -324,9 +496,6 @@ auto ParticleLoader::parse_cuboids(std::istreambuf_iterator<char> &buf) -> std::
   spdlog::debug("Parsed {} cuboids", particles.size());
   return particles;
 }
-
-// TODO make configurable
-static constexpr const double brownian_motion = 0.1;
 
 /**
     * @brief Generates particles from a list of cuboids using the given seed.

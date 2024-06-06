@@ -2,7 +2,7 @@
 
 #include "Particle.h"
 #include "ParticleContainer.h"
-#include "config/OldConfig.h"
+#include "config/Config.h"
 #include "simulator/io/Plotter.h"
 #include "utils/ArrayUtils.h"
 #include <cmath>
@@ -32,7 +32,7 @@ class Simulator {
  private:
   ParticleContainer particles;
   std::unique_ptr<io::Plotter> plotter;
-  std::shared_ptr<OldConfig::OldConfig> config;
+  std::shared_ptr<config::Config> config;
 
   double start_time;
   double end_time;
@@ -47,7 +47,7 @@ class Simulator {
   explicit Simulator(
       ParticleContainer particles,
       std::unique_ptr<io::Plotter> plotter,
-      const std::shared_ptr<OldConfig::OldConfig> &config);
+      const std::shared_ptr<config::Config> &config);
 
   /**
   * @brief Runs the simulation.
@@ -80,8 +80,8 @@ class Simulator {
 
 Simulator::Simulator(
     ParticleContainer particles, std::unique_ptr<io::Plotter> plotter,
-    const std::shared_ptr<OldConfig::OldConfig> &config)
-    : particles(std::move(particles)), plotter(std::move(plotter)), config(config), start_time(config->start_time),
+    const std::shared_ptr<config::Config> &config)
+    : particles(std::move(particles)), plotter(std::move(plotter)), config(config), start_time(0),
       end_time(config->end_time), delta_t(config->delta_t) {
 }
 
@@ -93,7 +93,7 @@ auto Simulator::run() -> void {
   spdlog::info("Running simulation...");
   double current_time = start_time;
   int iteration = 0;
-  auto interval = config->io_interval;
+  auto interval = config->output_frequency;
 
   calculate_force<PY>();
 
@@ -103,7 +103,7 @@ auto Simulator::run() -> void {
     calculate_velocity();
 
     iteration++;
-    if (iteration % interval == 0 && IO) {
+    if (iteration % static_cast<int>(interval) == 0 && IO) {
       plotter->plotParticles(particles, iteration);
       spdlog::debug("Iteration {} plotted.", iteration);
     }

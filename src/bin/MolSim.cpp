@@ -2,7 +2,7 @@
 // Created by template from MolSim
 //
 
-#include "config/OldConfig.h"
+#include "config/Config.h"
 #include "simulator/Simulator.h"
 #include "simulator/io/ParticleLoader.h"
 #include "simulator/io/VTKPlotter.h"
@@ -25,16 +25,11 @@
  */
 auto main(int argc, char *argv[]) -> int {
 
-  auto config = OldConfig::OldConfig::parse_config(argc, argv);
+  auto config = config::Config::parse_config(argc, argv);
   LoggerManager::setup_logger(config);
-
-  // Calling XMLFileReader to read from the input XML
-  // TODO: replace hard-coded file path with argument passed file path
-  auto sim_config = XMLFileReader::parseXMLData("../input/eingabe-collision-ws2.xml");
 
   auto startTime = std::chrono::high_resolution_clock::now();
 
-  // TODO: integrate sim_config into simulation call --> actually passing values that were passed by the XML
   auto particle_loader = simulator::io::ParticleLoader(config);
 
   auto [particle_container, force_model] = particle_loader.load_particles();
@@ -43,21 +38,21 @@ auto main(int argc, char *argv[]) -> int {
 
   auto simulator = simulator::Simulator(std::move(particle_container), std::move(plotter), config);
 
-  if (config->io_interval == 0) {
+  if (config->output_frequency == 0) {
     switch (force_model) {
-      case simulator::physics::ForceModel::Gravity:
+      case ForceModel::Gravity:
         simulator.run<simulator::physics::Gravity, false>();
         break;
-      case simulator::physics::ForceModel::LennardJones:
+      case ForceModel::LennardJones:
         simulator.run<simulator::physics::LennardJones, false>();
         break;
     }
   } else {
     switch (force_model) {
-      case simulator::physics::ForceModel::Gravity:
+      case ForceModel::Gravity:
         simulator.run<simulator::physics::Gravity, true>();
         break;
-      case simulator::physics::ForceModel::LennardJones:
+      case ForceModel::LennardJones:
         simulator.run<simulator::physics::LennardJones, true>();
         break;
     }

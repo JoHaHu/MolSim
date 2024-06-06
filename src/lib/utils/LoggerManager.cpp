@@ -6,6 +6,8 @@
 #include "spdlog/spdlog.h"
 #include <iostream>
 
+#include "config/Config.h"
+
 /**
  * Initializes the default logger with console and file sinks.
  *
@@ -14,7 +16,7 @@
  *
  * @param level The log level to set for the logger.
  */
-void LoggerManager::setup_logger(const std::shared_ptr<OldConfig::OldConfig> &config) {
+void LoggerManager::setup_logger(const std::shared_ptr<config::Config> &config) {
   try {
     // Read environment variable
     spdlog::cfg::load_env_levels();
@@ -39,7 +41,7 @@ void LoggerManager::setup_logger(const std::shared_ptr<OldConfig::OldConfig> &co
     spdlog::set_level(level);
 
     // Disable log when io disabled
-    if (config->io_interval == 0) {
+    if (config->output_frequency == 0) {
       spdlog::set_level(spdlog::level::off);
     }
 

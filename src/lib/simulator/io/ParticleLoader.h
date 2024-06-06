@@ -1,10 +1,12 @@
 #pragma once
 
 #include "ParticleContainer.h"
-#include "config/OldConfig.h"
+#include "config/Config.h"
 #include "simulator/physics/ForceModel.h"
 #include <memory>
 #include <optional>
+
+#include "config/Config.h"
 
 namespace simulator::io {
 
@@ -13,7 +15,7 @@ namespace simulator::io {
  */
 class ParticleLoader {
  private:
-  std::shared_ptr<OldConfig::OldConfig> config;
+  std::shared_ptr<config::Config> config;
 
   using cuboid_t = std::tuple<std::array<double, 3>, std::array<double, 3>, std::array<int, 3>, double, double, double>;
 
@@ -34,11 +36,28 @@ class ParticleLoader {
   static auto recognize_end_of_file(std::istreambuf_iterator<char> &buf) -> bool;
 
  public:
-  explicit ParticleLoader(const std::shared_ptr<OldConfig::OldConfig> &config);
+  explicit ParticleLoader(const std::shared_ptr<config::Config> &config);
   /**
    * Load particles based on a input file and returns a particle container and the used force model
    * */
-  auto load_particles() -> std::tuple<ParticleContainer, physics::ForceModel>;
+  auto load_particles() -> std::tuple<ParticleContainer, ForceModel>;
+
+  std::vector<Particle> generate_disk_particles(double centerX, double centerY, double initialVx, double initialVy,
+                                                int radiusMolecules, double meshwidth, unsigned int seed);
+
+  std::vector<Particle> generate_sphere_particles(double centerX, double centerY, double centerZ, double initialVx,
+                                                  double initialVy, double initialVz, int radiusMolecules,
+                                                  double meshwidth, unsigned int seed);
+
+  std::vector<Particle> generate_torus_particles(double centerX, double centerY, double centerZ, double initialVx,
+                                                 double initialVy, double initialVz, double majorRadius,
+                                                 double minorRadius, double meshwidth, unsigned int seed);
+
+  std::vector<Particle> generate_double_helix_particles(double centerX, double centerY, double centerZ,
+                                                        double initialVx,
+                                                        double initialVy, double initialVz, double helixRadius,
+                                                        double helixPitch, double helixHeight, double meshwidth,
+                                                        unsigned int seed);
 };
 
 }// namespace simulator::io

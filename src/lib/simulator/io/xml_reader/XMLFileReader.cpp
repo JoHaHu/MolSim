@@ -21,7 +21,7 @@ using namespace xercesc;
  * for further passing and use inside the project as well as easier testing
  *
  */
-auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_ptr<Config> {
+auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_ptr<config::Config> {
   try {
     XMLPlatformUtils::Initialize();
   } catch (const XMLException &exception) {
@@ -87,12 +87,12 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       std::vector<Disc> emptyDiscs;
       std::vector<CelestialBody> emptyCelestials;
       // create sim_config object to store all the parameters
-      auto sim_config = Config::store_config_values(SimulationType::LennardJones, BodyType::Cub, data->header().base_name(),
-                                                    data->header().t_end(), data->header().output_frequency(), data->header().output_file_name(),
-                                                    0, data->lennard_jones()->settings().delta_t(), data->lennard_jones()->settings().sigma(),
-                                                    data->lennard_jones()->settings().epsilon(), data->lennard_jones()->settings().mass_m(),
-                                                    data->lennard_jones()->settings().distance_h(), data->lennard_jones()->settings().brown_motion(),
-                                                    emptyCelestials, temp_cuboids, emptyDiscs, data->header().seed());
+      auto sim_config = config::Config::store_config_values(ForceModel::LennardJones, BodyType::Cub, data->header().base_name(),
+                                                            data->header().t_end(), data->header().output_frequency(), data->header().output_file_name(),
+                                                            0, data->lennard_jones()->settings().delta_t(), data->lennard_jones()->settings().sigma(),
+                                                            data->lennard_jones()->settings().epsilon(), data->lennard_jones()->settings().mass_m(),
+                                                            data->lennard_jones()->settings().distance_h(), data->lennard_jones()->settings().brown_motion(),
+                                                            emptyCelestials, temp_cuboids, emptyDiscs, data->header().seed());
       return sim_config;
     }
 
@@ -135,12 +135,12 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       std::vector<Cuboid> emptyCuboids;
       std::vector<CelestialBody> emptyCelestials;
       // create sim_config object to store all the parameters
-      auto sim_config = Config::store_config_values(SimulationType::LennardJones, BodyType::Dis, data->header().base_name(),
-                                                    data->header().t_end(), data->header().output_frequency(), data->header().output_file_name(),
-                                                    0, data->lennard_jones()->settings().delta_t(), data->lennard_jones()->settings().sigma(),
-                                                    data->lennard_jones()->settings().epsilon(), data->lennard_jones()->settings().mass_m(),
-                                                    data->lennard_jones()->settings().distance_h(), data->lennard_jones()->settings().brown_motion(),
-                                                    emptyCelestials, emptyCuboids, temp_discs, data->header().seed());
+      auto sim_config = config::Config::store_config_values(ForceModel::LennardJones, BodyType::Dis, data->header().base_name(),
+                                                            data->header().t_end(), data->header().output_frequency(), data->header().output_file_name(),
+                                                            0, data->lennard_jones()->settings().delta_t(), data->lennard_jones()->settings().sigma(),
+                                                            data->lennard_jones()->settings().epsilon(), data->lennard_jones()->settings().mass_m(),
+                                                            data->lennard_jones()->settings().distance_h(), data->lennard_jones()->settings().brown_motion(),
+                                                            emptyCelestials, emptyCuboids, temp_discs, data->header().seed());
       return sim_config;
     }
 
@@ -186,10 +186,10 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       const double emptyDouble = 0;
 
       // create sim_config object to store all the parameters
-      auto sim_config = Config::store_config_values(SimulationType::Gravity, BodyType::Cub, data->header().base_name(),
-                                                    data->header().t_end(), data->header().output_frequency(), data->header().output_file_name(),
-                                                    body_count, emptyDouble, emptyDouble, emptyDouble, emptyDouble, emptyDouble,
-                                                    emptyDouble, temp_bodies, emptyCuboids, emptyDiscs, data->header().seed());
+      auto sim_config = config::Config::store_config_values(ForceModel::Gravity, BodyType::Cub, data->header().base_name(),
+                                                            data->header().t_end(), data->header().output_frequency(), data->header().output_file_name(),
+                                                            body_count, emptyDouble, emptyDouble, emptyDouble, emptyDouble, emptyDouble,
+                                                            emptyDouble, temp_bodies, emptyCuboids, emptyDiscs, data->header().seed());
       return sim_config;
     } else {
       return nullptr;
