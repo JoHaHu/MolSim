@@ -37,7 +37,7 @@ class arena {
    *
    * @return A filtered range of active entries.
    */
-  auto range_entries() -> auto{
+  auto range_entries() -> auto {
     return allocation
         | std::views::filter(&entry::active);
   }

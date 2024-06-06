@@ -74,7 +74,7 @@ class Simulator {
         plotter(std::move(plotter)),
         config(config),
         end_time(config->end_time),
-        delta_t(config->delta_t){};
+        delta_t(config->delta_t) {};
 
   /*! <p> Function for position calculation </p>
    *
