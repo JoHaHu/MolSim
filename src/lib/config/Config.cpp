@@ -25,7 +25,7 @@
  * @param averageBrownianMotion The average brownian motion velocity used for calculation.
  * @param celestialBodies A vector of celestial bodies that should be simulated.
  * @param cuboidVector A vector of cuboids that should be simulated.
- * @param discVector A vector of cuboids that should be simulated.
+ * @param discVector A vector of discs that should be simulated.
  * @param RngSeed  An integer seed that enables replication of the simulation process.
  *
  * @return std::shared_ptr<Config> containing the configured parameters.

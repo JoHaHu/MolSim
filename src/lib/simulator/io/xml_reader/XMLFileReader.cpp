@@ -13,15 +13,14 @@
 using namespace xercesc;
 
 /**
- * @brief Parses the data from the given XML file using the XSD library.
+ * @brief Parses the data from the given XML file using the XSD library and stores it in a Config object.
  *
  * @param xmlFilePath path of the XML file that contains the simulation parameter values
  *
  * creates a Config object to store the simulation parameters given by the XML input
- * for further passing and use inside the project
+ * for further passing and use inside the project as well as easier testing
  *
  */
-
 auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_ptr<Config> {
   try {
     XMLPlatformUtils::Initialize();
