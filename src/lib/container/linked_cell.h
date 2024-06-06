@@ -57,7 +57,7 @@ class cell {
   explicit cell(std::vector<std::reference_wrapper<arena<Particle>::entry>> &&particles,
                 cell_type type,
                 std::array<size_t, 3> idx,
-                std::array<double, 3> widths) : particles(std::move(particles)), type(type), idx(idx), widths(widths){};
+                std::array<double, 3> widths) : particles(std::move(particles)), type(type), idx(idx), widths(widths) {};
   /**
    * a linear range over the particles
    * */
