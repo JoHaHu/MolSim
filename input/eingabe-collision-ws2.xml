@@ -15,8 +15,8 @@
         <boundary_conditions>
             <boundary_condition type="outflow"/>
             <boundary_condition type="outflow"/>
-            <boundary_condition type="reflecting"/>
-            <boundary_condition type="reflecting"/>
+            <boundary_condition type="outflow"/>
+            <boundary_condition type="outflow"/>
             <boundary_condition type="outflow"/>
             <boundary_condition type="outflow"/>
         </boundary_conditions>
