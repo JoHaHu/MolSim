@@ -19,19 +19,6 @@
 #include <unordered_set>
 #include <vector>
 
-// Defines a container as a type with a cbegin and cend function
-template<typename T>
-concept Container = requires(T container) {
-  std::cbegin(container);
-  std::cend(container);
-};
-
-// Asserts that arrays are a container
-static_assert(Container<std::array<double, 3>>);
-
-// Asserts that arrays are a container
-static_assert(Container<std::vector<double>>);
-
 /**
  * Collection of utility functions and operators for iterable data containers
  * like std::array, std::vector, etc.
@@ -47,7 +34,7 @@ namespace ArrayUtils {
      * brackets).
      * @return String representation of container.
      */
-template<Container C>
+template<std::ranges::forward_range C>
 [[nodiscard]] auto
 to_string(const C &container, const std::string &delimiter = ", ",
           const std::array<std::string, 2> &surround = {"[", "]"}) -> std::string {
@@ -78,7 +65,7 @@ to_string(const C &container, const std::string &delimiter = ", ",
      * @param binaryFunction
      * @return Element wise F(lhs, rhs).
      */
-template<Container C, class F>
+template<std::ranges::forward_range C, class F>
 inline auto elementWisePairOp(const C &lhs, const C &rhs, F binaryFunction) -> C {
   C ret = lhs;
   auto retIter = std::begin(ret);
@@ -106,7 +93,7 @@ inline auto elementWisePairOp(const C &lhs, const C &rhs, F binaryFunction) -> C
      * @param binaryFunction
      * @return Element wise F(lhs, rhs).
      */
-template<class Scalar, Container C, class F>
+template<class Scalar, std::ranges::forward_range C, class F>
 inline auto elementWiseScalarOp(const Scalar &lhs, const C &rhs,
                                 F binaryFunction) -> C {
   C ret = rhs;
@@ -127,8 +114,8 @@ inline auto elementWiseScalarOp(const Scalar &lhs, const C &rhs,
      * @param c
      * @return sqrt(sum_i(c[i]*c[i])).
      */
-template<Container C>
-auto inline L2Norm(const C &c) {
+template<std::ranges::forward_range C>
+auto constexpr L2Norm(const C &c) {
   return std::sqrt(std::accumulate(std::cbegin(c), std::cend(c), 0.0, [](auto a, auto b) { return a + b * b; }));
 }
 }// namespace ArrayUtils
@@ -141,7 +128,7 @@ auto inline L2Norm(const C &c) {
  * @param container
  * @return
  */
-template<Container C>
+template<std::ranges::forward_range C>
 auto inline operator<<(auto &os, const C &container) -> std::ostream & {
   os << ArrayUtils::to_string(container);
   return os;
@@ -154,7 +141,7 @@ auto inline operator<<(auto &os, const C &container) -> std::ostream & {
  * @param rhs
  * @return For all i lhs[i] + rhs[i].
  */
-template<Container C>
+template<std::ranges::forward_range C>
 auto inline operator+(const C &lhs, const C &rhs) -> C {
   return ArrayUtils::elementWisePairOp(lhs, rhs, std::plus<>());
 }
@@ -166,7 +153,7 @@ auto inline operator+(const C &lhs, const C &rhs) -> C {
  * @param rhs
  * @return For all i lhs[i] - rhs[i].
  */
-template<Container C>
+template<std::ranges::forward_range C>
 auto inline operator-(const C &lhs, const C &rhs) -> C {
   return ArrayUtils::elementWisePairOp(lhs, rhs, std::minus<>());
 }
@@ -178,7 +165,7 @@ auto inline operator-(const C &lhs, const C &rhs) -> C {
  * @param rhs
  * @return For all i lhs[i] * rhs[i].
  */
-template<Container C>
+template<std::ranges::forward_range C>
 auto inline operator*(const C &lhs, const C &rhs) -> C {
   return ArrayUtils::elementWisePairOp(lhs, rhs, std::multiplies<>());
 }
@@ -190,7 +177,7 @@ auto inline operator*(const C &lhs, const C &rhs) -> C {
  * @param rhs
  * @return For all i lhs * rhs[i].
  */
-template<class Scalar, Container C>
+template<class Scalar, std::ranges::forward_range C>
 auto inline operator*(const Scalar &lhs, const C &rhs) -> C {
   return ArrayUtils::elementWiseScalarOp(lhs, rhs, std::multiplies<>());
 }
@@ -203,7 +190,7 @@ auto inline operator*(const Scalar &lhs, const C &rhs) -> C {
  * @return True iff the containers are of the same size, all elements are equal,
  * and in the same order.
  */
-template<Container C>
+template<std::ranges::forward_range C>
 auto inline operator==(const C &lhs, const C &rhs) -> bool {
   if (lhs.size() != rhs.size()) {
     return false;

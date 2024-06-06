@@ -1,10 +1,3 @@
-//
-// Created by TimSc on 03.06.2024.
-//
-
-#ifndef SIM_CONFIG_XML_H
-#define SIM_CONFIG_XML_H
-
 #pragma once
 
 #include "CelestialBody.h"
@@ -13,6 +6,8 @@
 #include "DoubleHelix.h"
 #include "Sphere.h"
 #include "Torus.h"
+#include "container/boundary.h"
+#include "simulator/physics/ForceModel.h"
 #include <array>
 #include <iostream>
 #include <memory>
@@ -20,17 +15,9 @@
 #include <vector>
 
 /**
- * definition of an enum class that gives information about the desired simulation
- */
-enum class ForceModel {
-  Gravity,
-  LennardJones
-};
-
-/**
  * definition of an enum class that gives information about the desired ParticleLoader
  */
-enum class ParticleLoaderType {
+enum class ParticleContainerType {
   LinkedCells,
   Vector
 };
@@ -83,12 +70,12 @@ class Config {
   /**
    * an enum value that gives information about the desired simulation type
    */
-  ForceModel simulation_type{};
+  simulator::physics::ForceModel simulation_type{};
 
   /**
    * an enum value that gives information about the desired simulation type
    */
-  ParticleLoaderType particle_loader_type{};
+  ParticleContainerType particle_loader_type{};
 
   /**
    * an enum value that gives information about the desired simulated body type in Lennard Jones
@@ -99,6 +86,8 @@ class Config {
    * an array to store the domain size for the linked-cells algorithm
    */
   std::array<double, 3> domain_size{};
+
+  std::array<BoundaryCondition, 6> boundary_conditions;
 
   /**
    * the total amount of celestial bodies in the gravitational planetary simulation
@@ -192,5 +181,3 @@ class Config {
 };
 
 }// namespace config
-
-#endif// SIM_CONFIG_XML_H

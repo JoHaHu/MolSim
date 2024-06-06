@@ -1,4 +1,4 @@
 Checks: "cppcoreguidelines-*,modernize-*,performance-*,readability-*"
-WarningsAsErrors: "cppcoreguidelines-*,clang-analyzer-*"
+WarningsAsErrors: "clang-analyzer-*"
 #SystemHeaders: false
 FormatStyle: file

@@ -8,8 +8,6 @@
 #include "utils/ArrayUtils.h"
 
 namespace simulator::physics {
-constexpr double epsilon = 5.0;
-constexpr double sigma = 1.0;
 /**
        * @brief Calculates the Lennard Jones force between two particles.
        *
@@ -20,12 +18,11 @@ constexpr double sigma = 1.0;
        * @return std::array<double, 3> The calculated force vector.
        */
 auto LennardJones::calculate_force(const Particle &particle1, const Particle &particle2) -> std::array<double, 3> {
+
   SPDLOG_TRACE("Entering LennardJones calculate_force");
 
-  SPDLOG_TRACE("Particle 1: mass = {}, position = ({}, {}, {})", particle1.mass, particle1.position[0],
-               particle1.position[1], particle1.position[2]);
-  SPDLOG_TRACE("Particle 2: mass = {}, position = ({}, {}, {})", particle2.mass, particle2.position[0],
-               particle2.position[1], particle2.position[2]);
+  SPDLOG_TRACE("Particle 1: mass = {}, position = ({}, {}, {})", particle1.mass, particle1.position[0], particle1.position[1], particle1.position[2]);
+  SPDLOG_TRACE("Particle 2: mass = {}, position = ({}, {}, {})", particle2.mass, particle2.position[0], particle2.position[1], particle2.position[2]);
 
   const auto x_diff = particle2.position - particle1.position;
 
@@ -36,6 +33,10 @@ auto LennardJones::calculate_force(const Particle &particle1, const Particle &pa
 
   if (norm == 0) {
     SPDLOG_WARN("Zero distance between particles encountered. This should not be possible.");
+  }
+
+  if (norm > cutoff) {
+    return {0.0, 0.0, 0.0};
   }
 
   const auto sigma_over_norm_3 = (sigma / norm) * (sigma / norm) * (sigma / norm);
@@ -50,4 +51,7 @@ auto LennardJones::calculate_force(const Particle &particle1, const Particle &pa
 
   return force;
 }
+LennardJones::LennardJones(double cutoff, double sigma, double epsilon) : epsilon(epsilon), sigma(sigma), cutoff(cutoff) {
+}
+
 }// namespace simulator::physics

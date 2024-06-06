@@ -1,9 +1,6 @@
-//
-// Created by TimSc on 01.06.2024.
-//
-
 #include "XMLFileReader.h"
 #include "SimulationInputSchema.hxx"
+#include "container/boundary.h"
 #include <iostream>
 #include <memory>
 #include <ranges>
@@ -54,7 +51,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
 
     // Linked Cells
     if (data->linked_cells().present()) {
-      config.particle_loader_type = ParticleLoaderType::LinkedCells;
+      config.particle_loader_type = ParticleContainerType::LinkedCells;
 
       // Parsing array of domain size (volume)
       const auto &domain_size = data->linked_cells()->domain_size();
@@ -63,20 +60,38 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
         domain_size_vector.push_back(arr);
       }
       std::array<double, 3> arr_domain_size{};
-      if (domain_size_vector.size() == domain_size_vector.size()) {
+      if (domain_size_vector.size() == arr_domain_size.size()) {
         std::copy(domain_size_vector.begin(), domain_size_vector.end(), arr_domain_size.begin());
       }
       config.domain_size = arr_domain_size;
 
+      // Parsing array of domain size (volume)
+      const auto &boundary_conditions = data->linked_cells()->boundary_conditions();
+      std::vector<BoundaryCondition> boundary_conditions_vec;
+      for (const auto &arr : boundary_conditions.boundary_condition()) {
+        BoundaryCondition bc = BoundaryCondition::none;
+        if (arr.type() == "outflow") {
+          bc = BoundaryCondition::outflow;
+        } else if (arr.type() == "reflecting") {
+          bc = BoundaryCondition::reflecting;
+        }
+        boundary_conditions_vec.push_back(bc);
+      }
+      std::array<BoundaryCondition, 6> arr_boundary_conditions{};
+      if (boundary_conditions_vec.size() == arr_boundary_conditions.size()) {
+        std::copy(boundary_conditions_vec.begin(), boundary_conditions_vec.end(), arr_boundary_conditions.begin());
+      }
+      config.boundary_conditions = arr_boundary_conditions;
+
       // Vector
     } else if (data->vector().present()) {
-      config.particle_loader_type = ParticleLoaderType::Vector;
+      config.particle_loader_type = ParticleContainerType::Vector;
     }
 
     // Gravity Model
     if (data->gravity().present()) {
 
-      config.simulation_type = ForceModel::Gravity;
+      config.simulation_type = simulator::physics::ForceModel::Gravity;
 
       std::vector<CelestialBody> temp_bodies;
       // Iterate through all celestial bodies
@@ -122,7 +137,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
     if (data->lennard_jones().present()) {
 
       // parsing settings of Lennard Jones force simulation model
-      config.simulation_type = ForceModel::LennardJones;
+      config.simulation_type = simulator::physics::ForceModel::LennardJones;
       config.delta_t = data->lennard_jones()->settings().delta_t();
       config.sigma = data->lennard_jones()->settings().sigma();
       config.epsilon = data->lennard_jones()->settings().epsilon();
@@ -339,9 +354,6 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
             SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
             return nullptr;
           }
-
-          auto temp_helix = DoubleHelix(arr_coordinate, arr_velocity, radius, pitch, height);
-          temp_helices.emplace_back(temp_helix);
         }
         config.double_helices = temp_helices;
       }
