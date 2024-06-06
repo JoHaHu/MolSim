@@ -11,8 +11,8 @@
 #define PSEMOLDYN_GROUPD_SPHERE_H
 
 /**
-   * @class can store the information that defines a sphere, namely the coordinates, its initial velocity and radius
-   * also contains a string returning function to enable the printing of cuboid specifications for testing and debugging
+* @class can store the information that defines a sphere, namely the coordinates, its initial velocity and radius.
+   * Also contains a string returning function to enable the printing of cuboid specifications for testing and debugging
    *
    * */
 

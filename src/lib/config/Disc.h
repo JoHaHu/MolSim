@@ -11,7 +11,7 @@
 
 /**
  * @class Disc
- * @brief Can store the information that defines a disc for the Lennard Jones force simulation, namely the coordinates, its velocity, and radius.
+ * @brief Can store the information that defines a disc, namely the coordinates, its velocity, and radius.
  * Also contains a string returning function to enable the printing of disc specifications for testing and debugging.
  */
 class Disc {
