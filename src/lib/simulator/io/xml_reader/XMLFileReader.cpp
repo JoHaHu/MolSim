@@ -167,7 +167,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
             std::copy(particle_numbers.begin(), particle_numbers.end(), arr_particle_numbers.begin());
             std::copy(velocity.begin(), velocity.end(), arr_velocity.begin());
           } else {
-            spdlog::warn("There was an error while parsing the values for the cuboids.");
+            SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
             return nullptr;
           }
 
@@ -211,7 +211,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
             std::copy(coordinate.begin(), coordinate.end(), arr_coordinate.begin());
             std::copy(velocity.begin(), velocity.end(), arr_velocity.begin());
           } else {
-            spdlog::warn("There was an error while parsing the values for the cuboids.");
+            SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
             return nullptr;
           }
 
@@ -252,7 +252,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
             std::copy(coordinate.begin(), coordinate.end(), arr_coordinate.begin());
             std::copy(velocity.begin(), velocity.end(), arr_velocity.begin());
           } else {
-            spdlog::warn("There was an error while parsing the values for the cuboids.");
+            SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
             return nullptr;
           }
 
@@ -294,7 +294,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
             std::copy(coordinate.begin(), coordinate.end(), arr_coordinate.begin());
             std::copy(velocity.begin(), velocity.end(), arr_velocity.begin());
           } else {
-            spdlog::warn("There was an error while parsing the values for the cuboids.");
+            SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
             return nullptr;
           }
 
@@ -336,7 +336,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
             std::copy(coordinate.begin(), coordinate.end(), arr_coordinate.begin());
             std::copy(velocity.begin(), velocity.end(), arr_velocity.begin());
           } else {
-            spdlog::warn("There was an error while parsing the values for the cuboids.");
+            SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
             return nullptr;
           }
 
@@ -349,7 +349,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
     }
 
   } catch (const xml_schema::exception &exception) {
-    spdlog::warn("An error has occurred! Please look at the exception details here:\n");
+    SPDLOG_WARN("An error has occurred! Please look at the exception details here:\n");
     std::cerr << exception << '\n';
   }
   XMLPlatformUtils::Terminate();

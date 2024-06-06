@@ -90,7 +90,7 @@ Simulator::Simulator(
  * */
 template<Physics PY, bool IO>
 auto Simulator::run() -> void {
-  spdlog::info("Running simulation...");
+  SPDLOG_INFO("Running simulation...");
   double current_time = start_time;
   int iteration = 0;
   auto interval = config->output_frequency;
@@ -105,37 +105,37 @@ auto Simulator::run() -> void {
     iteration++;
     if (iteration % static_cast<int>(interval) == 0 && IO) {
       plotter->plotParticles(particles, iteration);
-      spdlog::debug("Iteration {} plotted.", iteration);
+      SPDLOG_DEBUG("Iteration {} plotted.", iteration);
     }
 
-    spdlog::debug("Iteration {} finished.", iteration);
+    SPDLOG_DEBUG("Iteration {} finished.", iteration);
 
     current_time += delta_t;
   }
-  spdlog::info("Output written. Terminating...");
+  SPDLOG_INFO("Output written. Terminating...");
 }
 
 inline void Simulator::calculate_position() {
-  spdlog::debug("Updating positions for {} particles.", particles.size());
+  SPDLOG_DEBUG("Updating positions for {} particles.", particles.size());
   for (auto &particle : particles) {
     particle.position = particle.position + delta_t * particle.velocity + pow(delta_t, 2) * (1 / (2 * particle.mass)) * particle.old_force;
-    spdlog::trace("Particle position updated: ({}, {}, {})", particle.position[0], particle.position[1],
-                  particle.position[2]);
+    SPDLOG_TRACE("Particle position updated: ({}, {}, {})", particle.position[0], particle.position[1],
+                 particle.position[2]);
   }
 }
 
 inline void Simulator::calculate_velocity() {
-  spdlog::debug("Updating velocities for {} particles.", particles.size());
+  SPDLOG_DEBUG("Updating velocities for {} particles.", particles.size());
   for (auto &particle : particles) {
     particle.velocity = particle.velocity + delta_t * (1 / (2 * particle.mass)) * (particle.old_force + particle.force);
-    spdlog::trace("Particle velocity updated: ({}, {}, {})", particle.velocity[0], particle.velocity[1],
-                  particle.velocity[2]);
+    SPDLOG_TRACE("Particle velocity updated: ({}, {}, {})", particle.velocity[0], particle.velocity[1],
+                 particle.velocity[2]);
   }
 }
 
 template<Physics PY>
 inline void Simulator::calculate_force() {
-  spdlog::debug("Starting force calculation for {} particles.", particles.size());
+  SPDLOG_DEBUG("Starting force calculation for {} particles.", particles.size());
   for (auto &particle : particles) {
     particle.old_force = particle.force;
     particle.force = {0, 0, 0};
@@ -150,10 +150,10 @@ inline void Simulator::calculate_force() {
     particle1.force = particle1.force + force;
     particle2.force = particle2.force - force;
 
-    spdlog::trace("Force updated for particle pair: ({}, {}, {}) - ({}, {}, {})", particle1.force[0],
-                  particle1.force[1], particle1.force[2], particle2.force[0], particle2.force[1],
-                  particle2.force[2]);
+    SPDLOG_TRACE("Force updated for particle pair: ({}, {}, {}) - ({}, {}, {})", particle1.force[0],
+                 particle1.force[1], particle1.force[2], particle2.force[0], particle2.force[1],
+                 particle2.force[2]);
   }
-  spdlog::trace("Force calculation completed.");
+  SPDLOG_TRACE("Force calculation completed.");
 }
 }// namespace simulator

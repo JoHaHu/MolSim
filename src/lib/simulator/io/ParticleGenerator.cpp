@@ -185,7 +185,7 @@ std::vector<Particle> ParticleGenerator::generate_double_helix_particles(
     double meshwidth, unsigned int seed) {
 
   if (helixRadius <= 0 || helixPitch <= 0 || helixHeight <= 0 || meshwidth <= 0) {
-    spdlog::error("Invalid parameters for double helix generation.");
+    SPDLOG_ERROR("Invalid parameters for double helix generation.");
     return {};
   }
 
@@ -244,18 +244,18 @@ auto ParticleGenerator::generate_cuboids(const std::vector<Cuboid> &cuboids, aut
 
     for (double pos : cuboid.coordinates) {
       if (std::isnan(pos)) {
-        spdlog::error("Invalid cuboid data: NaN value encountered in position.");
+        SPDLOG_ERROR("Invalid cuboid data: NaN value encountered in position.");
         continue;// Skip this cuboid
       }
     }
     for (double vel : cuboid.velocity) {
       if (std::isnan(vel)) {
-        spdlog::error("Invalid cuboid data: NaN value encountered in velocity.");
+        SPDLOG_ERROR("Invalid cuboid data: NaN value encountered in velocity.");
         continue;// Skip this cuboid
       }
     }
     if (std::isnan(config->distance_h) || std::isnan(config->mass_m) || std::isnan(config->sigma)) {
-      spdlog::error("Invalid cuboid data: NaN value encountered in h, m, or sigma.");
+      SPDLOG_ERROR("Invalid cuboid data: NaN value encountered in h, m, or sigma.");
       continue;// Skip this cuboid
     }
 

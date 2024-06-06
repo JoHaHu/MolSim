@@ -66,7 +66,7 @@ auto main(int argc, char *argv[]) -> int {
   durationMs -= seconds;
   auto milliseconds = durationMs.count();
 
-  spdlog::info("Simulation completed in {:02d}:{:02d}:{:03d} (mm:ss:ms)", minutes.count(), seconds.count(), milliseconds);
+  SPDLOG_INFO("Simulation completed in {:02d}:{:02d}:{:03d} (mm:ss:ms)", minutes.count(), seconds.count(), milliseconds);
 
   return 0;
 }

@@ -66,7 +66,7 @@ auto Config::parse_config(int argc, char *argv[]) -> std::shared_ptr<Config> {
   }
 
   if (input_file.empty()) {
-    spdlog::error("Input file not specified");
+    SPDLOG_ERROR("Input file not specified");
     print_usage();
     exit(0);
   }

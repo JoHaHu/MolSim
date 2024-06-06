@@ -59,7 +59,7 @@ ParticleContainer::PairIterator::PairIterator(std::vector<Particle>::iterator i1
                                               std::vector<Particle>::iterator i2,
                                               std::vector<Particle>::iterator end)
     : i1(i1), i2(i2), end(end) {
-  spdlog::trace("PairIterator initialized.");
+  SPDLOG_TRACE("PairIterator initialized.");
 }
 
 /**
@@ -67,7 +67,7 @@ ParticleContainer::PairIterator::PairIterator(std::vector<Particle>::iterator i1
  * @return A PairIterator to the beginning pair of particles.
  */
 auto ParticleContainer::begin_pair() -> ParticleContainer::PairIterator {
-  spdlog::trace("Creating begin_pair iterator.");
+  SPDLOG_TRACE("Creating begin_pair iterator.");
   return {particles.begin(), std::next(particles.begin()), particles.end()};
 }
 
@@ -76,7 +76,7 @@ auto ParticleContainer::begin_pair() -> ParticleContainer::PairIterator {
  * @return A PairIterator to the end pair of particles.
  */
 auto ParticleContainer::end_pair() -> ParticleContainer::PairIterator {
-  spdlog::trace("Creating end_pair iterator.");
+  SPDLOG_TRACE("Creating end_pair iterator.");
   return {particles.end(), particles.end(), particles.end()};
 }
 
@@ -87,7 +87,7 @@ auto ParticleContainer::end_pair() -> ParticleContainer::PairIterator {
 ParticleContainer::ParticleContainer(int capacity) {
   particles = std::vector<Particle>();
   particles.reserve(capacity);
-  spdlog::debug("ParticleContainer initialized with capacity: {}", capacity);
+  SPDLOG_DEBUG("ParticleContainer initialized with capacity: {}", capacity);
 }
 
 /**
@@ -119,5 +119,5 @@ auto ParticleContainer::size() -> unsigned long {
  * @param particles A vector of particles to initialize the container with.
  */
 ParticleContainer::ParticleContainer(std::vector<Particle> particles) : particles(std::move(particles)) {
-  spdlog::debug("ParticleContainer initialized with {} particles.", this->particles.size());
+  SPDLOG_DEBUG("ParticleContainer initialized with {} particles.", this->particles.size());
 }
