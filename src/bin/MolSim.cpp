@@ -4,7 +4,7 @@
 
 #include "config/Config.h"
 #include "simulator/Simulator.h"
-#include "simulator/io/ParticleLoader.h"
+#include "simulator/io/ParticleGenerator.h"
 #include "simulator/io/VTKPlotter.h"
 #include "simulator/io/xml_reader/XMLFileReader.h"
 #include "simulator/physics/ForceModel.h"
@@ -30,16 +30,16 @@ auto main(int argc, char *argv[]) -> int {
 
   auto startTime = std::chrono::high_resolution_clock::now();
 
-  auto particle_loader = simulator::io::ParticleLoader(config);
+  auto particle_loader = simulator::io::ParticleGenerator(config);
 
-  auto [particle_container, force_model] = particle_loader.load_particles();
-
+  auto particles = particle_loader.load_particles();
+  auto particle_container = ParticleContainer(particles);
   auto plotter = std::make_unique<simulator::io::VTKPlotter>(config);
 
-  auto simulator = simulator::Simulator(std::move(particle_container), std::move(plotter), config);
+  auto simulator = simulator::Simulator(particle_container, std::move(plotter), config);
 
   if (config->output_frequency == 0) {
-    switch (force_model) {
+    switch (config->simulation_type) {
       case ForceModel::Gravity:
         simulator.run<simulator::physics::Gravity, false>();
         break;
@@ -48,7 +48,7 @@ auto main(int argc, char *argv[]) -> int {
         break;
     }
   } else {
-    switch (force_model) {
+    switch (config->simulation_type) {
       case ForceModel::Gravity:
         simulator.run<simulator::physics::Gravity, true>();
         break;

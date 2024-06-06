@@ -2080,6 +2080,515 @@ VTKFile (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
     "");
 }
 
+#include <ostream>
+#include <xsd/cxx/tree/error-handler.hxx>
+#include <xsd/cxx/xml/dom/serialization-source.hxx>
+
+void
+operator<< (::xercesc::DOMElement& e, const DataArrayList_t& i)
+{
+  e << static_cast< const ::xsd::cxx::tree::list< ::xml_schema::decimal, char, ::xsd::cxx::tree::schema_type::decimal >& > (i);
+}
+
+void
+operator<< (::xercesc::DOMAttr& a, const DataArrayList_t& i)
+{
+  a << static_cast< const ::xsd::cxx::tree::list< ::xml_schema::decimal, char, ::xsd::cxx::tree::schema_type::decimal >& > (i);
+}
+
+void
+operator<< (::xml_schema::list_stream& l,
+            const DataArrayList_t& i)
+{
+  l << static_cast< const ::xsd::cxx::tree::list< ::xml_schema::decimal, char, ::xsd::cxx::tree::schema_type::decimal >& > (i);
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const DataArray_t& i)
+{
+  e << static_cast< const ::DataArrayList_t& > (i);
+
+  // type
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "type",
+        e));
+
+    a << i.type ();
+  }
+
+  // Name
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "Name",
+        e));
+
+    a << i.Name ();
+  }
+
+  // NumberOfComponents
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "NumberOfComponents",
+        e));
+
+    a << i.NumberOfComponents ();
+  }
+
+  // format
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "format",
+        e));
+
+    a << i.format ();
+  }
+
+  // offset
+  //
+  if (i.offset ())
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "offset",
+        e));
+
+    a << *i.offset ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const PieceUnstructuredGrid_t& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // PointData
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "PointData",
+        e));
+
+    s << i.PointData ();
+  }
+
+  // CellData
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "CellData",
+        e));
+
+    s << i.CellData ();
+  }
+
+  // Points
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "Points",
+        e));
+
+    s << i.Points ();
+  }
+
+  // Cells
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "Cells",
+        e));
+
+    s << i.Cells ();
+  }
+
+  // NumberOfPoints
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "NumberOfPoints",
+        e));
+
+    a << i.NumberOfPoints ();
+  }
+
+  // NumberOfCells
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "NumberOfCells",
+        e));
+
+    a << i.NumberOfCells ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const UnstructuredGrid_t& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // Piece
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "Piece",
+        e));
+
+    s << i.Piece ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const PolyData_t& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // greeting
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "greeting",
+        e));
+
+    s << i.greeting ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const VTKFile_t& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // UnstructuredGrid
+  //
+  if (i.UnstructuredGrid ())
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "UnstructuredGrid",
+        e));
+
+    s << *i.UnstructuredGrid ();
+  }
+
+  // PolyData
+  //
+  if (i.PolyData ())
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "PolyData",
+        e));
+
+    s << *i.PolyData ();
+  }
+
+  // type
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "type",
+        e));
+
+    a << i.type ();
+  }
+
+  // version
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "version",
+        e));
+
+    a << i.version ();
+  }
+
+  // byte_order
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "byte_order",
+        e));
+
+    a << i.byte_order ();
+  }
+}
+
+void
+VTKFile (::std::ostream& o,
+         const ::VTKFile_t& s,
+         const ::xml_schema::namespace_infomap& m,
+         const ::std::string& e,
+         ::xml_schema::flags f)
+{
+  ::xsd::cxx::xml::auto_initializer i (
+    (f & ::xml_schema::flags::dont_initialize) == 0);
+
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::VTKFile (s, m, f));
+
+  ::xsd::cxx::tree::error_handler< char > h;
+
+  ::xsd::cxx::xml::dom::ostream_format_target t (o);
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
+  }
+}
+
+void
+VTKFile (::std::ostream& o,
+         const ::VTKFile_t& s,
+         ::xml_schema::error_handler& h,
+         const ::xml_schema::namespace_infomap& m,
+         const ::std::string& e,
+         ::xml_schema::flags f)
+{
+  ::xsd::cxx::xml::auto_initializer i (
+    (f & ::xml_schema::flags::dont_initialize) == 0);
+
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::VTKFile (s, m, f));
+  ::xsd::cxx::xml::dom::ostream_format_target t (o);
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    throw ::xsd::cxx::tree::serialization< char > ();
+  }
+}
+
+void
+VTKFile (::std::ostream& o,
+         const ::VTKFile_t& s,
+         ::xercesc::DOMErrorHandler& h,
+         const ::xml_schema::namespace_infomap& m,
+         const ::std::string& e,
+         ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::VTKFile (s, m, f));
+  ::xsd::cxx::xml::dom::ostream_format_target t (o);
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    throw ::xsd::cxx::tree::serialization< char > ();
+  }
+}
+
+void
+VTKFile (::xercesc::XMLFormatTarget& t,
+         const ::VTKFile_t& s,
+         const ::xml_schema::namespace_infomap& m,
+         const ::std::string& e,
+         ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::VTKFile (s, m, f));
+
+  ::xsd::cxx::tree::error_handler< char > h;
+
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
+  }
+}
+
+void
+VTKFile (::xercesc::XMLFormatTarget& t,
+         const ::VTKFile_t& s,
+         ::xml_schema::error_handler& h,
+         const ::xml_schema::namespace_infomap& m,
+         const ::std::string& e,
+         ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::VTKFile (s, m, f));
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    throw ::xsd::cxx::tree::serialization< char > ();
+  }
+}
+
+void
+VTKFile (::xercesc::XMLFormatTarget& t,
+         const ::VTKFile_t& s,
+         ::xercesc::DOMErrorHandler& h,
+         const ::xml_schema::namespace_infomap& m,
+         const ::std::string& e,
+         ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::VTKFile (s, m, f));
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    throw ::xsd::cxx::tree::serialization< char > ();
+  }
+}
+
+void
+VTKFile (::xercesc::DOMDocument& d,
+         const ::VTKFile_t& s,
+         ::xml_schema::flags)
+{
+  ::xercesc::DOMElement& e (*d.getDocumentElement ());
+  const ::xsd::cxx::xml::qualified_name< char > n (
+    ::xsd::cxx::xml::dom::name< char > (e));
+
+  if (n.name () == "VTKFile" &&
+      n.namespace_ () == "")
+  {
+    e << s;
+  }
+  else
+  {
+    throw ::xsd::cxx::tree::unexpected_element < char > (
+      n.name (),
+      n.namespace_ (),
+      "VTKFile",
+      "");
+  }
+}
+
+::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument >
+VTKFile (const ::VTKFile_t& s,
+         const ::xml_schema::namespace_infomap& m,
+         ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::xsd::cxx::xml::dom::serialize< char > (
+      "VTKFile",
+      "",
+      m, f));
+
+  ::VTKFile (*d, s, f);
+  return d;
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const type& i)
+{
+  e << static_cast< const ::xml_schema::string& > (i);
+}
+
+void
+operator<< (::xercesc::DOMAttr& a, const type& i)
+{
+  a << static_cast< const ::xml_schema::string& > (i);
+}
+
+void
+operator<< (::xml_schema::list_stream& l,
+            const type& i)
+{
+  l << static_cast< const ::xml_schema::string& > (i);
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const PointData& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // DataArray
+  //
+  for (PointData::DataArray_const_iterator
+       b (i.DataArray ().begin ()), n (i.DataArray ().end ());
+       b != n; ++b)
+  {
+    const PointData::DataArray_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "DataArray",
+        e));
+
+    s << x;
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const CellData& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // DataArray
+  //
+  for (CellData::DataArray_const_iterator
+       b (i.DataArray ().begin ()), n (i.DataArray ().end ());
+       b != n; ++b)
+  {
+    const CellData::DataArray_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "DataArray",
+        e));
+
+    s << x;
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const Points& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // DataArray
+  //
+  for (Points::DataArray_const_iterator
+       b (i.DataArray ().begin ()), n (i.DataArray ().end ());
+       b != n; ++b)
+  {
+    const Points::DataArray_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "DataArray",
+        e));
+
+    s << x;
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const Cells& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // DataArray
+  //
+  for (Cells::DataArray_const_iterator
+       b (i.DataArray ().begin ()), n (i.DataArray ().end ());
+       b != n; ++b)
+  {
+    const Cells::DataArray_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "DataArray",
+        e));
+
+    s << x;
+  }
+}
+
 #include <xsd/cxx/post.hxx>
 
 // Begin epilogue.
