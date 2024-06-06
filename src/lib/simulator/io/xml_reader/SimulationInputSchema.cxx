@@ -2434,6 +2434,589 @@ Data_ (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
     "");
 }
 
+#include <ostream>
+#include <xsd/cxx/tree/error-handler.hxx>
+#include <xsd/cxx/xml/dom/serialization-source.hxx>
+
+void
+Data_ (::std::ostream& o,
+       const ::Data& s,
+       const ::xml_schema::namespace_infomap& m,
+       const ::std::string& e,
+       ::xml_schema::flags f)
+{
+  ::xsd::cxx::xml::auto_initializer i (
+    (f & ::xml_schema::flags::dont_initialize) == 0);
+
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::Data_ (s, m, f));
+
+  ::xsd::cxx::tree::error_handler< char > h;
+
+  ::xsd::cxx::xml::dom::ostream_format_target t (o);
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
+  }
+}
+
+void
+Data_ (::std::ostream& o,
+       const ::Data& s,
+       ::xml_schema::error_handler& h,
+       const ::xml_schema::namespace_infomap& m,
+       const ::std::string& e,
+       ::xml_schema::flags f)
+{
+  ::xsd::cxx::xml::auto_initializer i (
+    (f & ::xml_schema::flags::dont_initialize) == 0);
+
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::Data_ (s, m, f));
+  ::xsd::cxx::xml::dom::ostream_format_target t (o);
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    throw ::xsd::cxx::tree::serialization< char > ();
+  }
+}
+
+void
+Data_ (::std::ostream& o,
+       const ::Data& s,
+       ::xercesc::DOMErrorHandler& h,
+       const ::xml_schema::namespace_infomap& m,
+       const ::std::string& e,
+       ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::Data_ (s, m, f));
+  ::xsd::cxx::xml::dom::ostream_format_target t (o);
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    throw ::xsd::cxx::tree::serialization< char > ();
+  }
+}
+
+void
+Data_ (::xercesc::XMLFormatTarget& t,
+       const ::Data& s,
+       const ::xml_schema::namespace_infomap& m,
+       const ::std::string& e,
+       ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::Data_ (s, m, f));
+
+  ::xsd::cxx::tree::error_handler< char > h;
+
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
+  }
+}
+
+void
+Data_ (::xercesc::XMLFormatTarget& t,
+       const ::Data& s,
+       ::xml_schema::error_handler& h,
+       const ::xml_schema::namespace_infomap& m,
+       const ::std::string& e,
+       ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::Data_ (s, m, f));
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    throw ::xsd::cxx::tree::serialization< char > ();
+  }
+}
+
+void
+Data_ (::xercesc::XMLFormatTarget& t,
+       const ::Data& s,
+       ::xercesc::DOMErrorHandler& h,
+       const ::xml_schema::namespace_infomap& m,
+       const ::std::string& e,
+       ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::Data_ (s, m, f));
+  if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+  {
+    throw ::xsd::cxx::tree::serialization< char > ();
+  }
+}
+
+void
+Data_ (::xercesc::DOMDocument& d,
+       const ::Data& s,
+       ::xml_schema::flags)
+{
+  ::xercesc::DOMElement& e (*d.getDocumentElement ());
+  const ::xsd::cxx::xml::qualified_name< char > n (
+    ::xsd::cxx::xml::dom::name< char > (e));
+
+  if (n.name () == "Data" &&
+      n.namespace_ () == "")
+  {
+    e << s;
+  }
+  else
+  {
+    throw ::xsd::cxx::tree::unexpected_element < char > (
+      n.name (),
+      n.namespace_ (),
+      "Data",
+      "");
+  }
+}
+
+::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument >
+Data_ (const ::Data& s,
+       const ::xml_schema::namespace_infomap& m,
+       ::xml_schema::flags f)
+{
+  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+    ::xsd::cxx::xml::dom::serialize< char > (
+      "Data",
+      "",
+      m, f));
+
+  ::Data_ (*d, s, f);
+  return d;
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const double_array& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // value
+  //
+  for (double_array::value_const_iterator
+       b (i.value ().begin ()), n (i.value ().end ());
+       b != n; ++b)
+  {
+    const double_array::value_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "value",
+        e));
+
+    s << ::xml_schema::as_double (x);
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const celestial_body& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // coordinate
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "coordinate",
+        e));
+
+    s << i.coordinate ();
+  }
+
+  // velocity
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "velocity",
+        e));
+
+    s << i.velocity ();
+  }
+
+  // mass
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "mass",
+        e));
+
+    s << ::xml_schema::as_double(i.mass ());
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const cuboid& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // coordinate
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "coordinate",
+        e));
+
+    s << i.coordinate ();
+  }
+
+  // particle_counts
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "particle_counts",
+        e));
+
+    s << i.particle_counts ();
+  }
+
+  // velocity
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "velocity",
+        e));
+
+    s << i.velocity ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const disc& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // coordinate
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "coordinate",
+        e));
+
+    s << i.coordinate ();
+  }
+
+  // velocity
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "velocity",
+        e));
+
+    s << i.velocity ();
+  }
+
+  // radius
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "radius",
+        e));
+
+    s << i.radius ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const Data& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // header
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "header",
+        e));
+
+    s << i.header ();
+  }
+
+  // gravity
+  //
+  if (i.gravity ())
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "gravity",
+        e));
+
+    s << *i.gravity ();
+  }
+
+  // lennard_jones
+  //
+  if (i.lennard_jones ())
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "lennard_jones",
+        e));
+
+    s << *i.lennard_jones ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const header& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // base_name
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "base_name",
+        e));
+
+    a << i.base_name ();
+  }
+
+  // t_end
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "t_end",
+        e));
+
+    a << ::xml_schema::as_double(i.t_end ());
+  }
+
+  // output_frequency
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "output_frequency",
+        e));
+
+    a << ::xml_schema::as_double(i.output_frequency ());
+  }
+
+  // output_file_name
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "output_file_name",
+        e));
+
+    a << i.output_file_name ();
+  }
+
+  // seed
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "seed",
+        e));
+
+    a << i.seed ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const gravity& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // total_bodies
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "total_bodies",
+        e));
+
+    s << ::xml_schema::as_double(i.total_bodies ());
+  }
+
+  // celestial_body
+  //
+  for (gravity::celestial_body_const_iterator
+       b (i.celestial_body ().begin ()), n (i.celestial_body ().end ());
+       b != n; ++b)
+  {
+    const gravity::celestial_body_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "celestial_body",
+        e));
+
+    s << x;
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const lennard_jones& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // settings
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "settings",
+        e));
+
+    s << i.settings ();
+  }
+
+  // cuboids
+  //
+  if (i.cuboids ())
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "cuboids",
+        e));
+
+    s << *i.cuboids ();
+  }
+
+  // discs
+  //
+  if (i.discs ())
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "discs",
+        e));
+
+    s << *i.discs ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const settings& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // delta_t
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "delta_t",
+        e));
+
+    a << ::xml_schema::as_double(i.delta_t ());
+  }
+
+  // sigma
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "sigma",
+        e));
+
+    a << ::xml_schema::as_double(i.sigma ());
+  }
+
+  // epsilon
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "epsilon",
+        e));
+
+    a << ::xml_schema::as_double(i.epsilon ());
+  }
+
+  // mass_m
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "mass_m",
+        e));
+
+    a << ::xml_schema::as_double(i.mass_m ());
+  }
+
+  // distance_h
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "distance_h",
+        e));
+
+    a << ::xml_schema::as_double(i.distance_h ());
+  }
+
+  // brown_motion
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "brown_motion",
+        e));
+
+    a << ::xml_schema::as_double(i.brown_motion ());
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const cuboids& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // Cuboid
+  //
+  for (cuboids::Cuboid_const_iterator
+       b (i.Cuboid ().begin ()), n (i.Cuboid ().end ());
+       b != n; ++b)
+  {
+    const cuboids::Cuboid_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "Cuboid",
+        e));
+
+    s << x;
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const discs& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // Disc
+  //
+  for (discs::Disc_const_iterator
+       b (i.Disc ().begin ()), n (i.Disc ().end ());
+       b != n; ++b)
+  {
+    const discs::Disc_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "Disc",
+        e));
+
+    s << x;
+  }
+}
+
 #include <xsd/cxx/post.hxx>
 
 // Begin epilogue.

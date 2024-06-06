@@ -88,6 +88,21 @@
 #include <xsd/cxx/tree/parsing/double.hxx>
 #include <xsd/cxx/tree/parsing/decimal.hxx>
 
+#include <xsd/cxx/xml/dom/serialization-header.hxx>
+#include <xsd/cxx/tree/serialization.hxx>
+#include <xsd/cxx/tree/serialization/byte.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-byte.hxx>
+#include <xsd/cxx/tree/serialization/short.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-short.hxx>
+#include <xsd/cxx/tree/serialization/int.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-int.hxx>
+#include <xsd/cxx/tree/serialization/long.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-long.hxx>
+#include <xsd/cxx/tree/serialization/boolean.hxx>
+#include <xsd/cxx/tree/serialization/float.hxx>
+#include <xsd/cxx/tree/serialization/double.hxx>
+#include <xsd/cxx/tree/serialization/decimal.hxx>
+
 /**
  * @brief C++ namespace for the %http://www.w3.org/2001/XMLSchema
  * schema namespace.
@@ -444,6 +459,39 @@ namespace xml_schema
    * @brief Content order sequence entry.
    */
   typedef ::xsd::cxx::tree::content_order content_order;
+  // Namespace information and list stream. Used in
+  // serialization functions.
+  //
+  /**
+   * @brief Namespace serialization information.
+   */
+  typedef ::xsd::cxx::xml::dom::namespace_info< char > namespace_info;
+
+  /**
+   * @brief Namespace serialization information map.
+   */
+  typedef ::xsd::cxx::xml::dom::namespace_infomap< char > namespace_infomap;
+
+  /**
+   * @brief List serialization stream.
+   */
+  typedef ::xsd::cxx::tree::list_stream< char > list_stream;
+
+  /**
+   * @brief Serialization wrapper for the %double type.
+   */
+  typedef ::xsd::cxx::tree::as_double< double_ > as_double;
+
+  /**
+   * @brief Serialization wrapper for the %decimal type.
+   */
+  typedef ::xsd::cxx::tree::as_decimal< decimal > as_decimal;
+
+  /**
+   * @brief Simple type facet.
+   */
+  typedef ::xsd::cxx::tree::facet facet;
+
   // Flags and properties.
   //
 
@@ -535,6 +583,11 @@ namespace xml_schema
    * mapping was not provided.
    */
   typedef ::xsd::cxx::tree::no_prefix_mapping< char > no_prefix_mapping;
+
+  /**
+   * @brief Exception indicating a serialization failure.
+   */
+  typedef ::xsd::cxx::tree::serialization< char > serialization;
 
   /**
    * @brief Error handler callback interface.
@@ -3734,6 +3787,206 @@ Data_ (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
        const ::xml_schema::properties& p = ::xml_schema::properties ());
 
 //@}
+
+#include <iosfwd>
+
+#include <xercesc/dom/DOMDocument.hpp>
+#include <xercesc/dom/DOMErrorHandler.hpp>
+#include <xercesc/framework/XMLFormatter.hpp>
+
+#include <xsd/cxx/xml/dom/auto-ptr.hxx>
+
+/**
+ * @name Serialization functions for the %Data document root.
+ */
+//@{
+
+/**
+ * @brief Serialize to a standard output stream.
+ *
+ * @param os A standrad output stream.
+ * @param x An object model to serialize.
+ * @param m A namespace information map.
+ * @param e A character encoding to produce XML in.
+ * @param f Serialization flags.
+ *
+ * This function uses exceptions to report serialization errors.
+ */
+void
+Data_ (::std::ostream& os,
+       const ::Data& x, 
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       const ::std::string& e = "UTF-8",
+       ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to a standard output stream with an error handler.
+ *
+ * @param os A standrad output stream.
+ * @param x An object model to serialize.
+ * @param eh An error handler.
+ * @param m A namespace information map.
+ * @param e A character encoding to produce XML in.
+ * @param f Serialization flags.
+ *
+ * This function reports serialization errors by calling the error
+ * handler.
+ */
+void
+Data_ (::std::ostream& os,
+       const ::Data& x, 
+       ::xml_schema::error_handler& eh,
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       const ::std::string& e = "UTF-8",
+       ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to a standard output stream with a Xerces-C++ DOM
+ * error handler.
+ *
+ * @param os A standrad output stream.
+ * @param x An object model to serialize.
+ * @param eh A Xerces-C++ DOM error handler.
+ * @param m A namespace information map.
+ * @param e A character encoding to produce XML in.
+ * @param f Serialization flags.
+ *
+ * This function reports serialization errors by calling the error
+ * handler.
+ */
+void
+Data_ (::std::ostream& os,
+       const ::Data& x, 
+       ::xercesc::DOMErrorHandler& eh,
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       const ::std::string& e = "UTF-8",
+       ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to a Xerces-C++ XML format target.
+ *
+ * @param ft A Xerces-C++ XML format target.
+ * @param x An object model to serialize.
+ * @param m A namespace information map.
+ * @param e A character encoding to produce XML in.
+ * @param f Serialization flags.
+ *
+ * This function uses exceptions to report serialization errors.
+ */
+void
+Data_ (::xercesc::XMLFormatTarget& ft,
+       const ::Data& x, 
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       const ::std::string& e = "UTF-8",
+       ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to a Xerces-C++ XML format target with an error
+ * handler.
+ *
+ * @param ft A Xerces-C++ XML format target.
+ * @param x An object model to serialize.
+ * @param eh An error handler.
+ * @param m A namespace information map.
+ * @param e A character encoding to produce XML in.
+ * @param f Serialization flags.
+ *
+ * This function reports serialization errors by calling the error
+ * handler.
+ */
+void
+Data_ (::xercesc::XMLFormatTarget& ft,
+       const ::Data& x, 
+       ::xml_schema::error_handler& eh,
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       const ::std::string& e = "UTF-8",
+       ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to a Xerces-C++ XML format target with a
+ * Xerces-C++ DOM error handler.
+ *
+ * @param ft A Xerces-C++ XML format target.
+ * @param x An object model to serialize.
+ * @param eh A Xerces-C++ DOM error handler.
+ * @param m A namespace information map.
+ * @param e A character encoding to produce XML in.
+ * @param f Serialization flags.
+ *
+ * This function reports serialization errors by calling the error
+ * handler.
+ */
+void
+Data_ (::xercesc::XMLFormatTarget& ft,
+       const ::Data& x, 
+       ::xercesc::DOMErrorHandler& eh,
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       const ::std::string& e = "UTF-8",
+       ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to an existing Xerces-C++ DOM document.
+ *
+ * @param d A Xerces-C++ DOM document.
+ * @param x An object model to serialize.
+ * @param f Serialization flags.
+ *
+ * Note that it is your responsibility to create the DOM document
+ * with the correct root element as well as set the necessary
+ * namespace mapping attributes.
+ */
+void
+Data_ (::xercesc::DOMDocument& d,
+       const ::Data& x,
+       ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to a new Xerces-C++ DOM document.
+ *
+ * @param x An object model to serialize.
+ * @param m A namespace information map.
+ * @param f Serialization flags.
+ * @return A pointer to the new Xerces-C++ DOM document.
+ */
+::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument >
+Data_ (const ::Data& x, 
+       const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+       ::xml_schema::flags f = 0);
+
+//@}
+
+void
+operator<< (::xercesc::DOMElement&, const double_array&);
+
+void
+operator<< (::xercesc::DOMElement&, const celestial_body&);
+
+void
+operator<< (::xercesc::DOMElement&, const cuboid&);
+
+void
+operator<< (::xercesc::DOMElement&, const disc&);
+
+void
+operator<< (::xercesc::DOMElement&, const Data&);
+
+void
+operator<< (::xercesc::DOMElement&, const header&);
+
+void
+operator<< (::xercesc::DOMElement&, const gravity&);
+
+void
+operator<< (::xercesc::DOMElement&, const lennard_jones&);
+
+void
+operator<< (::xercesc::DOMElement&, const settings&);
+
+void
+operator<< (::xercesc::DOMElement&, const cuboids&);
+
+void
+operator<< (::xercesc::DOMElement&, const discs&);
 
 #include <xsd/cxx/post.hxx>
 
