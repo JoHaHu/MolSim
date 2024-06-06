@@ -40,10 +40,10 @@ PR: https://github.com/JoHaHu/MolSim/pull/1
 - Visualized runtime comparisons for different molecule counts (1000, 2000, 4000, 8000) in a plot, embedded in Doxygen
   documentation.
 - Results:
-    - 1000: 0:11 1:22
-    - 2000: 0:22 5:12
+    - 1000: 0:9 1:22
+    - 2000: 0:18 5:12
     - 4000: 0:38 20:53
-    - 8000:
+    - 8000: To be conducted
 
 ### Task 3 - Boundary conditions
 
