@@ -12,23 +12,24 @@ PR: https://github.com/JoHaHu/MolSim/pull/1
 
 #### XSD Tool
 
+#### XSD Tool
 - Installed the CodeSynthesis tool XSD XML Schema to C++ compiler 4.2.0
 - Created the custom XML schema SimulationInputSchema.xsd to define the structure of an input XML
 - The corresponding .hxx and .cxx files, we generated with the tool to create the XML binding to our application logic
-- The XML schema defines one string, one positive integer and five double values (all non-repeated) for the simulation (
-  name, output frequency, t_end, delta_t, epsilon, sigma and the average brownian motion velocity)
-- Further, there are three arrays and two doubles per each cuboid (repeatable values) that describe cuboid
-  specifications (coordinate, number of particles, distance h, mass m and initial velocity)
+- The XML schema defines several input variables next to the ones given on the worksheet, e.g. like different choices between types of bodies, particle loader types etc.
+- Further, we have defined different bodies like the cuboid or disc but also added spheres, tori (torus) and double_helices that are described by coordinates, velocity and other body-specific values like radius etc.
+- Functionality of previous weeks has been preserved by creating corresponding XML schema elements and XML files for the ws1 and ws2 gravitational and two-body collision simulations
 
 #### Processing
-
 - The parsing and storing of information for further processing happens in the XMLFileReader class
-- For that storing purpose, we created the SimConfigXML class which stores the data in appropriate attributes
-- The simulation-bound parameters (single value for one simulation) are each stored in a separate variable
-- The cuboid-bound parameters (single value/array per cuboid) are stored in a tuple and all tuples in a vector
-- This enables multiple cuboids with different specifications to be created and stored
-- The config file can then be passed to the simulation as we did in last week's worksheet when parsing from .txt files
-- That enables the previous functionality to remain functional and adding that extra ability of input
+- For that storing purpose, we created the Config class (which replaces the old Config class) which stores the data in appropriate attributes
+- The class contains all attributes for every type of body, simulation and force models as well as deciding enums that tell us which type of action/simulation is desired
+- Only the given input is set in the variables while others stay empty, which is fine because they will not be called in that situation
+- Global simulation-bound parameters (single value for one simulation) are stored in a header and settings element which has attributes for these parameters for a slimmer XML file
+- Specific cuboid-bound parameters (single value/array per cuboid) are stored in a corresponding class (e.g. Disc) and multiple instances in a vector of that class
+- Enables multiple cuboids with different specifications to be created and stored
+- Config file can then be passed to the simulation methods that pick out the necessary info
+- Enables the previous functionality to remain functional and adding that extra ability of input
 
 ### Task 2 - Linked-cell algorithm
 
