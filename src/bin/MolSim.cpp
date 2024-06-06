@@ -30,12 +30,7 @@ auto main(int argc, char *argv[]) -> int {
 
   auto particles = particle_loader.load_particles();
 
-  auto container = container::particle_container(std::vector<Particle>());
   auto plotter = std::make_unique<simulator::io::VTKPlotter>(config);
-
-  for (auto &p : particles) {
-    container.insert(std::move(p));
-  }
 
   simulator::physics::force_model physics;
   switch (config->simulation_type) {
@@ -47,7 +42,26 @@ auto main(int argc, char *argv[]) -> int {
       break;
   }
 
-  auto simulator = simulator::Simulator(std::move(container), physics, std::move(plotter), config);
+  // Intialize with empty vetor
+  container::particle_container pc = container::particle_container(std::vector<Particle>());
+
+  switch (config->particle_loader_type) {
+    case ParticleContainerType::Vector:
+      pc = container::particle_container(std::move(particles));
+      break;
+    case ParticleContainerType::LinkedCells:
+      auto lc = container::linked_cell<container::index::row_major_index>(
+          config->domain_size,
+          config->cutoff_radius, {container::boundary_condition::outflow, container::boundary_condition::outflow, container::boundary_condition::outflow, container::boundary_condition::outflow, container::boundary_condition::outflow, container::boundary_condition::outflow},
+          particles.size(), config->sigma);
+
+      pc = container::particle_container(std::move(lc));
+      for (auto &p : particles) {
+        pc.insert(std::move(p));
+      }
+      break;
+  }
+  auto simulator = simulator::Simulator(std::move(pc), physics, std::move(plotter), config);
 
   auto startTime = std::chrono::high_resolution_clock::now();
 

@@ -40,10 +40,6 @@ void LoggerManager::setup_logger(const config::Config &config) {
     spdlog::set_default_logger(logger);
     spdlog::set_level(level);
 
-    // Disable log when io disabled
-    if (config.output_frequency == 0) {
-      spdlog::set_level(spdlog::level::off);
-    }
     spdlog::set_pattern("[%^%l%$] %v");
     spdlog::debug("Logger initialized with level: {}", spdlog::level::to_string_view(level));
   } catch (const spdlog::spdlog_ex &ex) {

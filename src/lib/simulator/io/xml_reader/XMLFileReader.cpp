@@ -50,7 +50,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
 
     // Linked Cells
     if (data->linked_cells().present()) {
-      config.particle_loader_type = ParticleLoaderType::LinkedCells;
+      config.particle_loader_type = ParticleContainerType::LinkedCells;
 
       // Parsing array of domain size (volume)
       const auto &domain_size = data->linked_cells()->domain_size();
@@ -66,7 +66,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
 
       // Vector
     } else if (data->vector().present()) {
-      config.particle_loader_type = ParticleLoaderType::Vector;
+      config.particle_loader_type = ParticleContainerType::Vector;
     }
 
     // Gravity Model

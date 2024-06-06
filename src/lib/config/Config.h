@@ -20,7 +20,7 @@
 /**
  * definition of an enum class that gives information about the desired ParticleLoader
  */
-enum class ParticleLoaderType {
+enum class ParticleContainerType {
   LinkedCells,
   Vector
 };
@@ -78,7 +78,7 @@ class Config {
   /**
    * an enum value that gives information about the desired simulation type
    */
-  ParticleLoaderType particle_loader_type{};
+  ParticleContainerType particle_loader_type{};
 
   /**
    * an enum value that gives information about the desired simulated body type in Lennard Jones
