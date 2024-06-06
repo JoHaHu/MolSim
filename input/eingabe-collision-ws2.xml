@@ -7,7 +7,11 @@
             seed="1234"/>
 
     <linked_cells>
-        <domain_size>20</domain_size>
+        <domain_size>
+            <value>0</value>
+            <value>180</value>
+            <value>90</value>
+        </domain_size>
     </linked_cells>
 
     <lennard_jones>

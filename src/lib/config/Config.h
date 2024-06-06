@@ -10,6 +10,9 @@
 #include "CelestialBody.h"
 #include "Cuboid.h"
 #include "Disc.h"
+#include "DoubleHelix.h"
+#include "Sphere.h"
+#include "Torus.h"
 #include <array>
 #include <iostream>
 #include <memory>
@@ -25,11 +28,22 @@ enum class ForceModel {
 };
 
 /**
+ * definition of an enum class that gives information about the desired ParticleLoader
+ */
+enum class ParticleLoaderType {
+  LinkedCells,
+  Vector
+};
+
+/**
  * definition of an enum class that gives information about the desired simulated body type in Lennard Jones
  */
 enum class BodyType {
   Cub,
-  Dis
+  Dis,
+  Sph,
+  Tor,
+  Hel
 };
 
 /**
@@ -49,7 +63,7 @@ class Config {
   /**
    * the frequency of written output files
    */
-  std::string base_name{};
+  std::string base_name;
 
   /**
    * the end time of the simulation
@@ -59,12 +73,12 @@ class Config {
   /**
    * the frequency of written output files
    */
-  double output_frequency{};
+  int output_frequency{};
 
   /**
    * the output file name
    */
-  std::string output_filename{};
+  std::string output_filename;
 
   /**
    * an enum value that gives information about the desired simulation type
@@ -72,9 +86,19 @@ class Config {
   ForceModel simulation_type{};
 
   /**
+   * an enum value that gives information about the desired simulation type
+   */
+  ParticleLoaderType particle_loader_type{};
+
+  /**
    * an enum value that gives information about the desired simulated body type in Lennard Jones
    */
   BodyType body_type{};
+
+  /**
+   * an array to store the domain size for the linked-cells algorithm
+   */
+  std::array<double, 3> domain_size{};
 
   /**
    * the total amount of celestial bodies in the gravitational planetary simulation
@@ -112,6 +136,11 @@ class Config {
   double brownian_motion{};
 
   /**
+   * the cutoff radius for the linked-cells algorithm
+   */
+  double cutoff_radius{};
+
+  /**
    * a vector that can store multiple celestial bodies for simulation defined in the CelestialBody class
    */
   std::vector<CelestialBody> celestial_bodies;
@@ -127,6 +156,21 @@ class Config {
   std::vector<Disc> discs;
 
   /**
+   * a vector that can store multiple spheres for simulation defined in the Sphere class
+   */
+  std::vector<Sphere> spheres;
+
+  /**
+   * a vector that can store multiple tori for simulation defined in the Torus class
+   */
+  std::vector<Torus> tori;
+
+  /**
+   * a vector that can store multiple double helices for simulation defined in the DoubleHelix class
+   */
+  std::vector<DoubleHelix> double_helices;
+
+  /**
    * a random seed that is necessary for simulation
    */
   int seed{};
@@ -140,16 +184,6 @@ class Config {
    * prints the help message
    */
   static auto print_usage() -> void;
-
-  /**
-   * Static function to create the config by calling the respective constructors, setting the values and returning a shared_ptr to the config object
-   */
-  static auto store_config_values(ForceModel simulationType, BodyType bodyType, std::string &baseName, double endTime,
-                                  double outputFrequency, std::string &outputFilename, int totalBodies, double deltaT,
-                                  double inputSigma, double inputEpsilon, double massM, double distanceH,
-                                  double averageBrownianMotion, std::vector<CelestialBody> celestialBodies,
-                                  std::vector<Cuboid> cuboidVector, std::vector<Disc> discVector,
-                                  int RngSeed) -> std::shared_ptr<Config>;
 
   /**
    * build a config from provided cmdline arguments.

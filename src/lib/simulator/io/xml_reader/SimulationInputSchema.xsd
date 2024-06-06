@@ -12,7 +12,7 @@
                     <xs:complexType>
                         <xs:attribute name="base_name" type="xs:string" use="required"/>
                         <xs:attribute name="t_end" type="positive_double" use="required"/>
-                        <xs:attribute name="output_frequency" type="positive_double" use="required"/>
+                        <xs:attribute name="output_frequency" type="positive_int" use="required"/>
                         <xs:attribute name="output_file_name" type="xs:string" use="required"/>
                         <xs:attribute name="seed" type="xs:int" use="required"/>
                     </xs:complexType>
@@ -23,7 +23,7 @@
                     <xs:element name="linked_cells">
                         <xs:complexType>
                             <xs:sequence>
-                                <xs:element name="domain_size" type="positive_double"/>
+                                <xs:element name="domain_size" type="double_array"/>
                             </xs:sequence>
                         </xs:complexType>
                     </xs:element>
