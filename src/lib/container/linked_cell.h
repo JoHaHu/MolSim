@@ -23,6 +23,9 @@
 
 namespace container {
 
+  /**
+ * @brief Enum for defining different types of boundary conditions.
+ */
 enum class boundary_condition : std::uint8_t {
   outflow,
   reflecting,
@@ -30,6 +33,9 @@ enum class boundary_condition : std::uint8_t {
   none
 };
 
+  /**
+ * @brief Enum for defining different types of cells.
+ */
 enum class cell_type : std::uint8_t {
   inner,
   boundary,
@@ -38,9 +44,11 @@ enum class cell_type : std::uint8_t {
 template<index::Index I>
 class linked_cell;
 
-/**
- * A cell in the linked cell datastructure
- * */
+  /**
+   * @brief A cell in the linked cell data structure.
+   *
+   * Holds particles and supports operations on them.
+   */
 class cell {
   template<index::Index I>
   friend class linked_cell;

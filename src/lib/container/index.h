@@ -9,6 +9,9 @@
 
 namespace container::index {
 
+  /**
+ * @brief Concept to define an Index with required methods.
+ */
 template<typename T>
 concept Index =
     requires(T t, std::array<double, 3> pos, std::array<size_t, 3> dim, std::array<long, 3> offset, double width) {
@@ -23,9 +26,9 @@ concept Index =
       { t.min_distance(dim, dim) } -> std::convertible_to<double>;
     };
 
-/**
- * A simple index iterating over dimensions in xyz-order
- * */
+  /**
+   * @brief Simple index iterating over dimensions in xyz-order.
+   */
 struct row_major_index {
  public:
   std::array<double, 3> boundary;
@@ -45,6 +48,12 @@ struct row_major_index {
     radius = {1, 1, 1};
   }
 
+  /**
+ * @brief Converts a position to a linear index.
+ *
+ * @param position The position to convert.
+ * @return The linear index.
+ */
   constexpr auto position_to_index(std::array<double, 3> position) -> size_t {
     auto [x, y, z] = position;
 
@@ -55,11 +64,24 @@ struct row_major_index {
     return dimension_to_index(dim);
   }
 
+  /**
+ * @brief Converts 3D coordinates to a linear index.
+ *
+ * @param coords The 3D coordinates.
+ * @return The linear index.
+ */
   constexpr auto dimension_to_index(std::array<size_t, 3> coords) -> size_t {
     auto [x, y, z] = coords;
     return x + y * dimension[0] + z * dimension[0] * dimension[1];
   }
 
+  /**
+ * @brief Applies an offset to 3D coordinates and converts to a linear index.
+ *
+ * @param dim The 3D coordinates.
+ * @param offset The offset to apply.
+ * @return The linear index.
+ */
   constexpr auto offset(std::array<size_t, 3> dim, std::array<long, 3> offset) -> size_t {
     auto off = std::array<size_t, 3>({(dim[0] + offset[0]),
                                       (dim[1] + offset[1]),
@@ -67,6 +89,13 @@ struct row_major_index {
     return dimension_to_index(off);
   }
 
+  /**
+ * @brief Calculates the minimum distance between two sets of 3D coordinates.
+ *
+ * @param dim1 The first set of coordinates.
+ * @param dim2 The second set of coordinates.
+ * @return The minimum distance.
+ */
   constexpr auto min_distance(std::array<size_t, 3> dim1, std::array<size_t, 3> dim2) -> double {
     auto distances = std::vector<double>();
 
@@ -81,6 +110,14 @@ struct row_major_index {
     double min = std::ranges::min(distances);
     return min;
   }
+
+  /**
+ * @brief Calculates the distance between two sets of 3D coordinates.
+ *
+ * @param dim1 The first set of coordinates.
+ * @param dim2 The second set of coordinates.
+ * @return The distance.
+ */
   auto distance(std::array<size_t, 3> dim1, std::array<size_t, 3> dim2) -> double {
     auto diff = std::array<double, 3>({
         (double) std::abs(static_cast<long>(dim1[0]) - static_cast<long>(dim2[0])) * width[0],
@@ -92,9 +129,9 @@ struct row_major_index {
 };
 
 static_assert(Index<row_major_index>);
-/**
- * A simple index iterating over dimensions in xyz-order
- * */
+  /**
+   * @brief Simple index iterating over dimensions in xyz-order with half-sized cells.
+   */
 struct half_index {
  public:
   std::array<double, 3> boundary;
@@ -162,9 +199,9 @@ struct half_index {
 
 static_assert(Index<half_index>);
 
-/**
- * A indexing scheme using space a filling curve, specifically the morton curve
- * */
+  /**
+   * @brief Indexing scheme using a space-filling curve, specifically the Morton curve.
+   */
 class morton_index {
  public:
   std::array<double, 3> boundary;
@@ -271,9 +308,9 @@ class morton_index {
 
 static_assert(Index<morton_index>);
 
-/**
- * A test scheme using space a filling curve, specifically the morton curve
- * */
+  /**
+   * @brief Test scheme using a space-filling curve, specifically the Morton curve.
+   */
 class power_index {
  public:
   std::array<double, 3> boundary;

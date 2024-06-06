@@ -6,6 +6,11 @@
 
 namespace container {
 
+  /**
+ * @brief An iterator to generate combinations of elements in a range.
+ *
+ * @tparam Iter Type of the input iterator.
+ */
 template<std::input_iterator Iter>
 class combination_iterator {
 
@@ -78,6 +83,11 @@ class combination_iterator {
 
 static_assert(std::input_iterator<combination_iterator<std::vector<Particle>::iterator>>);
 
+  /**
+ * @brief A view to create combination pairs of elements in a range.
+ *
+ * @tparam Range Type of the input range.
+ */
 template<std::ranges::input_range Range>
   requires(std::ranges::view<Range>)
 class combination_view : public std::ranges::view_interface<combination_view<Range>> {

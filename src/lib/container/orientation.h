@@ -3,12 +3,17 @@
 #include <cstdint>
 namespace container {
 
-enum class orientation : uint8_t {
-  front,
-  back,
-  left,
-  right,
-  bottom,
-  top
-};
+  /**
+ * @brief Enum for defining orientations used in boundary conditions.
+ *
+ * Represents the six possible orientations: front, back, left, right, bottom, and top.
+ */
+  enum class orientation : uint8_t {
+    front,
+    back,
+    left,
+    right,
+    bottom,
+    top
+  };
 }
