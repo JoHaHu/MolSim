@@ -30,7 +30,7 @@ auto main(int argc, char *argv[]) -> int {
 
   // Calling XMLFileReader to read from the input XML
   // TODO: replace hard-coded file path with argument passed file path
-  auto sim_config = XMLFileReader::parseXMLData("../input/eingabe-collision-ws2.xml");
+  auto sim_config = XMLFileReader::parseXMLData("../input/eingabe-collision.txt");
 
   auto startTime = std::chrono::high_resolution_clock::now();
 

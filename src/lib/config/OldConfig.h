@@ -52,4 +52,4 @@ class OldConfig {
   static auto print_usage() -> void;
 };
 
-}// namespace config
+}// namespace OldConfig
