@@ -56,11 +56,11 @@ class cell {
   explicit cell(std::vector<std::reference_wrapper<arena<Particle>::entry>> &&particles,
                 cell_type type,
                 std::array<size_t, 3> idx,
-                std::array<double, 3> widths) : particles(std::move(particles)), type(type), idx(idx), widths(widths){};
+                std::array<double, 3> widths) : particles(std::move(particles)), type(type), idx(idx), widths(widths) {};
   /**
    * a linear range over the particles
    * */
-  auto linear() -> auto{
+  auto linear() -> auto {
     return particles
         | std::views::transform(&container::arena<Particle>::entry::data);
   }
@@ -174,7 +174,7 @@ class linked_cell {
    * Creates the range for a cell, containing the neighbours needed to calculate forces and respects Newtons 3. Law
    * Can be calculated once at the start and then be reused
    * */
-  static auto create_range(linked_cell &lc, std::array<size_t, 3> idx) -> auto{
+  static auto create_range(linked_cell &lc, std::array<size_t, 3> idx) -> auto {
     auto cell_idx = lc.index.dimension_to_index(idx);
 
     cell &cell = lc.cells[cell_idx];
@@ -207,7 +207,7 @@ class linked_cell {
   /**
    * a range over the boundary cells
    * */
-  auto boundary() -> auto{
+  auto boundary() -> auto {
     return cells
         | std::views::filter(&cell::is_boundary);
   }
@@ -215,7 +215,7 @@ class linked_cell {
   /**
    * returns a linear range of Particles, stored in arena entries
    * */
-  auto linear() -> auto{
+  auto linear() -> auto {
     return arena.range_entries()
         | std::views::transform(&container::arena<Particle>::entry::data);
   }
@@ -223,7 +223,7 @@ class linked_cell {
   /**
    * returns a range with pairs of Particles
    * */
-  auto pairwise() -> auto{
+  auto pairwise() -> auto {
 
     return cells
         | std::views::transform(&cell::pairwise)

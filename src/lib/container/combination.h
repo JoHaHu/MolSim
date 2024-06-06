@@ -89,7 +89,8 @@ static_assert(std::input_iterator<combination_iterator<std::vector<Particle>::it
  * @tparam Range Type of the input range.
  */
 template<std::ranges::input_range Range>
-requires(std::ranges::view<Range>) class combination_view : public std::ranges::view_interface<combination_view<Range>> {
+  requires(std::ranges::view<Range>)
+class combination_view : public std::ranges::view_interface<combination_view<Range>> {
 
  public:
   combination_view() = default;
@@ -112,7 +113,8 @@ requires(std::ranges::view<Range>) class combination_view : public std::ranges::
 
 struct _combination : std::ranges::range_adaptor_closure<_combination> {
   template<std::ranges::range R>
-  requires(std::ranges::view<R>) constexpr auto operator()(R &&range) const {
+    requires(std::ranges::view<R>)
+  constexpr auto operator()(R &&range) const {
     return combination_view(std::forward<R>(range));
   }
   template<std::ranges::range R>

@@ -8,15 +8,16 @@
 #include <vector>
 namespace container {
 
-/**
- * @brief A variant-based particle container supporting multiple underlying data structures.
- */
 using particle_container_variant = std::variant<std::vector<Particle>,
                                                 linked_cell<index::row_major_index>,
                                                 linked_cell<index::half_index>,
                                                 linked_cell<index::morton_index>,
                                                 linked_cell<index::power_index>>;
 
+/*!
+ * @brief A variant-based particle container supporting multiple underlying data structures.
+ * @image html submission/worksheet3/media/Benchmark.png
+ */
 struct particle_container {
  public:
   explicit particle_container(particle_container_variant &&var) : var(std::move(var)) {}
