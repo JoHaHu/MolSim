@@ -104,11 +104,11 @@ target_compile_options(MolSim
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -Wstrict-overflow -fno-omit-frame-pointer>
+            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -Wstrict-overflow -fno-omit-frame-pointer -fdebug-info-for-profiling>
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -Wstrict-overflow -fno-omit-frame-pointer>
+            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -Wstrict-overflow -fno-omit-frame-pointer -fdebug-info-for-profiling>
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
     target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
@@ -116,13 +116,13 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer >
-            $<$<CXX_COMPILER_ID:GNU>: -O3 >
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:GNU>: -O3>
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer >
-            $<$<CXX_COMPILER_ID:CNU>: -O3>
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:GNU>: -O3 >
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
     target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
