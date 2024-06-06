@@ -11,12 +11,24 @@
                 <xs:element name="header">
                     <xs:complexType>
                         <xs:attribute name="base_name" type="xs:string" use="required"/>
-                        <xs:attribute name="t_end" type="xs:double" use="required"/>
-                        <xs:attribute name="output_frequency" type="xs:double" use="required"/>
+                        <xs:attribute name="t_end" type="positive_double" use="required"/>
+                        <xs:attribute name="output_frequency" type="positive_double" use="required"/>
                         <xs:attribute name="output_file_name" type="xs:string" use="required"/>
                         <xs:attribute name="seed" type="xs:int" use="required"/>
                     </xs:complexType>
                 </xs:element>
+
+                <!-- Choice of particle loader -->
+                <xs:choice>
+                    <xs:element name="linked_cells">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="domain_size" type="positive_double"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="vector" type="xs:boolean"/>
+                </xs:choice>
 
                 <!-- Choice of simulation type -->
                 <xs:choice>
@@ -24,7 +36,8 @@
                     <xs:element name="gravity">
                         <xs:complexType>
                             <xs:sequence>
-                                <xs:element name="total_bodies" type="xs:double"/>
+                                <xs:element name="total_bodies" type="positive_double"/>
+                                <xs:element name="cutoff_radius" type="positive_double"/>
                                 <xs:element name="celestial_body" type="celestial_body" maxOccurs="unbounded"/>
                             </xs:sequence>
                         </xs:complexType>
@@ -43,6 +56,7 @@
                                         <xs:attribute name="mass_m" type="xs:double" use="required"/>
                                         <xs:attribute name="distance_h" type="xs:double" use="required"/>
                                         <xs:attribute name="brown_motion" type="xs:double" use="required"/>
+                                        <xs:attribute name="cutoff_radius" type="positive_double" use="required"/>
                                     </xs:complexType>
                                 </xs:element>
 
@@ -62,6 +76,27 @@
                                             </xs:sequence>
                                         </xs:complexType>
                                     </xs:element>
+                                    <xs:element name="spheres">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="Sphere" type="sphere" maxOccurs="unbounded"/>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="tori">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="Torus" type="torus" maxOccurs="unbounded"/>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="double_helices">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="double_helix" type="double_helix" maxOccurs="unbounded"/>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
                                 </xs:choice>
                             </xs:sequence>
                         </xs:complexType>
@@ -71,29 +106,20 @@
         </xs:complexType>
     </xs:element>
 
-    <!-- Definition of intArray as an array of 3 integers -->
-    <xs:complexType name="double_array">
-        <xs:sequence>
-            <xs:element name="value" type="xs:double" maxOccurs="3" minOccurs="3"/>
-        </xs:sequence>
-    </xs:complexType>
-
     <!-- Definition of celestial body described by 2 integer arrays and 1 double -->
     <xs:complexType name="celestial_body">
         <xs:sequence>
-            <!-- Disc description parameters -->
             <xs:element name="coordinate" type="double_array"/>
             <xs:element name="velocity" type="double_array"/>
-            <xs:element name="mass" type="xs:double"/>
+            <xs:element name="mass" type="positive_double"/>
         </xs:sequence>
     </xs:complexType>
 
     <!-- Definition of cuboid described by 3 integer arrays -->
     <xs:complexType name="cuboid">
         <xs:sequence>
-            <!-- Cuboid description parameters -->
             <xs:element name="coordinate"
-                        type="double_array"/>  <!-- coordinate is defined as the lower left front particle coordinate -->
+                        type="double_array"/>  <!-- defined as the lower left front particle coordinate -->
             <xs:element name="particle_counts" type="double_array"/>
             <xs:element name="velocity" type="double_array"/>
         </xs:sequence>
@@ -102,13 +128,65 @@
     <!-- Definition of disc described by 2 integer arrays and 1 double -->
     <xs:complexType name="disc">
         <xs:sequence>
-            <!-- Disc description parameters -->
+            <xs:element name="coordinate"
+                        type="double_array"/>  <!-- defined as the center particle coordinate -->
+            <xs:element name="velocity" type="double_array"/>
+            <xs:element name="radius"
+                        type="positive_int"/>  <!-- defined as the amount of particle along the radius of the disc -->
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Definition of sphere described by 2 integer arrays and 2 doubles -->
+    <xs:complexType name="sphere">
+        <xs:sequence>
+            <xs:element name="coordinate"
+                        type="double_array"/>  <!-- defined as the center particle coordinate -->
+            <xs:element name="velocity" type="double_array"/>
+            <xs:element name="radius"
+                        type="positive_int"/>  <!-- defined as the amount of particle along the radius of the sphere -->
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Definition of torus described by 2 integer arrays and 2 doubles -->
+    <xs:complexType name="torus">
+        <xs:sequence>
             <xs:element name="coordinate"
                         type="double_array"/>  <!-- coordinate is defined as the center particle coordinate -->
             <xs:element name="velocity" type="double_array"/>
-            <xs:element name="radius"
-                        type="xs:int"/>  <!-- radius is defined as the amount of particle along the radius of the disc -->
+            <xs:element name="major_radius" type="positive_double"/>
+            <xs:element name="minor_radius" type="positive_double"/>
         </xs:sequence>
     </xs:complexType>
+
+    <!-- Definition of a double helix described by 2 integer arrays and 3 doubles -->
+    <xs:complexType name="double_helix">
+        <xs:sequence>
+            <xs:element name="coordinate"
+                        type="double_array"/>  <!-- coordinate is defined as the center particle coordinate -->
+            <xs:element name="velocity" type="double_array"/>
+            <xs:element name="radius" type="positive_double"/>
+            <xs:element name="pitch" type="positive_double"/>
+            <xs:element name="height" type="positive_double"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Definition of intArray as an array of 3 integers -->
+    <xs:complexType name="double_array">
+        <xs:sequence>
+            <xs:element name="value" type="xs:double" maxOccurs="3" minOccurs="3"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="positive_int">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="positive_double">
+        <xs:restriction base="xs:double">
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
 
 </xs:schema>
