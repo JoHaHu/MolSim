@@ -11,8 +11,8 @@
 #define PSEMOLDYN_GROUPD_TORUS_H
 
 /**
-   * @class can store the information that defines a torus, namely the coordinates, its initial velocity and major and minor radius
-   * also contains a string returning function to enable the printing of cuboid specifications for testing and debugging
+* @class can store the information that defines a torus, namely the coordinates, its initial velocity and major and minor radius.
+   * Also contains a string returning function to enable the printing of cuboid specifications for testing and debugging
    *
    * */
 

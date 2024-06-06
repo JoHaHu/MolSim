@@ -14,27 +14,27 @@ namespace simulator::physics {
  * @return std::array<double, 3> The calculated force vector.
  */
 auto Gravity::calculate_force(const Particle &particle1, const Particle &particle2) -> std::array<double, 3> {
-  spdlog::trace("Entering Gravity calculate_force");
+  SPDLOG_TRACE("Entering Gravity calculate_force");
 
-  spdlog::trace("Particle 1: mass = {}, position = ({}, {}, {})", particle1.mass, particle1.position[0], particle1.position[1], particle1.position[2]);
-  spdlog::trace("Particle 2: mass = {}, position = ({}, {}, {})", particle2.mass, particle2.position[0], particle2.position[1], particle2.position[2]);
+  SPDLOG_TRACE("Particle 1: mass = {}, position = ({}, {}, {})", particle1.mass, particle1.position[0], particle1.position[1], particle1.position[2]);
+  SPDLOG_TRACE("Particle 2: mass = {}, position = ({}, {}, {})", particle2.mass, particle2.position[0], particle2.position[1], particle2.position[2]);
 
   const auto x_diff = particle2.position - particle1.position;
 
-  spdlog::trace("Position difference: ({}, {}, {})", x_diff[0], x_diff[1], x_diff[2]);
+  SPDLOG_TRACE("Position difference: ({}, {}, {})", x_diff[0], x_diff[1], x_diff[2]);
 
   const auto norm = ArrayUtils::L2Norm(x_diff);
-  spdlog::trace("Norm of position difference: {}", norm);
+  SPDLOG_TRACE("Norm of position difference: {}", norm);
 
   if (norm == 0) {
-    spdlog::warn("Zero distance between particles encountered");
+    SPDLOG_WARN("Zero distance between particles encountered");
     return {0.0, 0.0, 0.0};
   }
 
   const auto force = (particle1.mass * particle2.mass) / (norm * norm * norm) * x_diff;
-  spdlog::trace("Calculated force: ({}, {}, {})", force[0], force[1], force[2]);
+  SPDLOG_TRACE("Calculated force: ({}, {}, {})", force[0], force[1], force[2]);
 
-  spdlog::trace("Exiting Gravity calculate_force");
+  SPDLOG_TRACE("Exiting Gravity calculate_force");
 
   return force;
 }

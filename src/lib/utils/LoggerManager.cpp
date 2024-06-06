@@ -25,12 +25,12 @@ void LoggerManager::setup_logger(const config::Config &config) {
     // Create console sink
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     console_sink->set_level(level);
-    spdlog::trace("Console sink created");
+    SPDLOG_TRACE("Console sink created");
 
     // Create file sink
     auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/log.txt", true);
     file_sink->set_level(level);
-    spdlog::trace("File sink created");
+    SPDLOG_TRACE("File sink created");
 
     // Combine sinks into one logger
     std::vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
@@ -44,6 +44,6 @@ void LoggerManager::setup_logger(const config::Config &config) {
     spdlog::debug("Logger initialized with level: {}", spdlog::level::to_string_view(level));
   } catch (const spdlog::spdlog_ex &ex) {
     std::cerr << "Log initialization failed: " << ex.what() << '\n';
-    spdlog::critical("Log initialization failed: {}", ex.what());
+    SPDLOG_CRITICAL("Log initialization failed: {}", ex.what());
   }
 }
