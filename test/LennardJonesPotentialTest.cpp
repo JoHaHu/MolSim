@@ -4,8 +4,11 @@
 
 class LennardJonesPotentialTest : public ::testing::Test {
  public:
-  double epsilon = 5.0;
-  double sigma = 1;
+  simulator::physics::LennardJones ljf;
+
+  void SetUp() override {
+    ljf = simulator::physics::LennardJones();
+  }
 };
 
 /**
@@ -48,7 +51,7 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_forces_simple) {
   std::array<double, 3> actual_forces = {-1.37174211, 1.37174211, 1.37174211};
 
   // computing forces with method
-  std::array<double, 3> calculated_forces = simulator::physics::LennardJones::calculate_force(particle_i, particle_j);
+  std::array<double, 3> calculated_forces = ljf.calculate_force(particle_i, particle_j);
 
   // check if each result of the force vector is accurate enough
   EXPECT_TRUE(calculated_forces[0] - actual_forces[0] < 0.000001);
@@ -60,10 +63,7 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_forces_simple) {
  * Test: lennard_jones_small_forces
  *
  * Verifies the correctness of the Lennard-Jones force calculation between two particles
- * with small force magnitudes.
- *
- *
- * Verifies that each component of the calculated force vector is accurate within 0.000001.
+ * with small force magnitudes -> cutoff used.
  */
 TEST_F(LennardJonesPotentialTest, lennard_jones_small_forces) {
 
@@ -95,15 +95,15 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_small_forces) {
   // Lennard-Jones potential U(x_i, x_j) = -0.0033750273618335614
   // Lennard-Jones force F_ij = [-0.00234524 -0.00385084 -0.00152485]
 
-  std::array<double, 3> actual_forces = {-0.00234524, -0.00385084, -0.00152485};
+  std::array<double, 3> actual_forces = {0.0, 0.0, 0.0};
 
   // computing forces with method
-  std::array<double, 3> calculated_forces = simulator::physics::LennardJones::calculate_force(particle_i, particle_j);
+  std::array<double, 3> calculated_forces = ljf.calculate_force(particle_i, particle_j);
 
   // check if each result of the force vector is accurate enough
-  EXPECT_TRUE(calculated_forces[0] - actual_forces[0] < 0.000001);
-  EXPECT_TRUE(calculated_forces[1] - actual_forces[1] < 0.000001);
-  EXPECT_TRUE(calculated_forces[2] - actual_forces[2] < 0.000001);
+  EXPECT_EQ(calculated_forces[0], actual_forces[0]);
+  EXPECT_EQ(calculated_forces[1], actual_forces[1]);
+  EXPECT_EQ(calculated_forces[2], actual_forces[2]);
 }
 
 /**
@@ -149,7 +149,7 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_large_forces) {
   std::array<double, 3> actual_forces = {-5.87766053e+08, -3.82047935e+08, -2.027058176e+09};
 
   // computing forces with method
-  std::array<double, 3> calculated_forces = simulator::physics::LennardJones::calculate_force(particle_i, particle_j);
+  std::array<double, 3> calculated_forces = ljf.calculate_force(particle_i, particle_j);
 
   // check if each result of the force vector is accurate enough (in this case because of the immensely large numbers anything below 1.0 is accurate enough)
   EXPECT_TRUE(calculated_forces[0] - actual_forces[0] < 1);
@@ -191,7 +191,7 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_same_particle_not_zero) {
   // Lennard-Jones force F_ij = [-5570.3695767, 5570.3695767, -8046.08938856]
 
   // computing forces with method
-  std::array<double, 3> calculated_forces = simulator::physics::LennardJones::calculate_force(particle_i, particle_j);
+  std::array<double, 3> calculated_forces = ljf.calculate_force(particle_i, particle_j);
 
   double x_force = calculated_forces[0];
   double y_force = calculated_forces[1];

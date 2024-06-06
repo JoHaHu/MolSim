@@ -3,29 +3,38 @@
 <Data xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
       xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
 
-    <header base_name="Collision of two bodies" output_file_name="collision_simulation" output_frequency="100" t_end="5"
+    <header base_name="Collision of two bodies" output_file_name="collision_simulation" output_frequency="0" t_end="5"
             seed="1234"/>
 
     <linked_cells>
         <domain_size>
-            <value>0</value>
             <value>180</value>
             <value>90</value>
+            <value>3</value>
         </domain_size>
+        <boundary_conditions>
+            <boundary_condition type="outflow"/>
+            <boundary_condition type="outflow"/>
+            <boundary_condition type="reflecting"/>
+            <boundary_condition type="reflecting"/>
+            <boundary_condition type="outflow"/>
+            <boundary_condition type="outflow"/>
+        </boundary_conditions>
     </linked_cells>
 
     <lennard_jones>
-        <settings delta_t="0.0002" sigma="1" epsilon="5" mass_m="1" distance_h="1.1225" brown_motion="0.1" cutoff_radius="0"/>
+        <settings delta_t="0.0005" sigma="1" epsilon="5" mass_m="1" distance_h="1.1225" brown_motion="0.1"
+                  cutoff_radius="3.0"/>
         <cuboids>
             <Cuboid>
                 <coordinate>
-                    <value>0</value>
-                    <value>0</value>
-                    <value>0</value>
+                    <value>20</value>
+                    <value>20</value>
+                    <value>1</value>
                 </coordinate>
                 <particle_counts>
-                    <value>40</value>
-                    <value>8</value>
+                    <value>100</value>
+                    <value>20</value>
                     <value>1</value>
                 </particle_counts>
                 <velocity>
@@ -36,13 +45,13 @@
             </Cuboid>
             <Cuboid>
                 <coordinate>
-                    <value>15</value>
-                    <value>15</value>
-                    <value>0</value>
+                    <value>70</value>
+                    <value>60</value>
+                    <value>1</value>
                 </coordinate>
                 <particle_counts>
-                    <value>8</value>
-                    <value>8</value>
+                    <value>20</value>
+                    <value>20</value>
                     <value>1</value>
                 </particle_counts>
                 <velocity>

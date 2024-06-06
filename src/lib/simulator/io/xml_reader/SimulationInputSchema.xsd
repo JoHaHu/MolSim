@@ -24,6 +24,17 @@
                         <xs:complexType>
                             <xs:sequence>
                                 <xs:element name="domain_size" type="double_array"/>
+                                <xs:element name="boundary_conditions">
+                                    <xs:complexType>
+                                        <xs:sequence minOccurs="6" maxOccurs="6">
+                                            <xs:element name="boundary_condition">
+                                                <xs:complexType>
+                                                    <xs:attribute name="type" type="xs:string" use="required"/>
+                                                </xs:complexType>
+                                            </xs:element>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
                             </xs:sequence>
                         </xs:complexType>
                     </xs:element>
