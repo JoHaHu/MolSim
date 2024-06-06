@@ -25,7 +25,7 @@ TEST_F(XMLFileReaderTest, input_test_gravity) {
   // Header data
   const std::string base_name = "Halley's Comet";
   const double end_time = 5;
-  const double output_frequency = 100;
+  const int output_frequency = 100;
   const int seed = 1234;
   const std::string output_file_name = "sonne_simulation";
 
