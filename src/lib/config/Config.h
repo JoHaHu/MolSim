@@ -1,15 +1,9 @@
-//
-// Created by TimSc on 03.06.2024.
-//
-
-#ifndef SIM_CONFIG_XML_H
-#define SIM_CONFIG_XML_H
-
 #pragma once
 
 #include "CelestialBody.h"
 #include "Cuboid.h"
 #include "Disc.h"
+#include "simulator/physics/ForceModel.h"
 #include <array>
 #include <iostream>
 #include <memory>
@@ -19,10 +13,6 @@
 /**
  * definition of an enum class that gives information about the desired simulation
  */
-enum class ForceModel {
-  Gravity,
-  LennardJones
-};
 
 /**
  * definition of an enum class that gives information about the desired simulated body type in Lennard Jones
@@ -59,7 +49,7 @@ class Config {
   /**
    * the frequency of written output files
    */
-  double output_frequency{};
+  long output_frequency{};
 
   /**
    * the output file name
@@ -69,7 +59,7 @@ class Config {
   /**
    * an enum value that gives information about the desired simulation type
    */
-  ForceModel simulation_type{};
+  simulator::physics::ForceModel simulation_type{};
 
   /**
    * an enum value that gives information about the desired simulated body type in Lennard Jones
@@ -144,7 +134,7 @@ class Config {
   /**
    * Static function to create the config by calling the respective constructors, setting the values and returning a shared_ptr to the config object
    */
-  static auto store_config_values(ForceModel simulationType, BodyType bodyType, std::string &baseName, double endTime,
+  static auto store_config_values(simulator::physics::ForceModel simulationType, BodyType bodyType, std::string &baseName, double endTime,
                                   double outputFrequency, std::string &outputFilename, int totalBodies, double deltaT,
                                   double inputSigma, double inputEpsilon, double massM, double distanceH,
                                   double averageBrownianMotion, std::vector<CelestialBody> celestialBodies,
@@ -158,5 +148,3 @@ class Config {
 };
 
 }// namespace config
-
-#endif// SIM_CONFIG_XML_H

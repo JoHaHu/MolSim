@@ -38,11 +38,11 @@ void Config::print_usage() {
  * @return std::shared_ptr<Config> containing the configured parameters.
  *
  */
-auto Config::store_config_values(ForceModel simulationType, BodyType bodyType, std::string &baseName, double endTime, double outputFrequency,
+auto Config::store_config_values(simulator::physics::ForceModel simulationType, BodyType bodyType, std::string &baseName, double endTime, double outputFrequency,
                                  std::string &outputFilename, int totalBodies, double deltaT, double inputSigma, double inputEpsilon, double massM, double distanceH,
                                  double averageBrownianMotion, std::vector<CelestialBody> celestialBodies, std::vector<Cuboid> cuboidVector,
                                  std::vector<Disc> discVector, int RngSeed) -> std::shared_ptr<Config> {
-  if (simulationType == ForceModel::LennardJones) {
+  if (simulationType == simulator::physics::ForceModel::LennardJones) {
     Config config = Config();
     config.body_type = bodyType;
     config.simulation_type = simulationType;
@@ -64,7 +64,7 @@ auto Config::store_config_values(ForceModel simulationType, BodyType bodyType, s
     }
     return std::make_shared<Config>(config);
   }
-  if (simulationType == ForceModel::Gravity) {
+  if (simulationType == simulator::physics::ForceModel::Gravity) {
     Config config = Config();
     config.body_type = bodyType;
     config.simulation_type = simulationType;

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ParticleContainer.h"
 #include "config/Config.h"
 #include "simulator/physics/ForceModel.h"
 #include <memory>

@@ -1,7 +1,3 @@
-//
-// Created by TimSc on 01.06.2024.
-//
-
 #include "XMLFileReader.h"
 #include "SimulationInputSchema.hxx"
 #include <iostream>
@@ -87,7 +83,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       std::vector<Disc> emptyDiscs;
       std::vector<CelestialBody> emptyCelestials;
       // create sim_config object to store all the parameters
-      auto sim_config = config::Config::store_config_values(ForceModel::LennardJones, BodyType::Cub, data->header().base_name(),
+      auto sim_config = config::Config::store_config_values(simulator::physics::ForceModel::LennardJones, BodyType::Cub, data->header().base_name(),
                                                             data->header().t_end(), data->header().output_frequency(), data->header().output_file_name(),
                                                             0, data->lennard_jones()->settings().delta_t(), data->lennard_jones()->settings().sigma(),
                                                             data->lennard_jones()->settings().epsilon(), data->lennard_jones()->settings().mass_m(),
@@ -135,7 +131,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       std::vector<Cuboid> emptyCuboids;
       std::vector<CelestialBody> emptyCelestials;
       // create sim_config object to store all the parameters
-      auto sim_config = config::Config::store_config_values(ForceModel::LennardJones, BodyType::Dis, data->header().base_name(),
+      auto sim_config = config::Config::store_config_values(simulator::physics::ForceModel::LennardJones, BodyType::Dis, data->header().base_name(),
                                                             data->header().t_end(), data->header().output_frequency(), data->header().output_file_name(),
                                                             0, data->lennard_jones()->settings().delta_t(), data->lennard_jones()->settings().sigma(),
                                                             data->lennard_jones()->settings().epsilon(), data->lennard_jones()->settings().mass_m(),
@@ -186,7 +182,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       const double emptyDouble = 0;
 
       // create sim_config object to store all the parameters
-      auto sim_config = config::Config::store_config_values(ForceModel::Gravity, BodyType::Cub, data->header().base_name(),
+      auto sim_config = config::Config::store_config_values(simulator::physics::ForceModel::Gravity, BodyType::Cub, data->header().base_name(),
                                                             data->header().t_end(), data->header().output_frequency(), data->header().output_file_name(),
                                                             body_count, emptyDouble, emptyDouble, emptyDouble, emptyDouble, emptyDouble,
                                                             emptyDouble, temp_bodies, emptyCuboids, emptyDiscs, data->header().seed());
