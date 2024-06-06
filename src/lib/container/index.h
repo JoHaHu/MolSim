@@ -15,16 +15,16 @@ namespace container::index {
 template<typename T>
 concept Index =
     requires(T t, std::array<double, 3> pos, std::array<size_t, 3> dim, std::array<long, 3> offset, double width) {
-      { T(pos, width) };
-      { t.radius } -> std::convertible_to<std::array<size_t, 3>>;
-      { t.dimension } -> std::convertible_to<std::array<size_t, 3>>;
-      { t.width } -> std::convertible_to<std::array<double, 3>>;
-      { t.boundary } -> std::convertible_to<std::array<double, 3>>;
-      { t.position_to_index(pos) } -> std::convertible_to<size_t>;
-      { t.dimension_to_index(dim) } -> std::convertible_to<size_t>;
-      { t.offset(dim, offset) } -> std::convertible_to<size_t>;
-      { t.min_distance(dim, dim) } -> std::convertible_to<double>;
-    };
+  {T(pos, width)};
+  { t.radius } -> std::convertible_to<std::array<size_t, 3>>;
+  { t.dimension } -> std::convertible_to<std::array<size_t, 3>>;
+  { t.width } -> std::convertible_to<std::array<double, 3>>;
+  { t.boundary } -> std::convertible_to<std::array<double, 3>>;
+  { t.position_to_index(pos) } -> std::convertible_to<size_t>;
+  { t.dimension_to_index(dim) } -> std::convertible_to<size_t>;
+  { t.offset(dim, offset) } -> std::convertible_to<size_t>;
+  { t.min_distance(dim, dim) } -> std::convertible_to<double>;
+};
 
 /**
    * @brief Simple index iterating over dimensions in xyz-order.
