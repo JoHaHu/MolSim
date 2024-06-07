@@ -101,6 +101,8 @@ class Simulator {
 
   auto calculate_force() -> void {
     SPDLOG_DEBUG("Starting force calculation");
+    particles.boundary([this](auto p) { calculate_force_particle_pair(p); });
+    particles.refresh();
     particles.linear([this](auto &p) { calculate_old_force_particle(p); });
     particles.pairwise([this](auto p) { calculate_force_particle_pair(p); });
     SPDLOG_TRACE("Force calculation completed.");
@@ -119,6 +121,7 @@ class Simulator {
     iteration = 0;
     auto interval = config->output_frequency;
 
+
     calculate_force();
     // Plot initial position and forces
 
@@ -129,9 +132,6 @@ class Simulator {
 
     while (current_time < end_time) {
       calculate_position();
-      particles.boundary([this](auto p) { calculate_force_particle_pair(p); });
-      // refreshed the internal datastructure of the particle container
-      particles.refresh();
       calculate_force();
       calculate_velocity();
 
