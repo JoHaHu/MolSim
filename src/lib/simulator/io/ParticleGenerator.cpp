@@ -259,46 +259,46 @@ auto ParticleGenerator::generate_cuboids(const std::vector<Cuboid> &cuboids, aut
 }
 
 auto ParticleGenerator::load_particles() -> std::vector<Particle> {
-    auto particles = std::vector<Particle>();
+  auto particles = std::vector<Particle>();
 
-    switch (config->body_type) {
-        case BodyType::Cub:
-            generate_cuboids(config->cuboids, config->seed, particles);
-            break;
-        case BodyType::Dis:
-            for (const auto &disc : config->discs) {
-                auto disc_particles = generate_disk_particles(disc.coordinates[0], disc.coordinates[1], disc.velocity[0], disc.velocity[1], disc.radius, config->distance_h, config->seed);
-                particles.reserve(particles.size() + disc_particles.size());
-                std::copy(disc_particles.begin(), disc_particles.end(), std::back_inserter(particles));
-            }
-            break;
-        case BodyType::Sph:
-            for (const auto &sphere : config->spheres) {
-                auto sphere_particles = generate_sphere_particles(sphere.coordinates[0], sphere.coordinates[1], sphere.coordinates[2], sphere.velocity[0], sphere.velocity[1], sphere.velocity[2], sphere.radius, config->distance_h, config->seed);
-                particles.reserve(particles.size() + sphere_particles.size());
-                std::copy(sphere_particles.begin(), sphere_particles.end(), std::back_inserter(particles));
-            }
-            break;
-        case BodyType::Tor:
-            for (const auto &torus : config->tori) {
-                auto torus_particles = generate_torus_particles(torus.coordinates[0], torus.coordinates[1], torus.coordinates[2], torus.velocity[0], torus.velocity[1], torus.velocity[2], torus.major_radius, torus.minor_radius, config->distance_h, config->seed);
-                particles.reserve(particles.size() + torus_particles.size());
-                std::copy(torus_particles.begin(), torus_particles.end(), std::back_inserter(particles));
-            }
-            break;
-        case BodyType::Hel:
-            for (const auto &helix : config->double_helices) {
-                auto helix_particles = generate_double_helix_particles(helix.coordinates[0], helix.coordinates[1], helix.coordinates[2], helix.velocity[0], helix.velocity[1], helix.velocity[2], helix.radius, helix.pitch, helix.height, config->distance_h, config->seed);
-                particles.reserve(particles.size() + helix_particles.size());
-                std::copy(helix_particles.begin(), helix_particles.end(), std::back_inserter(particles));
-            }
-            break;
-        default:
-            SPDLOG_WARN("Unknown body type.");
-            break;
-    }
+  switch (config->body_type) {
+    case BodyType::Cub:
+      generate_cuboids(config->cuboids, config->seed, particles);
+      break;
+    case BodyType::Dis:
+      for (const auto &disc : config->discs) {
+        auto disc_particles = generate_disk_particles(disc.coordinates[0], disc.coordinates[1], disc.velocity[0], disc.velocity[1], disc.radius, config->distance_h, config->seed);
+        particles.reserve(particles.size() + disc_particles.size());
+        std::copy(disc_particles.begin(), disc_particles.end(), std::back_inserter(particles));
+      }
+      break;
+    case BodyType::Sph:
+      for (const auto &sphere : config->spheres) {
+        auto sphere_particles = generate_sphere_particles(sphere.coordinates[0], sphere.coordinates[1], sphere.coordinates[2], sphere.velocity[0], sphere.velocity[1], sphere.velocity[2], sphere.radius, config->distance_h, config->seed);
+        particles.reserve(particles.size() + sphere_particles.size());
+        std::copy(sphere_particles.begin(), sphere_particles.end(), std::back_inserter(particles));
+      }
+      break;
+    case BodyType::Tor:
+      for (const auto &torus : config->tori) {
+        auto torus_particles = generate_torus_particles(torus.coordinates[0], torus.coordinates[1], torus.coordinates[2], torus.velocity[0], torus.velocity[1], torus.velocity[2], torus.major_radius, torus.minor_radius, config->distance_h, config->seed);
+        particles.reserve(particles.size() + torus_particles.size());
+        std::copy(torus_particles.begin(), torus_particles.end(), std::back_inserter(particles));
+      }
+      break;
+    case BodyType::Hel:
+      for (const auto &helix : config->double_helices) {
+        auto helix_particles = generate_double_helix_particles(helix.coordinates[0], helix.coordinates[1], helix.coordinates[2], helix.velocity[0], helix.velocity[1], helix.velocity[2], helix.radius, helix.pitch, helix.height, config->distance_h, config->seed);
+        particles.reserve(particles.size() + helix_particles.size());
+        std::copy(helix_particles.begin(), helix_particles.end(), std::back_inserter(particles));
+      }
+      break;
+    default:
+      SPDLOG_WARN("Unknown body type.");
+      break;
+  }
 
-    return particles;
+  return particles;
 }
 
 }// namespace simulator::io

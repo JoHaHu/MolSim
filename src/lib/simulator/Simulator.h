@@ -5,6 +5,7 @@
 #include "container/container.h"
 #include "simulator/io/Plotter.h"
 #include "simulator/physics/ForceModel.h"
+#include "simulator/physics/Thermostat.h"
 #include "utils/ArrayUtils.h"
 #include "utils/variants.h"
 #include <cmath>
@@ -13,17 +14,16 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 #include <utility>
-#include "simulator/physics/Thermostat.h"
 
 namespace simulator {
 
-  // TODO @TIM Diese Variablen mit Config bzw. XML verstellbar machen.
-  // TODO @IRGENDJEMAND Die constexpr's hier raus löschen, und die aus der Config verwernden.
-  static constexpr bool use_brownian_motion = true;
-  static constexpr double Tinit = 300;
-  static constexpr double Ttarget = 300;
-  static constexpr double deltaT = 10;
-  static constexpr int nthermostat = 100;
+// TODO @TIM Diese Variablen mit Config bzw. XML verstellbar machen.
+// TODO @IRGENDJEMAND Die constexpr's hier raus löschen, und die aus der Config verwernden.
+static constexpr bool use_brownian_motion = true;
+static constexpr double Tinit = 300;
+static constexpr double Ttarget = 300;
+static constexpr double deltaT = 10;
+static constexpr int nthermostat = 100;
 
 /**
  * The main Simulator class. can be configured by providing a config and a plotter. Some methods use a physics model provided at compile time.
@@ -85,7 +85,7 @@ class Simulator {
         config(config),
         end_time(config->end_time),
         delta_t(config->delta_t),
-        thermostat(Tinit, Ttarget, deltaT, nthermostat, config->seed) {};
+        thermostat(Tinit, Ttarget, deltaT, nthermostat, config->seed){};
 
   /*! <p> Function for position calculation </p>
    *
