@@ -2,7 +2,9 @@ file(GLOB_RECURSE MY_TESTS
         "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )
 
-add_executable(Test ${MY_TESTS})
+add_executable(Test ${MY_TESTS}
+        ThermostatTest.cpp
+        ThermostatTest.h)
 
 include(CheckIPOSupported)
 check_ipo_supported(RESULT result)
