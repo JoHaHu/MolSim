@@ -33,10 +33,10 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
   try {
     // Parse the XML file and disable validation (according to worksheet)
     std::unique_ptr<Data> data = Data_(xmlFilePath, 0);
-    SPDLOG_INFO("Reading XML input to start simulation.");
+    SPDLOG_INFO("Reading XML file.");
 
     // Log the header input values so the user can confirm their correctness
-    SPDLOG_INFO("Passing the following header parameters to simulation: " + data->header().base_name() + " | output frequency: " + std::to_string(data->header().output_frequency()) + " | t_end value: " + std::to_string(data->header().t_end()));
+    SPDLOG_DEBUG("Passing the following header parameters to simulation: " + data->header().base_name() + " | output frequency: " + std::to_string(data->header().output_frequency()) + " | t_end value: " + std::to_string(data->header().t_end()));
 
     config::Config config = config::Config();
 

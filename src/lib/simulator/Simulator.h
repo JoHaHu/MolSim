@@ -13,8 +13,17 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 #include <utility>
+#include "simulator/physics/Thermostat.h"
 
 namespace simulator {
+
+  // TODO @TIM Diese Variablen mit Config bzw. XML verstellbar machen.
+  // TODO @IRGENDJEMAND Die constexpr's hier raus löschen, und die aus der Config verwernden.
+  static constexpr bool use_brownian_motion = true;
+  static constexpr double Tinit = 300;
+  static constexpr double Ttarget = 300;
+  static constexpr double deltaT = 10;
+  static constexpr int nthermostat = 100;
 
 /**
  * The main Simulator class. can be configured by providing a config and a plotter. Some methods use a physics model provided at compile time.
@@ -25,6 +34,7 @@ class Simulator {
   physics::force_model physics;
   std::unique_ptr<io::Plotter> plotter;
   std::shared_ptr<config::Config> config;
+  Thermostat thermostat;
 
   double end_time;
   double delta_t;
@@ -74,7 +84,8 @@ class Simulator {
         plotter(std::move(plotter)),
         config(config),
         end_time(config->end_time),
-        delta_t(config->delta_t) {};
+        delta_t(config->delta_t),
+        thermostat(Tinit, Ttarget, deltaT, nthermostat, config->seed) {};
 
   /*! <p> Function for position calculation </p>
    *
@@ -119,9 +130,10 @@ class Simulator {
     iteration = 0;
     auto interval = config->output_frequency;
 
+    thermostat.initializeVelocities(particles, use_brownian_motion, config->brownian_motion);
     calculate_force();
-    // Plot initial position and forces
 
+    // Plot initial position and forces
     if (IO) {
       plotter->plotParticles(particles, iteration);
       SPDLOG_DEBUG("Iteration {} plotted.", iteration);
@@ -130,10 +142,10 @@ class Simulator {
     while (current_time < end_time) {
       calculate_position();
       particles.boundary([this](auto p) { calculate_force_particle_pair(p); });
-      // refreshed the internal datastructure of the particle container
       particles.refresh();
       calculate_force();
       calculate_velocity();
+      //thermostat.apply(particles); //TODO activate
 
       iteration++;
       if (IO && iteration % interval == 0) {
