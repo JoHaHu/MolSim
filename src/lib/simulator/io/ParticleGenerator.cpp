@@ -9,30 +9,30 @@
 #include "utils/ArrayUtils.h"
 #include "utils/LoggerManager.h"
 #include "utils/MaxwellBoltzmannDistribution.h"
+#include <memory>
 
 namespace simulator::io {
-static constexpr const double brownian_motion = 0.1;
 
 ParticleGenerator::ParticleGenerator(const std::shared_ptr<config::Config> &config) : config(config) {
 }
 
 /**
-            * @brief Generates particles arranged in a disk configuration.
-            *
-            * This method generates particles within a disk of a specified radius. The disk
-            * is centered at (centerX, centerY) and each particle is given an initial velocity
-            * (initialVx, initialVy). The density of the particles is controlled by the meshwidth,
-            * which determines the spacing between adjacent particles. The number of particles
-            * along the radius is specified by radiusMolecules.
-            *
-            * @param centerX The x-coordinate of the center of the disk.
-            * @param centerY The y-coordinate of the center of the disk.
-            * @param initialVx The initial velocity in the x-direction for all particles.
-            * @param initialVy The initial velocity in the y-direction for all particles.
-            * @param radiusMolecules The radius of the disk in terms of the number of molecules.
-            * @param meshwidth The distance between adjacent particles.
-            * @return std::vector<Particle> A vector containing the generated particles.
-            */
+ * @brief Generates particles arranged in a disk configuration.
+ *
+ * This method generates particles within a disk of a specified radius. The disk
+ * is centered at (centerX, centerY) and each particle is given an initial velocity
+ * (initialVx, initialVy). The density of the particles is controlled by the meshwidth,
+ * which determines the spacing between adjacent particles. The number of particles
+ * along the radius is specified by radiusMolecules.
+ *
+ * @param centerX The x-coordinate of the center of the disk.
+ * @param centerY The y-coordinate of the center of the disk.
+ * @param initialVx The initial velocity in the x-direction for all particles.
+ * @param initialVy The initial velocity in the y-direction for all particles.
+ * @param radiusMolecules The radius of the disk in terms of the number of molecules.
+ * @param meshwidth The distance between adjacent particles.
+ * @return std::vector<Particle> A vector containing the generated particles.
+ */
 std::vector<Particle> ParticleGenerator::generate_disk_particles(double centerX, double centerY, double initialVx,
                                                                  double initialVy, int radiusMolecules,
                                                                  double meshwidth, unsigned int seed) {
@@ -45,12 +45,7 @@ std::vector<Particle> ParticleGenerator::generate_disk_particles(double centerX,
       double y = j * meshwidth;
       if (x * x + y * y <= radius * radius) {
         std::array<double, 3> position = {centerX + x, centerY + y, 0.0};
-        std::array<double, 3> velocity = {0.0, 0.0, 0.0};
-
-        std::array<double, 3> velocity2D = maxwellBoltzmannDistributedVelocity(brownian_motion, 2, seed);
-        velocity[0] = velocity2D[0] + initialVx;
-        velocity[1] = velocity2D[1] + initialVy;
-        velocity[2] = 0.0;
+        std::array<double, 3> velocity = {initialVx, initialVy, 0.0};
 
         particles.emplace_back(position, velocity, 1.0, 0);
       }
@@ -62,24 +57,24 @@ std::vector<Particle> ParticleGenerator::generate_disk_particles(double centerX,
 }
 
 /**
-   * @brief Generates particles arranged in a sphere configuration.
-   *
-   * This method generates particles within a sphere of a specified radius. The sphere
-   * is centered at (centerX, centerY, centerZ) and each particle is given an initial velocity
-   * (initialVx, initialVy, initialVz). The density of the particles is controlled by the meshwidth,
-   * which determines the spacing between adjacent particles. The number of particles
-   * along the radius is specified by radiusMolecules.
-   *
-   * @param centerX The x-coordinate of the center of the sphere.
-   * @param centerY The y-coordinate of the center of the sphere.
-   * @param centerZ The z-coordinate of the center of the sphere.
-   * @param initialVx The initial velocity in the x-direction for all particles.
-   * @param initialVy The initial velocity in the y-direction for all particles.
-   * @param initialVz The initial velocity in the z-direction for all particles.
-   * @param radiusMolecules The radius of the sphere in terms of the number of molecules.
-   * @param meshwidth The distance between adjacent particles.
-   * @return std::vector<Particle> A vector containing the generated particles.
-   */
+ * @brief Generates particles arranged in a sphere configuration.
+ *
+ * This method generates particles within a sphere of a specified radius. The sphere
+ * is centered at (centerX, centerY, centerZ) and each particle is given an initial velocity
+ * (initialVx, initialVy, initialVz). The density of the particles is controlled by the meshwidth,
+ * which determines the spacing between adjacent particles. The number of particles
+ * along the radius is specified by radiusMolecules.
+ *
+ * @param centerX The x-coordinate of the center of the sphere.
+ * @param centerY The y-coordinate of the center of the sphere.
+ * @param centerZ The z-coordinate of the center of the sphere.
+ * @param initialVx The initial velocity in the x-direction for all particles.
+ * @param initialVy The initial velocity in the y-direction for all particles.
+ * @param initialVz The initial velocity in the z-direction for all particles.
+ * @param radiusMolecules The radius of the sphere in terms of the number of molecules.
+ * @param meshwidth The distance between adjacent particles.
+ * @return std::vector<Particle> A vector containing the generated particles.
+ */
 std::vector<Particle> ParticleGenerator::generate_sphere_particles(double centerX, double centerY, double centerZ,
                                                                    double initialVx, double initialVy,
                                                                    double initialVz,
@@ -96,10 +91,7 @@ std::vector<Particle> ParticleGenerator::generate_sphere_particles(double center
         double z = k * meshwidth;
         if (x * x + y * y + z * z <= radius * radius) {
           std::array<double, 3> position = {centerX + x, centerY + y, centerZ + z};
-          std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity(brownian_motion, 3, seed);
-          velocity[0] += initialVx;
-          velocity[1] += initialVy;
-          velocity[2] += initialVz;
+          std::array<double, 3> velocity = {initialVx, initialVy, initialVz};
 
           particles.emplace_back(position, velocity, 1.0, 0);
         }
@@ -145,10 +137,7 @@ std::vector<Particle> ParticleGenerator::generate_torus_particles(double centerX
       double z = minorRadius * sin(phi);
 
       std::array<double, 3> position = {centerX + x, centerY + y, centerZ + z};
-      std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity(brownian_motion, 3, seed);
-      velocity[0] += initialVx;
-      velocity[1] += initialVy;
-      velocity[2] += initialVz;
+      std::array<double, 3> velocity = {initialVx, initialVy, initialVz};
 
       particles.emplace_back(position, velocity, 1.0, 0);
     }
@@ -201,10 +190,7 @@ std::vector<Particle> ParticleGenerator::generate_double_helix_particles(
     double z = helixPitch * theta / (2 * M_PI);
 
     std::array<double, 3> position = {centerX + x, centerY + y, centerZ + z};
-    std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity(brownian_motion, 3, seed);
-    velocity[0] += initialVx;
-    velocity[1] += initialVy;
-    velocity[2] += initialVz + 1;
+    std::array<double, 3> velocity = {initialVx, initialVy, initialVz + 1};
 
     particles.emplace_back(position, velocity, 1.0, particles.size());
   }
@@ -216,10 +202,7 @@ std::vector<Particle> ParticleGenerator::generate_double_helix_particles(
     double z = helixPitch * theta / (2 * M_PI);
 
     std::array<double, 3> position = {centerX + x, centerY + y, centerZ + z};
-    std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity(brownian_motion, 3, seed);
-    velocity[0] += initialVx;
-    velocity[1] += initialVy;
-    velocity[2] += initialVz - 1;
+    std::array<double, 3> velocity = {initialVx, initialVy, initialVz - 1};
 
     particles.emplace_back(position, velocity, 1.0, particles.size());
   }
@@ -229,15 +212,15 @@ std::vector<Particle> ParticleGenerator::generate_double_helix_particles(
 }
 
 /**
-    * @brief Generates particles from a list of cuboids using the given seed.
-    *
-    * Iterates through each cuboid and generates particles based on its dimensions and properties.
-    * Logs the progress at various levels.
-    *
-    * @param cuboids A vector of cuboid_t structures containing cuboid properties.
-    * @param seed The seed used for random number generation.
-    * @return std::vector<Particle> The generated particles.
-    */
+ * @brief Generates particles from a list of cuboids using the given seed.
+ *
+ * Iterates through each cuboid and generates particles based on its dimensions and properties.
+ * Logs the progress at various levels.
+ *
+ * @param cuboids A vector of cuboid_t structures containing cuboid properties.
+ * @param seed The seed used for random number generation.
+ * @return std::vector<Particle> The generated particles.
+ */
 auto ParticleGenerator::generate_cuboids(const std::vector<Cuboid> &cuboids, auto seed, std::vector<Particle> &particles) {
 
   for (auto const [index, cuboid] : std::views::enumerate(cuboids)) {
@@ -263,7 +246,7 @@ auto ParticleGenerator::generate_cuboids(const std::vector<Cuboid> &cuboids, aut
       for (const auto y : std::views::iota(0, cuboid.particles[1])) {
         for (const auto z : std::views::iota(0, cuboid.particles[2])) {
           const auto particle = Particle(
-              cuboid.coordinates + std::array<double, 3>({config->distance_h * static_cast<double>(x), config->distance_h * static_cast<double>(y), config->distance_h * static_cast<double>(z)}), cuboid.velocity + maxwellBoltzmannDistributedVelocity(brownian_motion, 2, seed), config->mass_m,
+              cuboid.coordinates + std::array<double, 3>({config->distance_h * static_cast<double>(x), config->distance_h * static_cast<double>(y), config->distance_h * static_cast<double>(z)}), cuboid.velocity, config->mass_m,
               static_cast<int>(index));
           particles.push_back(particle);
         }
@@ -274,10 +257,48 @@ auto ParticleGenerator::generate_cuboids(const std::vector<Cuboid> &cuboids, aut
   particles.shrink_to_fit();
   return particles;
 }
+
 auto ParticleGenerator::load_particles() -> std::vector<Particle> {
-  auto particles = std::vector<Particle>();
-  generate_cuboids(config->cuboids, config->seed, particles);
-  return particles;
+    auto particles = std::vector<Particle>();
+
+    switch (config->body_type) {
+        case BodyType::Cub:
+            generate_cuboids(config->cuboids, config->seed, particles);
+            break;
+        case BodyType::Dis:
+            for (const auto &disc : config->discs) {
+                auto disc_particles = generate_disk_particles(disc.coordinates[0], disc.coordinates[1], disc.velocity[0], disc.velocity[1], disc.radius, config->distance_h, config->seed);
+                particles.reserve(particles.size() + disc_particles.size());
+                std::copy(disc_particles.begin(), disc_particles.end(), std::back_inserter(particles));
+            }
+            break;
+        case BodyType::Sph:
+            for (const auto &sphere : config->spheres) {
+                auto sphere_particles = generate_sphere_particles(sphere.coordinates[0], sphere.coordinates[1], sphere.coordinates[2], sphere.velocity[0], sphere.velocity[1], sphere.velocity[2], sphere.radius, config->distance_h, config->seed);
+                particles.reserve(particles.size() + sphere_particles.size());
+                std::copy(sphere_particles.begin(), sphere_particles.end(), std::back_inserter(particles));
+            }
+            break;
+        case BodyType::Tor:
+            for (const auto &torus : config->tori) {
+                auto torus_particles = generate_torus_particles(torus.coordinates[0], torus.coordinates[1], torus.coordinates[2], torus.velocity[0], torus.velocity[1], torus.velocity[2], torus.major_radius, torus.minor_radius, config->distance_h, config->seed);
+                particles.reserve(particles.size() + torus_particles.size());
+                std::copy(torus_particles.begin(), torus_particles.end(), std::back_inserter(particles));
+            }
+            break;
+        case BodyType::Hel:
+            for (const auto &helix : config->double_helices) {
+                auto helix_particles = generate_double_helix_particles(helix.coordinates[0], helix.coordinates[1], helix.coordinates[2], helix.velocity[0], helix.velocity[1], helix.velocity[2], helix.radius, helix.pitch, helix.height, config->distance_h, config->seed);
+                particles.reserve(particles.size() + helix_particles.size());
+                std::copy(helix_particles.begin(), helix_particles.end(), std::back_inserter(particles));
+            }
+            break;
+        default:
+            SPDLOG_WARN("Unknown body type.");
+            break;
+    }
+
+    return particles;
 }
 
 }// namespace simulator::io
