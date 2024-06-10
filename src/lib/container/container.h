@@ -18,17 +18,25 @@ struct particle_container {
  public:
   explicit particle_container(particle_container_variant &&var) : var(std::move(var)) {}
 
+  auto particles() -> Particles & {
+    return std::visit(
+        [](Particles &container) -> auto & {
+          return container;
+        },
+        var);
+  }
+
   /**
   * @brief Applies a function to each particle in the container.
   *
   * @param f Function to apply to each particle.
   */
-  auto linear(std::function<void(Particles &, size_t)> const &f) {
-    std::visit(
-        [&f](Particles &container) {
-          std::ranges::for_each(container.linear(), [&f, &container](size_t index) { f(container, index); });
-        },
-        var);
+  template<typename C>
+  auto linear(C f) {
+    Particles &p = particles();
+    for (size_t index = 0; index < p.size; ++index) {
+      f(p, index);
+    };
   }
 
   auto swap_force() {
@@ -43,9 +51,14 @@ struct particle_container {
   *
   * @param f Function to apply to each pair of particles.
   */
-  auto pairwise(std::function<void(Particles &p, std::tuple<size_t, size_t>)> const &f) {
+  template<typename C>
+  auto pairwise(C f) {
     std::visit(
-        [&](Particles &container) { std::ranges::for_each(container.pairwise(), [&](auto index) { f(container, index); }); },
+        [&](Particles &container) {
+          for (size_t i = 0; i < container.size - 1; ++i) {
+            f(container, i);
+          }
+        },
         var);
   }
 

@@ -8,7 +8,6 @@
 #include "simulator/io/VTKPlotter.h"
 #include "simulator/io/xml_reader/XMLFileReader.h"
 #include "simulator/physics/ForceModel.h"
-#include "simulator/physics/Gravity.h"
 #include "simulator/physics/LennardJones.h"
 #include "utils/LoggerManager.h"
 
@@ -32,17 +31,17 @@ auto main(int argc, char *argv[]) -> int {
 
   auto plotter = std::make_unique<simulator::io::VTKPlotter>(config);
 
-  simulator::physics::force_model physics;
+  simulator::physics::ForceModel physics = config->simulation_type;
   switch (config->simulation_type) {
     case simulator::physics::ForceModel::Gravity:
-      physics = {simulator::physics::Gravity()};
       break;
     case simulator::physics::ForceModel::LennardJones:
-      physics = {simulator::physics::LennardJones(3.0, 1, 5)};
+      simulator::physics::lennard_jones::sigma = config->sigma;
+      simulator::physics::lennard_jones::epsilon = config->epsilon;
+      simulator::physics::lennard_jones::cutoff = config->cutoff_radius;
       break;
   }
 
-  // Intialize with empty vetor
   container::particle_container pc = container::particle_container(Particles());
 
   switch (config->particle_loader_type) {

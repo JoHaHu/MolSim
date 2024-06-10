@@ -3,6 +3,7 @@
 #include "Particle.h"
 #include "config/Config.h"
 #include "container/container.h"
+#include "experimental/simd"
 #include "simulator/io/Plotter.h"
 #include "simulator/physics/ForceModel.h"
 #include "utils/ArrayUtils.h"
@@ -14,6 +15,11 @@
 #include <spdlog/spdlog.h>
 #include <utility>
 
+using double_v = stdx::native_simd<double>;
+using double_mask = stdx::native_simd_mask<double>;
+using int_v = stdx::native_simd<int>;
+using size_v = stdx::native_simd<size_t>;
+
 namespace simulator {
 
 /**
@@ -22,54 +28,13 @@ namespace simulator {
 class Simulator {
  private:
   container::particle_container particles;
-  physics::force_model physics;
+  physics::ForceModel physics;
   std::unique_ptr<io::Plotter> plotter;
   std::shared_ptr<config::Config> config;
 
   double end_time;
   double delta_t;
   unsigned long iteration = 0;
-
-  auto calculate_position_particle(
-      double &position_x, double &position_y, double &position_z,
-      double const &velocity_x, double const &velocity_y, double const &velocity_z,
-      double const &old_force_x, double const &old_force_y, double const &old_force_z,
-      double const &mass) const {
-
-    const auto temp = pow(delta_t, 2) * (1 / (2 * mass));
-    position_x = position_x + delta_t * velocity_x + temp * old_force_x;
-    position_y = position_y + delta_t * velocity_y + temp * old_force_y;
-    position_z = position_z + delta_t * velocity_z + temp * old_force_z;
-  }
-  auto calculate_velocity_particle(
-      double &velocity_x, double &velocity_y, double &velocity_z,
-      double const &force_x, double const &force_y, double const &force_z,
-      double const &old_force_x, double const &old_force_y, double const &old_force_z,
-      double const &mass) const {
-
-    const auto temp = delta_t * (1 / (2 * mass));
-    velocity_x = velocity_x + temp * (old_force_x + force_x);
-    velocity_y = velocity_y + temp * (old_force_y + force_y);
-    velocity_z = velocity_z + temp * (old_force_z + force_z);
-  }
-
-  auto calculate_force_particle_pair(Particles &p, std::tuple<size_t, size_t> index) {
-
-    const auto [index1, index2] = index;
-
-    const auto [rforce_x, rforce_y, rforce_z] = physics::calculate_force(
-        physics,
-        p.position_x[index1], p.position_y[index1], p.position_z[index1], p.mass[index1], p.type[index1],
-        p.position_x[index2], p.position_y[index2], p.position_z[index2], p.mass[index2], p.type[index2]);
-
-    p.force_x[index1] = p.force_x[index1] + rforce_x;
-    p.force_y[index1] = p.force_y[index1] + rforce_y;
-    p.force_z[index1] = p.force_z[index1] + rforce_z;
-
-    p.force_x[index2] = p.force_x[index2] - rforce_x;
-    p.force_y[index2] = p.force_y[index2] - rforce_y;
-    p.force_z[index2] = p.force_z[index2] - rforce_z;
-  }
 
  public:
   /**
@@ -79,7 +44,7 @@ class Simulator {
    * */
   explicit Simulator(
       container::particle_container &&particles,
-      physics::force_model physics,
+      physics::ForceModel physics,
       std::unique_ptr<io::Plotter> &&plotter,
       const std::shared_ptr<config::Config> &config)
       : particles(std::move(particles)),
@@ -89,21 +54,111 @@ class Simulator {
         end_time(config->end_time),
         delta_t(config->delta_t) {};
 
+  auto calculate_position_particle(
+      double &position_x, double &position_y, double &position_z,
+      double const &velocity_x, double const &velocity_y, double const &velocity_z,
+      double const &old_force_x, double const &old_force_y, double const &old_force_z,
+      double const &mass) const {
+
+    const auto temp = pow(delta_t, 2) * (1 / (2 * mass));
+    position_x += delta_t * velocity_x + temp * old_force_x;
+    position_y += delta_t * velocity_y + temp * old_force_y;
+    position_z += delta_t * velocity_z + temp * old_force_z;
+  }
+  auto calculate_velocity_particle(
+      double &velocity_x, double &velocity_y, double &velocity_z,
+      double const &force_x, double const &force_y, double const &force_z,
+      double const &old_force_x, double const &old_force_y, double const &old_force_z,
+      double const &mass) const {
+
+    const auto temp = delta_t * (1 / (2 * mass));
+    velocity_x += temp * (old_force_x + force_x);
+    velocity_y += temp * (old_force_y + force_y);
+    velocity_z += temp * (old_force_z + force_z);
+  }
+
+  template<typename F>
+  auto calculate_force_particle_pair(F f, Particles &p, size_t index) {
+
+    const auto pos_x = double_v(p.position_x[index]);
+    const auto pos_y = double_v(p.position_y[index]);
+    const auto pos_z = double_v(p.position_z[index]);
+    const auto mass = double_v(p.mass[index]);
+    const auto type = int_v(p.type[index]);
+
+    size_v index_vector_tmp = 0;
+
+    for (size_t i = 0; i < size_v::size(); ++i) {
+      index_vector_tmp[i] = i;
+    }
+    const auto index_vector = index_vector_tmp;
+
+    size_t i = 0;
+    //#pragma clang loop vectorize(enable) vectorize_width(8) vectorize_predicate(enable)
+    while (1 + (i * double_v::size()) < p.size) {
+
+      auto active_mask = index_vector + 1 + (i * double_v::size()) < p.size;
+
+      auto pos_x_vector = double_v();
+      pos_x_vector.copy_from(&p.position_x[index + 1 + (i * double_v::size())], stdx::element_aligned);
+
+      auto pos_y_vector = double_v();
+      pos_y_vector.copy_from(&p.position_y[index + 1 + (i * double_v::size())], stdx::element_aligned);
+
+      auto pos_z_vector = double_v();
+      pos_z_vector.copy_from(&p.position_z[index + 1 + (i * double_v::size())], stdx::element_aligned);
+
+      auto mass_vector = double_v();
+      mass_vector.copy_from(&p.mass[index + 1 + (i * double_v::size())], stdx::element_aligned);
+
+      auto type_vector = int_v();
+      type_vector.copy_from(&p.type[index + 1 + (i * int_v::size())], stdx::element_aligned);
+
+      auto active_vector = size_v();
+      active_vector.copy_from(&p.active[index + 1 + (i * size_v::size())], stdx::element_aligned);
+      active_mask = active_mask && active_vector > 0;
+
+      const auto [rforce_x, rforce_y, rforce_z] = f(
+          pos_x, pos_y, pos_z, mass, type,
+          pos_x_vector, pos_y_vector, pos_z_vector, mass_vector, type_vector);
+
+      auto force_x_vector = double_v();
+      force_x_vector.copy_from(&p.force_x[index + 1 + (i * double_v::size())], stdx::element_aligned);
+      auto mask = stdx::static_simd_cast<double_mask>(active_mask);
+      stdx::where(mask, force_x_vector) = force_x_vector - rforce_x;
+      force_x_vector.copy_to(&p.force_x[index + 1 + (i * double_v::size())], stdx::element_aligned);
+
+      auto force_y_vector = double_v();
+      force_y_vector.copy_from(&p.force_y[index + 1 + (i * double_v::size())], stdx::element_aligned);
+      stdx::where(mask, force_y_vector) = force_y_vector - rforce_y;
+      force_y_vector.copy_to(&p.force_y[index + 1 + (i * double_v::size())], stdx::element_aligned);
+
+      auto force_z_vector = double_v();
+      force_z_vector.copy_from(&p.force_z[index + 1 + (i * double_v::size())], stdx::element_aligned);
+      stdx::where(mask, force_z_vector) = force_z_vector - rforce_z;
+      force_z_vector.copy_to(&p.force_z[index + 1 + (i * double_v::size())], stdx::element_aligned);
+
+      double tp = stdx::reduce(where(mask, rforce_x), std::plus<>());
+      p.force_x[index] += tp;
+      p.force_y[index] += stdx::reduce(where(mask, rforce_y), std::plus<>());
+      p.force_z[index] += stdx::reduce(where(mask, rforce_z), std::plus<>());
+
+      ++i;
+    }
+  }
+
   /*! <p> Function for position calculation </p>
    *
    * calculates the position for all particles, takes no arguments and has no return value
    */
   auto calculate_position() -> void {
     SPDLOG_DEBUG("Updating positions");
-
     particles.linear([this](Particles &p, size_t index) {
       calculate_position_particle(
           p.position_x[index], p.position_y[index], p.position_z[index],
-          p.position_x[index], p.position_y[index], p.position_z[index],
-          p.position_x[index], p.position_y[index], p.position_z[index],
-          p.mass[index]
-
-      );
+          p.velocity_x[index], p.velocity_y[index], p.velocity_z[index],
+          p.old_force_x[index], p.old_force_y[index], p.old_force_z[index],
+          p.mass[index]);
     });
   }
 
@@ -131,14 +186,25 @@ class Simulator {
     SPDLOG_DEBUG("Starting force calculation");
 
     particles.swap_force();
-    particles.boundary([this](Particles &p, auto index) {
-      calculate_force_particle_pair(p, index);
-    });
-    particles.refresh();
 
-    particles.pairwise([this](Particles &p, auto index) {
-      calculate_force_particle_pair(p, index);
-    });
+    //    particles.boundary([this](Particles &p, auto index) {
+    //      calculate_force_particle_pair(p, index);
+    //    });
+    //    particles.refresh();
+
+    switch (physics) {
+      case physics::ForceModel::Gravity:
+        particles.pairwise([this](Particles &p, auto index) {
+          calculate_force_particle_pair(physics::gravity::calculate_force, p, index);
+        });
+        break;
+      case physics::ForceModel::LennardJones:
+        particles.pairwise([this](Particles &p, auto index) {
+          calculate_force_particle_pair(physics::lennard_jones::calculate_force, p, index);
+        });
+        break;
+    }
+
     SPDLOG_TRACE("Force calculation completed.");
   };
 

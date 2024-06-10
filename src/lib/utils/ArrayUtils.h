@@ -120,19 +120,6 @@ auto constexpr L2Norm(const C &c) {
 }
 }// namespace ArrayUtils
 
-/**
- * Stream operator for containers.
- *
- * @tparam Container
- * @param os
- * @param container
- * @return
- */
-template<std::ranges::forward_range C>
-auto inline operator<<(auto &os, const C &container) -> std::ostream & {
-  os << ArrayUtils::to_string(container);
-  return os;
-}
 
 /**
  * Element wise addition of two containers.

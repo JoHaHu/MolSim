@@ -1,6 +1,5 @@
 #pragma once
 
-#include "container/combination.h"
 #include <array>
 #include <ranges>
 #include <vector>
@@ -71,7 +70,7 @@ class Particles {
   std::vector<double> mass{};
 
   std::vector<int> type{};
-  std::vector<bool> active{};
+  std::vector<size_t> active{};
 
   void insert_particle(Particle p) {
     position_x.emplace_back(p.position[0]);
@@ -92,20 +91,20 @@ class Particles {
 
     mass.emplace_back(p.mass);
     type.emplace_back(p.type);
-    active.emplace_back(true);
+    active.emplace_back(1);
     size++;
   }
   size_t size{};
 
-  auto linear() -> auto {
-    return std::views::iota(0UL, size);
-  }
-  auto pairwise() -> auto {
-    return linear() | container::combination;
-  }
   void swap_force() {
     std::swap(old_force_x, force_x);
     std::swap(old_force_y, force_y);
     std::swap(old_force_z, force_z);
+
+    for (size_t i = 0; i < size; i++) {
+      force_x[i] = 0;
+      force_y[i] = 0;
+      force_z[i] = 0;
+    }
   }
 };

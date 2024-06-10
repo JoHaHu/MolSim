@@ -42,7 +42,6 @@ target_include_directories(simulator
 target_link_libraries(simulator
         PUBLIC
         spdlog::spdlog
-        range-v3::range-v3
         xerces-c
 )
 
@@ -117,12 +116,12 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fprofile-use=../profiles/default.profdata -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -mprefer-vector-width=512 #[[-fprofile-use=../profiles/default.profdata]] -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
             $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize>
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fprofile-use=../profiles/default.profdata -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -mprefer-vector-width=512 #[[ -fprofile-use=../profiles/default.profdata ]] -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
             $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize>
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
@@ -130,12 +129,12 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
 
     target_link_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -Wl -fprofile-use=../profiles/default.profdata >
+            $<$<CXX_COMPILER_ID:Clang>: -Wl #[[-fprofile-use=../profiles/default.profdata]] >
 
     )
     target_link_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -Wl -fprofile-use=../profiles/default.profdata >
+            $<$<CXX_COMPILER_ID:Clang>: -Wl #[[-fprofile-use=../profiles/default.profdata]] >
 
     )
 
@@ -171,7 +170,3 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 include(doxygen)
 include(spdlog)
 include(g_test)
-
-# include the ranges-v3 library because std::ranges::concat_view is not available yet
-# and ranges-v3 is the basis for the implementation of the std::ranges library
-include(ranges-v3)
