@@ -30,6 +30,8 @@ file(GLOB_RECURSE MY_SRC
 add_library(simulator
         STATIC
         ${MY_SRC}
+        src/lib/simulator/physics/Thermostat.h
+        src/lib/simulator/physics/Thermostat.cpp
 )
 
 target_include_directories(simulator
