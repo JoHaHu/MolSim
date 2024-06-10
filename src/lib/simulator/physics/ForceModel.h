@@ -3,6 +3,7 @@
 #include "Gravity.h"
 #include "LennardJones.h"
 #include <cstdint>
+#include <variant>
 namespace simulator::physics {
 
 /** <p> physics concept for force calculation </p>
