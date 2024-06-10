@@ -43,7 +43,7 @@ auto main(int argc, char *argv[]) -> int {
       break;
   }
 
-  // Intialize with empty vetor
+  // Intialize with empty vector
   container::particle_container pc = container::particle_container(std::vector<Particle>());
 
   switch (config->particle_loader_type) {
