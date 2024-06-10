@@ -25,12 +25,11 @@ class VTKPlotter final : public Plotter {
   * @param particle_container The container holding the particles to be plotted.
   * @param iteration The current iteration number, used in the output file name.
   */
-  auto plotParticles(container::particle_container &container, int iteration) -> void override {
+  auto plotParticles(container::particle_container &particles, int iteration) -> void override {
 
     std::string out_name(config->output_filename);
-
-    vtk_writer.initializeOutput(container.size());
-    container.linear([this](auto &p) { vtk_writer.plotParticle(p); });
+    vtk_writer.initializeOutput(particles.size());
+    particles.linear([this](Particles &particles, size_t index) { vtk_writer.plotParticle(particles, index); });
     vtk_writer.writeFile(out_name, iteration);
   };
 

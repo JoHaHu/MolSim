@@ -30,32 +30,45 @@ class Simulator {
   double delta_t;
   unsigned long iteration = 0;
 
-  auto calculate_position_particle(Particle &particle) const {
-    particle.position = particle.position + delta_t * particle.velocity + pow(delta_t, 2) * (1 / (2 * particle.mass)) * particle.old_force;
-    SPDLOG_TRACE("Particle position updated: ({}, {}, {})", particle.position[0], particle.position[1],
-                 particle.position[2]);
+  auto calculate_position_particle(
+      double &position_x, double &position_y, double &position_z,
+      double const &velocity_x, double const &velocity_y, double const &velocity_z,
+      double const &old_force_x, double const &old_force_y, double const &old_force_z,
+      double const &mass) const {
+
+    const auto temp = pow(delta_t, 2) * (1 / (2 * mass));
+    position_x = position_x + delta_t * velocity_x + temp * old_force_x;
+    position_y = position_y + delta_t * velocity_y + temp * old_force_y;
+    position_z = position_z + delta_t * velocity_z + temp * old_force_z;
   }
-  auto calculate_velocity_particle(Particle &particle) const {
-    particle.velocity = particle.velocity + delta_t * (1 / (2 * particle.mass)) * (particle.old_force + particle.force);
-    SPDLOG_TRACE("Particle velocity updated: ({}, {}, {})", particle.velocity[0], particle.velocity[1],
-                 particle.velocity[2]);
+  auto calculate_velocity_particle(
+      double &velocity_x, double &velocity_y, double &velocity_z,
+      double const &force_x, double const &force_y, double const &force_z,
+      double const &old_force_x, double const &old_force_y, double const &old_force_z,
+      double const &mass) const {
+
+    const auto temp = delta_t * (1 / (2 * mass));
+    velocity_x = velocity_x + temp * (old_force_x + force_x);
+    velocity_y = velocity_y + temp * (old_force_y + force_y);
+    velocity_z = velocity_z + temp * (old_force_z + force_z);
   }
 
-  void calculate_old_force_particle(Particle &particle) {
-    particle.old_force = particle.force;
-    particle.force = {0, 0, 0};
-  }
+  auto calculate_force_particle_pair(Particles &p, std::tuple<size_t, size_t> index) {
 
-  auto calculate_force_particle_pair(std::tuple<Particle &, Particle &> pair) {
-    auto [particle1, particle2] = pair;
+    const auto [index1, index2] = index;
 
-    const auto force = physics::calculate_force(physics, particle1, particle2);
+    const auto [rforce_x, rforce_y, rforce_z] = physics::calculate_force(
+        physics,
+        p.position_x[index1], p.position_y[index1], p.position_z[index1], p.mass[index1], p.type[index1],
+        p.position_x[index2], p.position_y[index2], p.position_z[index2], p.mass[index2], p.type[index2]);
 
-    particle1.force = particle1.force + force;
-    particle2.force = particle2.force - force;
-    SPDLOG_TRACE("Force updated for particle pair: ({}, {}, {}) - ({}, {}, {})", particle1.force[0],
-                 particle1.force[1], particle1.force[2], particle2.force[0], particle2.force[1],
-                 particle2.force[2]);
+    p.force_x[index1] = p.force_x[index1] + rforce_x;
+    p.force_y[index1] = p.force_y[index1] + rforce_y;
+    p.force_z[index1] = p.force_z[index1] + rforce_z;
+
+    p.force_x[index2] = p.force_x[index2] - rforce_x;
+    p.force_y[index2] = p.force_y[index2] - rforce_y;
+    p.force_z[index2] = p.force_z[index2] - rforce_z;
   }
 
  public:
@@ -83,7 +96,15 @@ class Simulator {
   auto calculate_position() -> void {
     SPDLOG_DEBUG("Updating positions");
 
-    particles.linear([this](auto &p) { calculate_position_particle(p); });
+    particles.linear([this](Particles &p, size_t index) {
+      calculate_position_particle(
+          p.position_x[index], p.position_y[index], p.position_z[index],
+          p.position_x[index], p.position_y[index], p.position_z[index],
+          p.position_x[index], p.position_y[index], p.position_z[index],
+          p.mass[index]
+
+      );
+    });
   }
 
   /*! <p> Function for velocity calculation </p>
@@ -91,7 +112,14 @@ class Simulator {
   */
   auto calculate_velocity() -> void {
     SPDLOG_DEBUG("Updating velocities");
-    particles.linear([this](auto &p) { calculate_velocity_particle(p); });
+
+    particles.linear([this](Particles &p, size_t index) {
+      calculate_velocity_particle(
+          p.velocity_x[index], p.velocity_y[index], p.velocity_z[index],
+          p.force_x[index], p.force_y[index], p.force_z[index],
+          p.old_force_x[index], p.old_force_y[index], p.old_force_z[index],
+          p.mass[index]);
+    });
   }
   /**
   * @brief Calculates forces between particles.
@@ -101,10 +129,16 @@ class Simulator {
 
   auto calculate_force() -> void {
     SPDLOG_DEBUG("Starting force calculation");
-    particles.boundary([this](auto p) { calculate_force_particle_pair(p); });
+
+    particles.swap_force();
+    particles.boundary([this](Particles &p, auto index) {
+      calculate_force_particle_pair(p, index);
+    });
     particles.refresh();
-    particles.linear([this](auto &p) { calculate_old_force_particle(p); });
-    particles.pairwise([this](auto p) { calculate_force_particle_pair(p); });
+
+    particles.pairwise([this](Particles &p, auto index) {
+      calculate_force_particle_pair(p, index);
+    });
     SPDLOG_TRACE("Force calculation completed.");
   };
 
@@ -120,7 +154,6 @@ class Simulator {
     double current_time = 0;
     iteration = 0;
     auto interval = config->output_frequency;
-
 
     calculate_force();
     // Plot initial position and forces

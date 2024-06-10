@@ -3,7 +3,6 @@
 #include <variant>
 
 #include "config/Config.h"
-#include "container/boundary.h"
 #include "simulator/Simulator.h"
 #include "simulator/io/ParticleGenerator.h"
 #include "simulator/io/VTKPlotter.h"
@@ -44,24 +43,25 @@ auto main(int argc, char *argv[]) -> int {
   }
 
   // Intialize with empty vetor
-  container::particle_container pc = container::particle_container(std::vector<Particle>());
+  container::particle_container pc = container::particle_container(Particles());
 
   switch (config->particle_loader_type) {
     case ParticleContainerType::Vector:
-      pc = container::particle_container(std::move(particles));
+      pc = container::particle_container(Particles());
       break;
     case ParticleContainerType::LinkedCells:
-      auto lc = container::linked_cell<container::index::row_major_index>(
-          config->domain_size,
-          config->cutoff_radius,
-          config->boundary_conditions,
-          particles.size(), config->sigma);
-
-      pc = container::particle_container(std::move(lc));
-      for (auto &p : particles) {
-        pc.insert(std::move(p));
-      }
+      //      auto lc = container::linked_cell<container::index::row_major_index>(
+      //          config->domain_size,
+      //          config->cutoff_radius,
+      //          config->boundary_conditions,
+      //          particles.size(), config->sigma);
+      //
+      //      pc = container::particle_container(std::move(lc));
       break;
+  }
+
+  for (auto p : particles) {
+    pc.insert(p);
   }
   auto simulator = simulator::Simulator(std::move(pc), physics, std::move(plotter), config);
 

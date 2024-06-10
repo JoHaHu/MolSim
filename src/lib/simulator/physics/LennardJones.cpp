@@ -17,18 +17,17 @@ namespace simulator::physics {
        * @param particle2 The second particle.
        * @return std::array<double, 3> The calculated force vector.
        */
-auto LennardJones::calculate_force(const Particle &particle1, const Particle &particle2) -> std::array<double, 3> {
+auto LennardJones::calculate_force(const double &position_x, const double &position_y, const double &position_z, const double &mass, const int &type, const double &position_x2, const double &position_y2, const double &position_z2, const double &mass2, const int &type2) -> std::tuple<double, double, double> {
 
   SPDLOG_TRACE("Entering LennardJones calculate_force");
 
-  SPDLOG_TRACE("Particle 1: mass = {}, position = ({}, {}, {})", particle1.mass, particle1.position[0], particle1.position[1], particle1.position[2]);
-  SPDLOG_TRACE("Particle 2: mass = {}, position = ({}, {}, {})", particle2.mass, particle2.position[0], particle2.position[1], particle2.position[2]);
+  const auto x_diff = position_x2 - position_x;
+  const auto y_diff = position_y2 - position_y;
+  const auto z_diff = position_z2 - position_z;
 
-  const auto x_diff = particle2.position - particle1.position;
+  const auto diff = {x_diff, y_diff, z_diff};
 
-  SPDLOG_TRACE("Position difference: ({}, {}, {})", x_diff[0], x_diff[1], x_diff[2]);
-
-  const auto norm = ArrayUtils::L2Norm(x_diff);
+  const auto norm = ArrayUtils::L2Norm(diff);
   SPDLOG_TRACE("Norm of position difference: {}", norm);
 
   if (norm == 0) {
@@ -41,16 +40,16 @@ auto LennardJones::calculate_force(const Particle &particle1, const Particle &pa
 
   const auto sigma_over_norm_3 = (sigma / norm) * (sigma / norm) * (sigma / norm);
   const auto sigma_over_norm_6 = sigma_over_norm_3 * sigma_over_norm_3;
-  const auto sigma_over_norm_12 = sigma_over_norm_6 * sigma_over_norm_6;
 
-  const auto force = 24 * epsilon / (norm * norm) * (sigma_over_norm_6 - 2 * sigma_over_norm_12) * x_diff;
-
-  SPDLOG_TRACE("Calculated force: ({}, {}, {})", force[0], force[1], force[2]);
-
+  const auto temp = 24 * epsilon / (norm * norm) * (1 - 2 * sigma_over_norm_6) * sigma_over_norm_6;
+  const auto force_x = temp * x_diff;
+  const auto force_y = temp * y_diff;
+  const auto force_z = temp * z_diff;
   SPDLOG_TRACE("Exiting LennardJones calculate_force");
 
-  return force;
+  return {force_x, force_y, force_z};
 }
+
 LennardJones::LennardJones(double cutoff, double sigma, double epsilon) : epsilon(epsilon), sigma(sigma), cutoff(cutoff) {
 }
 

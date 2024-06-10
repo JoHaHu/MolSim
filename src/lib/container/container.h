@@ -2,23 +2,19 @@
 
 #include "Particle.h"
 #include "index.h"
-#include "linked_cell.h"
 #include "utils/variants.h"
 #include <ranges>
 #include <vector>
 namespace container {
 
-using particle_container_variant = std::variant<std::vector<Particle>,
-                                                linked_cell<index::row_major_index>,
-                                                linked_cell<index::half_index>,
-                                                linked_cell<index::morton_index>,
-                                                linked_cell<index::power_index>>;
+using particle_container_variant = std::variant<Particles>;
 
 /*!
  * @brief A variant-based particle container supporting multiple underlying data structures.
  * @image html submission/worksheet3/media/Benchmark.png
  */
 struct particle_container {
+
  public:
   explicit particle_container(particle_container_variant &&var) : var(std::move(var)) {}
 
@@ -27,11 +23,18 @@ struct particle_container {
   *
   * @param f Function to apply to each particle.
   */
-  auto linear(std::function<void(Particle &)> const &f) {
-    std::visit(overloaded{
-                   [&f](std::vector<Particle> &container) { std::ranges::for_each(container, f); },
-                   [&f](auto &container) { std::ranges::for_each(container.linear(), f); },
-               },
+  auto linear(std::function<void(Particles &, size_t)> const &f) {
+    std::visit(
+        [&f](Particles &container) {
+          std::ranges::for_each(container.linear(), [&f, &container](size_t index) { f(container, index); });
+        },
+        var);
+  }
+
+  auto swap_force() {
+    std::visit([](Particles &p) {
+      p.swap_force();
+    },
                var);
   }
 
@@ -40,11 +43,10 @@ struct particle_container {
   *
   * @param f Function to apply to each pair of particles.
   */
-  auto pairwise(std::function<void(std::tuple<Particle &, Particle &>)> const &f) {
-    std::visit(overloaded{
-                   [&f](std::vector<Particle> &container) { std::ranges::for_each(container | combination, f); },
-                   [&f](auto &container) { std::ranges::for_each(container.pairwise(), f); }},
-               var);
+  auto pairwise(std::function<void(Particles &p, std::tuple<size_t, size_t>)> const &f) {
+    std::visit(
+        [&](Particles &container) { std::ranges::for_each(container.pairwise(), [&](auto index) { f(container, index); }); },
+        var);
   }
 
   /**
@@ -53,11 +55,9 @@ struct particle_container {
   * @return Size of the container.
   */
   auto size() -> size_t {
-    return std::visit(overloaded{
-                          [](std::vector<Particle> &c) { return c.size(); },
-                          [](auto &c) { return c.size(); },
-                      },
-                      var);
+    return std::visit(
+        [](auto &c) { return c.size; },
+        var);
   }
 
   /**
@@ -65,14 +65,10 @@ struct particle_container {
   *
   * @param f Function to apply for boundary conditions.
   */
-  auto boundary(std::function<void(std::tuple<Particle &, Particle &>)> const &f) {
-    std::visit(overloaded{
-                   [](std::vector<Particle> &container) {},
-                   [&f](auto &container) {
-                     calculate_boundary_condition(container, f);
-                   },
-               },
-               var);
+  auto boundary(std::function<void(Particles &, std::tuple<size_t, size_t>)> const &f) {
+    std::visit(
+        [](Particles &container) {},
+        var);
   }
 
   /**
@@ -80,21 +76,19 @@ struct particle_container {
   *
   * @param p Particle to insert.
   */
-  void insert(Particle &&p) {
-    std::visit(overloaded{
-                   [&p](std::vector<Particle> &container) { container.emplace_back(p); },
-                   [&p](auto &container) { container.insert(std::move(p)); }},
-               var);
+  void insert(Particle p) {
+    std::visit(
+        [p](Particles &container) { container.insert_particle(p); },
+        var);
   }
 
   /**
   * @brief Updates internal data structures after position recalculations.
   */
   void refresh() {
-    std::visit(overloaded{
-                   [](std::vector<Particle> &container) {},
-                   [](auto &container) { container.fix_positions(); }},
-               var);
+    std::visit(
+        [](Particles &container) {},
+        var);
   }
 
  private:

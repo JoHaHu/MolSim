@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Particle.h"
-#include "arena.h"
 #include "combination.h"
 #include "container.h"
 #include "index.h"

@@ -1,17 +1,9 @@
-/*
- * Particle.h
- *
- *  Created on: 23.02.2010
- *      Author: eckhardw
- */
-
 #pragma once
 
+#include "container/combination.h"
 #include <array>
-#include <atomic>
-#include <iostream>
-#include <string>
-
+#include <ranges>
+#include <vector>
 /**
  * the Particle class representing the simulated particles
  * */
@@ -48,36 +40,72 @@ class Particle {
    */
   int type;
 
-  /**
-   * Static atomic ID counter shared by all objects that assigns the ID value to a new object when created
-   */
-  static std::atomic<int> nextID;
-
-  /**
-   * ID of the particle to differentiate between particles and compare if a particle is the same
-   */
-  int id;
-
-  explicit Particle(int type = 0);
-
-  Particle(const Particle &other);
-
-  Particle(const Particle &&other) = delete;
-
   Particle(
       // for visualization, we need always 3 coordinates
       // -> in case of 2d, we use only the first and the second
       std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg,
-      int type = 0);
+      int type = 0) : position(x_arg), velocity(v_arg), mass(m_arg), type(type)
 
-  ~Particle();
-
-  auto operator==(Particle &other) const -> bool;
-
-  auto operator=(Particle const &other) -> Particle & = default;
-  auto operator=(Particle &&other) -> Particle & = default;
-
-  [[nodiscard]] auto to_string() const -> std::string;
+  {
+  }
 };
 
-auto operator<<(std::ostream &stream, Particle &p) -> std::ostream &;
+class Particles {
+ public:
+  std::vector<double> position_x{};
+  std::vector<double> position_y{};
+  std::vector<double> position_z{};
+
+  std::vector<double> velocity_x{};
+  std::vector<double> velocity_y{};
+  std::vector<double> velocity_z{};
+
+  std::vector<double> force_x{};
+  std::vector<double> force_y{};
+  std::vector<double> force_z{};
+
+  std::vector<double> old_force_x{};
+  std::vector<double> old_force_y{};
+  std::vector<double> old_force_z{};
+
+  std::vector<double> mass{};
+
+  std::vector<int> type{};
+  std::vector<bool> active{};
+
+  void insert_particle(Particle p) {
+    position_x.emplace_back(p.position[0]);
+    position_y.emplace_back(p.position[1]);
+    position_z.emplace_back(p.position[2]);
+
+    velocity_x.emplace_back(p.velocity[0]);
+    velocity_y.emplace_back(p.velocity[1]);
+    velocity_z.emplace_back(p.velocity[2]);
+
+    force_x.emplace_back(p.force[0]);
+    force_y.emplace_back(p.force[1]);
+    force_z.emplace_back(p.force[2]);
+
+    old_force_x.emplace_back(p.old_force[0]);
+    old_force_y.emplace_back(p.old_force[1]);
+    old_force_z.emplace_back(p.old_force[2]);
+
+    mass.emplace_back(p.mass);
+    type.emplace_back(p.type);
+    active.emplace_back(true);
+    size++;
+  }
+  size_t size{};
+
+  auto linear() -> auto {
+    return std::views::iota(0UL, size);
+  }
+  auto pairwise() -> auto {
+    return linear() | container::combination;
+  }
+  void swap_force() {
+    std::swap(old_force_x, force_x);
+    std::swap(old_force_y, force_y);
+    std::swap(old_force_z, force_z);
+  }
+};

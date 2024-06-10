@@ -27,7 +27,7 @@ class VTKWriter {
    *
    * @note: initializeOutput() must have been called before.
    */
-  void plotParticle(Particle &particle);
+  void plotParticle(Particles &particle, size_t index);
 
   /**
    * writes the final output file.

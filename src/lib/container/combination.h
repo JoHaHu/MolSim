@@ -81,7 +81,7 @@ class combination_iterator {
   Iter i1{}, i2{}, end{};
 };
 
-static_assert(std::input_iterator<combination_iterator<std::vector<Particle>::iterator>>);
+static_assert(std::input_iterator<combination_iterator<std::vector<size_t>::iterator>>);
 
 /**
  * @brief A view to create combination pairs of elements in a range.
@@ -125,6 +125,6 @@ struct _combination : std::ranges::range_adaptor_closure<_combination> {
 
 inline constexpr _combination combination;
 
-static_assert(std::ranges::input_range<combination_view<std::ranges::ref_view<std::vector<Particle>>>>);
+static_assert(std::ranges::input_range<combination_view<std::ranges::ref_view<std::vector<size_t>>>>);
 
 }// namespace container

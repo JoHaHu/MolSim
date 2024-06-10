@@ -15,8 +15,8 @@ namespace simulator::physics {
 * \param particle2
 */
 template<typename T>
-concept physics = requires(T type, Particle const &particle1, Particle const &particle2) {
-  { type.calculate_force(particle1, particle2) } -> std::convertible_to<std::array<double, 3>>;
+concept physics = requires(T type, const double &value, const int &p_type) {
+  { type.calculate_force(value, value, value, value, p_type, value, value, value, value, p_type) } -> std::convertible_to<std::tuple<double, double, double>>;
 };
 
 template<physics... p>
@@ -24,9 +24,11 @@ using force_model_variant = std::variant<p...>;
 
 using force_model = force_model_variant<LennardJones, Gravity>;
 
-static constexpr auto calculate_force(force_model &force, Particle &particle1, Particle &particle2) -> std::array<double, 3> {
+static constexpr auto calculate_force(force_model &force, const double &position_x, const double &position_y, const double &position_z, const double &mass, const int &type,
+                                      const double &position_x2, const double &position_y2, const double &position_z2, const double &mass2, const int &type2) -> std::tuple<double, double, double> {
   return std::visit(
-      [&particle1, &particle2](auto &&force) { return force.calculate_force(particle1, particle2); }, force);
+      [&](auto &&force) { return force.calculate_force(position_x, position_y, position_z, mass, type,
+                                                       position_x2, position_y2, position_z2, mass2, type2); }, force);
 }
 
 /**
