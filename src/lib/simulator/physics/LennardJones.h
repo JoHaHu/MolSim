@@ -39,13 +39,16 @@ auto static calculate_force(const VectorizedParticle &p1, const VectorizedPartic
   const auto temp = (norm_6 * epsilon24 - epsilon48) / (norm_6 * norm_6 * norm_2);
   auto force = temp * diff;
 
-  SPDLOG_TRACE("Exiting LennardJones calculate_force");
-
   auto norm_mask = norm_2 > cutoff;
+
+  if (stdx::any_of(norm_2 == 0)) {
+    SPDLOG_DEBUG("zero distance between particle");
+  }
   stdx::where(norm_mask, force[0]) = 0;
   stdx::where(norm_mask, force[1]) = 0;
   stdx::where(norm_mask, force[2]) = 0;
 
+  SPDLOG_TRACE("Exiting LennardJones calculate_force");
   return force;
 }
 

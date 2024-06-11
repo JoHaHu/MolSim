@@ -169,7 +169,7 @@ class Particles {
 
     mass.emplace_back(p.mass);
     type.emplace_back(p.type);
-    active.emplace_back(1);
+    active.emplace_back(true);
     cell.emplace_back(0);
     size++;
     return size - 1;

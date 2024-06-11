@@ -39,64 +39,24 @@ class Cell {
   friend class LinkedCell;
 
   struct Neighbour {
-    Cell &c;
+    size_t c;
     // TODO correction vector
-    explicit Neighbour(Cell &c) : c(c) {}
+    explicit Neighbour(size_t neighbour_index) : c(neighbour_index) {}
   };
 
  private:
  public:
-  explicit Cell(Particles &particles, cell_type type, std::array<size_t, 3> idx) : particles(particles), type(type), idx(idx) {};
-
-  /**
-   * a pairwise range over the particles, uses a cached range initialized at the start of the program
-   * */
-  template<typename Callable>
-  auto pairwise(Callable c) {
-    for (int index = start_index; index < end_index; ++index) {
-      auto p1 = particles.load_vectorized_single(index);
-
-      size_v index_vector_tmp = 0;
-      for (size_t i = 0; i < size_v::size(); ++i) {
-        index_vector_tmp[i] = i;
-      }
-      auto index_vector = index_vector_tmp;
-
-      size_t i = 0;
-      while (index + 1 + (i * double_v::size()) < end_index) {
-        auto active_mask = index_vector + 1 + (i * double_v::size()) < particles.size;
-        auto p2 = particles.load_vectorized(index + 1 + (i * double_v::size()));
-        auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
-        c(p1, p2, mask);
-        particles.store_force_vector(p2, index + 1 + (i * double_v::size()), mask);
-        i++;
-      }
-
-      for (auto neighbour : neighbours) {
-
-        size_t i = 0;
-        size_t n_start = neighbour.c.start_index;
-        size_t n_end = neighbour.c.end_index;
-        while (n_start + (i * double_v::size()) < n_end) {
-          auto active_mask = index_vector + (i * double_v::size()) < (n_end - n_start);
-          auto p2 = particles.load_vectorized(n_start + (i * double_v::size()));
-          auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
-          c(p1, p2, mask);
-          particles.store_force_vector(p2, n_start + (i * double_v::size()), mask);
-          i++;
-        }
-      }
-
-      particles.store_force_single(p1, index);
-    }
-  };
+  explicit Cell(cell_type type, std::array<size_t, 3> idx) : type(type), idx(idx) {};
 
   constexpr auto is_boundary() -> bool {
     return type == cell_type::boundary;
   }
 
+  auto size() -> size_t {
+    return end_index - start_index;
+  }
+
  public:
-  Particles &particles;
   size_t start_index;
   size_t end_index;
   cell_type type = cell_type::inner;
@@ -120,8 +80,8 @@ class LinkedCell {
 
  public:
   LinkedCell() = delete;
-  explicit LinkedCell(Particles &&particles, const std::array<double, 3> &domain, double cutoff, std::array<BoundaryCondition, 6> bc, double sigma)
-      : particles(particles),
+  explicit LinkedCell(const std::array<double, 3> &domain, double cutoff, std::array<BoundaryCondition, 6> bc, double sigma)
+      : particles(Particles()),
         bc(bc),
         sigma(sigma),
         cutoff(cutoff) {
@@ -135,13 +95,13 @@ class LinkedCell {
         (size_t) std::ceil(domain[2] / widths[2])};
     cells.reserve(dim[0] * dim[1] * dim[2]);
 
-    auto range = std::views::cartesian_product(
-        std::views::iota(0UL, dim[0]),
-        std::views::iota(0UL, dim[1]),
-        std::views::iota(0UL, dim[2]));
-
-    for (auto [x, y, z] : range) {
-      this->cells.emplace_back(particles, cell_type::inner, std::array<size_t, 3>({x, y, z}));
+    // Iterate in reverse order to get correct index
+    for (size_t z = 0; z < dim[2]; ++z) {
+      for (size_t y = 0; y < dim[1]; ++y) {
+        for (size_t x = 0; x < dim[0]; ++x) {
+          this->cells.emplace_back(cell_type::inner, std::array<size_t, 3>({x, y, z}));
+        }
+      }
     }
 
     for (auto &c : cells) {
@@ -187,12 +147,13 @@ class LinkedCell {
     for (long x = -(long) radius_x; x <= (long) radius_x; ++x) {
       for (long y = -(long) radius_y; y <= (long) radius_y; ++y) {
         for (long z = -(long) radius_z; z <= (long) radius_z; ++z) {
+
           if (x != 0 || y != 0 || z != 0) {
             if (z > 0 || (x > 0 && z >= 0) || (x >= 0 && z >= 0 && y > 0)) {
               auto other_index = offset(idx, {x, y, z});
               // checks that cell is not out of bounds and not the same cell
               if (other_index < cells.size() && other_index != cell_idx) {
-                neighbours.emplace_back(cells[other_index]);
+                neighbours.emplace_back(other_index);
               }
             }
           }
@@ -206,14 +167,17 @@ class LinkedCell {
   constexpr auto position_to_index(std::array<double, 3> position) -> size_t {
     auto [x, y, z] = position;
 
-    std::array<size_t, 3> dim = {(size_t) std::floor(x / widths[0]),
-                                 (size_t) std::floor(y / widths[1]),
-                                 (size_t) std::floor(z / widths[2])};
+    std::array<size_t, 3> dimension = {(size_t) std::floor(x / widths[0]),
+                                       (size_t) std::floor(y / widths[1]),
+                                       (size_t) std::floor(z / widths[2])};
 
-    return dimension_to_index(dim);
+    return dimension_to_index(dimension);
   }
   auto dimension_to_index(std::array<size_t, 3> dimension) -> size_t {
     auto [x, y, z] = dimension;
+    if (x > dim[0] || y > dim[1] || z > dim[2]) {
+      return ULONG_MAX;
+    }
     return x + y * dim[0] + z * dim[0] * dim[1];
   }
 
@@ -228,23 +192,59 @@ class LinkedCell {
    * */
   template<typename Callable>
   auto boundary(Callable f) -> auto {
-    for (auto &cell : cells) {
-      if (cell.is_boundary()) {
-        cell.pairwise(f);
-      }
-    }
   }
 
   /**
-   * returns a range with pairs of Particles
+   * a pairwise range over the particles, uses a cached range initialized at the start of the program
    * */
-
   template<typename Callable>
-  auto pairwise(Callable f) -> auto {
-    for (auto &cell : cells) {
-      cell.pairwise(f);
+  auto pairwise(Callable c) {
+    for (int index = 0; index < particles.size; ++index) {
+      if (particles.active[index]) {
+        const auto temp = particles.cell[index];
+        auto &cell = cells[temp];
+        auto p1 = particles.load_vectorized_single(index);
+
+        size_v index_vector_tmp = 0;
+        for (size_t i = 0; i < size_v::size(); ++i) {
+          index_vector_tmp[i] = i;
+        }
+        auto index_vector = index_vector_tmp;
+
+        // Same cell particles
+        size_t i = 0;
+        while (index + 1 + ((i + 1) * double_v::size()) < cell.end_index) {
+          auto active_mask = index_vector + 1 + (i * double_v::size()) < (cell.size());
+          auto p2 = particles.load_vectorized(index + 1 + (i * double_v::size()));
+          auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
+          c(p1, p2, mask);
+          particles.store_force_vector(p2, index + 1 + (i * double_v::size()), mask);
+          i++;
+        }
+
+        // Neighbour cells
+        for (size_t n = 0; n < cell.neighbours.size(); ++n) {
+          auto &neighbour = cell.neighbours[n];
+
+          size_t i = 0;
+          auto &neighbour_cell = cells[neighbour.c];
+          size_t n_start = neighbour_cell.start_index;
+          size_t n_end = neighbour_cell.end_index;
+          while (n_start + ((i + 1) * double_v::size()) < n_end) {
+            auto active_mask = index_vector + (i * double_v::size()) < (neighbour_cell.size());
+            auto p2 = particles.load_vectorized(n_start + (i * double_v::size()));
+            auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
+            c(p1, p2, mask);
+            particles.store_force_vector(p2, n_start + (i * double_v::size()), mask);
+            i++;
+          }
+        }
+        particles.store_force_single(p1, index);
+      } else {
+        //        SPDLOG_WARN("Particle not deleted");
+      }
     }
-  }
+  };
 
   /**
    * inserts a new particle into the arena and the into the cells
@@ -274,14 +274,19 @@ class LinkedCell {
     particles.sort([this](std::array<double, 3> idx) -> size_t { return position_to_index(idx); });
 
     size_t start = 0;
-    size_t last = particles.cell[0];
+    size_t cell = particles.cell[0];
 
     for (size_t i = 0; i < particles.size; ++i) {
-      if (particles.cell[i] != last) {
-        cells[last].start_index = start;
-        cells[last].end_index = i;
+      if (particles.cell[i] >= cells.size()) {
+        particles.active[i] = false;
+      }
+      if (particles.cell[i] != cell) {
+        if (cell < cells.size()) {
+          cells[cell].start_index = start;
+          cells[cell].end_index = i;
+        }
         start = i;
-        last = particles.cell[i];
+        cell = particles.cell[i];
       }
     }
 

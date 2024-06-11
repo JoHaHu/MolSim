@@ -16,7 +16,7 @@ using particle_container_variant = std::variant<Particles, LinkedCell>;
 struct particle_container {
 
  public:
-  explicit particle_container(particle_container_variant &&var) : var(var) {
+  explicit particle_container(particle_container_variant &&var) : var(std::move(var)) {
   }
 
   auto particles() -> Particles & {

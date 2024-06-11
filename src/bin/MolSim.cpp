@@ -40,20 +40,13 @@ auto main(int argc, char *argv[]) -> int {
       break;
   }
 
-  auto particles = Particles();
-
-  for (auto p : particles_vector) {
-    particles.insert_particle(p);
-  }
-
-  container::particle_container pc = container::particle_container(particles);
+  container::particle_container pc = container::particle_container(Particles());
 
   switch (config->particle_loader_type) {
     case ParticleContainerType::Vector:
       break;
     case ParticleContainerType::LinkedCells:
       auto lc = container::LinkedCell(
-          std::move(particles),
           config->domain_size,
           config->cutoff_radius,
           config->boundary_conditions,
@@ -61,6 +54,10 @@ auto main(int argc, char *argv[]) -> int {
 
       pc = container::particle_container(std::move(lc));
       break;
+  }
+
+  for (auto p : particles_vector) {
+    pc.insert(p);
   }
 
   pc.refresh();
