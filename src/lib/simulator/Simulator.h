@@ -15,11 +15,6 @@
 #include <spdlog/spdlog.h>
 #include <utility>
 
-using double_v = stdx::native_simd<double>;
-using double_mask = stdx::native_simd_mask<double>;
-using int_v = stdx::native_simd<int>;
-using size_v = stdx::native_simd<size_t>;
-
 namespace simulator {
 
 /**
@@ -78,73 +73,17 @@ class Simulator {
   }
 
   template<typename F>
-  auto calculate_force_particle_pair(F f, Particles &p, size_t index) {
+  auto calculate_force_particle_pair(F f, VectorizedParticle &p1, VectorizedParticle &p2, double_mask mask) {
 
-    const auto pos_x = double_v(p.position_x[index]);
-    const auto pos_y = double_v(p.position_y[index]);
-    const auto pos_z = double_v(p.position_z[index]);
-    const auto mass = double_v(p.mass[index]);
-    const auto type = int_v(p.type[index]);
+    const auto force = f(p1, p2);
 
-    size_v index_vector_tmp = 0;
+    where(mask, p2.force[0]) = p2.force[0] - force[0];
+    where(mask, p2.force[1]) = p2.force[1] - force[1];
+    where(mask, p2.force[2]) = p2.force[2] - force[2];
 
-    for (size_t i = 0; i < size_v::size(); ++i) {
-      index_vector_tmp[i] = i;
-    }
-    const auto index_vector = index_vector_tmp;
-
-    size_t i = 0;
-    //#pragma clang loop vectorize(enable) vectorize_width(8) vectorize_predicate(enable)
-    while (1 + (i * double_v::size()) < p.size) {
-
-      auto active_mask = index_vector + 1 + (i * double_v::size()) < p.size;
-
-      auto pos_x_vector = double_v();
-      pos_x_vector.copy_from(&p.position_x[index + 1 + (i * double_v::size())], stdx::element_aligned);
-
-      auto pos_y_vector = double_v();
-      pos_y_vector.copy_from(&p.position_y[index + 1 + (i * double_v::size())], stdx::element_aligned);
-
-      auto pos_z_vector = double_v();
-      pos_z_vector.copy_from(&p.position_z[index + 1 + (i * double_v::size())], stdx::element_aligned);
-
-      auto mass_vector = double_v();
-      mass_vector.copy_from(&p.mass[index + 1 + (i * double_v::size())], stdx::element_aligned);
-
-      auto type_vector = int_v();
-      type_vector.copy_from(&p.type[index + 1 + (i * int_v::size())], stdx::element_aligned);
-
-      auto active_vector = size_v();
-      active_vector.copy_from(&p.active[index + 1 + (i * size_v::size())], stdx::element_aligned);
-      active_mask = active_mask && active_vector > 0;
-
-      const auto [rforce_x, rforce_y, rforce_z] = f(
-          pos_x, pos_y, pos_z, mass, type,
-          pos_x_vector, pos_y_vector, pos_z_vector, mass_vector, type_vector);
-
-      auto force_x_vector = double_v();
-      force_x_vector.copy_from(&p.force_x[index + 1 + (i * double_v::size())], stdx::element_aligned);
-      auto mask = stdx::static_simd_cast<double_mask>(active_mask);
-      stdx::where(mask, force_x_vector) = force_x_vector - rforce_x;
-      force_x_vector.copy_to(&p.force_x[index + 1 + (i * double_v::size())], stdx::element_aligned);
-
-      auto force_y_vector = double_v();
-      force_y_vector.copy_from(&p.force_y[index + 1 + (i * double_v::size())], stdx::element_aligned);
-      stdx::where(mask, force_y_vector) = force_y_vector - rforce_y;
-      force_y_vector.copy_to(&p.force_y[index + 1 + (i * double_v::size())], stdx::element_aligned);
-
-      auto force_z_vector = double_v();
-      force_z_vector.copy_from(&p.force_z[index + 1 + (i * double_v::size())], stdx::element_aligned);
-      stdx::where(mask, force_z_vector) = force_z_vector - rforce_z;
-      force_z_vector.copy_to(&p.force_z[index + 1 + (i * double_v::size())], stdx::element_aligned);
-
-      double tp = stdx::reduce(where(mask, rforce_x), std::plus<>());
-      p.force_x[index] += tp;
-      p.force_y[index] += stdx::reduce(where(mask, rforce_y), std::plus<>());
-      p.force_z[index] += stdx::reduce(where(mask, rforce_z), std::plus<>());
-
-      ++i;
-    }
+    p1.force[0] += stdx::reduce(where(mask, force[0]), std::plus<>());
+    p1.force[1] += stdx::reduce(where(mask, force[1]), std::plus<>());
+    p1.force[2] += stdx::reduce(where(mask, force[2]), std::plus<>());
   }
 
   /*! <p> Function for position calculation </p>
@@ -194,13 +133,13 @@ class Simulator {
 
     switch (physics) {
       case physics::ForceModel::Gravity:
-        particles.pairwise([this](Particles &p, auto index) {
-          calculate_force_particle_pair(physics::gravity::calculate_force, p, index);
+        particles.pairwise([this](auto &p1, auto &p2, auto mask) {
+          calculate_force_particle_pair(physics::gravity::calculate_force, p1, p2, mask);
         });
         break;
       case physics::ForceModel::LennardJones:
-        particles.pairwise([this](Particles &p, auto index) {
-          calculate_force_particle_pair(physics::lennard_jones::calculate_force, p, index);
+        particles.pairwise([this](auto &p1, auto &p2, auto mask) {
+          calculate_force_particle_pair(physics::lennard_jones::calculate_force, p1, p2, mask);
         });
         break;
     }
@@ -244,7 +183,7 @@ class Simulator {
 
       current_time += delta_t;
     }
-    spdlog::info("Output written. Terminating...");
+    SPDLOG_INFO("Output written. Terminating...");
   }
 };
 

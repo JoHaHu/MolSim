@@ -116,10 +116,21 @@ inline auto elementWiseScalarOp(const Scalar &lhs, const C &rhs,
      */
 template<std::ranges::forward_range C>
 auto constexpr L2Norm(const C &c) {
+  return stdx::sqrt(std::accumulate(std::cbegin(c), std::cend(c), double_v(0.0), [](auto a, auto b) { return a + b * b; }));
+}
+
+/**
+     * Calculates the L2 norm for a given container.
+     * @tparam Container
+     * @param c
+     * @return sqrt(sum_i(c[i]*c[i])).
+     */
+template<std::ranges::forward_range C>
+  requires(std::convertible_to<std::ranges::range_value_t<C>, double>)
+auto constexpr L2Norm(const C &c) {
   return std::sqrt(std::accumulate(std::cbegin(c), std::cend(c), 0.0, [](auto a, auto b) { return a + b * b; }));
 }
 }// namespace ArrayUtils
-
 
 /**
  * Element wise addition of two containers.

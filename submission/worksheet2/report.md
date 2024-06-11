@@ -49,11 +49,11 @@ PR: https://github.com/JoHaHu/MolSim/pull/27
 
 ### Task 4 - Collision Simulation
 
-- Created a function to generate particles arranged in a 3D grid
+- Created a function to generate particle_pages arranged in a 3D grid
 - Checked for and handled invalid data in the input cuboid parameters
 - Calculated particle positions based on grid dimensions and spacing
 - Initialized particle velocities with a predefined distribution.
-- Stored the generated particles efficiently in a vector
+- Stored the generated particle_pages efficiently in a vector
 
 
 

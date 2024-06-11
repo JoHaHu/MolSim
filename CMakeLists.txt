@@ -41,6 +41,7 @@ target_include_directories(simulator
 
 target_link_libraries(simulator
         PUBLIC
+#        asan
         spdlog::spdlog
         xerces-c
 )
@@ -116,12 +117,12 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -mprefer-vector-width=512 #[[-fprofile-use=../profiles/default.profdata]] -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -mprefer-vector-width=512 #[[-fsanitize=address]] -fprofile-use=../profiles/default.profdata -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
             $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize>
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -mprefer-vector-width=512 #[[ -fprofile-use=../profiles/default.profdata ]] -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -mprefer-vector-width=512  #[[-fsanitize=address]]  -fprofile-use=../profiles/default.profdata  -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
             $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize>
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
@@ -129,12 +130,12 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
 
     target_link_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -Wl #[[-fprofile-use=../profiles/default.profdata]] >
+            $<$<CXX_COMPILER_ID:Clang>: -Wl -fprofile-use=../profiles/default.profdata>
 
     )
     target_link_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -Wl #[[-fprofile-use=../profiles/default.profdata]] >
+            $<$<CXX_COMPILER_ID:Clang>: -Wl -fprofile-use=../profiles/default.profdata >
 
     )
 
@@ -142,12 +143,12 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
 elseif (CMAKE_BUILD_TYPE STREQUAL "Profile")
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fprofile-generate=../profiles/ -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize  -mprefer-vector-width=512  -fprofile-generate=../profiles/ -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
             $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize>
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fprofile-generate=../profiles/ -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize  -mprefer-vector-width=512 -fprofile-generate=../profiles/ -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
             $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize>
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)

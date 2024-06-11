@@ -46,16 +46,15 @@ auto main(int argc, char *argv[]) -> int {
 
   switch (config->particle_loader_type) {
     case ParticleContainerType::Vector:
-      pc = container::particle_container(Particles());
       break;
     case ParticleContainerType::LinkedCells:
-      //      auto lc = container::linked_cell<container::index::row_major_index>(
-      //          config->domain_size,
-      //          config->cutoff_radius,
-      //          config->boundary_conditions,
-      //          particles.size(), config->sigma);
-      //
-      //      pc = container::particle_container(std::move(lc));
+      auto lc = container::LinkedCell(
+          config->domain_size,
+          config->cutoff_radius,
+          config->boundary_conditions,
+          config->sigma);
+
+      pc = container::particle_container(std::move(lc));
       break;
   }
 

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Particle.h"
-#include "index.h"
+#include "container/linked_cell.h"
 #include "utils/variants.h"
 #include <ranges>
 #include <vector>
 namespace container {
 
-using particle_container_variant = std::variant<Particles>;
+using particle_container_variant = std::variant<Particles, LinkedCell>;
 
 /*!
  * @brief A variant-based particle container supporting multiple underlying data structures.
@@ -19,11 +19,14 @@ struct particle_container {
   explicit particle_container(particle_container_variant &&var) : var(std::move(var)) {}
 
   auto particles() -> Particles & {
-    return std::visit(
-        [](Particles &container) -> auto & {
-          return container;
-        },
-        var);
+    return std::visit(overloaded{
+                          [](Particles &container) -> auto & {
+                            return container;
+                          },
+                          [](LinkedCell &c) -> auto & {
+                            return c.particles;
+                          }},
+                      var);
   }
 
   /**
@@ -40,10 +43,7 @@ struct particle_container {
   }
 
   auto swap_force() {
-    std::visit([](Particles &p) {
-      p.swap_force();
-    },
-               var);
+    particles().swap_force();
   }
 
   /**
@@ -53,13 +53,30 @@ struct particle_container {
   */
   template<typename C>
   auto pairwise(C f) {
-    std::visit(
-        [&](Particles &container) {
-          for (size_t i = 0; i < container.size - 1; ++i) {
-            f(container, i);
-          }
-        },
-        var);
+    std::visit(overloaded{
+                   [&](LinkedCell &lc) { lc.pairwise(f); },
+                   [&](Particles &p) {
+                     for (size_t index = 0; index < p.size - 1; ++index) {
+                       auto p1 = p.load_vectorized_single(index);
+                       size_v index_vector_tmp = 0;
+                       for (size_t i = 0; i < size_v::size(); ++i) {
+                         index_vector_tmp[i] = i;
+                       }
+                       const auto index_vector = index_vector_tmp;
+                       size_t i = 0;
+                       while (index + 1 + (i * double_v::size()) < p.size) {
+                         auto active_mask = index_vector + 1 + (i * double_v::size()) < p.size;
+                         auto p2 = p.load_vectorized(index + 1 + (i * double_v::size()));
+                         active_mask = active_mask && p2.active > 0;
+                         auto mask = stdx::static_simd_cast<double_v>(active_mask);
+                         f(p1, p2, mask);
+                         p.store_force_vector(p2, index + 1 + (i * double_v::size()), mask);
+                         i++;
+                       }
+                       p.store_force_single(p1, index);
+                     }
+                   }},
+               var);
   }
 
   /**
@@ -68,21 +85,19 @@ struct particle_container {
   * @return Size of the container.
   */
   auto size() -> size_t {
-    return std::visit(
-        [](auto &c) { return c.size; },
-        var);
+    return particles().size;
   }
 
-  /**
-  * @brief Applies boundary conditions to the container.
-  *
-  * @param f Function to apply for boundary conditions.
-  */
-  auto boundary(std::function<void(Particles &, std::tuple<size_t, size_t>)> const &f) {
-    std::visit(
-        [](Particles &container) {},
-        var);
-  }
+  //  /**
+  //  * @brief Applies boundary conditions to the container.
+  //  *
+  //  * @param f Function to apply for boundary conditions.
+  //  */
+  //  auto boundary(std::function<void(Particles &, std::tuple<size_t, size_t>)> const &f) {
+  //    std::visit(
+  //        [](Particles &container) {},
+  //        var);
+  //  }
 
   /**
   * @brief Inserts a particle into the container.
@@ -90,18 +105,22 @@ struct particle_container {
   * @param p Particle to insert.
   */
   void insert(Particle p) {
-    std::visit(
-        [p](Particles &container) { container.insert_particle(p); },
-        var);
+    std::visit(overloaded{
+                   [p](Particles &container) { container.insert_particle(p); },
+                   [p](LinkedCell &lc) {
+                     lc.insert(p);
+                   }},
+               var);
   }
 
   /**
   * @brief Updates internal data structures after position recalculations.
   */
   void refresh() {
-    std::visit(
-        [](Particles &container) {},
-        var);
+    std::visit(overloaded{
+                   [](Particles &container) {},
+                   [](LinkedCell &lc) { lc.fix_positions(); }},
+               var);
   }
 
  private:

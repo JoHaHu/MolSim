@@ -15,7 +15,7 @@ class LinkedCellsTest : public ::testing::Test {
   void SetUp() override {
     Test::SetUp();
 
-    auto lc = container::linked_cell<container::index::row_major_index>(
+    auto lc = container::LinkedCell<container::index::row_major_index>(
         {1.0, 1.0, 1.0},
         1.0,
         {
@@ -30,7 +30,7 @@ class LinkedCellsTest : public ::testing::Test {
         1.0);
     lc.insert(Particle({0.5, 0.5, 0.5}, {0, 0, 0}, 0, 0));
     outflow_pc = container::particle_container(std::move(lc));
-    auto lc2 = container::linked_cell<container::index::row_major_index>(
+    auto lc2 = container::LinkedCell<container::index::row_major_index>(
         {1.0, 1.0, 1.0},
         1.0,
         {
