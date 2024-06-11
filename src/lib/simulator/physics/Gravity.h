@@ -11,8 +11,8 @@ namespace simulator::physics::gravity {
  * Implements physics for simulations using gravity as force Model
  *
  * */
-auto static calculate_force(VectorizedParticle& p1,
-                            VectorizedParticle& p2) -> std::array<double_v, 3> {
+auto static calculate_force(VectorizedParticle &p1,
+                            VectorizedParticle &p2) -> std::array<double_v, 3> {
   SPDLOG_TRACE("Entering Gravity calculate_force");
 
   const auto diff = p2.position - p1.position;

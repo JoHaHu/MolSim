@@ -5,8 +5,6 @@
 #include <cstdint>
 namespace simulator::physics {
 
-
-
 /**
  * A enum with supported Force Models
  * */

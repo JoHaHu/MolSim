@@ -46,7 +46,7 @@ class Cell {
 
  private:
  public:
-  explicit Cell(Particles &particles, cell_type type, std::array<size_t, 3> idx) : particles(particles), type(type), idx(idx){};
+  explicit Cell(Particles &particles, cell_type type, std::array<size_t, 3> idx) : particles(particles), type(type), idx(idx) {};
 
   /**
    * a pairwise range over the particles, uses a cached range initialized at the start of the program
@@ -287,7 +287,7 @@ class LinkedCell {
 
     SPDLOG_TRACE("fixed positions");
   }
-  
+
   Particles particles;
 
  private:
