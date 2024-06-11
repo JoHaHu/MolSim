@@ -35,7 +35,7 @@ class LinkedCell;
    *
    * Holds particles and supports operations on them.
    */
-class cell {
+class Cell {
   friend class LinkedCell;
 
  private:
@@ -45,17 +45,21 @@ class cell {
   };
 
  public:
-  explicit cell(Particles &particles, cell_type type, std::array<size_t, 3> idx, std::vector<size_t> neighbours) : particles(particles), type(type), neighbours(std::move(neighbours)), idx(idx) {};
+  explicit Cell(Particles &particles, cell_type type, std::array<size_t, 3> idx, std::vector<size_t> neighbours) : particles(particles), type(type), neighbours(std::move(neighbours)), idx(idx) {};
 
   /**
    * a pairwise range over the particles, uses a cached range initialized at the start of the program
    * */
   template<typename Callable>
-  auto pairwise(Callable c)  {
-    for (auto& page: particle_pages) {
+  auto pairwise(Callable c) {
+    for (auto &page : particle_pages) {
 
+      for (int offset = 0; offset < double_mask::size(); ++offset) {
+        auto p1 = particles.load_vectorized_single(page.index + offset);
+        if (stdx::any_of(p1.active>0 )) {
 
-
+        }
+      }
     }
   };
 
@@ -211,7 +215,12 @@ class LinkedCell {
    * a range over the boundary cells
    * */
   template<typename Callable>
-  auto boundary() -> auto {
+  auto boundary(Callable f) -> auto {
+    for (auto &cell : cells) {
+      if (cell.is_boundary()) {
+        cell.pairwise(f);
+      }
+    }
   }
 
   /**
@@ -220,9 +229,9 @@ class LinkedCell {
 
   template<typename Callable>
   auto pairwise(Callable f) -> auto {
-    std::for_each(cells.begin(), cells.end(), [&](cell &c) {
-      c.pairwise(f);
-    });
+    for (auto &cell : cells) {
+      cell.pairwise(f);
+    }
   }
 
   /**
@@ -245,7 +254,7 @@ class LinkedCell {
    * Better than updating positions when changes are made, because the vectors get resized/reorderd a lot when only single elements get removed
    * */
   auto fix_positions() {
-    std::ranges::for_each(cells, &cell::clear);
+    std::ranges::for_each(cells, &Cell::clear);
 
     for (int i = 0; i < particles.size; ++i) {
       insert_into_cell(i);
@@ -273,7 +282,7 @@ class LinkedCell {
     }
   }
 
-  std::vector<cell> cells;
+  std::vector<Cell> cells;
   std::array<BoundaryCondition, 6> bc;
   std::array<double, 3> widths;
   std::array<size_t, 3> dim;

@@ -13,20 +13,31 @@ inline static double epsilon;
 inline static double sigma;
 inline static double cutoff;
 
+static double epsilon24;
+static double epsilon48;
 
-auto static calculate_force(const VectorizedParticle& p1, const VectorizedParticle& p2) -> std::array<double_v, 3> {
+auto static initialize_constants(double e, double s, double c) {
+  epsilon = e;
+  sigma = s;
+  cutoff = c;
+
+  auto sigma3 = sigma * sigma * sigma;
+  auto sigma6 = sigma3 * sigma3;
+  epsilon24 = 24 * epsilon * sigma6;
+  epsilon48 = 48 * epsilon * sigma6 * sigma6;
+}
+
+auto static calculate_force(const VectorizedParticle &p1, const VectorizedParticle &p2) -> std::array<double_v, 3> {
   SPDLOG_TRACE("Entering LennardJones calculate_force");
 
   const auto diff = p2.position - p1.position;
 
   const auto norm = ArrayUtils::L2Norm(diff);
 
-  // TODO precalculate sigma^3 , 24 * epsilon
+  const auto norm_2 = norm * norm;
+  const auto norm_6 = norm_2 * norm_2 * norm_2;
 
-  const auto sigma_over_norm_3 = (sigma / norm) * (sigma / norm) * (sigma / norm);
-  const auto sigma_over_norm_6 = sigma_over_norm_3 * sigma_over_norm_3;
-
-  const auto temp = 24 * epsilon / (norm * norm) * (1 - 2 * sigma_over_norm_6) * sigma_over_norm_6;
+  const auto temp = (norm_6 * epsilon24 - epsilon48) / (norm_6 * norm_6 * norm_2);
   auto force = temp * diff;
 
   SPDLOG_TRACE("Exiting LennardJones calculate_force");

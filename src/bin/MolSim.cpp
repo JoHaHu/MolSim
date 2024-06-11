@@ -36,9 +36,7 @@ auto main(int argc, char *argv[]) -> int {
     case simulator::physics::ForceModel::Gravity:
       break;
     case simulator::physics::ForceModel::LennardJones:
-      simulator::physics::lennard_jones::sigma = config->sigma;
-      simulator::physics::lennard_jones::epsilon = config->epsilon;
-      simulator::physics::lennard_jones::cutoff = config->cutoff_radius;
+      simulator::physics::lennard_jones::initialize_constants(config->epsilon, config->sigma, config->cutoff_radius);
       break;
   }
 
