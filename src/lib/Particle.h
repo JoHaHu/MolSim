@@ -67,9 +67,9 @@ struct VectorizedParticle {
   std::array<double_v, 3> old_force{};
   double_v mass{};
   int_v type;
-  size_v active;
+  double_mask active;
 
-  VectorizedParticle(const std::array<double_v, 3> &position, const std::array<double_v, 3> &velocity, const std::array<double_v, 3> &force, const std::array<double_v, 3> &oldForce, const double_v &mass, const int_v &type, const size_v &active) : position(position), velocity(velocity), force(force), old_force(oldForce), mass(mass), type(type), active(active) {}
+  VectorizedParticle(const std::array<double_v, 3> &position, const std::array<double_v, 3> &velocity, const std::array<double_v, 3> &force, const std::array<double_v, 3> &oldForce, const double_v &mass, const int_v &type, const double_mask &active) : position(position), velocity(velocity), force(force), old_force(oldForce), mass(mass), type(type), active(active) {}
 };
 
 class Particles {
@@ -93,7 +93,8 @@ class Particles {
   std::vector<double> mass{};
 
   std::vector<int> type{};
-  std::vector<size_t> active{};
+  std::vector<uint8_t> active{};
+  std::vector<size_t> cell{};
 
   auto store_force_single(VectorizedParticle p1, size_t index) {
     force_x[index] = p1.force[0][0];
@@ -114,45 +115,31 @@ class Particles {
                               {double_v(old_force_x[index]), double_v(old_force_y[index]), double_v(old_force_z[index])},
                               double_v(mass[index]),
                               int_v(type[index]),
-                              size_v(active[index]));
+                              double_mask(static_cast<bool>(active[index])));
   }
   auto load_vectorized(size_t index) -> VectorizedParticle {
-    auto pos_x_vector = double_v();
-    pos_x_vector.copy_from(&position_x[index], stdx::element_aligned);
-    auto pos_y_vector = double_v();
-    pos_y_vector.copy_from(&position_y[index], stdx::element_aligned);
-    auto pos_z_vector = double_v();
-    pos_z_vector.copy_from(&position_z[index], stdx::element_aligned);
+    auto pos_x_vector = double_v(&position_x[index], stdx::element_aligned);
+    auto pos_y_vector = double_v(&position_y[index], stdx::element_aligned);
+    auto pos_z_vector = double_v(&position_z[index], stdx::element_aligned);
 
-    auto velocity_x_vector = double_v();
-    velocity_x_vector.copy_from(&velocity_x[index], stdx::element_aligned);
-    auto velocity_y_vector = double_v();
-    velocity_y_vector.copy_from(&velocity_y[index], stdx::element_aligned);
-    auto velocity_z_vector = double_v();
-    velocity_z_vector.copy_from(&velocity_z[index], stdx::element_aligned);
+    auto velocity_x_vector = double_v(&velocity_x[index], stdx::element_aligned);
+    auto velocity_y_vector = double_v(&velocity_y[index], stdx::element_aligned);
+    auto velocity_z_vector = double_v(&velocity_z[index], stdx::element_aligned);
 
-    auto force_x_vector = double_v();
-    force_x_vector.copy_from(&force_x[index], stdx::element_aligned);
-    auto force_y_vector = double_v();
-    force_y_vector.copy_from(&force_y[index], stdx::element_aligned);
-    auto force_z_vector = double_v();
-    force_z_vector.copy_from(&force_z[index], stdx::element_aligned);
+    auto force_x_vector = double_v(&force_x[index], stdx::element_aligned);
+    auto force_y_vector = double_v(&force_y[index], stdx::element_aligned);
+    auto force_z_vector = double_v(&force_z[index], stdx::element_aligned);
 
-    auto old_force_x_vector = double_v();
-    old_force_x_vector.copy_from(&old_force_x[index], stdx::element_aligned);
-    auto old_force_y_vector = double_v();
-    old_force_y_vector.copy_from(&old_force_y[index], stdx::element_aligned);
-    auto old_force_z_vector = double_v();
-    old_force_z_vector.copy_from(&old_force_z[index], stdx::element_aligned);
+    auto old_force_x_vector = double_v(&old_force_x[index], stdx::element_aligned);
+    auto old_force_y_vector = double_v(&old_force_y[index], stdx::element_aligned);
+    auto old_force_z_vector = double_v(&old_force_z[index], stdx::element_aligned);
 
     auto mass_vector = double_v();
     mass_vector.copy_from(&mass[index], stdx::element_aligned);
 
-    auto type_vector = int_v();
-    type_vector.copy_from(&type[index], stdx::element_aligned);
+    auto type_vector = int_v(&type[index], stdx::element_aligned);
 
-    auto active_vector = size_v();
-    active_vector.copy_from(&active[index], stdx::element_aligned);
+    auto active_vector = stdx::static_simd_cast<double_mask>(size_v(&active[index], stdx::element_aligned) > 0);
 
     return VectorizedParticle({pos_x_vector, pos_y_vector, pos_z_vector},
                               {velocity_x_vector, velocity_y_vector, velocity_z_vector},
@@ -183,10 +170,28 @@ class Particles {
     mass.emplace_back(p.mass);
     type.emplace_back(p.type);
     active.emplace_back(1);
+    cell.emplace_back(0);
     size++;
     return size - 1;
   }
   size_t size{};
+
+  template<typename Callable>
+  void sort(Callable c) {
+    for (int i = 0; i < size; ++i) {
+      cell[i] = c({position_x[i], position_y[i], position_z[i]});
+    }
+    std::ranges::sort(std::ranges::zip_view(
+                          cell,
+                          position_x, position_y, position_z,
+                          velocity_x, velocity_y, velocity_z,
+                          force_x, force_y, force_z,
+                          old_force_x, old_force_y, old_force_z,
+                          mass, type, active),
+                      [](auto tuple1, auto tuple2) {
+                        return std::get<0>(tuple1) < std::get<0>(tuple2);
+                      });
+  }
 
   void swap_force() {
     std::swap(old_force_x, force_x);

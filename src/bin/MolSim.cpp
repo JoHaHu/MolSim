@@ -27,7 +27,7 @@ auto main(int argc, char *argv[]) -> int {
 
   auto particle_loader = simulator::io::ParticleGenerator(config);
 
-  auto particles = particle_loader.load_particles();
+  auto particles_vector = particle_loader.load_particles();
 
   auto plotter = std::make_unique<simulator::io::VTKPlotter>(config);
 
@@ -40,13 +40,20 @@ auto main(int argc, char *argv[]) -> int {
       break;
   }
 
-  container::particle_container pc = container::particle_container(Particles());
+  auto particles = Particles();
+
+  for (auto p : particles_vector) {
+    particles.insert_particle(p);
+  }
+
+  container::particle_container pc = container::particle_container(particles);
 
   switch (config->particle_loader_type) {
     case ParticleContainerType::Vector:
       break;
     case ParticleContainerType::LinkedCells:
       auto lc = container::LinkedCell(
+          std::move(particles),
           config->domain_size,
           config->cutoff_radius,
           config->boundary_conditions,
@@ -56,9 +63,7 @@ auto main(int argc, char *argv[]) -> int {
       break;
   }
 
-  for (auto p : particles) {
-    pc.insert(p);
-  }
+  pc.refresh();
   auto simulator = simulator::Simulator(std::move(pc), physics, std::move(plotter), config);
 
   auto startTime = std::chrono::high_resolution_clock::now();

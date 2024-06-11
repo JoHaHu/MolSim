@@ -19,7 +19,7 @@ static double epsilon48;
 auto static initialize_constants(double e, double s, double c) {
   epsilon = e;
   sigma = s;
-  cutoff = c;
+  cutoff = c * c;
 
   auto sigma3 = sigma * sigma * sigma;
   auto sigma6 = sigma3 * sigma3;
@@ -32,9 +32,8 @@ auto static calculate_force(const VectorizedParticle &p1, const VectorizedPartic
 
   const auto diff = p2.position - p1.position;
 
-  const auto norm = ArrayUtils::L2Norm(diff);
+  const auto norm_2 = ArrayUtils::L2NormSquared(diff);
 
-  const auto norm_2 = norm * norm;
   const auto norm_6 = norm_2 * norm_2 * norm_2;
 
   const auto temp = (norm_6 * epsilon24 - epsilon48) / (norm_6 * norm_6 * norm_2);
@@ -42,7 +41,7 @@ auto static calculate_force(const VectorizedParticle &p1, const VectorizedPartic
 
   SPDLOG_TRACE("Exiting LennardJones calculate_force");
 
-  auto norm_mask = norm > cutoff;
+  auto norm_mask = norm_2 > cutoff;
   stdx::where(norm_mask, force[0]) = 0;
   stdx::where(norm_mask, force[1]) = 0;
   stdx::where(norm_mask, force[2]) = 0;

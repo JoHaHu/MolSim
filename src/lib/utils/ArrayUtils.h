@@ -109,6 +109,17 @@ inline auto elementWiseScalarOp(const Scalar &lhs, const C &rhs,
 }
 
 /**
+     * Calculates the L2 norm squared for a given container.
+     * @tparam Container
+     * @param c
+     * @return sqrt(sum_i(c[i]*c[i])).
+     */
+template<std::ranges::forward_range C>
+auto constexpr L2NormSquared(const C &c) {
+  return std::accumulate(std::cbegin(c), std::cend(c), double_v(0.0), [](auto a, auto b) { return a + b * b; });
+}
+
+/**
      * Calculates the L2 norm for a given container.
      * @tparam Container
      * @param c
@@ -118,7 +129,6 @@ template<std::ranges::forward_range C>
 auto constexpr L2Norm(const C &c) {
   return stdx::sqrt(std::accumulate(std::cbegin(c), std::cend(c), double_v(0.0), [](auto a, auto b) { return a + b * b; }));
 }
-
 /**
      * Calculates the L2 norm for a given container.
      * @tparam Container

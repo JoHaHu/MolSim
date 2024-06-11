@@ -38,28 +38,56 @@ class LinkedCell;
 class Cell {
   friend class LinkedCell;
 
- private:
-  struct ParticlePage {
-    size_t index;
-    double_mask mask;
+  struct Neighbour {
+    Cell &c;
+    // TODO correction vector
+    explicit Neighbour(Cell &c) : c(c) {}
   };
 
+ private:
  public:
-  explicit Cell(Particles &particles, cell_type type, std::array<size_t, 3> idx, std::vector<size_t> neighbours) : particles(particles), type(type), neighbours(std::move(neighbours)), idx(idx) {};
+  explicit Cell(Particles &particles, cell_type type, std::array<size_t, 3> idx) : particles(particles), type(type), idx(idx){};
 
   /**
    * a pairwise range over the particles, uses a cached range initialized at the start of the program
    * */
   template<typename Callable>
   auto pairwise(Callable c) {
-    for (auto &page : particle_pages) {
+    for (int index = start_index; index < end_index; ++index) {
+      auto p1 = particles.load_vectorized_single(index);
 
-      for (int offset = 0; offset < double_mask::size(); ++offset) {
-        auto p1 = particles.load_vectorized_single(page.index + offset);
-        if (stdx::any_of(p1.active>0 )) {
+      size_v index_vector_tmp = 0;
+      for (size_t i = 0; i < size_v::size(); ++i) {
+        index_vector_tmp[i] = i;
+      }
+      auto index_vector = index_vector_tmp;
 
+      size_t i = 0;
+      while (index + 1 + (i * double_v::size()) < end_index) {
+        auto active_mask = index_vector + 1 + (i * double_v::size()) < particles.size;
+        auto p2 = particles.load_vectorized(index + 1 + (i * double_v::size()));
+        auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
+        c(p1, p2, mask);
+        particles.store_force_vector(p2, index + 1 + (i * double_v::size()), mask);
+        i++;
+      }
+
+      for (auto neighbour : neighbours) {
+
+        size_t i = 0;
+        size_t n_start = neighbour.c.start_index;
+        size_t n_end = neighbour.c.end_index;
+        while (n_start + (i * double_v::size()) < n_end) {
+          auto active_mask = index_vector + (i * double_v::size()) < (n_end - n_start);
+          auto p2 = particles.load_vectorized(n_start + (i * double_v::size()));
+          auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
+          c(p1, p2, mask);
+          particles.store_force_vector(p2, n_start + (i * double_v::size()), mask);
+          i++;
         }
       }
+
+      particles.store_force_single(p1, index);
     }
   };
 
@@ -67,28 +95,12 @@ class Cell {
     return type == cell_type::boundary;
   }
 
-  /**
-   * inserts a new particle into the cell
-   * */
-  auto insert(size_t index, double_mask mask) {
-    auto found = std::find_if(particle_pages.begin(), particle_pages.end(), [index](auto el) { return el.index == index; });
-    if (found != particle_pages.end()) {
-      *found = ParticlePage(index, found->mask | mask);
-    }
-  }
-
-  /**
-   * clears the cell
-   * */
-  auto clear() {
-    particle_pages.clear();
-  }
-
  public:
   Particles &particles;
-  std::vector<ParticlePage> particle_pages{};
+  size_t start_index;
+  size_t end_index;
   cell_type type = cell_type::inner;
-  std::vector<size_t> neighbours{};//todo correction vector
+  std::vector<Neighbour> neighbours{};
   std::array<size_t, 3> idx{};
   std::array<BoundaryCondition, 6> boundary = {
       BoundaryCondition::none,
@@ -108,8 +120,8 @@ class LinkedCell {
 
  public:
   LinkedCell() = delete;
-  explicit LinkedCell(const std::array<double, 3> &domain, double cutoff, std::array<BoundaryCondition, 6> bc, double sigma)
-      : particles(Particles()),
+  explicit LinkedCell(Particles &&particles, const std::array<double, 3> &domain, double cutoff, std::array<BoundaryCondition, 6> bc, double sigma)
+      : particles(particles),
         bc(bc),
         sigma(sigma),
         cutoff(cutoff) {
@@ -129,7 +141,7 @@ class LinkedCell {
         std::views::iota(0UL, dim[2]));
 
     for (auto [x, y, z] : range) {
-      this->cells.emplace_back(particles, cell_type::inner, std::array<size_t, 3>({x, y, z}), std::vector<size_t>());
+      this->cells.emplace_back(particles, cell_type::inner, std::array<size_t, 3>({x, y, z}));
     }
 
     for (auto &c : cells) {
@@ -167,10 +179,10 @@ class LinkedCell {
    * Creates the range for a cell, containing the neighbours needed to calculate forces and respects Newtons 3. Law
    * Can be calculated once at the start and then be reused
    * */
-  auto create_neighbours(std::array<size_t, 3> idx) -> std::vector<size_t> {
+  auto create_neighbours(std::array<size_t, 3> idx) -> std::vector<Cell::Neighbour> {
     auto cell_idx = dimension_to_index(idx);
     auto [radius_x, radius_y, radius_z] = std::array<size_t, 3>{1, 1, 1};
-    auto neighbours = std::vector<size_t>();
+    auto neighbours = std::vector<Cell::Neighbour>();
 
     for (long x = -(long) radius_x; x <= (long) radius_x; ++x) {
       for (long y = -(long) radius_y; y <= (long) radius_y; ++y) {
@@ -180,7 +192,7 @@ class LinkedCell {
               auto other_index = offset(idx, {x, y, z});
               // checks that cell is not out of bounds and not the same cell
               if (other_index < cells.size() && other_index != cell_idx) {
-                neighbours.emplace_back(other_index);
+                neighbours.emplace_back(cells[other_index]);
               }
             }
           }
@@ -238,8 +250,7 @@ class LinkedCell {
    * inserts a new particle into the arena and the into the cells
    * */
   auto insert(Particle particle) {
-    auto inserted = particles.insert_particle(particle);
-    insert_into_cell(inserted);
+    particles.insert_particle(particle);
   }
 
   /**
@@ -254,34 +265,32 @@ class LinkedCell {
    * Better than updating positions when changes are made, because the vectors get resized/reorderd a lot when only single elements get removed
    * */
   auto fix_positions() {
-    std::ranges::for_each(cells, &Cell::clear);
 
-    for (int i = 0; i < particles.size; ++i) {
-      insert_into_cell(i);
+    for (auto &cell : cells) {
+      cell.start_index = 0;
+      cell.end_index = 0;
+    }
+
+    particles.sort([this](std::array<double, 3> idx) -> size_t { return position_to_index(idx); });
+
+    size_t start = 0;
+    size_t last = particles.cell[0];
+
+    for (size_t i = 0; i < particles.size; ++i) {
+      if (particles.cell[i] != last) {
+        cells[last].start_index = start;
+        cells[last].end_index = i;
+        start = i;
+        last = particles.cell[i];
+      }
     }
 
     SPDLOG_TRACE("fixed positions");
   }
-
+  
   Particles particles;
 
  private:
-  /**
-   * Inserts a reference to a particle in a arena into it's cell
-   * */
-  auto insert_into_cell(size_t particle) -> void {
-
-    auto cell = position_to_index({particles.position_x[particle], particles.position_y[particle], particles.position_z[particle]});
-    if (cell < cells.size()) {
-      auto offset = particle % double_mask ::size();
-      auto mask = double_mask();
-      mask[offset] = true;
-      cells[cell].insert(particle - offset, mask);
-    } else {
-      spdlog::warn("a particle has positions that is out of bounds ");
-    }
-  }
-
   std::vector<Cell> cells;
   std::array<BoundaryCondition, 6> bc;
   std::array<double, 3> widths;

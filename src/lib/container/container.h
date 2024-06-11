@@ -16,7 +16,8 @@ using particle_container_variant = std::variant<Particles, LinkedCell>;
 struct particle_container {
 
  public:
-  explicit particle_container(particle_container_variant &&var) : var(std::move(var)) {}
+  explicit particle_container(particle_container_variant &&var) : var(var) {
+  }
 
   auto particles() -> Particles & {
     return std::visit(overloaded{
@@ -67,8 +68,7 @@ struct particle_container {
                        while (index + 1 + (i * double_v::size()) < p.size) {
                          auto active_mask = index_vector + 1 + (i * double_v::size()) < p.size;
                          auto p2 = p.load_vectorized(index + 1 + (i * double_v::size()));
-                         active_mask = active_mask && p2.active > 0;
-                         auto mask = stdx::static_simd_cast<double_v>(active_mask);
+                         auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
                          f(p1, p2, mask);
                          p.store_force_vector(p2, index + 1 + (i * double_v::size()), mask);
                          i++;
