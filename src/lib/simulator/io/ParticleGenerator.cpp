@@ -30,7 +30,7 @@ ParticleGenerator::ParticleGenerator(const std::shared_ptr<config::Config> &conf
             * @param initialVx The initial velocity in the x-direction for all particles.
             * @param initialVy The initial velocity in the y-direction for all particles.
             * @param radiusMolecules The radius of the disk in terms of the number of molecules.
-            * @param meshwidth The distance between adjacent particles.
+            * @param meshwidth The reflecting_distance between adjacent particles.
             * @return std::vector<Particle> A vector containing the generated particles.
             */
 std::vector<Particle> ParticleGenerator::generate_disk_particles(double centerX, double centerY, double initialVx,
@@ -77,7 +77,7 @@ std::vector<Particle> ParticleGenerator::generate_disk_particles(double centerX,
    * @param initialVy The initial velocity in the y-direction for all particles.
    * @param initialVz The initial velocity in the z-direction for all particles.
    * @param radiusMolecules The radius of the sphere in terms of the number of molecules.
-   * @param meshwidth The distance between adjacent particles.
+   * @param meshwidth The reflecting_distance between adjacent particles.
    * @return std::vector<Particle> A vector containing the generated particles.
    */
 std::vector<Particle> ParticleGenerator::generate_sphere_particles(double centerX, double centerY, double centerZ,
@@ -125,9 +125,9 @@ std::vector<Particle> ParticleGenerator::generate_sphere_particles(double center
  * @param initialVx The initial velocity in the x-direction for all particles.
  * @param initialVy The initial velocity in the y-direction for all particles.
  * @param initialVz The initial velocity in the z-direction for all particles.
- * @param majorRadius The major radius of the torus (distance from the center of the tube to the center of the torus).
+ * @param majorRadius The major radius of the torus (reflecting_distance from the center of the tube to the center of the torus).
  * @param minorRadius The minor radius of the torus (radius of the tube).
- * @param meshwidth The distance between adjacent particles.
+ * @param meshwidth The reflecting_distance between adjacent particles.
  * @return std::vector<Particle> A vector containing the generated particles.
  */
 std::vector<Particle> ParticleGenerator::generate_torus_particles(double centerX, double centerY, double centerZ,
@@ -171,10 +171,10 @@ std::vector<Particle> ParticleGenerator::generate_torus_particles(double centerX
  * @param initialVx The initial velocity in the x-direction for all particles.
  * @param initialVy The initial velocity in the y-direction for all particles.
  * @param initialVz The initial velocity in the z-direction for all particles.
- * @param helixRadius The radius of the helix (distance from the center of the helix to the path of the particles).
- * @param helixPitch The pitch of the helix (distance between consecutive turns of the helix along the z-axis).
- * @param helixHeight The total height of the helix (distance covered along the z-axis).
- * @param meshwidth The distance between adjacent particles along the helix path.
+ * @param helixRadius The radius of the helix (reflecting_distance from the center of the helix to the path of the particles).
+ * @param helixPitch The pitch of the helix (reflecting_distance between consecutive turns of the helix along the z-axis).
+ * @param helixHeight The total height of the helix (reflecting_distance covered along the z-axis).
+ * @param meshwidth The reflecting_distance between adjacent particles along the helix path.
  * @param seed The seed for random number generation, used in velocity distribution.
  * @return std::vector<Particle> A vector containing the generated particles.
  */

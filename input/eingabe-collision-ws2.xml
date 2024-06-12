@@ -3,7 +3,7 @@
 <Data xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
       xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
 
-    <header base_name="Collision of two bodies" output_file_name="collision_simulation" output_frequency="0" t_end="20"
+    <header base_name="Collision of two bodies" output_file_name="collision_simulation" output_frequency="100" t_end="20"
             seed="1337"/>
 
     <linked_cells>
@@ -13,15 +13,15 @@
             <value>3</value>
         </domain_size>
         <boundary_conditions>
-            <boundary_condition type="outflow"/>
-            <boundary_condition type="outflow"/>
-            <boundary_condition type="outflow"/>
-            <boundary_condition type="outflow"/>
-            <boundary_condition type="outflow"/>
-            <boundary_condition type="outflow"/>
+            <boundary_condition type="reflecting"/>
+            <boundary_condition type="reflecting"/>
+            <boundary_condition type="reflecting"/>
+            <boundary_condition type="reflecting"/>
+            <boundary_condition type="reflecting"/>
+            <boundary_condition type="reflecting"/>
         </boundary_conditions>
     </linked_cells>
-    <!--    <vector>true</vector>-->
+<!--        <vector>true</vector>-->
 
     <lennard_jones>
         <settings delta_t="0.0005" sigma="1" epsilon="5" mass_m="1" distance_h="1.1225" brown_motion="0.1"

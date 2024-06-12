@@ -115,7 +115,7 @@ class Config {
   double mass_m{};
 
   /**
-   * the distance h between particles (mesh width of the grid) in cuboid or disc simulation
+   * the reflecting_distance h between particles (mesh width of the grid) in cuboid or disc simulation
    */
   double distance_h{};
 

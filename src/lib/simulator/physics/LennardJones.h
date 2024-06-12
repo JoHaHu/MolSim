@@ -2,8 +2,8 @@
 
 #include "Particle.h"
 #include "experimental/simd"
-#include "utils/ArrayUtils.h"
 #include "spdlog/spdlog.h"
+#include "utils/ArrayUtils.h"
 
 namespace simulator::physics::lennard_jones {
 /**
@@ -28,7 +28,7 @@ auto static initialize_constants(double e, double s, double c) {
   epsilon48 = 48 * epsilon * sigma6 * sigma6;
 }
 
-auto static calculate_force(const VectorizedParticle &p1, const VectorizedParticle &p2, double_mask mask) -> std::array<double_v, 3> {
+auto static calculate_force(const VectorizedParticle &p1, const VectorizedParticle &p2, double_mask mask, std::array<double_v, 3> &force) {
   SPDLOG_TRACE("Entering LennardJones calculate_force");
 
   const auto diff = p2.position - p1.position;
@@ -38,11 +38,10 @@ auto static calculate_force(const VectorizedParticle &p1, const VectorizedPartic
   const auto norm_6 = norm_2 * norm_2 * norm_2;
 
   const auto temp = (norm_6 * epsilon24 - epsilon48) / (norm_6 * norm_6 * norm_2);
-  auto force = temp * diff;
+  force = temp * diff;
 
-
-  if (stdx::any_of(norm_2 == 0 && mask )) {
-    SPDLOG_WARN("zero distance between particle");
+  if (stdx::any_of(norm_2 == 0 && mask)) [[unlikely]] {
+    SPDLOG_WARN("zero reflecting_distance between particle");
   }
   auto norm_mask = norm_2 > cutoff;
 
@@ -51,7 +50,6 @@ auto static calculate_force(const VectorizedParticle &p1, const VectorizedPartic
   stdx::where(norm_mask, force[2]) = 0;
 
   SPDLOG_TRACE("Exiting LennardJones calculate_force");
-  return force;
 }
 
 }// namespace simulator::physics::lennard_jones

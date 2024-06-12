@@ -98,7 +98,7 @@ target_compile_options(MolSim
         $<$<CXX_COMPILER_ID:GNU>:-Wall -g -march=native>
         # disable some spam warnings for icpc...
         $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>
-        $<$<CXX_COMPILER_ID:Clang>:-Wall -g -march=native#[[ -fsanitize=address,leak]] >
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -g -march=native   #[[ -fsanitize=address,leak]] >
 )
 
 

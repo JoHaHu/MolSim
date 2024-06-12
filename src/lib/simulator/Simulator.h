@@ -75,7 +75,8 @@ class Simulator {
   template<typename F>
   auto calculate_force_particle_pair(F f, VectorizedParticle &p1, VectorizedParticle &p2, double_mask mask) {
 
-    const auto force = f(p1, p2, mask);
+    std::array<double_v, 3> force{};
+    f(p1, p2, mask, force);
 
     where(mask, p2.force[0]) = p2.force[0] - force[0];
     where(mask, p2.force[1]) = p2.force[1] - force[1];
@@ -126,18 +127,19 @@ class Simulator {
 
     particles.swap_force();
 
-    //    particles.boundary([this](Particles &p, auto index) {
-    //      calculate_force_particle_pair(p, index);
-    //    });
-    particles.refresh();
+    particles.boundary();
 
     switch (physics) {
       case physics::ForceModel::Gravity:
+
+        particles.refresh();
         particles.pairwise([this](auto &p1, auto &p2, auto mask) {
           calculate_force_particle_pair(physics::gravity::calculate_force, p1, p2, mask);
         });
         break;
       case physics::ForceModel::LennardJones:
+
+        particles.refresh();
         particles.pairwise([this](auto &p1, auto &p2, auto mask) {
           calculate_force_particle_pair(physics::lennard_jones::calculate_force, p1, p2, mask);
         });

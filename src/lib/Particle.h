@@ -151,7 +151,7 @@ class Particles {
                               active_vector);
   }
 
-  auto insert_particle(Particle p) -> size_t {
+  auto insert_particle(Particle p) {
     position_x.emplace_back(p.position[0]);
     position_y.emplace_back(p.position[1]);
     position_z.emplace_back(p.position[2]);
@@ -173,7 +173,6 @@ class Particles {
     active.emplace_back(true);
     cell.emplace_back(0);
     size++;
-    return size - 1;
   }
   size_t size{};
 

@@ -113,6 +113,13 @@ struct ParticleContainer {
                var);
   }
 
+  void boundary() {
+    std::visit(overloaded{
+                   [](Particles &container) {},
+                   [](LinkedCell &lc) { lc.boundary(); }},
+               var);
+  }
+
   /**
   * @brief Updates internal data structures after position recalculations.
   */

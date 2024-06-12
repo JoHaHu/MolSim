@@ -48,7 +48,7 @@ class Cell {
  public:
   explicit Cell(cell_type type, std::array<size_t, 3> idx) : type(type), idx(idx) {};
 
-  constexpr auto is_boundary() -> bool {
+  constexpr auto is_boundary() const -> bool {
     return type == cell_type::boundary;
   }
 
@@ -82,12 +82,13 @@ class LinkedCell {
   LinkedCell() = delete;
   explicit LinkedCell(const std::array<double, 3> &domain, double cutoff, std::array<BoundaryCondition, 6> bc, double sigma)
       : particles(Particles()),
+        domain(domain),
         bc(bc),
         sigma(sigma),
         cutoff(cutoff) {
-    widths = {cutoff,
-              cutoff,
-              cutoff};
+    widths = {cutoff / 2,
+              cutoff / 2,
+              cutoff / 2};
 
     dim = {
         (size_t) std::ceil(domain[0] / widths[0]),
@@ -141,7 +142,7 @@ class LinkedCell {
    * */
   auto create_neighbours(std::array<size_t, 3> idx) -> std::vector<Cell::Neighbour> {
     auto cell_idx = dimension_to_index(idx);
-    auto [radius_x, radius_y, radius_z] = std::array<size_t, 3>{1, 1, 1};
+    auto [radius_x, radius_y, radius_z] = std::array<size_t, 3>{2, 2, 2};
     auto neighbours = std::vector<Cell::Neighbour>();
 
     for (long x = -(long) radius_x; x <= (long) radius_x; ++x) {
@@ -151,7 +152,7 @@ class LinkedCell {
             if (z > 0 || (x > 0 && z >= 0) || (x >= 0 && z >= 0 && y > 0)) {
               auto other_index = offset(idx, {x, y, z});
               // checks that cell is not out of bounds and not the same cell
-              if (other_index < cells.size() && other_index != cell_idx) {
+              if (other_index < cells.size() && other_index != cell_idx && min_distance(idx, cells[other_index].idx) <= cutoff) {
                 neighbours.emplace_back(other_index);
               }
             }
@@ -160,7 +161,40 @@ class LinkedCell {
       }
     }
     neighbours.shrink_to_fit();
+    std::sort(neighbours.begin(), neighbours.end(), [](auto &n1, auto &n2) {
+      return n1.c < n2.c;
+    });
     return neighbours;
+  }
+
+  auto min_distance(std::array<size_t, 3> dim1, std::array<size_t, 3> dim2) -> double {
+    auto distances = std::vector<double>();
+
+    for (auto [x, y, z] : std::views::cartesian_product(
+             std::views::iota(0, 2),
+             std::views::iota(0, 2),
+             std::views::iota(0, 2))) {
+      distances.emplace_back(
+          distance({dim1[0] + x, dim1[1] + y, dim1[2] + z}, dim2));
+    }
+
+    double min = std::ranges::min(distances);
+    return min;
+  }
+  /**
+ * @brief Calculates the reflecting_distance between two sets of 3D coordinates.
+ *
+ * @param dim1 The first set of coordinates.
+ * @param dim2 The second set of coordinates.
+ * @return The reflecting_distance.
+ */
+  auto distance(std::array<size_t, 3> dim1, std::array<size_t, 3> dim2) -> double {
+    auto diff = std::array<double, 3>({
+        (double) std::abs(static_cast<long>(dim1[0]) - static_cast<long>(dim2[0])) * widths[0],
+        (double) std::abs(static_cast<long>(dim1[1]) - static_cast<long>(dim2[1])) * widths[1],
+        (double) std::abs(static_cast<long>(dim1[2]) - static_cast<long>(dim2[2])) * widths[2],
+    });
+    return ArrayUtils::L2Norm(diff);
   }
 
   constexpr auto position_to_index(std::array<double, 3> position) -> size_t {
@@ -189,26 +223,121 @@ class LinkedCell {
   /**
    * a range over the boundary cells
    * */
-  template<typename Callable>
-  auto boundary(Callable f) -> auto {
+  auto boundary() -> auto {
+
+    for (size_t index = 0; index < particles.size; index++) {
+      if (particles.active[index]) [[likely]] {
+        const auto cell_idx = particles.cell[index];
+        const auto &cell = cells[cell_idx];
+        if (cell.is_boundary()) {
+          for (auto [side, bc] : std::ranges::enumerate_view(cell.boundary)) {
+
+            auto o = orientation(side);
+            switch (bc) {
+              case BoundaryCondition::outflow:
+                outflow(index, o);
+                break;
+              case BoundaryCondition::reflecting:
+                reflecting(index, o);
+                break;
+              case BoundaryCondition::none: break;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void outflow(size_t index, orientation o) {
+
+    const auto pos_x = particles.position_x[index];
+    const auto pos_y = particles.position_y[index];
+    const auto pos_z = particles.position_z[index];
+    const auto [bound_x, bound_y, bound_z] = domain;
+
+    bool condition = false;
+    switch (o) {
+      case orientation::front:
+        condition |= pos_z > bound_z;
+        break;
+      case orientation::back:
+        condition |= pos_z < 0;
+        break;
+      case orientation::left:
+        condition |= pos_x < 0;
+        break;
+      case orientation::right:
+        condition |= pos_x > bound_x;
+        break;
+      case orientation::bottom:
+        condition |= pos_y < 0;
+        break;
+      case orientation::top:
+        condition |= pos_y > bound_y;
+        break;
+    }
+    particles.active[index] &= static_cast<int>(!condition);
+  }
+
+  /**
+   * function to apply reflecting boundary condition
+   * */
+  void reflecting(size_t index, orientation o) {
+    const auto pos_x = particles.position_x[index];
+    const auto pos_y = particles.position_y[index];
+    const auto pos_z = particles.position_z[index];
+    const auto [bound_x, bound_y, bound_z] = domain;
+
+    auto diff_x = bound_x - pos_x;
+    auto diff_y = bound_y - pos_y;
+    auto diff_z = bound_z - pos_z;
+
+    switch (o) {
+      case orientation::front:
+        if (diff_z <= reflecting_distance && diff_z > 0) {
+          particles.velocity_z[index] = -particles.velocity_z[index];
+        }
+        break;
+      case orientation::back:
+        if (pos_z <= reflecting_distance && pos_z > 0) {
+          particles.velocity_z[index] = -particles.velocity_z[index];
+        }
+        break;
+
+      case orientation::left:
+        if (pos_x <= reflecting_distance && pos_x > 0) {
+          particles.velocity_x[index] = -particles.velocity_x[index];
+        }
+        break;
+      case orientation::right:
+        if (diff_x <= reflecting_distance && diff_x > 0) {
+          particles.velocity_x[index] = -particles.velocity_x[index];
+        }
+        break;
+      case orientation::bottom:
+        if (pos_y <= reflecting_distance && pos_y > 0) {
+          particles.velocity_y[index] = -particles.velocity_y[index];
+        }
+        break;
+      case orientation::top:
+        if (diff_y <= reflecting_distance && diff_y > 0) {
+          particles.velocity_y[index] = -particles.velocity_y[index];
+        }
+        break;
+    }
   }
 
   /**
    * a pairwise range over the particles, uses a cached range initialized at the start of the program
    * */
+  // TODO align all accesses by applying proper masks
   template<typename Callable>
   auto pairwise(Callable c) {
     for (size_t index = 0; index < particles.size; ++index) {
-      if (particles.active[index]) {
+      if (particles.active[index]) [[likely]] {
         const auto temp = particles.cell[index];
         auto &cell = cells[temp];
         auto p1 = particles.load_vectorized_single(index);
-
-        size_v index_vector_tmp = 0;
-        for (size_t i = 0; i < size_v::size(); ++i) {
-          index_vector_tmp[i] = i;
-        }
-        auto index_vector = index_vector_tmp;
 
         // Same cell particles
         size_t i = 0;
@@ -222,9 +351,7 @@ class LinkedCell {
         }
 
         // Neighbour cells
-        for (size_t n = 0; n < cell.neighbours.size(); ++n) {
-          auto &neighbour = cell.neighbours[n];
-
+        for (auto &neighbour : cell.neighbours) {
           size_t i = 0;
           auto &neighbour_cell = cells[neighbour.c];
           size_t n_start = neighbour_cell.start_index;
@@ -239,11 +366,13 @@ class LinkedCell {
           }
         }
         particles.store_force_single(p1, index);
-      } else {
-        // SPDLOG_WARN("Particle not deleted");
+      } else [[unlikely]] {
+        // Stop on first inactive encountered particle
+        break;
+        //        SPDLOG_WARN("Particle crossed boundary not handled before next loop");
       }
     }
-  };
+  }
 
   /**
    * inserts a new particle into the arena and the into the cells
@@ -292,130 +421,26 @@ class LinkedCell {
     SPDLOG_TRACE("fixed positions");
   }
 
+  static auto init_index_vector() noexcept -> size_v {
+    size_v index_vector_tmp = 0;
+    for (size_t i = 0; i < size_v::size(); ++i) {
+      index_vector_tmp[i] = i;
+    }
+    return index_vector_tmp;
+  }
+
   Particles particles;
 
  private:
   std::vector<Cell> cells;
+  std::array<double, 3> domain;
   std::array<BoundaryCondition, 6> bc;
   std::array<double, 3> widths;
   std::array<size_t, 3> dim;
-
- public:
+  size_v index_vector = init_index_vector();
   double sigma;
   double cutoff;
+  double reflecting_distance = std::pow(2, 1 / 6.0) * sigma;
 };
-
-///**
-// * a function to apply all up to 6 boundary conditions to a all boundary cell of a linked container
-// * */
-//
-//static void calculate_boundary_condition(linked_cell &lc,
-//                                         std::function<void(std::tuple<Particle &, Particle &>)> const &force_calculation
-//
-//) {
-//
-//  std::ranges::for_each(lc.boundary(), [&lc, &force_calculation](cell &cell) {
-//    for (auto [side, b] : std::views::enumerate(cell.boundary)) {
-//      auto o = orientation(side);
-//      switch (b) {
-//        case BoundaryCondition::outflow:
-//          std::ranges::for_each(cell.particles, [&lc, &o](auto &e) { outflow<I>(lc, e, o); });
-//          break;
-//        case BoundaryCondition::reflecting:
-//          std::ranges::for_each(cell.linear(), [&lc, &o, &force_calculation](auto &p) { reflecting<I>(lc, p, o, force_calculation); });
-//          break;
-//        case BoundaryCondition::none: break;
-//      }
-//    }
-//  });
-//}
-//
-///**
-// * function to apply outflow boundary condition
-// * */
-//
-//static void outflow(linked_cell &lc, arena<Particle>::entry &entry, orientation o) {
-//
-//  auto &p = entry.data;
-//  const auto [pos_x, pos_y, pos_z] = p.position;
-//  const auto [bound_x, bound_y, bound_z] = lc.index.boundary;
-//
-//  bool condition = false;
-//  switch (o) {
-//    case orientation::front:
-//      condition |= pos_z > bound_z;
-//      break;
-//    case orientation::back:
-//      condition |= pos_z < 0;
-//      break;
-//    case orientation::left:
-//      condition |= pos_x < 0;
-//      break;
-//    case orientation::right:
-//      condition |= pos_x > bound_x;
-//      break;
-//    case orientation::bottom:
-//      condition |= pos_y < 0;
-//      break;
-//    case orientation::top:
-//      condition |= pos_y > bound_y;
-//      break;
-//  }
-//  entry.active &= !condition;
-//}
-//
-///**
-// * function to apply reflecting boundary condition
-// * */
-//
-//static void reflecting(linked_cell &lc, auto &p, orientation o, auto fc) {
-//  auto [pos_x, pos_y, pos_z] = p.position;
-//  auto [bound_x, bound_y, bound_z] = lc.index.boundary;
-//  auto diff = lc.index.boundary - p.position;
-//  auto [diff_x, diff_y, diff_z] = diff;
-//
-//  const double sigma = lc.sigma;
-//  const double distance = std::pow(2, 1 / 6.0) * sigma;
-//
-//  switch (o) {
-//    case orientation::front:
-//      if (diff_z <= distance && diff_z > 0) {
-//        auto ghost = Particle({pos_x, pos_y, bound_z + diff_z}, {0, 0, 0}, 0, 0);
-//        fc({p, ghost});
-//      }
-//      break;
-//    case orientation::back:
-//      if (pos_z <= distance && pos_z > 0) {
-//        auto ghost = Particle({pos_x, pos_y, -pos_z}, {0, 0, 0}, 0, 0);
-//        fc({p, ghost});
-//      }
-//      break;
-//
-//    case orientation::left:
-//      if (pos_x <= distance && pos_x > 0) {
-//        auto ghost = Particle({-pos_x, pos_y, pos_z}, {0, 0, 0}, 0, 0);
-//        fc({p, ghost});
-//      }
-//      break;
-//    case orientation::right:
-//      if (diff_x <= distance && diff_x > 0) {
-//        auto ghost = Particle({bound_x + diff_x, pos_y, pos_z}, {0, 0, 0}, 0, 0);
-//        fc({p, ghost});
-//      }
-//      break;
-//    case orientation::bottom:
-//      if (pos_y <= distance && pos_y > 0) {
-//        auto ghost = Particle({pos_x, -pos_y, pos_z}, {0, 0, 0}, 0, 0);
-//        fc({p, ghost});
-//      }
-//      break;
-//    case orientation::top:
-//      if (diff_y <= distance && diff_y > 0) {
-//        auto ghost = Particle({pos_x, bound_y + diff_y, pos_z}, {0, 0, 0}, 0, 0);
-//        fc({p, ghost});
-//      }
-//      break;
-//  }
-//}
 
 }// namespace container

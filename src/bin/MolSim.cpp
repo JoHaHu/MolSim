@@ -60,6 +60,8 @@ auto main(int argc, char *argv[]) -> int {
     pc.insert(p);
   }
 
+  pc.refresh();
+
   auto simulator = simulator::Simulator(std::move(pc), physics, std::move(plotter), config);
 
   auto startTime = std::chrono::high_resolution_clock::now();
@@ -72,13 +74,14 @@ auto main(int argc, char *argv[]) -> int {
 
   auto endTime = std::chrono::high_resolution_clock::now();
   auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+  auto rate = (double) durationMs.count() / (config->end_time / config->delta_t);
   auto minutes = std::chrono::duration_cast<std::chrono::minutes>(durationMs);
   durationMs -= minutes;
   auto seconds = std::chrono::duration_cast<std::chrono::seconds>(durationMs);
   durationMs -= seconds;
   auto milliseconds = durationMs.count();
 
-  SPDLOG_INFO("Simulation completed in {:02d}:{:02d}:{:03d} (mm:ss:ms)", minutes.count(), seconds.count(), milliseconds);
+  SPDLOG_INFO("Simulation completed in {:02d}:{:02d}:{:03d} (mm:ss:ms) | {:0.5f} ms/iteration", minutes.count(), seconds.count(), milliseconds, rate);
 
   return 0;
 }

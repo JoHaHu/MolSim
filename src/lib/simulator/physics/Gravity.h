@@ -13,7 +13,8 @@ namespace simulator::physics::gravity {
  * */
 auto static calculate_force(VectorizedParticle &p1,
                             VectorizedParticle &p2,
-                            double_mask mask) -> std::array<double_v, 3> {
+                            double_mask mask,
+                            std::array<double_v, 3> &force) {
   SPDLOG_TRACE("Entering Gravity calculate_force");
 
   const auto diff = p2.position - p1.position;
@@ -25,15 +26,13 @@ auto static calculate_force(VectorizedParticle &p1,
   //  }
 
   const auto temp = (p1.mass * p2.mass) / (norm * norm * norm);
-  auto force = temp * diff;
+  force = temp * diff;
   SPDLOG_TRACE("Exiting Gravity calculate_force");
-  auto norm_mask = norm == 0;
 
+  auto norm_mask = norm == 0;
   stdx::where(norm_mask, force[0]) = 0;
   stdx::where(norm_mask, force[1]) = 0;
   stdx::where(norm_mask, force[2]) = 0;
-
-  return force;
 };
 
 }// namespace simulator::physics::gravity

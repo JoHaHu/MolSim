@@ -63,7 +63,7 @@ PR: https://github.com/JoHaHu/MolSim/pull/50
         - Center coordinates
         - Initial velocity
         - Radius in terms of the number of molecules along the radius
-        - Meshwidth (distance between molecules)
+        - Meshwidth (reflecting_distance between molecules)
 - Adapted the XML input format to include the new disc properties.
 - Conducted the simulation with a disc flying against a reflecting boundary using specified parameters.
     - Parameters: xcenter = {60, 25, 0}, v = {0, −10, 0}, m = 1.0, R = 15, h ≈ 1.1225, ϵ = 5, σ = 1, ∆t = 0.00005,
