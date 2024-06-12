@@ -40,7 +40,7 @@ auto main(int argc, char *argv[]) -> int {
       break;
   }
 
-  container::particle_container pc = container::particle_container(Particles());
+  container::ParticleContainer pc = container::ParticleContainer(Particles());
 
   switch (config->particle_loader_type) {
     case ParticleContainerType::Vector:
@@ -52,7 +52,7 @@ auto main(int argc, char *argv[]) -> int {
           config->boundary_conditions,
           config->sigma);
 
-      pc = container::particle_container(std::move(lc));
+      pc = container::ParticleContainer(std::move(lc));
       break;
   }
 
@@ -60,7 +60,6 @@ auto main(int argc, char *argv[]) -> int {
     pc.insert(p);
   }
 
-  pc.refresh();
   auto simulator = simulator::Simulator(std::move(pc), physics, std::move(plotter), config);
 
   auto startTime = std::chrono::high_resolution_clock::now();

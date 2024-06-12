@@ -22,7 +22,7 @@ namespace simulator {
  * */
 class Simulator {
  private:
-  container::particle_container particles;
+  container::ParticleContainer particles;
   physics::ForceModel physics;
   std::unique_ptr<io::Plotter> plotter;
   std::shared_ptr<config::Config> config;
@@ -38,7 +38,7 @@ class Simulator {
    * \param config the runtime configuration
    * */
   explicit Simulator(
-      container::particle_container &&particles,
+      container::ParticleContainer &&particles,
       physics::ForceModel physics,
       std::unique_ptr<io::Plotter> &&plotter,
       const std::shared_ptr<config::Config> &config)
@@ -75,7 +75,7 @@ class Simulator {
   template<typename F>
   auto calculate_force_particle_pair(F f, VectorizedParticle &p1, VectorizedParticle &p2, double_mask mask) {
 
-    const auto force = f(p1, p2);
+    const auto force = f(p1, p2, mask);
 
     where(mask, p2.force[0]) = p2.force[0] - force[0];
     where(mask, p2.force[1]) = p2.force[1] - force[1];

@@ -147,7 +147,6 @@ class LinkedCell {
     for (long x = -(long) radius_x; x <= (long) radius_x; ++x) {
       for (long y = -(long) radius_y; y <= (long) radius_y; ++y) {
         for (long z = -(long) radius_z; z <= (long) radius_z; ++z) {
-
           if (x != 0 || y != 0 || z != 0) {
             if (z > 0 || (x > 0 && z >= 0) || (x >= 0 && z >= 0 && y > 0)) {
               auto other_index = offset(idx, {x, y, z});
@@ -175,7 +174,7 @@ class LinkedCell {
   }
   auto dimension_to_index(std::array<size_t, 3> dimension) -> size_t {
     auto [x, y, z] = dimension;
-    if (x > dim[0] || y > dim[1] || z > dim[2]) {
+    if (x >= dim[0] || y >= dim[1] || z >= dim[2]) {
       return ULONG_MAX;
     }
     return x + y * dim[0] + z * dim[0] * dim[1];
@@ -199,7 +198,7 @@ class LinkedCell {
    * */
   template<typename Callable>
   auto pairwise(Callable c) {
-    for (int index = 0; index < particles.size; ++index) {
+    for (size_t index = 0; index < particles.size; ++index) {
       if (particles.active[index]) {
         const auto temp = particles.cell[index];
         auto &cell = cells[temp];
@@ -213,7 +212,7 @@ class LinkedCell {
 
         // Same cell particles
         size_t i = 0;
-        while (index + 1 + ((i + 1) * double_v::size()) < cell.end_index) {
+        while (index + 1 + (i * double_v::size()) < cell.end_index) {
           auto active_mask = index_vector + 1 + (i * double_v::size()) < (cell.size());
           auto p2 = particles.load_vectorized(index + 1 + (i * double_v::size()));
           auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
@@ -230,7 +229,7 @@ class LinkedCell {
           auto &neighbour_cell = cells[neighbour.c];
           size_t n_start = neighbour_cell.start_index;
           size_t n_end = neighbour_cell.end_index;
-          while (n_start + ((i + 1) * double_v::size()) < n_end) {
+          while (n_start + (i * double_v::size()) < n_end) {
             auto active_mask = index_vector + (i * double_v::size()) < (neighbour_cell.size());
             auto p2 = particles.load_vectorized(n_start + (i * double_v::size()));
             auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
@@ -241,7 +240,7 @@ class LinkedCell {
         }
         particles.store_force_single(p1, index);
       } else {
-        //        SPDLOG_WARN("Particle not deleted");
+        // SPDLOG_WARN("Particle not deleted");
       }
     }
   };

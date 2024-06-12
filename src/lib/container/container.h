@@ -7,16 +7,16 @@
 #include <vector>
 namespace container {
 
-using particle_container_variant = std::variant<Particles, LinkedCell>;
+using ParticleContainerVariant = std::variant<Particles, LinkedCell>;
 
 /*!
  * @brief A variant-based particle container supporting multiple underlying data structures.
  * @image html submission/worksheet3/media/Benchmark.png
  */
-struct particle_container {
+struct ParticleContainer {
 
  public:
-  explicit particle_container(particle_container_variant &&var) : var(std::move(var)) {
+  explicit ParticleContainer(ParticleContainerVariant &&var) : var(std::move(var)) {
   }
 
   auto particles() -> Particles & {
@@ -124,7 +124,7 @@ struct particle_container {
   }
 
  private:
-  particle_container_variant var;
+  ParticleContainerVariant var;
 };
 
 }// namespace container

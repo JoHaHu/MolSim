@@ -12,7 +12,8 @@ namespace simulator::physics::gravity {
  *
  * */
 auto static calculate_force(VectorizedParticle &p1,
-                            VectorizedParticle &p2) -> std::array<double_v, 3> {
+                            VectorizedParticle &p2,
+                            double_mask mask) -> std::array<double_v, 3> {
   SPDLOG_TRACE("Entering Gravity calculate_force");
 
   const auto diff = p2.position - p1.position;

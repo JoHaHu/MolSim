@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <execution>
 #include <experimental/simd>
 #include <ranges>
 #include <vector>
