@@ -23,7 +23,7 @@ PR: https://github.com/JoHaHu/MolSim/pull/27
 
 #### New implementation - molecular collision
 - New tests for Lennard-Jones forces, also with manually pre-calculated expected results
-- Testing behavior of calculate_force function to confirm proper calculation
+- Testing behavior of calculate_force_vectorized function to confirm proper calculation
 - Used mainly/only expects and not asserts because one non-matching value does not mean that everything else is wrong, too
 - Expects and therefore continuation of testing can give valuable feedback about where exactly a mistake could have happened
 

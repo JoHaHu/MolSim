@@ -223,7 +223,8 @@ class LinkedCell {
   /**
    * a range over the boundary cells
    * */
-  auto boundary() -> auto {
+  template<typename Callable>
+  auto boundary(Callable f) -> auto {
 
     for (size_t index = 0; index < particles.size; index++) {
       if (particles.active[index]) [[likely]] {
@@ -238,9 +239,10 @@ class LinkedCell {
                 outflow(index, o);
                 break;
               case BoundaryCondition::reflecting:
-                reflecting(index, o);
+                reflecting(index, o, f);
                 break;
-              case BoundaryCondition::none: break;
+              case BoundaryCondition::none:
+              case BoundaryCondition::periodic: break;
             }
           }
         }
@@ -282,7 +284,8 @@ class LinkedCell {
   /**
    * function to apply reflecting boundary condition
    * */
-  void reflecting(size_t index, orientation o) {
+  template<typename Callable>
+  void reflecting(size_t index, orientation o, Callable f) {
     const auto pos_x = particles.position_x[index];
     const auto pos_y = particles.position_y[index];
     const auto pos_z = particles.position_z[index];
@@ -295,33 +298,39 @@ class LinkedCell {
     switch (o) {
       case orientation::front:
         if (diff_z <= reflecting_distance && diff_z > 0) {
-          particles.velocity_z[index] = -particles.velocity_z[index];
+          std::array<double, 3> ghost = {pos_x, pos_y, bound_z + diff_z};
+          f(particles, index, ghost);
         }
         break;
       case orientation::back:
         if (pos_z <= reflecting_distance && pos_z > 0) {
-          particles.velocity_z[index] = -particles.velocity_z[index];
+          std::array<double, 3> ghost = {pos_x, pos_y, -pos_z};
+          f(particles, index, ghost);
         }
         break;
 
       case orientation::left:
         if (pos_x <= reflecting_distance && pos_x > 0) {
-          particles.velocity_x[index] = -particles.velocity_x[index];
+          std::array<double, 3> ghost = {-pos_x, pos_y, pos_z};
+          f(particles, index, ghost);
         }
         break;
       case orientation::right:
         if (diff_x <= reflecting_distance && diff_x > 0) {
-          particles.velocity_x[index] = -particles.velocity_x[index];
+          std::array<double, 3> ghost = {bound_x + diff_x, pos_y, pos_z};
+          f(particles, index, ghost);
         }
         break;
       case orientation::bottom:
         if (pos_y <= reflecting_distance && pos_y > 0) {
-          particles.velocity_y[index] = -particles.velocity_y[index];
+          std::array<double, 3> ghost = {pos_x, -pos_y, pos_z};
+          f(particles, index, ghost);
         }
         break;
       case orientation::top:
         if (diff_y <= reflecting_distance && diff_y > 0) {
-          particles.velocity_y[index] = -particles.velocity_y[index];
+          std::array<double, 3> ghost = {pos_x, bound_y + diff_y, pos_z};
+          f(particles, index, ghost);
         }
         break;
     }

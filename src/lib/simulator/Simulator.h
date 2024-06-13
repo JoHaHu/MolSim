@@ -6,6 +6,8 @@
 #include "experimental/simd"
 #include "simulator/io/Plotter.h"
 #include "simulator/physics/ForceModel.h"
+#include "simulator/physics/Gravity.h"
+#include "simulator/physics/LennardJones.h"
 #include "utils/ArrayUtils.h"
 #include "utils/variants.h"
 #include <cmath>
@@ -127,23 +129,23 @@ class Simulator {
 
     particles.swap_force();
 
-    particles.boundary();
-
     switch (physics) {
-      case physics::ForceModel::Gravity:
-
+      case physics::ForceModel::Gravity: {
+        particles.boundary(physics::gravity::calculate_force);
         particles.refresh();
         particles.pairwise([this](auto &p1, auto &p2, auto mask) {
-          calculate_force_particle_pair(physics::gravity::calculate_force, p1, p2, mask);
+          calculate_force_particle_pair(physics::gravity::calculate_force_vectorized, p1, p2, mask);
         });
         break;
-      case physics::ForceModel::LennardJones:
-
+      }
+      case physics::ForceModel::LennardJones: {
+        particles.boundary(physics::lennard_jones::calculate_force);
         particles.refresh();
         particles.pairwise([this](auto &p1, auto &p2, auto mask) {
-          calculate_force_particle_pair(physics::lennard_jones::calculate_force, p1, p2, mask);
+          calculate_force_particle_pair(physics::lennard_jones::calculate_force_vectorized, p1, p2, mask);
         });
         break;
+      }
     }
 
     SPDLOG_TRACE("Force calculation completed.");

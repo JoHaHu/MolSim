@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Gravity.h"
-#include "LennardJones.h"
 #include <cstdint>
 namespace simulator::physics {
 

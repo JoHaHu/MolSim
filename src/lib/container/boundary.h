@@ -6,6 +6,6 @@
 enum class BoundaryCondition : uint8_t {
   outflow,
   reflecting,
-  //  periodic,
+  periodic,
   none
 };

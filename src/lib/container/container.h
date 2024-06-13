@@ -112,11 +112,11 @@ struct ParticleContainer {
                    }},
                var);
   }
-
-  void boundary() {
+  template<typename Callable>
+  void boundary(Callable f) {
     std::visit(overloaded{
                    [](Particles &container) {},
-                   [](LinkedCell &lc) { lc.boundary(); }},
+                   [&f](LinkedCell &lc) { lc.boundary(f); }},
                var);
   }
 
