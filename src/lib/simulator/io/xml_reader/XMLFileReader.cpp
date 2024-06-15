@@ -59,11 +59,8 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       for (const auto &arr : domain_size.value()) {
         domain_size_vector.push_back(arr);
       }
-      std::array<double, 3> arr_domain_size{};
-      if (domain_size_vector.size() == arr_domain_size.size()) {
-        std::copy(domain_size_vector.begin(), domain_size_vector.end(), arr_domain_size.begin());
-      }
-      config.domain_size = arr_domain_size;
+
+      config.domain_size = domain_size_vector;
 
       // Parsing array of domain size (volume)
       const auto &boundary_conditions = data->linked_cells()->boundary_conditions();
@@ -74,14 +71,15 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
           bc = BoundaryCondition::outflow;
         } else if (arr.type() == "reflecting") {
           bc = BoundaryCondition::reflecting;
+        } else if (arr.type() == "periodic") {
+          bc = BoundaryCondition::periodic;
+        } else {
+          spdlog::warn("unknown boundary condition {}", arr.type());
         }
         boundary_conditions_vec.push_back(bc);
       }
-      std::array<BoundaryCondition, 6> arr_boundary_conditions{};
-      if (boundary_conditions_vec.size() == arr_boundary_conditions.size()) {
-        std::copy(boundary_conditions_vec.begin(), boundary_conditions_vec.end(), arr_boundary_conditions.begin());
-      }
-      config.boundary_conditions = arr_boundary_conditions;
+
+      config.boundary_conditions = boundary_conditions_vec;
 
       // Vector
     } else if (data->vector().present()) {
@@ -171,25 +169,10 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
             velocity.push_back(arr);
           }
 
-          // initializing arrays for the config object to be created
-          std::array<double, 3> arr_coordinate{};
-          std::array<double, 3> arr_particle_numbers{};
-          std::array<double, 3> arr_velocity{};
-
-          // checking if lengths match before copying to static length arrays of size 3, otherwise give error
-          if (coordinate.size() == arr_coordinate.size() && particle_numbers.size() == arr_particle_numbers.size() && velocity.size() == arr_velocity.size()) {
-            std::copy(coordinate.begin(), coordinate.end(), arr_coordinate.begin());
-            std::copy(particle_numbers.begin(), particle_numbers.end(), arr_particle_numbers.begin());
-            std::copy(velocity.begin(), velocity.end(), arr_velocity.begin());
-          } else {
-            SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
-            return nullptr;
-          }
-
           // Create an instance of Cuboid
           // append the cuboid to the vector of cuboids for the config
 
-          auto temp_cuboid = Cuboid(arr_coordinate, arr_particle_numbers, arr_velocity);
+          auto temp_cuboid = Cuboid(coordinate, particle_numbers, velocity);
           temp_cuboids.emplace_back(temp_cuboid);
         }
 

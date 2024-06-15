@@ -5,24 +5,24 @@
 
     <header base_name="Collision of two bodies" output_file_name="collision_simulation" output_frequency="0" t_end="5"
             seed="1337"/>
-    <linked_cells>
-        <domain_size>
-            <value>60</value>
-            <value>60</value>
-            <value>3</value>
-        </domain_size>
-        <boundary_conditions>
-            <boundary_condition type="reflecting"/>
-            <boundary_condition type="reflecting"/>
-            <boundary_condition type="reflecting"/>
-            <boundary_condition type="reflecting"/>
-            <boundary_condition type="reflecting"/>
-            <boundary_condition type="reflecting"/>
-        </boundary_conditions>
-    </linked_cells>
-    <!--        <vector>-->
-    <!--            true-->
-    <!--        </vector>-->
+    <!--    <linked_cells>-->
+    <!--        <domain_size>-->
+    <!--            <value>70</value>-->
+    <!--            <value>70</value>-->
+    <!--            <value>30</value>-->
+    <!--        </domain_size>-->
+    <!--        <boundary_conditions>-->
+    <!--            <boundary_condition type="reflecting"/>-->
+    <!--            <boundary_condition type="reflecting"/>-->
+    <!--            <boundary_condition type="reflecting"/>-->
+    <!--            <boundary_condition type="reflecting"/>-->
+    <!--            <boundary_condition type="reflecting"/>-->
+    <!--            <boundary_condition type="reflecting"/>-->
+    <!--        </boundary_conditions>-->
+    <!--    </linked_cells>-->
+    <vector>
+        true
+    </vector>
 
     <lennard_jones>
         <settings delta_t="0.0002" sigma="1" epsilon="5" mass_m="1" distance_h="1.1225" brown_motion="0.1"
@@ -32,7 +32,7 @@
                 <coordinate>
                     <value>10</value>
                     <value>10</value>
-                    <value>0</value>
+                    <value>15</value>
                 </coordinate>
                 <particle_counts>
                     <value>40</value>
@@ -49,7 +49,7 @@
                 <coordinate>
                     <value>25</value>
                     <value>25</value>
-                    <value>0</value>
+                    <value>15</value>
                 </coordinate>
                 <particle_counts>
                     <value>8</value>

@@ -1,14 +1,10 @@
-//
-// Created by TimSc on 05.06.2024.
-//
 
+#pragma once
 #include <array>
 #include <iostream>
 #include <sstream>
 #include <string>
-
-#ifndef PSEMOLDYN_GROUPD_CUBOID_H
-#define PSEMOLDYN_GROUPD_CUBOID_H
+#include <vector>
 
 /**
  * @class Cuboid
@@ -17,15 +13,12 @@
  */
 class Cuboid {
  public:
-  std::array<double, 3> coordinates;
-  std::array<double, 3> particles;
-  std::array<double, 3> velocity;
-
-  // Default constructor
-  Cuboid() : coordinates({0.0, 0.0, 0.0}), particles({0.0, 0.0, 0.0}), velocity({0.0, 0.0, 0.0}) {}
+  std::vector<double> coordinates{};
+  std::vector<double> particles{};
+  std::vector<double> velocity{};
 
   // Parameterized constructor
-  Cuboid(const std::array<double, 3> &coordinates, const std::array<double, 3> &particles, const std::array<double, 3> &velocity)
+  Cuboid(std::vector<double> &coordinates, std::vector<double> &particles, std::vector<double> &velocity)
       : coordinates(coordinates), particles(particles), velocity(velocity) {}
 
   // Copy constructor
@@ -51,8 +44,7 @@ class Cuboid {
     return output;
   }
 
-  template<std::size_t N>
-  std::string arrayToString(const std::array<double, N> &array) const {
+  std::string arrayToString(const std::vector<double> &array) const {
     std::ostringstream oss;
     oss << "[";
     for (std::size_t i = 0; i < array.size(); ++i) {
@@ -65,5 +57,3 @@ class Cuboid {
     return oss.str();
   }
 };
-
-#endif// PSEMOLDYN_GROUPD_CUBOID_H

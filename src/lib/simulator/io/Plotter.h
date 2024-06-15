@@ -7,6 +7,7 @@ namespace simulator::io {
 /*!
  * a abstract for different plotting methods
  */
+template<const size_t DIMENSIONS>
 class Plotter {
  public:
   Plotter() = default;
@@ -17,7 +18,8 @@ class Plotter {
    * plots the particles of the particle container, takes an integer value and has no return value
    * \param iteration an integer argument that sets the number of iterations
    * */
-  virtual auto plotParticles(container::ParticleContainer &particles, int) -> void = 0;
+
+  virtual auto plotParticles(container::ParticleContainer<DIMENSIONS> &particles, int) -> void = 0;
 };
 
 }// namespace simulator::io

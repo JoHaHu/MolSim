@@ -22,11 +22,13 @@ namespace simulator {
 /**
  * The main Simulator class. can be configured by providing a config and a plotter. Some methods use a physics model provided at compile time.
  * */
+
+template<const size_t DIMENSIONS>
 class Simulator {
  private:
-  container::ParticleContainer particles;
+  container::ParticleContainer<DIMENSIONS> particles;
   physics::ForceModel physics;
-  std::unique_ptr<io::Plotter> plotter;
+  std::unique_ptr<io::Plotter<DIMENSIONS>> plotter;
   std::shared_ptr<config::Config> config;
 
   double end_time;
@@ -40,53 +42,46 @@ class Simulator {
    * \param config the runtime configuration
    * */
   explicit Simulator(
-      container::ParticleContainer &&particles,
+      container::ParticleContainer<DIMENSIONS> &&particles,
       physics::ForceModel physics,
-      std::unique_ptr<io::Plotter> &&plotter,
+      std::unique_ptr<io::Plotter<DIMENSIONS>> &&plotter,
       const std::shared_ptr<config::Config> &config)
       : particles(std::move(particles)),
         physics(physics),
         plotter(std::move(plotter)),
         config(config),
         end_time(config->end_time),
-        delta_t(config->delta_t) {};
+        delta_t(config->delta_t){};
 
-  auto calculate_position_particle(
-      double &position_x, double &position_y, double &position_z,
-      double const &velocity_x, double const &velocity_y, double const &velocity_z,
-      double const &old_force_x, double const &old_force_y, double const &old_force_z,
-      double const &mass) const {
+  auto calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
-    const auto temp = pow(delta_t, 2) * (1 / (2 * mass));
-    position_x += delta_t * velocity_x + temp * old_force_x;
-    position_y += delta_t * velocity_y + temp * old_force_y;
-    position_z += delta_t * velocity_z + temp * old_force_z;
+    const auto temp = pow(delta_t, 2) * (1 / (2 * p.mass[index]));
+    for (int i = 0; i < DIMENSIONS; ++i) {
+      p.positions[i][index] += delta_t * p.velocities[i][index] + temp * p.old_forces[i][index];
+    }
   }
-  auto calculate_velocity_particle(
-      double &velocity_x, double &velocity_y, double &velocity_z,
-      double const &force_x, double const &force_y, double const &force_z,
-      double const &old_force_x, double const &old_force_y, double const &old_force_z,
-      double const &mass) const {
+  auto calculate_velocity_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
-    const auto temp = delta_t * (1 / (2 * mass));
-    velocity_x += temp * (old_force_x + force_x);
-    velocity_y += temp * (old_force_y + force_y);
-    velocity_z += temp * (old_force_z + force_z);
+    const auto temp = delta_t * (1 / (2 * p.mass[index]));
+
+    for (int i = 0; i < DIMENSIONS; ++i) {
+      p.velocities[i][index] += temp * (p.old_forces[i][index] + p.forces[i][index]);
+    }
   }
 
   template<typename F>
-  auto calculate_force_particle_pair(F f, VectorizedParticle &p1, VectorizedParticle &p2, double_mask mask) {
+  auto calculate_force_particle_pair(F f, VectorizedParticle<DIMENSIONS> &p1, VectorizedParticle<DIMENSIONS> &p2, double_mask mask) {
 
-    std::array<double_v, 3> force{};
+    std::array<double_v, DIMENSIONS> force{};
     f(p1, p2, mask, force);
 
-    where(mask, p2.force[0]) = p2.force[0] - force[0];
-    where(mask, p2.force[1]) = p2.force[1] - force[1];
-    where(mask, p2.force[2]) = p2.force[2] - force[2];
+    for (int i = 0; i < DIMENSIONS; ++i) {
+      where(mask, p2.force[i]) = p2.force[i] - force[i];
+    }
 
-    p1.force[0] += stdx::reduce(where(mask, force[0]), std::plus<>());
-    p1.force[1] += stdx::reduce(where(mask, force[1]), std::plus<>());
-    p1.force[2] += stdx::reduce(where(mask, force[2]), std::plus<>());
+    for (int i = 0; i < DIMENSIONS; ++i) {
+      p1.force[i] += stdx::reduce(where(mask, force[i]), std::plus<>());
+    }
   }
 
   /*! <p> Function for position calculation </p>
@@ -95,12 +90,8 @@ class Simulator {
    */
   auto calculate_position() -> void {
     SPDLOG_DEBUG("Updating positions");
-    particles.linear([this](Particles &p, size_t index) {
-      calculate_position_particle(
-          p.position_x[index], p.position_y[index], p.position_z[index],
-          p.velocity_x[index], p.velocity_y[index], p.velocity_z[index],
-          p.old_force_x[index], p.old_force_y[index], p.old_force_z[index],
-          p.mass[index]);
+    particles.linear([this](Particles<DIMENSIONS> &p, size_t index) {
+      calculate_position_particle(p, index);
     });
   }
 
@@ -110,12 +101,8 @@ class Simulator {
   auto calculate_velocity() -> void {
     SPDLOG_DEBUG("Updating velocities");
 
-    particles.linear([this](Particles &p, size_t index) {
-      calculate_velocity_particle(
-          p.velocity_x[index], p.velocity_y[index], p.velocity_z[index],
-          p.force_x[index], p.force_y[index], p.force_z[index],
-          p.old_force_x[index], p.old_force_y[index], p.old_force_z[index],
-          p.mass[index]);
+    particles.linear([this](Particles<DIMENSIONS> &p, size_t index) {
+      calculate_velocity_particle(p, index);
     });
   }
   /**
@@ -131,10 +118,14 @@ class Simulator {
 
     switch (physics) {
       case physics::ForceModel::Gravity: {
-        particles.boundary(physics::gravity::calculate_force);
+
+        // TODO clarify what boundary forces should apply when simulating with gravity,
+        //  since gravity will always pull towards the center it might be possible to have no boundary condition if we start from stationary
+        particles.boundary(physics::lennard_jones::calculate_force);
+
         particles.refresh();
         particles.pairwise([this](auto &p1, auto &p2, auto mask) {
-          calculate_force_particle_pair(physics::gravity::calculate_force_vectorized, p1, p2, mask);
+          calculate_force_particle_pair(physics::gravity::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask);
         });
         break;
       }
@@ -142,7 +133,7 @@ class Simulator {
         particles.boundary(physics::lennard_jones::calculate_force);
         particles.refresh();
         particles.pairwise([this](auto &p1, auto &p2, auto mask) {
-          calculate_force_particle_pair(physics::lennard_jones::calculate_force_vectorized, p1, p2, mask);
+          calculate_force_particle_pair(physics::lennard_jones::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask);
         });
         break;
       }
@@ -165,6 +156,7 @@ class Simulator {
     auto interval = config->output_frequency;
 
     calculate_force();
+    particles.swap_force();
     // Plot initial position and forces
 
     if (IO) {

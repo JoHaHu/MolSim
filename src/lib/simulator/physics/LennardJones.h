@@ -25,10 +25,10 @@ auto static initialize_constants(double e, double s, double c) {
   auto sigma3 = sigma * sigma * sigma;
   auto sigma6 = sigma3 * sigma3;
   epsilon24 = 24 * epsilon * sigma6;
-  epsilon48 = 48 * epsilon * sigma6 * sigma6;
+  epsilon48 = 2 * epsilon24 * sigma6;
 }
-
-auto static calculate_force_vectorized(const VectorizedParticle &p1, const VectorizedParticle &p2, double_mask mask, std::array<double_v, 3> &force) {
+template<const size_t DIMENSIONS>
+auto static calculate_force_vectorized(const VectorizedParticle<DIMENSIONS> &p1, const VectorizedParticle<DIMENSIONS> &p2, double_mask mask, std::array<double_v, DIMENSIONS> &force) {
   SPDLOG_TRACE("Entering LennardJones calculate_force_vectorized");
 
   const auto diff = p2.position - p1.position;
@@ -45,40 +45,21 @@ auto static calculate_force_vectorized(const VectorizedParticle &p1, const Vecto
   }
   auto norm_mask = norm_2 > cutoff;
 
-  stdx::where(norm_mask, force[0]) = 0;
-  stdx::where(norm_mask, force[1]) = 0;
-  stdx::where(norm_mask, force[2]) = 0;
+  for (int i = 0; i < DIMENSIONS; ++i) {
+    stdx::where(norm_mask, force[i]) = 0;
+  }
 
   SPDLOG_TRACE("Exiting LennardJones calculate_force_vectorized");
 }
 
-auto static calculate_force(Particles &p, size_t index, std::array<double, 3>& position2) {
-  SPDLOG_TRACE("Entering LennardJones calculate_force_vectorized");
-
-  const auto diff = position2 - std::array<double, 3>({p.position_x[index], p.position_y[index], p.position_z[index]});
-
-  const auto norm_2 = ArrayUtils::L2NormSquared(diff);
-
+/**
+ * simplified jennard jones force for boundary particle. since the vector is perpendicular to the boundary plane, only one position component is relevant to calculate the norm
+ * */
+auto static calculate_force(double diff) -> double {
+  const auto norm_2 = diff * diff;
   const auto norm_6 = norm_2 * norm_2 * norm_2;
-
   const auto temp = (norm_6 * epsilon24 - epsilon48) / (norm_6 * norm_6 * norm_2);
-  auto force = temp * diff;
-
-  if (norm_2 == 0) [[unlikely]] {
-    SPDLOG_WARN("zero distance between particle");
-  }
-
-  if (norm_2 > cutoff) {
-    force[0] = 0;
-    force[1] = 0;
-    force[2] = 0;
-  }
-
-  p.force_x[index] += force[0];
-  p.force_y[index] += force[1];
-  p.force_z[index] += force[2];
-
-  SPDLOG_TRACE("Exiting LennardJones calculate_force_vectorized");
+  return temp * diff;
 }
 
 }// namespace simulator::physics::lennard_jones

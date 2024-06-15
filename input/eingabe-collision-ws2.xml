@@ -3,14 +3,15 @@
 <Data xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
       xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
 
-    <header base_name="Collision of two bodies" output_file_name="collision_simulation" output_frequency="100" t_end="20"
+    <header base_name="Collision of two bodies" output_file_name="collision_simulation" output_frequency="100"
+            t_end="20"
             seed="1337"/>
 
     <linked_cells>
         <domain_size>
             <value>180</value>
             <value>90</value>
-            <value>10</value>
+            <value>4</value>
         </domain_size>
         <boundary_conditions>
             <boundary_condition type="reflecting"/>
@@ -21,7 +22,7 @@
             <boundary_condition type="reflecting"/>
         </boundary_conditions>
     </linked_cells>
-<!--        <vector>true</vector>-->
+    <!--    <vector>true</vector>-->
 
     <lennard_jones>
         <settings delta_t="0.0005" sigma="1" epsilon="5" mass_m="1" distance_h="1.1225" brown_motion="0.1"
@@ -31,7 +32,7 @@
                 <coordinate>
                     <value>20</value>
                     <value>20</value>
-                    <value>5</value>
+                    <value>2</value>
                 </coordinate>
                 <particle_counts>
                     <value>100</value>
@@ -48,7 +49,7 @@
                 <coordinate>
                     <value>70</value>
                     <value>60</value>
-                    <value>5</value>
+                    <value>2</value>
                 </coordinate>
                 <particle_counts>
                     <value>20</value>

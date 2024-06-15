@@ -46,7 +46,10 @@ make
 SPDLOG_LEVEL=info ./MolSim --input <input_xml_file>
 ```
 
+llvm-profdata merge -output=default.profdata default_*.profraw
+
 ## Tests
+
 ```shell
 cd test
 ./Test
