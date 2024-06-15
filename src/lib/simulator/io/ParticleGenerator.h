@@ -29,7 +29,7 @@ class ParticleGenerator {
   using cuboid_t = std::tuple<std::array<double, DIMENSIONS>, std::array<double, DIMENSIONS>, std::array<int, DIMENSIONS>, double, double, double>;
 
  public:
-  explicit ParticleGenerator(const std::shared_ptr<config::Config> &config) : config(config){};
+  explicit ParticleGenerator(const std::shared_ptr<config::Config> &config) : config(config) {};
   /**
    * Load particles based on a input file and returns a particle container and the used force model
    * */

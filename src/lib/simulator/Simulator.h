@@ -51,7 +51,7 @@ class Simulator {
         plotter(std::move(plotter)),
         config(config),
         end_time(config->end_time),
-        delta_t(config->delta_t){};
+        delta_t(config->delta_t) {};
 
   auto calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
