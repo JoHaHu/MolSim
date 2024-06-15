@@ -19,8 +19,6 @@ namespace simulator::io {
  * A recursive descent parser to load scenario from file and populate ParticleContainer
  */
 
-static constexpr const double brownian_motion = 0.1;
-
 template<const size_t DIMENSIONS>
 class ParticleGenerator {
  private:
@@ -29,7 +27,7 @@ class ParticleGenerator {
   using cuboid_t = std::tuple<std::array<double, DIMENSIONS>, std::array<double, DIMENSIONS>, std::array<int, DIMENSIONS>, double, double, double>;
 
  public:
-  explicit ParticleGenerator(const std::shared_ptr<config::Config> &config) : config(config) {};
+  explicit ParticleGenerator(const std::shared_ptr<config::Config> &config) : config(config){};
   /**
    * Load particles based on a input file and returns a particle container and the used force model
    * */
@@ -46,7 +44,7 @@ class ParticleGenerator {
         new_coords[i] = cuboid.coordinates[i] + config->distance_h * static_cast<double>(offset[i]);
       }
 
-      std::array<double, DIMENSIONS> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(brownian_motion, seed);
+      std::array<double, DIMENSIONS> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(config->brownian_motion, seed);
       for (int i = 0; i < DIMENSIONS; ++i) {
         velocity[i] += cuboid.velocity[i];
       }
@@ -131,7 +129,7 @@ class ParticleGenerator {
           std::array<double, DIMENSIONS> position = {centerX + x, centerY + y, 0.0};
           std::array<double, DIMENSIONS> velocity = {0.0, 0.0, 0.0};
 
-          std::array<double, DIMENSIONS> velocity2D = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(brownian_motion, seed);
+          std::array<double, DIMENSIONS> velocity2D = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(config->brownian_motion, seed);
           velocity[0] = velocity2D[0] + initialVx;
           velocity[1] = velocity2D[1] + initialVy;
 
@@ -179,7 +177,7 @@ class ParticleGenerator {
             double z = k * meshwidth;
             if (x * x + y * y + z * z <= radius * radius) {
               std::array<double, 3> position = {centerX + x, centerY + y, centerZ + z};
-              std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(brownian_motion, 3, seed);
+              std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(config->brownian_motion, 3, seed);
               velocity[0] += initialVx;
               velocity[1] += initialVy;
               velocity[2] += initialVz;
@@ -230,7 +228,7 @@ class ParticleGenerator {
           double z = minorRadius * sin(phi);
 
           std::array<double, 3> position = {centerX + x, centerY + y, centerZ + z};
-          std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(brownian_motion, 3, seed);
+          std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(config->brownian_motion, 3, seed);
           velocity[0] += initialVx;
           velocity[1] += initialVy;
           velocity[2] += initialVz;
@@ -290,7 +288,7 @@ class ParticleGenerator {
         double z = helixPitch * theta / (2 * M_PI);
 
         std::array<double, 3> position = {centerX + x, centerY + y, centerZ + z};
-        std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(brownian_motion, 3, seed);
+        std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(config->brownian_motion, 3, seed);
         velocity[0] += initialVx;
         velocity[1] += initialVy;
         velocity[2] += initialVz + 1;
@@ -305,7 +303,7 @@ class ParticleGenerator {
         double z = helixPitch * theta / (2 * M_PI);
 
         std::array<double, 3> position = {centerX + x, centerY + y, centerZ + z};
-        std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(brownian_motion, 3, seed);
+        std::array<double, 3> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(config->brownian_motion, 3, seed);
         velocity[0] += initialVx;
         velocity[1] += initialVy;
         velocity[2] += initialVz - 1;

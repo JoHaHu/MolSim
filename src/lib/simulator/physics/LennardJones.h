@@ -28,10 +28,10 @@ auto static initialize_constants(double e, double s, double c) {
   epsilon48 = 2 * epsilon24 * sigma6;
 }
 template<const size_t DIMENSIONS>
-auto static calculate_force_vectorized(const VectorizedParticle<DIMENSIONS> &p1, const VectorizedParticle<DIMENSIONS> &p2, double_mask mask, std::array<double_v, DIMENSIONS> &force) {
+auto static calculate_force_vectorized(const VectorizedParticle<DIMENSIONS> &p1, const VectorizedParticle<DIMENSIONS> &p2, double_mask mask, std::array<double_v, DIMENSIONS> &force, std::array<double_v, DIMENSIONS> &corrections) {
   SPDLOG_TRACE("Entering LennardJones calculate_force_vectorized");
 
-  const auto diff = p2.position - p1.position;
+  const auto diff = (p2.position + corrections) - p1.position;
 
   const auto norm_2 = ArrayUtils::L2NormSquared(diff);
 

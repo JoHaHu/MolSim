@@ -60,7 +60,14 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_forces_simple) {
   std::array<double_v, 3> actual_forces = {-1.37174211, 1.37174211, 1.37174211};
 
   // computing forces with method
-  std::array<double_v, 3> calculated_forces = simulator::physics::lennard_jones::calculate_force_vectorized(particle_i, particle_j);
+  std::array<double_v, 3> calculated_forces;
+  std::array<double_v, 3> correction = {double_v(0), double_v(0), double_v(0)};
+  simulator::physics::lennard_jones::calculate_force_vectorized(
+      particle_i,
+      particle_j,
+      double_mask(true),
+      calculated_forces,
+      correction);
 
   // check if each result of the force vector is accurate enough
   EXPECT_TRUE(stdx::all_of(calculated_forces[0] - actual_forces[0] < 0.000001));

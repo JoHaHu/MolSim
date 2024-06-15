@@ -26,7 +26,7 @@
                                 <xs:element name="domain_size" type="double_array"/>
                                 <xs:element name="boundary_conditions">
                                     <xs:complexType>
-                                        <xs:sequence minOccurs="6" maxOccurs="6">
+                                        <xs:sequence minOccurs="4" maxOccurs="6">
                                             <xs:element name="boundary_condition">
                                                 <xs:complexType>
                                                     <xs:attribute name="type" type="xs:string" use="required"/>
@@ -104,7 +104,8 @@
                                     <xs:element name="double_helices">
                                         <xs:complexType>
                                             <xs:sequence>
-                                                <xs:element name="double_helix" type="double_helix" maxOccurs="unbounded"/>
+                                                <xs:element name="double_helix" type="double_helix"
+                                                            maxOccurs="unbounded"/>
                                             </xs:sequence>
                                         </xs:complexType>
                                     </xs:element>
@@ -184,7 +185,7 @@
     <!-- Definition of intArray as an array of 3 integers -->
     <xs:complexType name="double_array">
         <xs:sequence>
-            <xs:element name="value" type="xs:double" maxOccurs="3" minOccurs="3"/>
+            <xs:element name="value" type="xs:double" maxOccurs="3" minOccurs="2"/>
         </xs:sequence>
     </xs:complexType>
 

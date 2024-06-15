@@ -104,10 +104,7 @@ target_compile_options(MolSim
 
 # Configure Debug and Release specific options
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_link_libraries(simulator
-            PUBLIC
-            asan
-    )
+
     target_compile_options(simulator
             PRIVATE
             $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling #[[-fsanitize=address]] >

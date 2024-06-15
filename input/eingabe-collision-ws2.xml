@@ -4,22 +4,22 @@
       xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
 
     <header base_name="Collision of two bodies" output_file_name="collision_simulation" output_frequency="100"
-            t_end="20"
+            t_end="40"
             seed="1337"/>
 
     <linked_cells>
         <domain_size>
-            <value>180</value>
+            <value>150</value>
             <value>90</value>
             <value>4</value>
         </domain_size>
         <boundary_conditions>
+            <boundary_condition type="periodic"/>
             <boundary_condition type="reflecting"/>
+            <boundary_condition type="periodic"/>
             <boundary_condition type="reflecting"/>
-            <boundary_condition type="reflecting"/>
-            <boundary_condition type="reflecting"/>
-            <boundary_condition type="reflecting"/>
-            <boundary_condition type="reflecting"/>
+            <boundary_condition type="periodic"/>
+            <boundary_condition type="periodic"/>
         </boundary_conditions>
     </linked_cells>
     <!--    <vector>true</vector>-->

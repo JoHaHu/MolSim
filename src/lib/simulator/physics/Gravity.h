@@ -15,10 +15,11 @@ template<const size_t DIMENSIONS>
 auto static calculate_force_vectorized(VectorizedParticle<DIMENSIONS> &p1,
                                        VectorizedParticle<DIMENSIONS> &p2,
                                        double_mask mask,
-                                       std::array<double_v, DIMENSIONS> &force) {
+                                       std::array<double_v, DIMENSIONS> &force,
+                                       std::array<double_v, DIMENSIONS> &corrections) {
   SPDLOG_TRACE("Entering Gravity calculate_force_vectorized");
 
-  const auto diff = p2.position - p1.position;
+  const auto diff = (p2.position - corrections) - p1.position;
 
   const auto norm = ArrayUtils::L2Norm(diff);
 

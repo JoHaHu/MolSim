@@ -51,7 +51,7 @@ class Simulator {
         plotter(std::move(plotter)),
         config(config),
         end_time(config->end_time),
-        delta_t(config->delta_t) {};
+        delta_t(config->delta_t){};
 
   auto calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
@@ -70,10 +70,10 @@ class Simulator {
   }
 
   template<typename F>
-  auto calculate_force_particle_pair(F f, VectorizedParticle<DIMENSIONS> &p1, VectorizedParticle<DIMENSIONS> &p2, double_mask mask) {
+  auto calculate_force_particle_pair(F f, VectorizedParticle<DIMENSIONS> &p1, VectorizedParticle<DIMENSIONS> &p2, double_mask mask, std::array<double_v, DIMENSIONS> &correction) {
 
     std::array<double_v, DIMENSIONS> force{};
-    f(p1, p2, mask, force);
+    f(p1, p2, mask, force, correction);
 
     for (int i = 0; i < DIMENSIONS; ++i) {
       where(mask, p2.force[i]) = p2.force[i] - force[i];
@@ -124,16 +124,16 @@ class Simulator {
         particles.boundary(physics::lennard_jones::calculate_force);
 
         particles.refresh();
-        particles.pairwise([this](auto &p1, auto &p2, auto mask) {
-          calculate_force_particle_pair(physics::gravity::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask);
+        particles.pairwise([this](auto &p1, auto &p2, auto mask, auto &correction) {
+          calculate_force_particle_pair(physics::gravity::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask, correction);
         });
         break;
       }
       case physics::ForceModel::LennardJones: {
         particles.boundary(physics::lennard_jones::calculate_force);
         particles.refresh();
-        particles.pairwise([this](auto &p1, auto &p2, auto mask) {
-          calculate_force_particle_pair(physics::lennard_jones::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask);
+        particles.pairwise([this](auto &p1, auto &p2, auto mask, auto &correction) {
+          calculate_force_particle_pair(physics::lennard_jones::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask, correction);
         });
         break;
       }

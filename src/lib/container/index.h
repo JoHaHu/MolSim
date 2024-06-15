@@ -1,6 +1,10 @@
 #pragma once
 
 #include "boundary.h"
+#include "utils/ArrayUtils.h"
+#include "utils/types.h"
+#include <climits>
+#include <cmath>
 #include <span>
 
 namespace container::index {
@@ -15,6 +19,8 @@ class Index {
   std::array<size_t, DIMENSIONS> dim{};
   std::array<long, DIMENSIONS> radius{};
   //  double diagonal;
+
+  Index() = default;
 
   Index(const std::array<double, DIMENSIONS> &dm, const std::array<BoundaryCondition, 2 * DIMENSIONS> &bc, double cutoff) : domain(dm), bc(bc) {
 
@@ -58,7 +64,18 @@ class Index {
   auto calculate_correction(std::array<size_t, DIMENSIONS> from, std::array<long, DIMENSIONS> offset) -> std::array<double, DIMENSIONS> {
     std::array<double, DIMENSIONS> correction;
     for (int i = 0; i < DIMENSIONS; ++i) {
-      if (bc[i] == BoundaryCondition::periodic) { correction[0] = widths[0] * static_cast<double>(from[i] - offset[i]); }
+      if (bc[i] == BoundaryCondition::periodic) {
+        long diff = static_cast<long>(from[i]) + offset[i];
+        if (diff >= static_cast<long>(dim[i])) {
+          correction[i] = widths[i] * dim[i];
+        } else if (diff < 0) {
+          correction[i] = -widths[i] * dim[i];
+        } else {
+          correction[i] = 0.0;
+        }
+      } else {
+        correction[i] = 0.0;
+      }
     }
     return correction;
   }
@@ -89,7 +106,11 @@ class Index {
 
     std::array<size_t, DIMENSIONS> temp;
     for (int i = 0; i < DIMENSIONS; ++i) {
-      temp[i] = index[i] + off[i];
+      temp[i] = 0;
+      if (bc[i] == BoundaryCondition::periodic) {
+        temp[i] += dim[i];
+      }
+      temp[i] += static_cast<long>(index[i]) + off[i];
     }
     return dimension_to_index(temp);
   }

@@ -61,7 +61,7 @@ class Cell {
 
  private:
  public:
-  explicit Cell(cell_type type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx) {};
+  explicit Cell(cell_type type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx){};
 
   constexpr auto is_boundary() const -> bool {
     return type == cell_type::boundary;
@@ -155,7 +155,7 @@ class LinkedCell {
           auto other_index = index.offset(idx, offset);
           auto correction = index.calculate_correction(idx, offset);
           // checks that cell is not out of bounds and not the same cell
-          if (other_index < cells.size() && other_index != cell_idx && index.in_cutoff_distance(idx, cells[other_index].idx) <= cutoff) {
+          if (other_index < cells.size() && other_index != cell_idx && index.in_cutoff_distance(idx, cells[other_index].idx)) {
             neighbours.emplace_back(other_index, correction);
           }
         }
@@ -283,22 +283,28 @@ class LinkedCell {
           auto active_mask = index_vector + 1 + (i * double_v::size()) < (cell.size());
           auto p2 = particles.load_vectorized(idx + 1 + (i * double_v::size()));
           auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
-          c(p1, p2, mask);
+          c(p1, p2, mask, empty_correction);
           particles.store_force_vector(p2, idx + 1 + (i * double_v::size()));
           i++;
         }
 
         // Neighbour cells
-        for (auto &neighbour : cell.neighbours) {
+        std::array<double_v, DIMENSIONS> correction;
+        for (Neighbour<DIMENSIONS> &neighbour : cell.neighbours) {
           size_t i = 0;
-          auto &neighbour_cell = cells[neighbour.cell];
+          Cell<DIMENSIONS> &neighbour_cell = cells[neighbour.cell];
           size_t n_start = neighbour_cell.start_index;
           size_t n_end = neighbour_cell.end_index;
+
+          for (int i = 0; i < DIMENSIONS; ++i) {
+            correction[i] = double_v(neighbour.correction[i]);
+          }
+
           while (n_start + (i * double_v::size()) < n_end) {
             auto active_mask = index_vector + (i * double_v::size()) < (neighbour_cell.size());
             auto p2 = particles.load_vectorized(n_start + (i * double_v::size()));
             auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
-            c(p1, p2, mask);
+            c(p1, p2, mask, correction);
             particles.store_force_vector(p2, n_start + (i * double_v::size()));
             i++;
           }
@@ -306,7 +312,7 @@ class LinkedCell {
         particles.store_force_single(p1, idx);
       } else [[unlikely]] {
         // Stop on first inactive encountered particle
-        //        SPDLOG_WARN("Particle crossed boundary not handled before next loop");
+        SPDLOG_WARN("Particle crossed boundary not handled before next loop");
         break;
       }
     }
@@ -391,6 +397,16 @@ class LinkedCell {
   double sigma;
   double cutoff;
   double reflecting_distance = std::pow(2, 1 / 6.0) * sigma;
+
+  constexpr static auto init_empty_correction() -> std::array<double_v, DIMENSIONS> {
+    std::array<double_v, DIMENSIONS> temp{};
+    for (int i = 0; i < DIMENSIONS; ++i) {
+      temp[i] = double_v(0.0);
+    }
+    return temp;
+  }
+
+  std::array<double_v, DIMENSIONS> empty_correction = init_empty_correction();
 };
 
 }// namespace container
