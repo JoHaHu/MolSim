@@ -28,6 +28,7 @@ auto static initialize_constants(double e, double s, double c) {
   epsilon48 = 2 * epsilon24 * sigma6;
 }
 template<const size_t DIMENSIONS>
+__attribute__((__always_inline__))
 auto static calculate_force_vectorized(const VectorizedParticle<DIMENSIONS> &p1, const VectorizedParticle<DIMENSIONS> &p2, double_mask mask, std::array<double_v, DIMENSIONS> &force, std::array<double_v, DIMENSIONS> &corrections) {
   SPDLOG_TRACE("Entering LennardJones calculate_force_vectorized");
 
@@ -55,6 +56,7 @@ auto static calculate_force_vectorized(const VectorizedParticle<DIMENSIONS> &p1,
 /**
  * simplified jennard jones force for boundary particle. since the vector is perpendicular to the boundary plane, only one position component is relevant to calculate the norm
  * */
+__attribute__((__always_inline__))
 auto static calculate_force(double diff) -> double {
   const auto norm_2 = diff * diff;
   const auto norm_6 = norm_2 * norm_2 * norm_2;

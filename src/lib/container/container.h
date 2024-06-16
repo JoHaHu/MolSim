@@ -109,6 +109,9 @@ struct ParticleContainer {
                    }},
                var);
   }
+  /**
+   * @brief applies boundary conditions, only effective when using linked cells
+   * */
   template<typename Callable>
   void boundary(Callable f) {
     std::visit(overloaded{

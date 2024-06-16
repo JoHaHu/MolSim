@@ -12,6 +12,7 @@ namespace simulator::physics::gravity {
  *
  * */
 template<const size_t DIMENSIONS>
+__attribute__((__always_inline__))
 auto static calculate_force_vectorized(VectorizedParticle<DIMENSIONS> &p1,
                                        VectorizedParticle<DIMENSIONS> &p2,
                                        double_mask mask,

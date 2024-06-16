@@ -8,8 +8,8 @@
             seed="1337"/>
     <linked_cells>
         <domain_size>
-            <value>21</value>
-            <value>21</value>
+            <value>24</value>
+            <value>24</value>
         </domain_size>
         <boundary_conditions>
             <boundary_condition type="periodic"/>
@@ -26,8 +26,8 @@
         <cuboids>
             <Cuboid>
                 <coordinate>
-                    <value>7</value>
-                    <value>7</value>
+                    <value>11</value>
+                    <value>11</value>
                 </coordinate>
                 <particle_counts>
                     <value>1</value>
@@ -40,7 +40,7 @@
             </Cuboid>
             <Cuboid>
                 <coordinate>
-                    <value>7</value>
+                    <value>11</value>
                     <value>13</value>
                 </coordinate>
                 <particle_counts>
@@ -69,7 +69,7 @@
             <Cuboid>
                 <coordinate>
                     <value>13</value>
-                    <value>7</value>
+                    <value>11</value>
                 </coordinate>
                 <particle_counts>
                     <value>1</value>

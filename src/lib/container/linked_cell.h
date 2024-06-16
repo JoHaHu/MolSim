@@ -363,8 +363,13 @@ class LinkedCell {
           cells[cell].start_index = start;
           cells[cell].end_index = i;
         }
+
         start = i;
         cell = particles.cell[i];
+      }
+      if (i == particles.size - 1) {
+        cells[cell].start_index = start;
+        cells[cell].end_index = particles.size;
       }
     }
 
