@@ -67,7 +67,7 @@ class Cell {
     return type == cell_type::boundary;
   }
 
-  auto size() -> size_t {
+  auto size() const -> size_t {
     return end_index - start_index;
   }
 
