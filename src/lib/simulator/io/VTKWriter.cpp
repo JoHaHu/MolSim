@@ -45,7 +45,6 @@ void VTKWriter::initializeOutput(int numParticles) {
 void VTKWriter::writeFile(const std::string &filename, int iteration) {
   std::stringstream strstr;
   strstr << filename << "_" << std::setfill('0') << std::setw(4) << iteration << ".vtu";
-
   std::ofstream file(strstr.str().c_str());
   VTKFile(file, *vtkFile);
   // Early release of memory resources
@@ -54,9 +53,9 @@ void VTKWriter::writeFile(const std::string &filename, int iteration) {
 
 void VTKWriter::plotParticle(Particle &p) {
   if (vtkFile->UnstructuredGrid().present()) {
-    spdlog::trace("UnstructuredGrid is present");
+    SPDLOG_TRACE("UnstructuredGrid is present");
   } else {
-    spdlog::warn("ERROR: No UnstructuredGrid present");
+    SPDLOG_WARN("ERROR: No UnstructuredGrid present");
   }
 
   PointData::DataArray_sequence &pointDataSequence =

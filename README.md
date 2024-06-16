@@ -11,9 +11,9 @@ MolSim2024 - Group D
 
 Developed and tested with these versions, other versions might work
 
-- clang 17.0.6
-- lld 17.0.6
-- lldb 17.0.6
+- clang 18.1.6
+- lld 18.1.6
+- lldb 18.1.6
 - cmake 3.27.7
 
 this repository includes `.idea/cmake.xml`.
@@ -43,7 +43,7 @@ make doc_doxygen
 cd ${BUILD_DIR}
 make
 ./MolSim --help
-SPDLOG_LEVEL=info ./MolSim --input <input> --output <output> --start_time <start_time> --end_time <t_end> --delta_t <delta_t> --seed <seed> --io_interval <io_interval>
+SPDLOG_LEVEL=info ./MolSim --input <input_xml_file>
 ```
 
 ## Tests

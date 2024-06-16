@@ -1,5 +1,4 @@
 // file      : xsd/cxx/tree/exceptions.txx
-// copyright : Copyright (c) 2005-2014 Code Synthesis Tools CC
 // license   : GNU GPL v2 + exceptions; see accompanying LICENSE file
 
 #include <xsd/cxx/tree/bits/literals.hxx>
@@ -495,7 +494,7 @@ namespace xsd
       const char* bounds<C>::
       what () const throw ()
       {
-        return "buffer boundary rules have been violated";
+        return "buffer is_boundary rules have been violated";
       }
 
       template <typename C>

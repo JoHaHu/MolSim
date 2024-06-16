@@ -22,7 +22,6 @@ file(GLOB_RECURSE MY_SRC
         "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.cpp"
         # we use cxx extension to exclude generated files from clang-tidy
         "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.cxx"
-        # header don't need to be included but this might be necessary for some IDEs
         "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.h"
         # we use hxx extension to exclude generated files from clang-tidy
         "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.hxx"
@@ -34,16 +33,17 @@ add_library(simulator
 )
 
 target_include_directories(simulator
-        PUBLIC
+        PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/libxsd
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/lib
+        PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/lib"
 )
 
 target_link_libraries(simulator
-        # stuff that is used in headers and source files
         PUBLIC
-        xerces-c
         spdlog::spdlog
+        range-v3::range-v3
+        xerces-c
 )
 
 target_compile_features(simulator
@@ -51,8 +51,7 @@ target_compile_features(simulator
         cxx_std_23
 )
 
-# activate all compiler warnings. Clean up your code :P
-# depending on the compiler different flags are used
+
 target_compile_options(simulator
         PRIVATE
         $<$<CXX_COMPILER_ID:GNU>:-Wall -march=native>
@@ -69,6 +68,7 @@ get_target_property(SIMULATOR_INCLUDES simulator INCLUDE_DIRECTORIES)
 # create make target
 add_executable(MolSim src/bin/MolSim.cpp)
 
+
 # set cxx standard. You may raise this if you want.
 target_compile_features(MolSim
         PRIVATE
@@ -80,7 +80,6 @@ target_include_directories(MolSim
         ${SIMULATOR_INCLUDES}
 )
 target_link_libraries(MolSim
-        # stuff that is used in headers and source files
         PRIVATE
         simulator
 )
@@ -92,38 +91,44 @@ if (result)
     set_property(TARGET simulator PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif ()
 
-# activate all compiler warnings. Clean up your code :P
-# depending on the compiler different flags are used
+
 target_compile_options(MolSim
         PRIVATE
-        $<$<CXX_COMPILER_ID:GNU>:-Wall -march=native>
+        $<$<CXX_COMPILER_ID:GNU>:-Wall -g -march=native>
         # disable some spam warnings for icpc...
         $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>
-        $<$<CXX_COMPILER_ID:Clang>:-Wall -march=native>
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -g -march=native>
 )
 
 
 # Configure Debug and Release specific options
-if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -g -O0 -fno-omit-frame-pointer>
+            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -Wstrict-overflow -fno-omit-frame-pointer -fdebug-info-for-profiling>
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -g -O0 -fno-omit-frame-pointer>
+            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -Wstrict-overflow -fno-omit-frame-pointer -fdebug-info-for-profiling>
     )
-elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
+    target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
+    target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
+
+elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize >
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:GNU>: -O3>
+    )
+    target_compile_options(MolSim
+            PRIVATE
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
             $<$<CXX_COMPILER_ID:GNU>: -O3 >
     )
-    target_compile_options(MolSim
-            PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize >
-            $<$<CXX_COMPILER_ID:CNU>: -O3>
-    )
+    target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+    target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+
+
 endif ()
 
 
@@ -131,3 +136,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 include(doxygen)
 include(spdlog)
 include(g_test)
+
+# include the ranges-v3 library because std::ranges::concat_view is not available yet
+# and ranges-v3 is the basis for the implementation of the std::ranges library
+include(ranges-v3)

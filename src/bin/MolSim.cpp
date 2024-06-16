@@ -1,10 +1,13 @@
-#include <spdlog/spdlog.h>
-#include <vector>
 
-#include "config/config.h"
+#include <spdlog/spdlog.h>
+#include <variant>
+
+#include "config/Config.h"
+#include "container/boundary.h"
 #include "simulator/Simulator.h"
-#include "simulator/io/ParticleLoader.h"
+#include "simulator/io/ParticleGenerator.h"
 #include "simulator/io/VTKPlotter.h"
+#include "simulator/io/xml_reader/XMLFileReader.h"
 #include "simulator/physics/ForceModel.h"
 #include "simulator/physics/Gravity.h"
 #include "simulator/physics/LennardJones.h"
@@ -22,36 +25,52 @@
 auto main(int argc, char *argv[]) -> int {
 
   auto config = config::Config::parse_config(argc, argv);
-  LoggerManager::setup_logger(config);
+  LoggerManager::setup_logger(*config);
 
-  auto startTime = std::chrono::high_resolution_clock::now();
+  auto particle_loader = simulator::io::ParticleGenerator(config);
 
-  auto particle_loader = simulator::io::ParticleLoader(config);
-
-  auto [particle_container, force_model] = particle_loader.load_particles();
+  auto particles = particle_loader.load_particles();
 
   auto plotter = std::make_unique<simulator::io::VTKPlotter>(config);
 
-  auto simulator = simulator::Simulator(std::move(particle_container), std::move(plotter), config);
+  simulator::physics::force_model physics;
+  switch (config->simulation_type) {
+    case simulator::physics::ForceModel::Gravity:
+      physics = {simulator::physics::Gravity()};
+      break;
+    case simulator::physics::ForceModel::LennardJones:
+      physics = {simulator::physics::LennardJones(3.0, 1, 5)};
+      break;
+  }
 
-  if (config->io_interval == 0) {
-    switch (force_model) {
-      case simulator::physics::ForceModel::Gravity:
-        simulator.run<simulator::physics::Gravity, false>();
-        break;
-      case simulator::physics::ForceModel::LennardJones:
-        simulator.run<simulator::physics::LennardJones, false>();
-        break;
-    }
+  // Intialize with empty vetor
+  container::particle_container pc = container::particle_container(std::vector<Particle>());
+
+  switch (config->particle_loader_type) {
+    case ParticleContainerType::Vector:
+      pc = container::particle_container(std::move(particles));
+      break;
+    case ParticleContainerType::LinkedCells:
+      auto lc = container::linked_cell<container::index::row_major_index>(
+          config->domain_size,
+          config->cutoff_radius,
+          config->boundary_conditions,
+          particles.size(), config->sigma);
+
+      pc = container::particle_container(std::move(lc));
+      for (auto &p : particles) {
+        pc.insert(std::move(p));
+      }
+      break;
+  }
+  auto simulator = simulator::Simulator(std::move(pc), physics, std::move(plotter), config);
+
+  auto startTime = std::chrono::high_resolution_clock::now();
+
+  if (config->output_frequency == 0) {
+    simulator.run<false>();
   } else {
-    switch (force_model) {
-      case simulator::physics::ForceModel::Gravity:
-        simulator.run<simulator::physics::Gravity, true>();
-        break;
-      case simulator::physics::ForceModel::LennardJones:
-        simulator.run<simulator::physics::LennardJones, true>();
-        break;
-    }
+    simulator.run<true>();
   }
 
   auto endTime = std::chrono::high_resolution_clock::now();
@@ -62,7 +81,7 @@ auto main(int argc, char *argv[]) -> int {
   durationMs -= seconds;
   auto milliseconds = durationMs.count();
 
-  spdlog::info("Simulation completed in {:02d}:{:02d}:{:03d} (mm:ss:ms)", minutes.count(), seconds.count(), milliseconds);
+  SPDLOG_INFO("Simulation completed in {:02d}:{:02d}:{:03d} (mm:ss:ms)", minutes.count(), seconds.count(), milliseconds);
 
   return 0;
 }

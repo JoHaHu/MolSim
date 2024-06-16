@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Data xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+      xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
+    <header base_name="Collision of two bodies" output_file_name="collision_simulation" output_frequency="0"
+            t_end="20" seed="1234"/>
+    <linked_cells>
+        <domain_size>
+            <value>100</value>
+            <value>100</value>
+            <value>3</value>
+        </domain_size>
+        <boundary_conditions>
+            <boundary_condition type="outflow"/>
+            <boundary_condition type="outflow"/>
+            <boundary_condition type="outflow"/>
+            <boundary_condition type="outflow"/>
+            <boundary_condition type="outflow"/>
+            <boundary_condition type="outflow"/>
+        </boundary_conditions>
+    </linked_cells>
+    <lennard_jones>
+        <settings delta_t="0.0005" sigma="1" epsilon="5" mass_m="1" distance_h="1.1225" brown_motion="0.1"
+                  cutoff_radius="3"/>
+        <cuboids>
+            <Cuboid>
+                <coordinate>
+                    <value>1</value>
+                    <value>1</value>
+                    <value>2</value>
+                </coordinate>
+                <particle_counts>
+                    <value>90</value>
+                    <value>90</value>
+                    <value>1</value>
+                </particle_counts>
+                <velocity>
+                    <value>0</value>
+                    <value>0</value>
+                    <value>0</value>
+                </velocity>
+            </Cuboid>
+        </cuboids>
+    </lennard_jones>
+</Data>
