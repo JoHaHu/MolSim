@@ -8,6 +8,8 @@
 #include "simulator/physics/ForceModel.h"
 #include "simulator/physics/Gravity.h"
 #include "simulator/physics/LennardJones.h"
+#include "simulator/physics/Thermostat.h"
+
 #include "utils/ArrayUtils.h"
 #include "utils/variants.h"
 #include <cmath>
@@ -18,6 +20,12 @@
 #include <utility>
 
 namespace simulator {
+
+static constexpr bool use_brownian_motion = true;
+static constexpr double t_init = 1;
+static constexpr double t_target = 30;
+static constexpr double delta_temp = std::numeric_limits<double>::infinity();
+static constexpr int nthermostat = 1000;
 
 /**
  * The main Simulator class. can be configured by providing a config and a plotter. Some methods use a physics model provided at compile time.
@@ -30,6 +38,7 @@ class Simulator {
   physics::ForceModel physics;
   std::unique_ptr<io::Plotter<DIMENSIONS>> plotter;
   std::shared_ptr<config::Config> config;
+  Thermostat<DIMENSIONS> thermostat;
 
   double end_time;
   double delta_t;
@@ -51,7 +60,8 @@ class Simulator {
         plotter(std::move(plotter)),
         config(config),
         end_time(config->end_time),
-        delta_t(config->delta_t) {};
+        delta_t(config->delta_t),
+        thermostat(t_init, t_target, delta_temp, config->seed) {};
 
   auto calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
@@ -155,6 +165,7 @@ class Simulator {
     iteration = 0;
     auto interval = config->output_frequency;
 
+    thermostat.initializeVelocities(particles, use_brownian_motion, config->brownian_motion);
     calculate_force();
     particles.swap_force();
     // Plot initial position and forces
@@ -167,6 +178,9 @@ class Simulator {
     while (current_time < end_time) {
       calculate_position();
       calculate_force();
+      if (iteration % nthermostat == 0) {
+        thermostat.apply(particles);
+      }
       calculate_velocity();
 
       iteration++;

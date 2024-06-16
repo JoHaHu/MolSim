@@ -96,7 +96,7 @@ auto main(int argc, char *argv[]) -> int {
   durationMs -= seconds;
   auto milliseconds = durationMs.count();
 
-  SPDLOG_INFO("Simulation completed in {:02d}:{:02d}:{:03d} (mm:ss:ms) | {:0.5f} ms/iteration", minutes.count(), seconds.count(), milliseconds, rate);
+  SPDLOG_INFO("Simulation completed in {:02d}:{:02d}:{:03d} (mm:ss:ms) | {:0.5f} ms/iteration | {:0.5f} MUPS/s", minutes.count(), seconds.count(), milliseconds, rate, 1000 / rate);
 
   return 0;
 }
