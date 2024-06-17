@@ -61,7 +61,7 @@ struct VectorizedParticle {
   std::array<double_v, DIMENSIONS> force{};
   std::array<double_v, DIMENSIONS> old_force{};
   double_v mass{};
-  int_v type;
+  long_v type;
   double_mask active;
 
   VectorizedParticle(
@@ -69,7 +69,7 @@ struct VectorizedParticle {
       const std::array<double_v, DIMENSIONS> &velocity,
       const std::array<double_v, DIMENSIONS> &force,
       const std::array<double_v, DIMENSIONS> &oldForce,
-      const double_v &mass, const int_v &type,
+      const double_v &mass, const long_v &type,
       const double_mask &active) : position(position), velocity(velocity), force(force), old_force(oldForce), mass(mass), type(type), active(active) {}
 };
 
@@ -86,7 +86,7 @@ class Particles {
 
   std::vector<double> mass{};
 
-  std::vector<int> type{};
+  std::vector<long> type{};
   std::vector<uint8_t> active{};
   std::vector<size_t> cell{};
 
@@ -127,7 +127,7 @@ class Particles {
         force,
         old_force,
         double_v(mass[index]),
-        int_v(type[index]),
+        long_v(type[index]),
         double_mask(static_cast<bool>(active[index])));
   }
 
@@ -152,7 +152,7 @@ class Particles {
     auto mass_vector = double_v();
     mass_vector.copy_from(&mass[index], stdx::element_aligned);
 
-    auto type_vector = int_v(&type[index], stdx::element_aligned);
+    auto type_vector = long_v(&type[index], stdx::element_aligned);
 
     auto active_vector = stdx::static_simd_cast<double_mask>(size_v(&active[index], stdx::element_aligned) > 0);
 

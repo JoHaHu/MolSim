@@ -8,6 +8,5 @@ using namespace std::experimental::__proposed;
 
 using double_v = stdx::native_simd<double>;
 using double_mask = stdx::native_simd_mask<double>;
-using int_mask = stdx::native_simd_mask<int>;
-using int_v = stdx::native_simd<int>;
+using long_v = stdx::native_simd<long>;
 using size_v = stdx::native_simd<size_t>;

@@ -45,7 +45,7 @@ __attribute__((__always_inline__)) auto static calculate_force_vectorized(const 
 
   const auto norm_6 = norm_2 * norm_2 * norm_2;
 
-  int_v vindex = int_v(0);
+  long_v vindex = long_v(0);
 
   stdx::where(vindex < NUM_TYPES, vindex) = 8 * p1.type + p2.type;
 
@@ -76,7 +76,7 @@ __attribute__((__always_inline__)) auto static calculate_force_vectorized(const 
 }
 
 /**
- * simplified jennard jones force for boundary particle. since the vector is perpendicular to the boundary plane, only one position component is relevant to calculate the norm
+ * simplified Lennard-Jones force for boundary particle. since the vector is perpendicular to the boundary plane, only one position component is relevant to calculate the norm
  * */
 __attribute__((__always_inline__)) auto static calculate_force(double diff, int type) -> double {
   const auto norm_2 = diff * diff;
