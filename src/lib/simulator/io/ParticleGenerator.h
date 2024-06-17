@@ -40,7 +40,7 @@ class ParticleGenerator {
     if (depth == 0) {
       std::array<double, DIMENSIONS> new_coords;
       for (int i = 0; i < DIMENSIONS; ++i) {
-        new_coords[i] = cuboid.coordinates[i] + config->distance_h * static_cast<double>(offset[i]);
+        new_coords[i] = cuboid.coordinates[i] + cuboid.spacing * static_cast<double>(offset[i]);
       }
 
       std::array<double, DIMENSIONS> velocity;
@@ -48,12 +48,12 @@ class ParticleGenerator {
         velocity[i] = cuboid.velocity[i];
       }
 
-      const auto particle = Particle(
-          new_coords, velocity, config->mass_m,
+      const auto particle = Particle<DIMENSIONS>(
+          new_coords, velocity, config->mass[type],
           type);
       particles.push_back(particle);
     } else {
-      for (const auto z : std::views::iota(0, cuboid.particles[depth - 1])) {
+      for (size_t z : std::views::iota(0, cuboid.particles[depth - 1])) {
         offset[depth - 1] = z;
         _generate_cuboids(depth - 1, offset, particles, cuboid, type);
       }
@@ -85,13 +85,8 @@ class ParticleGenerator {
           continue;// Skip this cuboid
         }
       }
-      if (std::isnan(config->distance_h) || std::isnan(config->mass_m) || std::isnan(config->sigma)) {
-        SPDLOG_ERROR("Invalid cuboid data: NaN value encountered in h, m, or sigma.");
-        continue;// Skip this cuboid
-      }
-
       std::array<double, DIMENSIONS> temp;
-      _generate_cuboids(DIMENSIONS, temp, particles, cuboid, index);
+      _generate_cuboids(DIMENSIONS, temp, particles, cuboid, 0);
     }
 
     particles.shrink_to_fit();

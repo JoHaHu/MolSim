@@ -32,38 +32,37 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
 
   try {
     // Parse the XML file and disable validation (according to worksheet)
-    std::unique_ptr<Data> data = Data_(xmlFilePath, 0);
+    std::unique_ptr<scenario> scenario = scenario_(xmlFilePath, 0);
+    auto &sc = *scenario;
     SPDLOG_INFO("Reading XML file.");
 
     // Log the header input values so the user can confirm their correctness
-    SPDLOG_DEBUG("Passing the following header parameters to simulation: " + data->header().base_name() + " | output frequency: " + std::to_string(data->header().output_frequency()) + " | t_end value: " + std::to_string(data->header().t_end()));
+    SPDLOG_DEBUG("Passing the following header parameters to simulation: " + sc.header().base_name() + " | output frequency: " + std::to_string(sc.header().output_frequency()) + " | t_end value: " + std::to_string(sc.header().t_end()));
 
     config::Config config = config::Config();
 
     // Header parsing
-    config.base_name = data->header().base_name();
-    config.end_time = data->header().t_end();
-    config.output_frequency = data->header().output_frequency();
-    config.output_filename = data->header().output_file_name();
-    config.seed = data->header().seed();
+    config.base_name = sc.header().base_name();
+    config.end_time = sc.header().t_end();
+    config.output_frequency = sc.header().output_frequency();
+    config.output_file = sc.header().output_file();
+    config.seed = sc.header().seed();
+    config.delta_t = sc.header().delta_t();
 
     /** Particle Loader choice **/
 
     // Linked Cells
-    if (data->linked_cells().present()) {
-      config.particle_loader_type = ParticleContainerType::LinkedCells;
+    if (sc.container().linked_cells().present()) {
+      config.particle_container_type = ParticleContainerType::LinkedCells;
 
       // Parsing array of domain size (volume)
-      const auto &domain_size = data->linked_cells()->domain_size();
-      std::vector<double> domain_size_vector;
-      for (const auto &arr : domain_size.value()) {
-        domain_size_vector.push_back(arr);
-      }
+      const auto &domain_size = sc.container().linked_cells()->domain_size();
+      std::vector<double> domain_size_vector = {domain_size.x(), domain_size.y(), *domain_size.z()};
 
       config.domain_size = domain_size_vector;
 
       // Parsing array of domain size (volume)
-      const auto &boundary_conditions = data->linked_cells()->boundary_conditions();
+      const auto &boundary_conditions = sc.container().linked_cells()->boundary_conditions();
       std::vector<BoundaryCondition> boundary_conditions_vec;
       for (const auto &arr : boundary_conditions.boundary_condition()) {
         BoundaryCondition bc = BoundaryCondition::none;
@@ -80,266 +79,149 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       }
 
       config.boundary_conditions = boundary_conditions_vec;
+      config.cutoff_radius = sc.container().linked_cells()->cutoff_radius();
 
       // Vector
-    } else if (data->vector().present()) {
-      config.particle_loader_type = ParticleContainerType::Vector;
+    } else if (sc.container().vector().present()) {
+      config.particle_container_type = ParticleContainerType::Vector;
     }
 
     // Gravity Model
-    if (data->gravity().present()) {
-
-      config.simulation_type = simulator::physics::ForceModel::Gravity;
-
-      std::vector<CelestialBody> temp_bodies;
-      // Iterate through all celestial bodies
-      const auto &bodies = data->gravity()->celestial_body();
-      int body_count = 0;
-      for (const auto &body : bodies) {
-
-        std::vector<double> coordinate{};
-        std::vector<double> velocity{};
-        double mass = body.mass();
-
-        for (const auto &arr : body.coordinate().value()) {
-          coordinate.push_back(arr);
-        }
-
-        for (const auto &arr : body.velocity().value()) {
-          velocity.push_back(arr);
-        }
-
-        // initializing arrays for the config object to be created
-        std::array<double, 3> arr_coordinate{};
-        std::array<double, 3> arr_velocity{};
-
-        // checking if lengths match before copying to static length arrays of size 3, otherwise give error
-        if (coordinate.size() == arr_coordinate.size() && velocity.size() == arr_velocity.size()) {
-          std::copy(coordinate.begin(), coordinate.end(), arr_coordinate.begin());
-          std::copy(velocity.begin(), velocity.end(), arr_velocity.begin());
-        } else {
-          SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
-          return nullptr;
-        }
-
-        auto temp_body = CelestialBody(arr_coordinate, arr_velocity, mass);
-        temp_bodies.emplace_back(temp_body);
-        body_count++;
-      }
-
-      config.total_bodies = body_count;
-      config.celestial_bodies = temp_bodies;
-    }
+    //    if (sc.forces().gravity().present()) {
+    //
+    //      config.simulation_type = simulator::physics::ForceModel::Gravity;
+    //
+    //      std::vector<CelestialBody> temp_bodies;
+    //      // Iterate through all celestial bodies
+    //      const auto &bodies = sc.forces().gravity()->celestial_body();
+    //      int body_count = 0;
+    //      for (const auto &body : bodies) {
+    //
+    //        std::vector<double> coordinate{};
+    //        std::vector<double> velocity{};
+    //        double mass = body.mass();
+    //
+    //        for (const auto &arr : body.coordinate().value()) {
+    //          coordinate.push_back(arr);
+    //        }
+    //
+    //        for (const auto &arr : body.velocity().value()) {
+    //          velocity.push_back(arr);
+    //        }
+    //
+    //        // initializing arrays for the config object to be created
+    //        std::array<double, 3> arr_coordinate{};
+    //        std::array<double, 3> arr_velocity{};
+    //
+    //        // checking if lengths match before copying to static length arrays of size 3, otherwise give error
+    //        if (coordinate.size() == arr_coordinate.size() && velocity.size() == arr_velocity.size()) {
+    //          std::copy(coordinate.begin(), coordinate.end(), arr_coordinate.begin());
+    //          std::copy(velocity.begin(), velocity.end(), arr_velocity.begin());
+    //        } else {
+    //          SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
+    //          return nullptr;
+    //        }
+    //
+    //        auto temp_body = CelestialBody(arr_coordinate, arr_velocity, mass);
+    //        temp_bodies.emplace_back(temp_body);
+    //        body_count++;
+    //      }
+    //
+    //      config.total_bodies = body_count;
+    //      config.celestial_bodies = temp_bodies;
+    //    }
 
     // Lennard-Jones Model
-    if (data->lennard_jones().present()) {
+    if (sc.forces().lennard_jones().present()) {
+      auto ljf = *sc.forces().lennard_jones();
+
+      std::vector<double> sigma{};
+      std::vector<double> epsilon{};
+      std::vector<double> mass{};
+
+      for (auto &type : ljf.particleTypes().particleType()) {
+        sigma.emplace_back(type.sigma());
+        epsilon.emplace_back(type.epsilon());
+        mass.emplace_back(type.mass());
+      }
+      config.sigma = sigma;
+      config.epsilon = epsilon;
+      config.mass = mass;
+
 
       // parsing settings of Lennard Jones force simulation model
       config.simulation_type = simulator::physics::ForceModel::LennardJones;
-      config.delta_t = data->lennard_jones()->settings().delta_t();
-      config.sigma = data->lennard_jones()->settings().sigma();
-      config.epsilon = data->lennard_jones()->settings().epsilon();
-      config.mass_m = data->lennard_jones()->settings().mass_m();
-      config.distance_h = data->lennard_jones()->settings().distance_h();
-      config.brownian_motion = data->lennard_jones()->settings().brown_motion();
-      config.cutoff_radius = data->lennard_jones()->settings().cutoff_radius();
 
       // Cuboids
-      if (data->lennard_jones()->cuboids().present()) {
+      std::vector<Cuboid> temp_cuboids;
+      // Iterate through all cuboid elements
+      for (const auto &cuboid : ljf.particles().cuboid()) {
+        std::vector<double> coordinate{cuboid.coordinate().x(), cuboid.coordinate().y(), *cuboid.coordinate().z()};
+        std::vector<double> dimensions{cuboid.dimensions().x(), cuboid.dimensions().y(), *cuboid.dimensions().z()};
+        std::vector<double> velocity{cuboid.velocity().x(), cuboid.velocity().y(), *cuboid.velocity().z()};
 
-        config.body_type = BodyType::Cub;
-        std::vector<Cuboid> temp_cuboids;
-        // Iterate through all cuboid elements
-        const auto &cuboids = data->lennard_jones()->cuboids().get().Cuboid();
-        for (const auto &cuboid : cuboids) {
-
-          std::vector<double> coordinate{};
-          std::vector<double> particle_numbers{};
-          std::vector<double> velocity{};
-
-          for (const auto &arr : cuboid.coordinate().value()) {
-            coordinate.push_back(arr);
-          }
-
-          for (const auto &arr : cuboid.particle_counts().value()) {
-            particle_numbers.push_back(arr);
-          }
-
-          for (const auto &arr : cuboid.velocity().value()) {
-            velocity.push_back(arr);
-          }
-
-          // Create an instance of Cuboid
-          // append the cuboid to the vector of cuboids for the config
-
-          auto temp_cuboid = Cuboid(coordinate, particle_numbers, velocity);
-          temp_cuboids.emplace_back(temp_cuboid);
-        }
-
-        config.cuboids = temp_cuboids;
-
-      } else if (data->lennard_jones()->discs().present()) {
-
-        // Discs
-        std::vector<Disc> temp_discs;
-
-        config.body_type = BodyType::Dis;
-        // Iterate through all disc elements
-        const auto &discs = data->lennard_jones()->discs().get().Disc();
-        for (const auto &disc : discs) {
-
-          std::vector<double> coordinate{};
-          std::vector<double> velocity{};
-          int radius = disc.radius();
-
-          for (const auto &arr : disc.coordinate().value()) {
-            coordinate.push_back(arr);
-          }
-
-          for (const auto &arr : disc.velocity().value()) {
-            velocity.push_back(arr);
-          }
-
-          // initializing arrays for the config object to be created
-          std::array<double, 3> arr_coordinate{};
-          std::array<double, 3> arr_velocity{};
-
-          // checking if lengths match before copying to static length arrays of size 3, otherwise give error
-          if (coordinate.size() == arr_coordinate.size() && velocity.size() == arr_velocity.size()) {
-            std::copy(coordinate.begin(), coordinate.end(), arr_coordinate.begin());
-            std::copy(velocity.begin(), velocity.end(), arr_velocity.begin());
-          } else {
-            SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
-            return nullptr;
-          }
-
-          auto temp_disc = Disc(arr_coordinate, arr_velocity, radius);
-          temp_discs.emplace_back(temp_disc);
-        }
-
-        config.discs = temp_discs;
+        auto temp_cuboid = Cuboid(coordinate, dimensions, velocity,
+                                  mass[cuboid.particleTypeId()], *cuboid.spacing(), static_cast<int>(cuboid.particleTypeId()));
+        temp_cuboids.emplace_back(temp_cuboid);
       }
+      config.cuboids = temp_cuboids;
+
+      // Discs
+      std::vector<Disc> temp_discs;
+
+      // Iterate through all disc elements
+      for (const auto &disc : ljf.particles().disc()) {
+        std::vector<double> coordinate = {disc.coordinate().x(), disc.coordinate().y(), *disc.coordinate().z()};
+        std::vector<double> velocity = {disc.velocity().x(), disc.velocity().y(), *disc.velocity().z()};
+        int radius = disc.radius();
+        auto temp_disc = Disc(coordinate, velocity, radius);
+        temp_discs.emplace_back(temp_disc);
+      }
+      config.discs = temp_discs;
 
       // Spheres
-      else if (data->lennard_jones()->spheres().present()) {
 
-        config.body_type = BodyType::Sph;
-        std::vector<Sphere> temp_spheres;
-        // Iterate through all disc elements
-        const auto &spheres = data->lennard_jones()->spheres().get().Sphere();
-        for (const auto &sphere : spheres) {
+      std::vector<Sphere> temp_spheres;
+      // Iterate through all disc elements
+      for (const auto &sphere : ljf.particles().sphere()) {
 
-          std::vector<double> coordinate{};
-          std::vector<double> velocity{};
-          int radius = sphere.radius();
+        std::vector<double> coordinate = {sphere.coordinate().x(), sphere.coordinate().y(), *sphere.coordinate().z()};
+        std::vector<double> velocity = {sphere.velocity().x(), sphere.velocity().y(), *sphere.velocity().z()};
+        int radius = sphere.radius();
 
-          for (const auto &arr : sphere.coordinate().value()) {
-            coordinate.push_back(arr);
-          }
-
-          for (const auto &arr : sphere.velocity().value()) {
-            velocity.push_back(arr);
-          }
-
-          // initializing arrays for the config object to be created
-          std::array<double, 3> arr_coordinate{};
-          std::array<double, 3> arr_velocity{};
-
-          // checking if lengths match before copying to static length arrays of size 3, otherwise give error
-          if (coordinate.size() == arr_coordinate.size() && velocity.size() == arr_velocity.size()) {
-            std::copy(coordinate.begin(), coordinate.end(), arr_coordinate.begin());
-            std::copy(velocity.begin(), velocity.end(), arr_velocity.begin());
-          } else {
-            SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
-            return nullptr;
-          }
-
-          auto temp_sphere = Sphere(arr_coordinate, arr_velocity, radius);
-          temp_spheres.emplace_back(temp_sphere);
-        }
-
-        config.spheres = temp_spheres;
+        auto temp_sphere = Sphere(coordinate, velocity, radius);
+        temp_spheres.emplace_back(temp_sphere);
       }
 
-      // Tori
-      else if (data->lennard_jones()->tori().present()) {
+      config.spheres = temp_spheres;
 
-        config.body_type = BodyType::Tor;
-        std::vector<Torus> temp_tori;
-        // Iterate through all disc elements
-        const auto &tori = data->lennard_jones()->tori().get().Torus();
-        for (const auto &torus : tori) {
+      std::vector<Torus> temp_tori;
+      // Iterate through all disc elements
+      for (const auto &torus : ljf.particles().torus()) {
 
-          std::vector<double> coordinate{};
-          std::vector<double> velocity{};
-          double major_radius = torus.major_radius();
-          double minor_radius = torus.minor_radius();
+        std::vector<double> coordinate = {torus.coordinate().x(), torus.coordinate().y(), *torus.coordinate().z()};
+        std::vector<double> velocity = {torus.velocity().x(), torus.velocity().y(), *torus.velocity().z()};
 
-          for (const auto &arr : torus.coordinate().value()) {
-            coordinate.push_back(arr);
-          }
-
-          for (const auto &arr : torus.velocity().value()) {
-            velocity.push_back(arr);
-          }
-
-          // initializing arrays for the config object to be created
-          std::array<double, 3> arr_coordinate{};
-          std::array<double, 3> arr_velocity{};
-
-          // checking if lengths match before copying to static length arrays of size 3, otherwise give error
-          if (coordinate.size() == arr_coordinate.size() && velocity.size() == arr_velocity.size()) {
-            std::copy(coordinate.begin(), coordinate.end(), arr_coordinate.begin());
-            std::copy(velocity.begin(), velocity.end(), arr_velocity.begin());
-          } else {
-            SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
-            return nullptr;
-          }
-
-          auto temp_torus = Torus(arr_coordinate, arr_velocity, major_radius, minor_radius);
-          temp_tori.emplace_back(temp_torus);
-        }
-        config.tori = temp_tori;
+        double major_radius = torus.major_radius();
+        double minor_radius = torus.minor_radius();
+        auto temp_torus = Torus(coordinate, velocity, major_radius, minor_radius);
+        temp_tori.emplace_back(temp_torus);
       }
+      config.tori = temp_tori;
 
-      // Double Helices
-      else if (data->lennard_jones()->double_helices().present()) {
+      std::vector<DoubleHelix> temp_helices;
+      // Iterate through all disc elements
+      for (const auto &helix : ljf.particles().doubleHelix()) {
 
-        config.body_type = BodyType::Hel;
-        std::vector<DoubleHelix> temp_helices;
-        // Iterate through all disc elements
-        const auto &helices = data->lennard_jones()->double_helices().get().double_helix();
-        for (const auto &helix : helices) {
-
-          std::vector<double> coordinate{};
-          std::vector<double> velocity{};
-          double radius = helix.radius();
-          double pitch = helix.pitch();
-          double height = helix.height();
-
-          for (const auto &arr : helix.coordinate().value()) {
-            coordinate.push_back(arr);
-          }
-
-          for (const auto &arr : helix.velocity().value()) {
-            velocity.push_back(arr);
-          }
-
-          // initializing arrays for the config object to be created
-          std::array<double, 3> arr_coordinate{};
-          std::array<double, 3> arr_velocity{};
-
-          // checking if lengths match before copying to static length arrays of size 3, otherwise give error
-          if (coordinate.size() == arr_coordinate.size() && velocity.size() == arr_velocity.size()) {
-            std::copy(coordinate.begin(), coordinate.end(), arr_coordinate.begin());
-            std::copy(velocity.begin(), velocity.end(), arr_velocity.begin());
-          } else {
-            SPDLOG_WARN("There was an error while parsing the values for the cuboids.");
-            return nullptr;
-          }
-        }
-        config.double_helices = temp_helices;
+        std::vector<double> coordinate = {helix.coordinate().x(), helix.coordinate().y(), *helix.coordinate().z()};
+        std::vector<double> velocity = {helix.velocity().x(), helix.velocity().y(), *helix.velocity().z()};
+        double radius = helix.radius();
+        double pitch = helix.pitch();
+        double height = helix.height();
+        auto temp_helice = DoubleHelix(coordinate, velocity, radius, pitch, height);
+        temp_helices.emplace_back(temp_helice);
       }
+      config.double_helices = temp_helices;
     }
     return std::make_shared<config::Config>(config);
 

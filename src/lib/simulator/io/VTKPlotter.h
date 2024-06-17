@@ -28,7 +28,7 @@ class VTKPlotter final : public Plotter<DIMENSIONS> {
   */
   auto plotParticles(container::ParticleContainer<DIMENSIONS> &particles, int iteration) -> void override {
 
-    std::string out_name(config->output_filename);
+    std::string out_name(config->output_file);
     vtk_writer.initializeOutput(particles.size());
     particles.linear([this](Particles<DIMENSIONS> &particles, size_t index) { vtk_writer.plotParticle(particles, index); });
     vtk_writer.writeFile(out_name, iteration);

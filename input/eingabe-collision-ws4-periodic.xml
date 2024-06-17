@@ -21,7 +21,7 @@
 
 
     <lennard_jones>
-        <settings delta_t="0.0005" sigma="1" epsilon="5" mass_m="1" distance_h="1.1225" brown_motion="0.0"
+        <settings delta_t="0.0005" sigma="1" epsilon="5" mass="1" distance_h="1.1225" brown_motion="0.0"
                   cutoff_radius="3"/>
         <cuboids>
             <Cuboid>

@@ -59,9 +59,9 @@ class Simulator {
         physics(physics),
         plotter(std::move(plotter)),
         config(config),
+        thermostat(t_init, t_target, delta_temp, config->seed),
         end_time(config->end_time),
-        delta_t(config->delta_t),
-        thermostat(t_init, t_target, delta_temp, config->seed) {};
+        delta_t(config->delta_t) {};
 
   auto calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
@@ -124,26 +124,22 @@ class Simulator {
   auto calculate_force() -> void {
     SPDLOG_DEBUG("Starting force calculation");
 
-    particles.swap_force();
-
     switch (physics) {
       case physics::ForceModel::Gravity: {
-
-        // TODO clarify what boundary forces should apply when simulating with gravity,
-        //  since gravity will always pull towards the center it might be possible to have no boundary condition if we start from stationary
+        particles.swap_force();
         particles.boundary(physics::lennard_jones::calculate_force);
-
         particles.refresh();
         particles.pairwise([this](auto &p1, auto &p2, auto mask, auto &correction) {
-          calculate_force_particle_pair(physics::gravity::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask, correction);
+          this->calculate_force_particle_pair(physics::gravity::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask, correction);
         });
         break;
       }
       case physics::ForceModel::LennardJones: {
+        particles.swap_force();
         particles.boundary(physics::lennard_jones::calculate_force);
         particles.refresh();
         particles.pairwise([this](auto &p1, auto &p2, auto mask, auto &correction) {
-          calculate_force_particle_pair(physics::lennard_jones::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask, correction);
+          this->calculate_force_particle_pair(physics::lennard_jones::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask, correction);
         });
         break;
       }
@@ -177,6 +173,7 @@ class Simulator {
 
     while (current_time < end_time) {
       calculate_position();
+
       calculate_force();
       if (iteration % nthermostat == 0) {
         thermostat.apply(particles);

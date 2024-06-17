@@ -30,7 +30,7 @@ auto setup(std::shared_ptr<config::Config> config) -> auto {
 
   container::ParticleContainer pc = container::ParticleContainer<DIMENSIONS>(Particles<DIMENSIONS>());
 
-  switch (config->particle_loader_type) {
+  switch (config->particle_container_type) {
     case ParticleContainerType::Vector:
       break;
     case ParticleContainerType::LinkedCells:

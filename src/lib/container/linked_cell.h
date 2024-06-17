@@ -109,11 +109,13 @@ class LinkedCell {
     }
   }
 
-  explicit LinkedCell(const std::array<double, DIMENSIONS> &domain, double cutoff, std::array<BoundaryCondition, 2 * DIMENSIONS> bc, double sigma)
+  explicit LinkedCell(const std::array<double, DIMENSIONS> &domain, double cutoff, std::array<BoundaryCondition, 2 * DIMENSIONS> bc, std::vector<double> sigma)
       : particles(Particles<DIMENSIONS>()),
         index(container::index::Index<DIMENSIONS>(domain, bc, cutoff)),
         sigma(sigma),
-        cutoff(cutoff) {
+        reflecting_distance(sigma
+                                            | std::views::transform([](auto sigma) { return std::pow(2, 1 / 6.0) * sigma; })
+                                            | std::ranges::to<std::vector<double>>()) {
 
     cells.reserve(std::ranges::fold_left(index.dim, 1.0, std::multiplies<>()));
 
@@ -255,12 +257,12 @@ class LinkedCell {
     double bound = index.domain[axis];
     auto diff = bound - pos;
     if (start_of_axis) {
-      if (pos <= reflecting_distance && pos > 0) {
-        particles.forces[axis][idx] -= f(2 * pos);
+      if (pos <= reflecting_distance[particles.type[idx]] && pos > 0) {
+        particles.forces[axis][idx] -= f(2 * pos, particles.type[idx]);
       }
     } else {
-      if (diff <= reflecting_distance && diff > 0) {
-        particles.forces[axis][idx] += f(2 * diff);
+      if (diff <= reflecting_distance[particles.type[idx]] && diff > 0) {
+        particles.forces[axis][idx] += f(2 * diff, particles.type[idx]);
       }
     }
   }
@@ -268,7 +270,6 @@ class LinkedCell {
   /**
    * a pairwise range over the particles, uses a cached range initialized at the start of the program
    * */
-  // TODO align all accesses by applying proper masks
   template<typename Callable>
   constexpr auto pairwise(Callable c) {
     for (size_t idx = 0; idx < particles.size; ++idx) {
@@ -399,9 +400,8 @@ class LinkedCell {
    * a vector (AVX) with stepwise incremented
    * */
   size_v index_vector = init_index_vector();
-  double sigma;
-  double cutoff;
-  double reflecting_distance = std::pow(2, 1 / 6.0) * sigma;
+  std::vector<double> sigma;
+  std::vector<double> reflecting_distance;
 
   constexpr static auto init_empty_correction() -> std::array<double_v, DIMENSIONS> {
     std::array<double_v, DIMENSIONS> temp{};

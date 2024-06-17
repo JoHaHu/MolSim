@@ -16,25 +16,16 @@ class Cuboid {
   std::vector<double> coordinates{};
   std::vector<double> particles{};
   std::vector<double> velocity{};
+  double mass;
+  double spacing;
+  int type;
 
   // Parameterized constructor
-  Cuboid(std::vector<double> &coordinates, std::vector<double> &particles, std::vector<double> &velocity)
-      : coordinates(coordinates), particles(particles), velocity(velocity) {}
-
-  // Copy constructor
-  Cuboid(const Cuboid &other) = default;
-
-  // Move constructor
-  Cuboid(Cuboid &&other) noexcept = default;
-
-  // Copy assignment operator
-  Cuboid &operator=(const Cuboid &other) = default;
-
-  // Move assignment operator
-  Cuboid &operator=(Cuboid &&other) noexcept = default;
-
-  // Destructor
-  ~Cuboid() = default;
+  Cuboid(std::vector<double> &coordinates,
+         std::vector<double> &particles,
+         std::vector<double> &velocity,
+         double mass, double spacing, int type)
+      : coordinates(coordinates), particles(particles), velocity(velocity), mass(mass), spacing(spacing), type(type) {}
 
   std::string toString() const {
     std::string output;
