@@ -130,7 +130,6 @@ class Simulator {
 
     switch (physics) {
       case physics::ForceModel::Gravity: {
-        particles.swap_force();
         particles.boundary(physics::lennard_jones::calculate_force);
         particles.refresh();
         particles.pairwise([this](auto &p1, auto &p2, auto mask, auto &correction) {
@@ -139,13 +138,15 @@ class Simulator {
         break;
       }
       case physics::ForceModel::LennardJones: {
-        particles.swap_force();
         particles.boundary(physics::lennard_jones::calculate_force);
+
         particles.refresh();
         particles.pairwise([this](auto &p1, auto &p2, auto mask, auto &correction) {
           this->calculate_force_particle_pair(physics::lennard_jones::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask, correction);
         });
-
+        if (gravity != 0) {
+          apply_gravity();
+        }
         break;
       }
     }
@@ -178,13 +179,10 @@ class Simulator {
 
     while (current_time < end_time) {
       calculate_position();
-
+      particles.swap_force();
       calculate_force();
       if (iteration % temp_interval == 0 && iteration != 0) {
         thermostat.apply(particles);
-      }
-      if (gravity != 0) {
-        apply_gravity();
       }
       calculate_velocity();
 
