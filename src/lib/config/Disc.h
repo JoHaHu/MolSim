@@ -3,7 +3,6 @@
 #include <sstream>
 #include <string>
 
-
 /**
  * @class Disc
  * @brief Can store the information that defines a disc, namely the coordinates, its velocity, and radius.

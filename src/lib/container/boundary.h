@@ -1,6 +1,6 @@
 #pragma once
 
-#include<cstdint>
+#include <cstdint>
 /**
  * @brief Enum for defining different types of boundary conditions.
  */

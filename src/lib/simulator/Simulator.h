@@ -57,7 +57,7 @@ class Simulator {
         thermostat(config->temp_init, config->temp_target, config->max_temp_diff, config->seed),
         end_time(config->end_time),
         delta_t(config->delta_t),
-        gravity(config->ljf_gravity){};
+        gravity(config->ljf_gravity) {};
 
   auto calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
 

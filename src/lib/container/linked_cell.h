@@ -61,7 +61,7 @@ class Cell {
 
  private:
  public:
-  explicit Cell(cell_type type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx){};
+  explicit Cell(cell_type type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx) {};
 
   constexpr auto is_boundary() const -> bool {
     return type == cell_type::boundary;
