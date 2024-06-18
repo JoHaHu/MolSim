@@ -13,7 +13,7 @@ namespace simulator::physics::lennard_jones {
 
 inline static double cutoff = 3.0;
 
-static const int NUM_TYPES = 8;
+static const long NUM_TYPES = 8;
 // For now supports up to 8 types, can be increased
 alignas(64) inline static std::array<double, NUM_TYPES * NUM_TYPES> epsilons_24;
 alignas(64) inline static std::array<double, NUM_TYPES * NUM_TYPES> epsilons_48;
@@ -47,16 +47,17 @@ __attribute__((__always_inline__)) auto static calculate_force_vectorized(const 
 
   long_v vindex = long_v(0);
 
+  //  stdx::where(vindex < NUM_TYPES, vindex) = 8 * p1.type + p2.type;
   stdx::where(vindex < NUM_TYPES, vindex) = 8 * p1.type + p2.type;
-
-  double_v epsilon24;
-  double_v epsilon48;
-
+  stdx::where(!stdx::static_simd_cast<long_mask>(mask), vindex) = 0;
+  double_v epsilon24 = double_v(0);
+  double_v epsilon48 = double_v(0);
 
   // Faster than vgatherpd
-  for (int i = 0; i < double_v::size(); ++i) {
-    epsilon24[i] = epsilons_24[vindex[i]];
-    epsilon48[i] = epsilons_48[vindex[i]];
+  for (int i = 0; i < long_v::size(); ++i) {
+    auto helper = vindex[i];
+    epsilon24[i] = epsilons_24[helper];
+    epsilon48[i] = epsilons_48[helper];
   }
 
   const auto temp = (norm_6 * epsilon24 - epsilon48) / (norm_6 * norm_6 * norm_2);

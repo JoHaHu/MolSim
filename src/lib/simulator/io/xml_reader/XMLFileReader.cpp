@@ -148,6 +148,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       config.epsilon = epsilon;
       config.mass = mass;
 
+      config.ljf_gravity = *ljf.gravity();
 
       // parsing settings of Lennard Jones force simulation model
       config.simulation_type = simulator::physics::ForceModel::LennardJones;
@@ -223,6 +224,18 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       }
       config.double_helices = temp_helices;
     }
+
+    if (scenario->thermostat().present()) {
+      auto thermostat = *scenario->thermostat();
+
+      config.temp_init = thermostat.t_init();
+      config.temp_target = thermostat.t_target().present() ? *thermostat.t_target() : std::optional<double>();
+      config.max_temp_diff = thermostat.max_temp_diff().present() ? *thermostat.max_temp_diff() : std::optional<double>();
+      config.thermo_step = thermostat.frequency();
+      config.use_brownian_motion = thermostat.brownian_motion().present();
+      config.brownian_motion = *thermostat.brownian_motion();
+    }
+
     return std::make_shared<config::Config>(config);
 
   } catch (const xml_schema::exception &exception) {

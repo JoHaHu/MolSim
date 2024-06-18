@@ -88,6 +88,21 @@
 #include <xsd/cxx/tree/parsing/double.hxx>
 #include <xsd/cxx/tree/parsing/decimal.hxx>
 
+#include <xsd/cxx/xml/dom/serialization-header.hxx>
+#include <xsd/cxx/tree/serialization.hxx>
+#include <xsd/cxx/tree/serialization/byte.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-byte.hxx>
+#include <xsd/cxx/tree/serialization/short.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-short.hxx>
+#include <xsd/cxx/tree/serialization/int.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-int.hxx>
+#include <xsd/cxx/tree/serialization/long.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-long.hxx>
+#include <xsd/cxx/tree/serialization/boolean.hxx>
+#include <xsd/cxx/tree/serialization/float.hxx>
+#include <xsd/cxx/tree/serialization/double.hxx>
+#include <xsd/cxx/tree/serialization/decimal.hxx>
+
 /**
  * @brief C++ namespace for the %http://www.w3.org/2001/XMLSchema
  * schema namespace.
@@ -444,6 +459,39 @@ namespace xml_schema
    * @brief Content order sequence entry.
    */
   typedef ::xsd::cxx::tree::content_order content_order;
+  // Namespace information and list stream. Used in
+  // serialization functions.
+  //
+  /**
+   * @brief Namespace serialization information.
+   */
+  typedef ::xsd::cxx::xml::dom::namespace_info< char > namespace_info;
+
+  /**
+   * @brief Namespace serialization information map.
+   */
+  typedef ::xsd::cxx::xml::dom::namespace_infomap< char > namespace_infomap;
+
+  /**
+   * @brief List serialization stream.
+   */
+  typedef ::xsd::cxx::tree::list_stream< char > list_stream;
+
+  /**
+   * @brief Serialization wrapper for the %double type.
+   */
+  typedef ::xsd::cxx::tree::as_double< double_ > as_double;
+
+  /**
+   * @brief Serialization wrapper for the %decimal type.
+   */
+  typedef ::xsd::cxx::tree::as_decimal< decimal > as_decimal;
+
+  /**
+   * @brief Simple type facet.
+   */
+  typedef ::xsd::cxx::tree::facet facet;
+
   // Flags and properties.
   //
 
@@ -537,6 +585,11 @@ namespace xml_schema
   typedef ::xsd::cxx::tree::no_prefix_mapping< char > no_prefix_mapping;
 
   /**
+   * @brief Exception indicating a serialization failure.
+   */
+  typedef ::xsd::cxx::tree::serialization< char > serialization;
+
+  /**
    * @brief Error handler callback interface.
    */
   typedef ::xsd::cxx::xml::error_handler< char > error_handler;
@@ -580,12 +633,10 @@ class thermostat;
 class container;
 class forces;
 class linked_cells;
-class gravity;
 class lennard_jones;
 class domain_size;
 class boundary_conditions;
 class particleTypes;
-class gravity1;
 class particles;
 class boundary_condition;
 class particleType;
@@ -5305,7 +5356,7 @@ class forces: public ::xml_schema::type
   /**
    * @brief Element type.
    */
-  typedef ::gravity gravity_type;
+  typedef ::xml_schema::double_ gravity_type;
 
   /**
    * @brief Element optional container type.
@@ -5315,7 +5366,7 @@ class forces: public ::xml_schema::type
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< gravity_type, char > gravity_traits;
+  typedef ::xsd::cxx::tree::traits< gravity_type, char, ::xsd::cxx::tree::schema_type::double_ > gravity_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element
@@ -5356,17 +5407,6 @@ class forces: public ::xml_schema::type
    */
   void
   gravity (const gravity_optional& x);
-
-  /**
-   * @brief Set the element value without copying.
-   *
-   * @param p A new value to use.
-   *
-   * This function will try to use the passed value directly instead
-   * of making a copy.
-   */
-  void
-  gravity (::std::unique_ptr< gravity_type > p);
 
   //@}
 
@@ -5818,105 +5858,6 @@ class linked_cells: public ::xml_schema::type
 };
 
 /**
- * @brief Class corresponding to the %gravity schema type.
- *
- * @nosubgrouping
- */
-class gravity: public ::xml_schema::type
-{
-  public:
-  /**
-   * @name Constructors
-   */
-  //@{
-
-  /**
-   * @brief Create an instance from the ultimate base and
-   * initializers for required elements and attributes.
-   */
-  gravity ();
-
-  /**
-   * @brief Create an instance from a DOM element.
-   *
-   * @param e A DOM element to extract the data from.
-   * @param f Flags to create the new instance with.
-   * @param c A pointer to the object that will contain the new
-   * instance.
-   */
-  gravity (const ::xercesc::DOMElement& e,
-           ::xml_schema::flags f = 0,
-           ::xml_schema::container* c = 0);
-
-  /**
-   * @brief Create an instance from a DOM attribute.
-   *
-   * @param a A DOM attribute to extract the data from.
-   * @param f Flags to create the new instance with.
-   * @param c A pointer to the object that will contain the new
-   * instance.
-   */
-  gravity (const ::xercesc::DOMAttr& a,
-           ::xml_schema::flags f = 0,
-           ::xml_schema::container* c = 0);
-
-  /**
-   * @brief Create an instance from a string fragment.
-   *
-   * @param s A string fragment to extract the data from.
-   * @param e A pointer to DOM element containing the string fragment.
-   * @param f Flags to create the new instance with.
-   * @param c A pointer to the object that will contain the new
-   * instance.
-   */
-  gravity (const ::std::string& s,
-           const ::xercesc::DOMElement* e,
-           ::xml_schema::flags f = 0,
-           ::xml_schema::container* c = 0);
-
-  /**
-   * @brief Copy constructor.
-   *
-   * @param x An instance to make a copy of.
-   * @param f Flags to create the copy with.
-   * @param c A pointer to the object that will contain the copy.
-   *
-   * For polymorphic object models use the @c _clone function instead.
-   */
-  gravity (const gravity& x,
-           ::xml_schema::flags f = 0,
-           ::xml_schema::container* c = 0);
-
-  /**
-   * @brief Copy the instance polymorphically.
-   *
-   * @param f Flags to create the copy with.
-   * @param c A pointer to the object that will contain the copy.
-   * @return A pointer to the dynamically allocated copy.
-   *
-   * This function ensures that the dynamic type of the instance is
-   * used for copying and should be used for polymorphic object
-   * models instead of the copy constructor.
-   */
-  virtual gravity*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
-
-  //@}
-
-#ifdef XSD_CXX11
-  gravity&
-  operator= (const gravity&) = default;
-#endif
-
-  /**
-   * @brief Destructor.
-   */
-  virtual 
-  ~gravity ();
-};
-
-/**
  * @brief Class corresponding to the %lennard_jones schema type.
  *
  * @nosubgrouping
@@ -5993,7 +5934,7 @@ class lennard_jones: public ::xml_schema::type
   /**
    * @brief Element type.
    */
-  typedef ::gravity1 gravity_type;
+  typedef ::xml_schema::double_ gravity_type;
 
   /**
    * @brief Element optional container type.
@@ -6003,7 +5944,7 @@ class lennard_jones: public ::xml_schema::type
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< gravity_type, char > gravity_traits;
+  typedef ::xsd::cxx::tree::traits< gravity_type, char, ::xsd::cxx::tree::schema_type::double_ > gravity_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element
@@ -6044,17 +5985,6 @@ class lennard_jones: public ::xml_schema::type
    */
   void
   gravity (const gravity_optional& x);
-
-  /**
-   * @brief Set the element value without copying.
-   *
-   * @param p A new value to use.
-   *
-   * This function will try to use the passed value directly instead
-   * of making a copy.
-   */
-  void
-  gravity (::std::unique_ptr< gravity_type > p);
 
   //@}
 
@@ -6784,262 +6714,6 @@ class particleTypes: public ::xml_schema::type
 
   protected:
   particleType_sequence particleType_;
-
-  //@endcond
-};
-
-/**
- * @brief Class corresponding to the %gravity1 schema type.
- *
- * @nosubgrouping
- */
-class gravity1: public ::xml_schema::type
-{
-  public:
-  /**
-   * @name x
-   *
-   * @brief Accessor and modifier functions for the %x
-   * required attribute.
-   */
-  //@{
-
-  /**
-   * @brief Attribute type.
-   */
-  typedef ::xml_schema::double_ x_type;
-
-  /**
-   * @brief Attribute traits type.
-   */
-  typedef ::xsd::cxx::tree::traits< x_type, char, ::xsd::cxx::tree::schema_type::double_ > x_traits;
-
-  /**
-   * @brief Return a read-only (constant) reference to the attribute.
-   *
-   * @return A constant reference to the attribute.
-   */
-  const x_type&
-  x () const;
-
-  /**
-   * @brief Return a read-write reference to the attribute.
-   *
-   * @return A reference to the attribute.
-   */
-  x_type&
-  x ();
-
-  /**
-   * @brief Set the attribute value.
-   *
-   * @param x A new value to set.
-   *
-   * This function makes a copy of its argument and sets it as
-   * the new value of the attribute.
-   */
-  void
-  x (const x_type& x);
-
-  //@}
-
-  /**
-   * @name y
-   *
-   * @brief Accessor and modifier functions for the %y
-   * required attribute.
-   */
-  //@{
-
-  /**
-   * @brief Attribute type.
-   */
-  typedef ::xml_schema::double_ y_type;
-
-  /**
-   * @brief Attribute traits type.
-   */
-  typedef ::xsd::cxx::tree::traits< y_type, char, ::xsd::cxx::tree::schema_type::double_ > y_traits;
-
-  /**
-   * @brief Return a read-only (constant) reference to the attribute.
-   *
-   * @return A constant reference to the attribute.
-   */
-  const y_type&
-  y () const;
-
-  /**
-   * @brief Return a read-write reference to the attribute.
-   *
-   * @return A reference to the attribute.
-   */
-  y_type&
-  y ();
-
-  /**
-   * @brief Set the attribute value.
-   *
-   * @param x A new value to set.
-   *
-   * This function makes a copy of its argument and sets it as
-   * the new value of the attribute.
-   */
-  void
-  y (const y_type& x);
-
-  //@}
-
-  /**
-   * @name z
-   *
-   * @brief Accessor and modifier functions for the %z
-   * optional attribute.
-   */
-  //@{
-
-  /**
-   * @brief Attribute type.
-   */
-  typedef ::xml_schema::double_ z_type;
-
-  /**
-   * @brief Attribute optional container type.
-   */
-  typedef ::xsd::cxx::tree::optional< z_type > z_optional;
-
-  /**
-   * @brief Attribute traits type.
-   */
-  typedef ::xsd::cxx::tree::traits< z_type, char, ::xsd::cxx::tree::schema_type::double_ > z_traits;
-
-  /**
-   * @brief Return a read-only (constant) reference to the attribute
-   * container.
-   *
-   * @return A constant reference to the optional container.
-   */
-  const z_optional&
-  z () const;
-
-  /**
-   * @brief Return a read-write reference to the attribute container.
-   *
-   * @return A reference to the optional container.
-   */
-  z_optional&
-  z ();
-
-  /**
-   * @brief Set the attribute value.
-   *
-   * @param x A new value to set.
-   *
-   * This function makes a copy of its argument and sets it as
-   * the new value of the attribute.
-   */
-  void
-  z (const z_type& x);
-
-  /**
-   * @brief Set the attribute value.
-   *
-   * @param x An optional container with the new value to set.
-   *
-   * If the value is present in @a x then this function makes a copy 
-   * of this value and sets it as the new value of the attribute.
-   * Otherwise the attribute container is set the 'not present' state.
-   */
-  void
-  z (const z_optional& x);
-
-  //@}
-
-  /**
-   * @name Constructors
-   */
-  //@{
-
-  /**
-   * @brief Create an instance from the ultimate base and
-   * initializers for required elements and attributes.
-   */
-  gravity1 (const x_type&,
-            const y_type&);
-
-  /**
-   * @brief Create an instance from a DOM element.
-   *
-   * @param e A DOM element to extract the data from.
-   * @param f Flags to create the new instance with.
-   * @param c A pointer to the object that will contain the new
-   * instance.
-   */
-  gravity1 (const ::xercesc::DOMElement& e,
-            ::xml_schema::flags f = 0,
-            ::xml_schema::container* c = 0);
-
-  /**
-   * @brief Copy constructor.
-   *
-   * @param x An instance to make a copy of.
-   * @param f Flags to create the copy with.
-   * @param c A pointer to the object that will contain the copy.
-   *
-   * For polymorphic object models use the @c _clone function instead.
-   */
-  gravity1 (const gravity1& x,
-            ::xml_schema::flags f = 0,
-            ::xml_schema::container* c = 0);
-
-  /**
-   * @brief Copy the instance polymorphically.
-   *
-   * @param f Flags to create the copy with.
-   * @param c A pointer to the object that will contain the copy.
-   * @return A pointer to the dynamically allocated copy.
-   *
-   * This function ensures that the dynamic type of the instance is
-   * used for copying and should be used for polymorphic object
-   * models instead of the copy constructor.
-   */
-  virtual gravity1*
-  _clone (::xml_schema::flags f = 0,
-          ::xml_schema::container* c = 0) const;
-
-  /**
-   * @brief Copy assignment operator.
-   *
-   * @param x An instance to make a copy of.
-   * @return A reference to itself.
-   *
-   * For polymorphic object models use the @c _clone function instead.
-   */
-  gravity1&
-  operator= (const gravity1& x);
-
-  //@}
-
-  /**
-   * @brief Destructor.
-   */
-  virtual 
-  ~gravity1 ();
-
-  // Implementation.
-  //
-
-  //@cond
-
-  protected:
-  void
-  parse (::xsd::cxx::xml::dom::parser< char >&,
-         ::xml_schema::flags);
-
-  protected:
-  ::xsd::cxx::tree::one< x_type > x_;
-  ::xsd::cxx::tree::one< y_type > y_;
-  z_optional z_;
 
   //@endcond
 };
@@ -8160,6 +7834,259 @@ scenario_ (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
            const ::xml_schema::properties& p = ::xml_schema::properties ());
 
 //@}
+
+#include <iosfwd>
+
+#include <xercesc/dom/DOMDocument.hpp>
+#include <xercesc/dom/DOMErrorHandler.hpp>
+#include <xercesc/framework/XMLFormatter.hpp>
+
+#include <xsd/cxx/xml/dom/auto-ptr.hxx>
+
+/**
+ * @name Serialization functions for the %scenario document root.
+ */
+//@{
+
+/**
+ * @brief Serialize to a standard output stream.
+ *
+ * @param os A standrad output stream.
+ * @param x An object model to serialize.
+ * @param m A namespace information map.
+ * @param e A character encoding to produce XML in.
+ * @param f Serialization flags.
+ *
+ * This function uses exceptions to report serialization errors.
+ */
+void
+scenario_ (::std::ostream& os,
+           const ::scenario& x, 
+           const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+           const ::std::string& e = "UTF-8",
+           ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to a standard output stream with an error handler.
+ *
+ * @param os A standrad output stream.
+ * @param x An object model to serialize.
+ * @param eh An error handler.
+ * @param m A namespace information map.
+ * @param e A character encoding to produce XML in.
+ * @param f Serialization flags.
+ *
+ * This function reports serialization errors by calling the error
+ * handler.
+ */
+void
+scenario_ (::std::ostream& os,
+           const ::scenario& x, 
+           ::xml_schema::error_handler& eh,
+           const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+           const ::std::string& e = "UTF-8",
+           ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to a standard output stream with a Xerces-C++ DOM
+ * error handler.
+ *
+ * @param os A standrad output stream.
+ * @param x An object model to serialize.
+ * @param eh A Xerces-C++ DOM error handler.
+ * @param m A namespace information map.
+ * @param e A character encoding to produce XML in.
+ * @param f Serialization flags.
+ *
+ * This function reports serialization errors by calling the error
+ * handler.
+ */
+void
+scenario_ (::std::ostream& os,
+           const ::scenario& x, 
+           ::xercesc::DOMErrorHandler& eh,
+           const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+           const ::std::string& e = "UTF-8",
+           ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to a Xerces-C++ XML format target.
+ *
+ * @param ft A Xerces-C++ XML format target.
+ * @param x An object model to serialize.
+ * @param m A namespace information map.
+ * @param e A character encoding to produce XML in.
+ * @param f Serialization flags.
+ *
+ * This function uses exceptions to report serialization errors.
+ */
+void
+scenario_ (::xercesc::XMLFormatTarget& ft,
+           const ::scenario& x, 
+           const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+           const ::std::string& e = "UTF-8",
+           ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to a Xerces-C++ XML format target with an error
+ * handler.
+ *
+ * @param ft A Xerces-C++ XML format target.
+ * @param x An object model to serialize.
+ * @param eh An error handler.
+ * @param m A namespace information map.
+ * @param e A character encoding to produce XML in.
+ * @param f Serialization flags.
+ *
+ * This function reports serialization errors by calling the error
+ * handler.
+ */
+void
+scenario_ (::xercesc::XMLFormatTarget& ft,
+           const ::scenario& x, 
+           ::xml_schema::error_handler& eh,
+           const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+           const ::std::string& e = "UTF-8",
+           ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to a Xerces-C++ XML format target with a
+ * Xerces-C++ DOM error handler.
+ *
+ * @param ft A Xerces-C++ XML format target.
+ * @param x An object model to serialize.
+ * @param eh A Xerces-C++ DOM error handler.
+ * @param m A namespace information map.
+ * @param e A character encoding to produce XML in.
+ * @param f Serialization flags.
+ *
+ * This function reports serialization errors by calling the error
+ * handler.
+ */
+void
+scenario_ (::xercesc::XMLFormatTarget& ft,
+           const ::scenario& x, 
+           ::xercesc::DOMErrorHandler& eh,
+           const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+           const ::std::string& e = "UTF-8",
+           ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to an existing Xerces-C++ DOM document.
+ *
+ * @param d A Xerces-C++ DOM document.
+ * @param x An object model to serialize.
+ * @param f Serialization flags.
+ *
+ * Note that it is your responsibility to create the DOM document
+ * with the correct root element as well as set the necessary
+ * namespace mapping attributes.
+ */
+void
+scenario_ (::xercesc::DOMDocument& d,
+           const ::scenario& x,
+           ::xml_schema::flags f = 0);
+
+/**
+ * @brief Serialize to a new Xerces-C++ DOM document.
+ *
+ * @param x An object model to serialize.
+ * @param m A namespace information map.
+ * @param f Serialization flags.
+ * @return A pointer to the new Xerces-C++ DOM document.
+ */
+::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument >
+scenario_ (const ::scenario& x, 
+           const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+           ::xml_schema::flags f = 0);
+
+//@}
+
+void
+operator<< (::xercesc::DOMElement&, const celestial_body&);
+
+void
+operator<< (::xercesc::DOMElement&, const cuboid&);
+
+void
+operator<< (::xercesc::DOMElement&, const disc&);
+
+void
+operator<< (::xercesc::DOMElement&, const sphere&);
+
+void
+operator<< (::xercesc::DOMElement&, const torus&);
+
+void
+operator<< (::xercesc::DOMElement&, const double_helix&);
+
+void
+operator<< (::xercesc::DOMElement&, const coordinate&);
+
+void
+operator<< (::xercesc::DOMElement&, const velocity&);
+
+void
+operator<< (::xercesc::DOMElement&, const dimensions&);
+
+void
+operator<< (::xercesc::DOMElement&, const positive_int&);
+
+void
+operator<< (::xercesc::DOMAttr&, const positive_int&);
+
+void
+operator<< (::xml_schema::list_stream&,
+            const positive_int&);
+
+void
+operator<< (::xercesc::DOMElement&, const positive_double&);
+
+void
+operator<< (::xercesc::DOMAttr&, const positive_double&);
+
+void
+operator<< (::xml_schema::list_stream&,
+            const positive_double&);
+
+void
+operator<< (::xercesc::DOMElement&, const scenario&);
+
+void
+operator<< (::xercesc::DOMElement&, const header&);
+
+void
+operator<< (::xercesc::DOMElement&, const thermostat&);
+
+void
+operator<< (::xercesc::DOMElement&, const container&);
+
+void
+operator<< (::xercesc::DOMElement&, const forces&);
+
+void
+operator<< (::xercesc::DOMElement&, const linked_cells&);
+
+void
+operator<< (::xercesc::DOMElement&, const lennard_jones&);
+
+void
+operator<< (::xercesc::DOMElement&, const domain_size&);
+
+void
+operator<< (::xercesc::DOMElement&, const boundary_conditions&);
+
+void
+operator<< (::xercesc::DOMElement&, const particleTypes&);
+
+void
+operator<< (::xercesc::DOMElement&, const particles&);
+
+void
+operator<< (::xercesc::DOMElement&, const boundary_condition&);
+
+void
+operator<< (::xercesc::DOMElement&, const particleType&);
 
 #include <xsd/cxx/post.hxx>
 

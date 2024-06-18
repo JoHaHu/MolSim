@@ -12,12 +12,11 @@ namespace simulator::physics::gravity {
  *
  * */
 template<const size_t DIMENSIONS>
-__attribute__((__always_inline__))
-auto static calculate_force_vectorized(VectorizedParticle<DIMENSIONS> &p1,
-                                       VectorizedParticle<DIMENSIONS> &p2,
-                                       double_mask mask,
-                                       std::array<double_v, DIMENSIONS> &force,
-                                       std::array<double_v, DIMENSIONS> &corrections) {
+__attribute__((__always_inline__)) auto static calculate_force_vectorized(VectorizedParticle<DIMENSIONS> &p1,
+                                                                          VectorizedParticle<DIMENSIONS> &p2,
+                                                                          double_mask mask,
+                                                                          std::array<double_v, DIMENSIONS> &force,
+                                                                          std::array<double_v, DIMENSIONS> &corrections) {
   SPDLOG_TRACE("Entering Gravity calculate_force_vectorized");
 
   const auto diff = (p2.position - corrections) - p1.position;
@@ -37,5 +36,9 @@ auto static calculate_force_vectorized(VectorizedParticle<DIMENSIONS> &p1,
     stdx::where(norm_mask, force[i]) = 0;
   }
 };
+
+auto static calculate_force(double mass, double constant) {
+  return mass * constant;
+}
 
 }// namespace simulator::physics::gravity

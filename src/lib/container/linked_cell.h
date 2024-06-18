@@ -61,7 +61,7 @@ class Cell {
 
  private:
  public:
-  explicit Cell(cell_type type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx) {};
+  explicit Cell(cell_type type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx){};
 
   constexpr auto is_boundary() const -> bool {
     return type == cell_type::boundary;
@@ -114,8 +114,8 @@ class LinkedCell {
         index(container::index::Index<DIMENSIONS>(domain, bc, cutoff)),
         sigma(sigma),
         reflecting_distance(sigma
-                                            | std::views::transform([](auto sigma) { return std::pow(2, 1 / 6.0) * sigma; })
-                                            | std::ranges::to<std::vector<double>>()) {
+                            | std::views::transform([](auto sigma) { return std::pow(2, 1 / 6.0) * sigma; })
+                            | std::ranges::to<std::vector<double>>()) {
 
     cells.reserve(std::ranges::fold_left(index.dim, 1.0, std::multiplies<>()));
 
@@ -258,11 +258,11 @@ class LinkedCell {
     auto diff = bound - pos;
     if (start_of_axis) {
       if (pos <= reflecting_distance[particles.type[idx]] && pos > 0) {
-        particles.forces[axis][idx] -= f(2 * pos, particles.type[idx]);
+        particles.forces[axis][idx] -= f(pos, particles.type[idx]);
       }
     } else {
       if (diff <= reflecting_distance[particles.type[idx]] && diff > 0) {
-        particles.forces[axis][idx] += f(2 * diff, particles.type[idx]);
+        particles.forces[axis][idx] += f(diff, particles.type[idx]);
       }
     }
   }
@@ -281,7 +281,7 @@ class LinkedCell {
         // Same cell particles
         size_t i = 0;
         while (idx + 1 + (i * double_v::size()) < cell.end_index) {
-          auto active_mask = index_vector + 1 + (i * double_v::size()) < (cell.size());
+          auto active_mask = idx + 1 + index_vector + (i * double_v::size()) < (cell.end_index);
           auto p2 = particles.load_vectorized(idx + 1 + (i * double_v::size()));
           auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
           c(p1, p2, mask, empty_correction);
@@ -373,6 +373,13 @@ class LinkedCell {
         cells[cell].end_index = particles.size;
       }
     }
+    //    auto new_size = 0;
+    //    for (int i = 0; i < particles.size; ++i) {
+    //      if (particles.active[i]) {
+    //        new_size++;
+    //      }
+    //    }
+    //    particles.size = new_size;
 
     SPDLOG_TRACE("fixed positions");
   }

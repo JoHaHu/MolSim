@@ -22,7 +22,6 @@ enum class ParticleContainerType {
   Vector
 };
 
-
 /**
  * All supported runtime configurations
  */
@@ -67,7 +66,6 @@ class Config {
    */
   ParticleContainerType particle_container_type{};
 
-
   /**
    * an array to store the domain size for the linked-cells algorithm
    */
@@ -100,11 +98,40 @@ class Config {
    */
   std::vector<double> mass{};
 
+  /**
+   * gravity constant used with ljf
+   * */
+  double ljf_gravity;
+
+  /**
+   * If to apply browninan motion
+   * */
+  bool use_brownian_motion{};
 
   /**
    * average brownian motion velocity
    */
   double brownian_motion{};
+
+  /**
+   * Initial temperature
+   * */
+  double temp_init;
+
+  /**
+   * target temperature
+   * */
+  std::optional<double> temp_target;
+
+  /**
+   * maximum temperature difference
+   * */
+  std::optional<double> max_temp_diff;
+
+  /**
+   * timestep between aplications of the thermostat
+   * */
+  long thermo_step;
 
   /**
    * the cutoff radius for the linked-cells algorithm

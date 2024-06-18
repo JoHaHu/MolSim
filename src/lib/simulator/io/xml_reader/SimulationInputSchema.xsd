@@ -65,12 +65,7 @@
                     <xs:complexType>
                         <xs:choice>
                             <!-- Gravity simulation -->
-                            <xs:element name="gravity">
-                                <xs:complexType>
-
-                                </xs:complexType>
-                            </xs:element>
-
+                            <xs:element name="gravity" type="xs:double"/>
                             <!-- Lennard-Jones simulation -->
                             <xs:element name="lennard_jones">
                                 <xs:complexType>
@@ -91,10 +86,7 @@
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
-                                        <xs:element name="gravity" minOccurs="0">
-                                            <xs:complexType>
-                                                <xs:attributeGroup ref="double_array"/>
-                                            </xs:complexType>
+                                        <xs:element name="gravity" minOccurs="0" type="xs:double">
                                         </xs:element>
                                         <xs:element name="particles">
                                             <xs:complexType>

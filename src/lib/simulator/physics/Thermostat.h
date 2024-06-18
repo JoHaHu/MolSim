@@ -19,12 +19,12 @@ class Thermostat {
      * @param nthermostat Number of steps after which the thermostat is applied.
      * @param seed Seed for the random number generator.
      */
-  Thermostat(double t_init, double t_target = NAN, double delta_t = std::numeric_limits<double>::infinity(), unsigned int seed = std::random_device{}())
-      : t_init(t_init), t_target(t_target), delta_t(delta_t), seed(seed) {
-    if ( std::isnan(t_target)) {
-      this->t_target = t_init;
-    }
-    SPDLOG_DEBUG("Thermostat initialized with Tinit={}, Ttarget={}, deltaT={},  seed={}", t_init, t_target, delta_t, seed);
+  Thermostat(double t_init, std::optional<double> t_target, std::optional<double> delta_t, unsigned int seed = std::random_device{}())
+      : t_init(t_init), seed(seed) {
+    this->t_target = t_target.has_value() ? *t_target : this->t_init;
+    this->delta_t = delta_t.has_value() ? *delta_t : std::numeric_limits<double>::infinity();
+
+    SPDLOG_DEBUG("Thermostat initialized with Tinit={}, Ttarget={}, deltaT={},  seed={}", t_init, *t_target, *delta_t, seed);
   };
 
   /**
@@ -55,8 +55,15 @@ class Thermostat {
   void initializeVelocities(container::ParticleContainer<DIMENSIONS> &particles, bool useBrownianMotion, double brownianMotion) {
     if (useBrownianMotion) {
       SPDLOG_INFO("Initializing velocities with Brownian motion");
+
       particles.linear([this, brownianMotion](Particles<DIMENSIONS> &particles, size_t index) {
-        std::array<double, DIMENSIONS> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(brownianMotion, seed);
+        double average_mortion;
+        if (brownianMotion == 0) {
+          average_mortion = std::sqrt(t_init / particles.mass[index]);
+        } else {
+          average_mortion = brownianMotion;
+        }
+        std::array<double, DIMENSIONS> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(average_mortion, seed);
         for (int i = 0; i < DIMENSIONS; ++i) {
           particles.velocities[i][index] += velocity[i];
         }

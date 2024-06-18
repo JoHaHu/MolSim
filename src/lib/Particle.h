@@ -51,6 +51,10 @@ class Particle {
       int type = 0) : position(x_arg), velocity(v_arg), mass(m_arg), type(type)
 
   {
+    for (int i = 0; i < DIMENSIONS; ++i) {
+      force[i] = 0.0;
+      old_force[i] = 0.0;
+    }
   }
 };
 

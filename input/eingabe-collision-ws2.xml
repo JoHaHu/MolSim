@@ -4,7 +4,7 @@
     <header base_name="Collision of two bodies"
             output_file="collision_simulation"
             output_frequency="0"
-            t_end="5" seed="1337" delta_t="0.0005"/>
+            t_end="20" seed="1337" delta_t="0.0005"/>
     <thermostat t_init="1" frequency="1000"/>
     <container>
         <linked_cells cutoff_radius="3.0">

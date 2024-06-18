@@ -21,12 +21,6 @@
 
 namespace simulator {
 
-static constexpr bool use_brownian_motion = true;
-static constexpr double t_init = 1;
-static constexpr double t_target = 30;
-static constexpr double delta_temp = std::numeric_limits<double>::infinity();
-static constexpr int nthermostat = 1000;
-
 /**
  * The main Simulator class. can be configured by providing a config and a plotter. Some methods use a physics model provided at compile time.
  * */
@@ -43,6 +37,7 @@ class Simulator {
   double end_time;
   double delta_t;
   unsigned long iteration = 0;
+  double gravity = 0.0;
 
  public:
   /**
@@ -59,9 +54,10 @@ class Simulator {
         physics(physics),
         plotter(std::move(plotter)),
         config(config),
-        thermostat(t_init, t_target, delta_temp, config->seed),
+        thermostat(config->temp_init, config->temp_target, config->max_temp_diff, config->seed),
         end_time(config->end_time),
-        delta_t(config->delta_t) {};
+        delta_t(config->delta_t),
+        gravity(config->ljf_gravity){};
 
   auto calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
@@ -115,6 +111,14 @@ class Simulator {
       calculate_velocity_particle(p, index);
     });
   }
+  auto apply_gravity() -> void {
+    SPDLOG_DEBUG("Applying gravity");
+
+    particles.linear([this](Particles<DIMENSIONS> &p, size_t index) {
+      p.forces[1][index] += simulator::physics::gravity::calculate_force(p.mass[index], gravity);
+    });
+  }
+
   /**
   * @brief Calculates forces between particles.
   *
@@ -141,6 +145,7 @@ class Simulator {
         particles.pairwise([this](auto &p1, auto &p2, auto mask, auto &correction) {
           this->calculate_force_particle_pair(physics::lennard_jones::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask, correction);
         });
+
         break;
       }
     }
@@ -160,8 +165,8 @@ class Simulator {
     double current_time = 0;
     iteration = 0;
     auto interval = config->output_frequency;
-
-    thermostat.initializeVelocities(particles, use_brownian_motion, config->brownian_motion);
+    auto temp_interval = config->thermo_step;
+    thermostat.initializeVelocities(particles, config->use_brownian_motion, config->brownian_motion);
     calculate_force();
     particles.swap_force();
     // Plot initial position and forces
@@ -175,8 +180,11 @@ class Simulator {
       calculate_position();
 
       calculate_force();
-      if (iteration % nthermostat == 0) {
+      if (iteration % temp_interval == 0 && iteration != 0) {
         thermostat.apply(particles);
+      }
+      if (gravity != 0) {
+        apply_gravity();
       }
       calculate_velocity();
 
