@@ -92,6 +92,10 @@ class Particles {
   std::vector<uint8_t> active{};
   std::vector<size_t> cell{};
 
+#if DEBUG
+  std::vector<size_t> ids{};
+#endif
+
   auto store_force_single(VectorizedParticle<DIMENSIONS> &p1, size_t index) {
     for (int i = 0; i < DIMENSIONS; ++i) {
       forces[i][index] = p1.force[i][0];
@@ -186,6 +190,9 @@ class Particles {
     type.emplace_back(p.type);
     active.emplace_back(true);
     cell.emplace_back(0);
+#if DEBUG
+    ids.emplace_back(size);
+#endif
     size++;
   }
   size_t size{};
@@ -207,7 +214,12 @@ class Particles {
                                   vs...,
                                   fs...,
                                   ofs...,
-                                  mass, type, active),
+                                  mass, type, active
+#if DEBUG
+                                  ,
+                                  ids
+#endif
+                                  ),
                               [](auto tuple1, auto tuple2) {
                                 return std::get<0>(tuple1) < std::get<0>(tuple2);
                               });

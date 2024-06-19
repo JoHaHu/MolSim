@@ -33,12 +33,17 @@ class VTKWriter {
     DataArray_t mass(type::Float32, "mass", 1);
     DataArray_t velocity(type::Float32, "velocity", 3);
     DataArray_t forces(type::Float32, "force", 3);
+    DataArray_t old_forces(type::Float32, "old_force", 3);
     DataArray_t type(type::Int32, "type", 1);
     pointData.DataArray().push_back(mass);
     pointData.DataArray().push_back(velocity);
     pointData.DataArray().push_back(forces);
+    pointData.DataArray().push_back(old_forces);
     pointData.DataArray().push_back(type);
-
+#if DEBUG
+    DataArray_t id(type::Int32, "id", 1);
+    pointData.DataArray().push_back(id);
+#endif
     CellData cellData;// we don't have cell data => leave it empty
 
     // 3 coordinates
@@ -88,6 +93,14 @@ class VTKWriter {
 
     dataIterator++;
     for (int i = 0; i < DIMENSIONS; ++i) {
+      dataIterator->push_back(p.forces[i][index]);
+    }
+    for (int i = DIMENSIONS; i < 3; ++i) {
+      dataIterator->push_back(0);
+    }
+
+    dataIterator++;
+    for (int i = 0; i < DIMENSIONS; ++i) {
       dataIterator->push_back(p.old_forces[i][index]);
     }
     for (int i = DIMENSIONS; i < 3; ++i) {
@@ -97,6 +110,11 @@ class VTKWriter {
 
     dataIterator++;
     dataIterator->push_back(p.type[index]);
+
+#if DEBUG
+    dataIterator++;
+    dataIterator->push_back(p.ids[index]);
+#endif
 
     Points::DataArray_sequence &pointsSequence =
         vtkFile->UnstructuredGrid()->Piece().Points().DataArray();

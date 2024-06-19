@@ -59,14 +59,14 @@ class Simulator {
         delta_t(config->delta_t),
         gravity(config->ljf_gravity) {};
 
-  auto calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
+  auto inline calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
     const auto temp = pow(delta_t, 2) * (1 / (2 * p.mass[index]));
     for (int i = 0; i < DIMENSIONS; ++i) {
       p.positions[i][index] += delta_t * p.velocities[i][index] + temp * p.old_forces[i][index];
     }
   }
-  auto calculate_velocity_particle(Particles<DIMENSIONS> &p, size_t index) const {
+  auto inline calculate_velocity_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
     const auto temp = delta_t * (1 / (2 * p.mass[index]));
 
@@ -76,7 +76,7 @@ class Simulator {
   }
 
   template<typename F>
-  auto calculate_force_particle_pair(F f, VectorizedParticle<DIMENSIONS> &p1, VectorizedParticle<DIMENSIONS> &p2, double_mask mask, std::array<double_v, DIMENSIONS> &correction) {
+  auto inline calculate_force_particle_pair(F f, VectorizedParticle<DIMENSIONS> &p1, VectorizedParticle<DIMENSIONS> &p2, double_mask mask, std::array<double_v, DIMENSIONS> &correction) {
 
     std::array<double_v, DIMENSIONS> force{};
     f(p1, p2, mask, force, correction);
@@ -139,7 +139,6 @@ class Simulator {
       }
       case physics::ForceModel::LennardJones: {
         particles.boundary(physics::lennard_jones::calculate_force);
-
         particles.refresh();
         particles.pairwise([this](auto &p1, auto &p2, auto mask, auto &correction) {
           this->calculate_force_particle_pair(physics::lennard_jones::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask, correction);

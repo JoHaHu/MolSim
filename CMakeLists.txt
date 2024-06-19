@@ -115,7 +115,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
     target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
-
+    target_compile_definitions(MolSim PUBLIC DEBUG=true)
+    target_compile_definitions(simulator PUBLIC DEBUG=true)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(simulator
             PRIVATE

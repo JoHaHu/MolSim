@@ -31,7 +31,7 @@ class Thermostat {
      * @brief Applies the thermostat to adjust particle velocities.
      * @param particles Container of particles to apply the thermostat to.
      */
-  void apply(container::ParticleContainer<DIMENSIONS> &particles) {
+  void inline apply(container::ParticleContainer<DIMENSIONS> &particles) {
     double current_temperature = calculateCurrentTemperature(particles);
     SPDLOG_DEBUG("Current temperature calculated: {}", current_temperature);
 

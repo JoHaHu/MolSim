@@ -309,7 +309,7 @@ class LinkedCell {
         std::array<double_v, DIMENSIONS> correction;
         for (size_t n = 0; n < cell.number_neighbours; ++n) {
           Neighbour<DIMENSIONS> &neighbour = cell.neighbours[n];
-          size_t i = 0;
+
           Cell<DIMENSIONS> &neighbour_cell = cells[neighbour.cell];
           size_t n_start = neighbour_cell.start_index;
           size_t n_end = neighbour_cell.end_index;
@@ -318,6 +318,7 @@ class LinkedCell {
             correction[i] = double_v(neighbour.correction[i]);
           }
 
+          size_t i = 0;
           while (n_start + (i * double_v::size()) < n_end) {
             auto active_mask = index_vector + (i * double_v::size()) < (neighbour_cell.size());
             auto p2 = particles.load_vectorized(n_start + (i * double_v::size()));

@@ -64,17 +64,14 @@ class Index {
   auto calculate_correction(std::array<size_t, DIMENSIONS> from, std::array<long, DIMENSIONS> offset) -> std::array<double, DIMENSIONS> {
     std::array<double, DIMENSIONS> correction;
     for (int i = 0; i < DIMENSIONS; ++i) {
+      correction[i] = 0.0;
       if (bc[i] == BoundaryCondition::periodic) {
         long diff = static_cast<long>(from[i]) + offset[i];
         if (diff >= static_cast<long>(dim[i])) {
           correction[i] = domain[i];
         } else if (diff < 0) {
           correction[i] = -domain[i];
-        } else {
-          correction[i] = 0.0;
         }
-      } else {
-        correction[i] = 0.0;
       }
     }
     return correction;
