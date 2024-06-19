@@ -3,12 +3,12 @@
           xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
     <header base_name="Rayleigh-Taylor instability"
             output_file="../../output/collision_simulation"
-            output_frequency="100"
-            t_end="25" seed="1337"
+            output_frequency="1"
+            t_end="1" seed="1337"
             delta_t="0.0005"/>
     <thermostat t_init="40" frequency="1000" brownian_motion="0"/>
     <container>
-        <linked_cells cutoff_radius="3">
+        <linked_cells cutoff_radius="2.5">
             <domain_size x="63" y="36"/>
             <boundary_conditions>
                 <boundary_condition type="periodic"/>
@@ -17,7 +17,6 @@
                 <boundary_condition type="reflecting"/>
             </boundary_conditions>
         </linked_cells>
-        <!--        <vector/>-->
     </container>
     <forces>
         <lennard_jones>

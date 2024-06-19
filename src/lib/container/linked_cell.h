@@ -39,14 +39,16 @@ struct Neighbour {
   /**
    * index of the represented neighbour cell
    * */
-  size_t cell;
+  size_t cell{};
   /**
    * correction vector to apply to account for periodic boundary conditions
    * */
-  std::array<double, DIMENSIONS> correction;
+  std::array<double, DIMENSIONS> correction{};
 
   // rotation to apply to particles if periodic boundaries are not parallel to each other
   //  std::array<double, 3> rotation;
+
+  Neighbour() = default;
 
   explicit Neighbour(size_t neighbour_index, std::array<double, DIMENSIONS> correction) : cell(neighbour_index), correction(correction) {}
 };
@@ -75,7 +77,8 @@ class Cell {
   size_t start_index;
   size_t end_index;
   cell_type type = cell_type::inner;
-  std::vector<Neighbour<DIMENSIONS>> neighbours{};
+  std::array<Neighbour<DIMENSIONS>, 4> neighbours{};
+  size_t number_neighbours;
   std::array<size_t, DIMENSIONS> idx{};
   std::array<BoundaryCondition, 2 * DIMENSIONS> boundary = initialize_boundary();
 
@@ -134,7 +137,11 @@ class LinkedCell {
         }
       }
 
-      c.neighbours = create_neighbours(c.idx);
+      auto neighbour_vec = create_neighbours(c.idx);
+      c.number_neighbours = neighbour_vec.size();
+      std::array<Neighbour<DIMENSIONS>, 4> neighbours{};
+      std::ranges::copy(neighbour_vec, neighbours.begin());
+      c.neighbours = neighbours;
     }
   };
 
@@ -158,6 +165,7 @@ class LinkedCell {
           auto correction = index.calculate_correction(idx, offset);
           // checks that cell is not out of bounds and not the same cell
           if (other_index < cells.size() && other_index != cell_idx && index.in_cutoff_distance(idx, cells[other_index].idx)) {
+
             neighbours.emplace_back(other_index, correction);
           }
         }
@@ -180,10 +188,12 @@ class LinkedCell {
     auto neighbours = std::vector<Neighbour<DIMENSIONS>>();
     std::array<long, DIMENSIONS> temp;
     recursive_fill_neighbours(DIMENSIONS, neighbours, idx, temp);
+
     neighbours.shrink_to_fit();
     std::ranges::sort(neighbours, [](auto &n1, auto &n2) {
       return n1.cell < n2.cell;
     });
+
     return neighbours;
   }
 
@@ -193,7 +203,9 @@ class LinkedCell {
   template<typename Callable>
   constexpr auto boundary(Callable f) -> auto {
 
-    for (size_t idx = 0; idx < particles.size; idx++) {
+    // Keep the particle size outside the loop to improve performance and to ensure that when deleting particles, still all particles are interated
+    const size_t particle_size = particles.size;
+    for (size_t idx = 0; idx < particle_size; idx++) {
       if (particles.active[idx]) [[likely]] {
         const auto cell_idx = particles.cell[idx];
         const auto &cell = cells[cell_idx];
@@ -233,6 +245,9 @@ class LinkedCell {
       condition |= pos > index.domain[axis];
     }
     particles.active[idx] &= static_cast<int>(!condition);
+    if (!particles.active[idx]) {
+      particles.size--;
+    }
   }
 
   /**
@@ -257,12 +272,12 @@ class LinkedCell {
     double bound = index.domain[axis];
     auto diff = bound - pos;
     if (start_of_axis) {
-      if (pos <= reflecting_distance[particles.type[idx]] && pos > 0) {
-        particles.forces[axis][idx] -= f(pos, particles.type[idx]);
+      if (2 * pos < reflecting_distance[particles.type[idx]] && pos > 0) {
+        particles.forces[axis][idx] -= f(2 * pos, particles.type[idx]);
       }
     } else {
-      if (diff <= reflecting_distance[particles.type[idx]] && diff > 0) {
-        particles.forces[axis][idx] += f(diff, particles.type[idx]);
+      if (2 * diff < reflecting_distance[particles.type[idx]] && diff > 0) {
+        particles.forces[axis][idx] += f(2 * diff, particles.type[idx]);
       }
     }
   }
@@ -280,8 +295,9 @@ class LinkedCell {
 
         // Same cell particles
         size_t i = 0;
-        while (idx + 1 + (i * double_v::size()) < cell.end_index) {
-          auto active_mask = idx + 1 + index_vector + (i * double_v::size()) < (cell.end_index);
+        const size_t end_index = cell.end_index;
+        while (idx + 1 + (i * double_v::size()) < end_index) {
+          auto active_mask = idx + 1 + index_vector + (i * double_v::size()) < (end_index);
           auto p2 = particles.load_vectorized(idx + 1 + (i * double_v::size()));
           auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
           c(p1, p2, mask, empty_correction);
@@ -291,7 +307,8 @@ class LinkedCell {
 
         // Neighbour cells
         std::array<double_v, DIMENSIONS> correction;
-        for (Neighbour<DIMENSIONS> &neighbour : cell.neighbours) {
+        for (size_t n = 0; n < cell.number_neighbours; ++n) {
+          Neighbour<DIMENSIONS> &neighbour = cell.neighbours[n];
           size_t i = 0;
           Cell<DIMENSIONS> &neighbour_cell = cells[neighbour.cell];
           size_t n_start = neighbour_cell.start_index;
@@ -355,7 +372,9 @@ class LinkedCell {
     size_t start = 0;
     size_t cell = particles.cell[0];
 
-    for (size_t i = 0; i < particles.size; ++i) {
+    const size_t particle_size = particles.size;
+    for (size_t i = 0; i < particle_size; ++i) {
+
       if (particles.cell[i] >= cells.size()) {
         particles.active[i] = false;
       }
@@ -368,18 +387,9 @@ class LinkedCell {
         start = i;
         cell = particles.cell[i];
       }
-      if (i == particles.size - 1) {
-        cells[cell].start_index = start;
-        cells[cell].end_index = particles.size;
-      }
     }
-    //    auto new_size = 0;
-    //    for (int i = 0; i < particles.size; ++i) {
-    //      if (particles.active[i]) {
-    //        new_size++;
-    //      }
-    //    }
-    //    particles.size = new_size;
+    cells[cell].start_index = start;
+    cells[cell].end_index = particle_size;
 
     SPDLOG_TRACE("fixed positions");
   }

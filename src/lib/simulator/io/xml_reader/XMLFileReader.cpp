@@ -234,6 +234,8 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       config.thermo_step = thermostat.frequency();
       config.use_brownian_motion = thermostat.brownian_motion().present();
       config.brownian_motion = *thermostat.brownian_motion();
+    } else {
+      config.thermo_step = 0;
     }
 
     return std::make_shared<config::Config>(config);

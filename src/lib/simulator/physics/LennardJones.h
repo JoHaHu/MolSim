@@ -18,7 +18,7 @@ static const long NUM_TYPES = 8;
 alignas(64) inline static std::array<double, NUM_TYPES * NUM_TYPES> epsilons_24;
 alignas(64) inline static std::array<double, NUM_TYPES * NUM_TYPES> epsilons_48;
 
-auto static initialize_constants(std::vector<double> epsilons, std::vector<double> sigmas, double c) {
+auto static inline initialize_constants(std::vector<double> epsilons, std::vector<double> sigmas, double c) {
 
   cutoff = c * c;
 
@@ -36,7 +36,7 @@ auto static initialize_constants(std::vector<double> epsilons, std::vector<doubl
   }
 }
 template<const size_t DIMENSIONS>
-__attribute__((__always_inline__)) auto static calculate_force_vectorized(const VectorizedParticle<DIMENSIONS> &p1, const VectorizedParticle<DIMENSIONS> &p2, double_mask mask, std::array<double_v, DIMENSIONS> &force, std::array<double_v, DIMENSIONS> &corrections) {
+__attribute__((__always_inline__)) auto static inline calculate_force_vectorized(const VectorizedParticle<DIMENSIONS> &p1, const VectorizedParticle<DIMENSIONS> &p2, double_mask mask, std::array<double_v, DIMENSIONS> &force, std::array<double_v, DIMENSIONS> &corrections) {
   SPDLOG_TRACE("Entering LennardJones calculate_force_vectorized");
 
   const auto diff = (p2.position + corrections) - p1.position;
@@ -72,14 +72,13 @@ __attribute__((__always_inline__)) auto static calculate_force_vectorized(const 
   for (int i = 0; i < DIMENSIONS; ++i) {
     stdx::where(norm_mask, force[i]) = 0;
   }
-
   SPDLOG_TRACE("Exiting LennardJones calculate_force_vectorized");
 }
 
 /**
  * simplified Lennard-Jones force for boundary particle. since the vector is perpendicular to the boundary plane, only one position component is relevant to calculate the norm
  * */
-__attribute__((__always_inline__)) auto static calculate_force(double diff, int type) -> double {
+__attribute__((__always_inline__)) auto static inline calculate_force(double diff, int type) -> double {
   const auto norm_2 = diff * diff;
   const auto norm_6 = norm_2 * norm_2 * norm_2;
   const auto temp = (norm_6 * epsilons_24[8 * type + type] - epsilons_48[8 * type + type]) / (norm_6 * norm_6 * norm_2);

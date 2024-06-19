@@ -169,9 +169,11 @@ class Simulator {
     auto temp_interval = config->thermo_step;
     thermostat.initializeVelocities(particles, config->use_brownian_motion, config->brownian_motion);
     calculate_force();
+    // calculate twice to initialize old_force and force to have proper simulation and output
     particles.swap_force();
-    // Plot initial position and forces
+    calculate_force();
 
+    // Plot initial position and forces
     if (IO) {
       plotter->plotParticles(particles, iteration);
       SPDLOG_DEBUG("Iteration {} plotted.", iteration);
@@ -181,7 +183,7 @@ class Simulator {
       calculate_position();
       particles.swap_force();
       calculate_force();
-      if (iteration % temp_interval == 0 && iteration != 0) {
+      if (temp_interval != 0 && iteration % temp_interval == 0) {
         thermostat.apply(particles);
       }
       calculate_velocity();

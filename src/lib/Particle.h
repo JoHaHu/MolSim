@@ -61,9 +61,7 @@ class Particle {
 template<const size_t DIMENSIONS>
 struct VectorizedParticle {
   std::array<double_v, DIMENSIONS> position{};
-  std::array<double_v, DIMENSIONS> velocity{};
   std::array<double_v, DIMENSIONS> force{};
-  std::array<double_v, DIMENSIONS> old_force{};
   double_v mass{};
   long_v type;
   double_mask active;
@@ -74,7 +72,7 @@ struct VectorizedParticle {
       const std::array<double_v, DIMENSIONS> &force,
       const std::array<double_v, DIMENSIONS> &oldForce,
       const double_v &mass, const long_v &type,
-      const double_mask &active) : position(position), velocity(velocity), force(force), old_force(oldForce), mass(mass), type(type), active(active) {}
+      const double_mask &active) : position(position), force(force), mass(mass), type(type), active(active) {}
 };
 
 template<const size_t DIMENSIONS>

@@ -67,9 +67,9 @@ class Index {
       if (bc[i] == BoundaryCondition::periodic) {
         long diff = static_cast<long>(from[i]) + offset[i];
         if (diff >= static_cast<long>(dim[i])) {
-          correction[i] = widths[i] * dim[i];
+          correction[i] = domain[i];
         } else if (diff < 0) {
-          correction[i] = -widths[i] * dim[i];
+          correction[i] = -domain[i];
         } else {
           correction[i] = 0.0;
         }
