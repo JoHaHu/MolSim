@@ -15,44 +15,43 @@ class Index {
  public:
   std::array<double, DIMENSIONS> domain{};
   std::array<BoundaryCondition, 2 * DIMENSIONS> bc{};
-  std::array<double, DIMENSIONS> widths{};
   std::array<size_t, DIMENSIONS> dim{};
+  std::array<double, DIMENSIONS> widths{};
   std::array<long, DIMENSIONS> radius{};
   //  double diagonal;
 
   Index() = default;
 
-  Index(const std::array<double, DIMENSIONS> &dm, const std::array<BoundaryCondition, 2 * DIMENSIONS> &bc, double cutoff) : domain(dm), bc(bc) {
-
-    radius = [] {
-      std::array<long, DIMENSIONS> temp = {};
-      for (int i = 0; i < DIMENSIONS; ++i) {
-        temp[i] = 1;
-      }
-      return temp;
-    }();
-
-    widths = [cutoff, this] {
-      std::array<double, DIMENSIONS> temp = {};
-      for (int i = 0; i < DIMENSIONS; ++i) {
-        temp[i] = cutoff / radius[i];
-      }
-      return temp;
-    }();
-
-    dim = [this] {
-      std::array<size_t, DIMENSIONS> temp = {};
-      for (int i = 0; i < DIMENSIONS; ++i) {
-        temp[i] = (size_t) std::ceil(domain[i] / widths[i]);
-      }
-      return temp;
-    }();
+  Index(const std::array<double, DIMENSIONS> &dm, const std::array<BoundaryCondition, 2 * DIMENSIONS> &bc, double cutoff)
+      : domain(dm),
+        bc(bc),
+        dim([this, cutoff] {
+          std::array<size_t, DIMENSIONS> temp = {};
+          for (int i = 0; i < DIMENSIONS; ++i) {
+            temp[i] = std::bit_ceil((size_t) std::ceil(domain[i] / cutoff));
+          }
+          return temp;
+        }()),
+        radius([this, cutoff] {
+          std::array<long, DIMENSIONS> temp = {};
+          for (int i = 0; i < DIMENSIONS; ++i) {
+            temp[i] = (size_t) std::ceil(cutoff / widths[i]);
+          }
+          return temp;
+        }()),
+        widths([this] {
+          std::array<double, DIMENSIONS> temp = {};
+          for (int i = 0; i < DIMENSIONS; ++i) {
+            temp[i] = domain[i] / dim[i];
+          }
+          return temp;
+        }()) {
 
     //    diagonal = distance(, widths);
   }
 
   auto in_cutoff_distance(std::array<size_t, DIMENSIONS> dim1, std::array<size_t, DIMENSIONS> dim2) -> bool {
-    // TODO fix this
+
     return true;
   }
 

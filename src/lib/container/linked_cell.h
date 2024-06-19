@@ -77,8 +77,7 @@ class Cell {
   size_t start_index;
   size_t end_index;
   cell_type type = cell_type::inner;
-  std::array<Neighbour<DIMENSIONS>, 4> neighbours{};
-  size_t number_neighbours;
+  std::vector<Neighbour<DIMENSIONS>> neighbours{};
   std::array<size_t, DIMENSIONS> idx{};
   std::array<BoundaryCondition, 2 * DIMENSIONS> boundary = initialize_boundary();
 
@@ -137,11 +136,7 @@ class LinkedCell {
         }
       }
 
-      auto neighbour_vec = create_neighbours(c.idx);
-      c.number_neighbours = neighbour_vec.size();
-      std::array<Neighbour<DIMENSIONS>, 4> neighbours{};
-      std::ranges::copy(neighbour_vec, neighbours.begin());
-      c.neighbours = neighbours;
+      c.neighbours = create_neighbours(c.idx);
     }
   };
 
@@ -307,8 +302,7 @@ class LinkedCell {
 
         // Neighbour cells
         std::array<double_v, DIMENSIONS> correction;
-        for (size_t n = 0; n < cell.number_neighbours; ++n) {
-          Neighbour<DIMENSIONS> &neighbour = cell.neighbours[n];
+        for (auto &neighbour : cell.neighbours) {
 
           Cell<DIMENSIONS> &neighbour_cell = cells[neighbour.cell];
           size_t n_start = neighbour_cell.start_index;

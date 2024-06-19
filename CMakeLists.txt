@@ -41,7 +41,7 @@ target_include_directories(simulator
 
 target_link_libraries(simulator
         PUBLIC
-        #asan
+        asan
         spdlog::spdlog
         xerces-c
 
@@ -107,11 +107,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling #[[-fsanitize=address]] >
+            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling -fsanitize=address >
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling #[[-fsanitize=address]] >
+            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling -fsanitize=address >
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
     target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
