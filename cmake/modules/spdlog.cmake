@@ -5,3 +5,5 @@ fetchcontent_declare(spdlog
         OVERRIDE_FIND_PACKAGE)
 fetchcontent_makeavailable(spdlog)
 find_package(spdlog REQUIRED)
+
+find_package(XercesC 3.2.1 REQUIRED)
