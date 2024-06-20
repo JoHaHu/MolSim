@@ -66,7 +66,7 @@ class Cell {
 
  private:
  public:
-  explicit Cell(cell_type type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx) {};
+  explicit Cell(cell_type type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx){};
 
   constexpr auto is_boundary() const -> bool {
     return type == cell_type::boundary;
@@ -114,10 +114,10 @@ class LinkedCell {
     }
   }
 
-  explicit LinkedCell(const std::array<double, DIMENSIONS> &domain, double cutoff, std::array<BoundaryCondition, 2 * DIMENSIONS> bc, std::vector<double> sigma)
+  explicit LinkedCell(const std::array<double, DIMENSIONS> &domain, double cutoff, std::array<BoundaryCondition, 2 * DIMENSIONS> bc, std::vector<double> &sigma)
       : particles(Particles<DIMENSIONS>()),
         index(container::index::Index<DIMENSIONS>(domain, bc, cutoff)),
-        sigma(std::move(sigma)) {
+        sigma(sigma) {
 
     size_t temp_size = 1.0;
     for (int i = 0; i < DIMENSIONS; ++i) {

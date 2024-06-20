@@ -16,8 +16,8 @@ class Index {
   std::array<double, DIMENSIONS> domain{};
   std::array<BoundaryCondition, 2 * DIMENSIONS> bc{};
   std::array<size_t, DIMENSIONS> dim{};
-  std::array<long, DIMENSIONS> radius{};
   std::array<double, DIMENSIONS> widths{};
+  std::array<long, DIMENSIONS> radius{};
   //  double diagonal;
 
   Index() = default;
@@ -32,17 +32,17 @@ class Index {
           }
           return temp;
         }()),
-        radius([this, cutoff] {
-          std::array<long, DIMENSIONS> temp = {};
-          for (int i = 0; i < DIMENSIONS; ++i) {
-            temp[i] = (size_t) std::ceil(cutoff / widths[i]);
-          }
-          return temp;
-        }()),
         widths([this] {
           std::array<double, DIMENSIONS> temp = {};
           for (int i = 0; i < DIMENSIONS; ++i) {
             temp[i] = domain[i] / dim[i];
+          }
+          return temp;
+        }()),
+        radius([this, cutoff] {
+          std::array<long, DIMENSIONS> temp = {};
+          for (int i = 0; i < DIMENSIONS; ++i) {
+            temp[i] = (size_t) std::ceil(cutoff / widths[i]);
           }
           return temp;
         }()) {

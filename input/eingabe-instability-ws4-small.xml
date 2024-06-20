@@ -8,7 +8,7 @@
             delta_t="0.0005"/>
     <thermostat t_init="40" frequency="1000" brownian_motion="0"/>
     <container>
-        <linked_cells cutoff_radius="3">
+        <linked_cells cutoff_radius="2.5">
             <domain_size x="63" y="36"/>
             <boundary_conditions>
                 <boundary_condition type="periodic"/>
