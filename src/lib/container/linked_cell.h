@@ -77,9 +77,19 @@ class Cell {
   }
 
  public:
+  /**
+   * start index of the cell
+   * */
   size_t start_index;
+  /**
+   * end  index of the particles
+   * */
   size_t end_index;
+
   cell_type type = cell_type::inner;
+  /**
+   * All enighbours
+   * */
   std::vector<Neighbour<DIMENSIONS>> neighbours{};
   std::array<size_t, DIMENSIONS> idx{};
   std::array<BoundaryCondition, 2 * DIMENSIONS> boundary = initialize_boundary();
@@ -95,7 +105,6 @@ class Cell {
 
 /**
  * The linked cell container class
- * the Index template parameter can be used to change the iteration order of the LinkedCell.
  * */
 template<const size_t DIMENSIONS>
 class LinkedCell {
@@ -148,6 +157,12 @@ class LinkedCell {
     }
   };
 
+  /**
+   * calculates all neighbours and the correction vector if a axis is a periodic axis.
+   * The correction vector gets added to all calculations between particles of those 2 cells and
+   * accounts for the boundary conditions.
+   *
+   * */
   constexpr void recursive_fill_neighbours(size_t depth, std::vector<Neighbour<DIMENSIONS>> &neighbours, std::array<size_t, DIMENSIONS> idx, std::array<long, DIMENSIONS> &offset) {
 
     if (depth == 0) {
@@ -201,7 +216,7 @@ class LinkedCell {
   }
 
   /**
-   * a range over the boundary cells
+   * a applies the boundary conditions
    * */
   template<typename Callable>
   constexpr auto boundary(Callable f) -> auto {
@@ -289,6 +304,14 @@ class LinkedCell {
 
   /**
    * a pairwise range over the particles, uses a cached range initialized at the start of the program
+   * Linear scan over the particles.  They are lined out contiguously in memory.
+   * for each particles it's cell is loaded and the forces are calculated between it and all within the same cell.
+   * After that the same is done for the neighbour cells.
+   * All calculations are done vectorized.
+   * After that this process is repeated for the next particle.
+   *
+   * Prerequisite for this is that all particles are sorted by cell.
+   *
    * */
   template<typename Callable>
   constexpr auto pairwise(Callable c) {
@@ -356,8 +379,9 @@ class LinkedCell {
   }
 
   /**
-   * Clear all cells and reinserts all particles into the cells.
-   * Better than updating positions when changes are made, because the vectors get resized/reorderd a lot when only single elements get removed
+   * calculates the new cells of each particle and sort the Particles based on that.
+   * After that all cell ranges get reconstructed.
+   *
    * */
   constexpr auto fix_positions() {
 

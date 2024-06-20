@@ -83,6 +83,10 @@ struct VectorizedParticle {
       const double_mask &active) : position(position), force(force), mass(mass), type(type), active(active) {}
 };
 
+/***
+ * A structure of Arrays for the particles
+ *
+ * */
 template<const size_t DIMENSIONS>
 class Particles {
  public:
@@ -101,6 +105,9 @@ class Particles {
   std::vector<size_t> cell{};
 
 #if DEBUG
+  /**
+   * particle ids only used with debugging. Helps to set debug points for suspicious particles
+   * */
   std::vector<size_t> ids{};
 #endif
 
@@ -115,7 +122,9 @@ class Particles {
       p.force[i].copy_to(&forces[i][index], stdx::element_aligned);
     }
   }
-
+  /**
+    * loads a single particle in all slots of a simd vector
+    * */
   auto load_vectorized_single(size_t index) -> VectorizedParticle<DIMENSIONS> {
 
     std::array<double_v, DIMENSIONS> position;
@@ -145,6 +154,9 @@ class Particles {
         double_mask(static_cast<bool>(active[index])));
   }
 
+  /**
+   * loads different particel in all slots of the simd vector
+   * */
   auto load_vectorized(size_t index) -> VectorizedParticle<DIMENSIONS> {
     std::array<double_v, DIMENSIONS> position_vector;
     for (int i = 0; i < DIMENSIONS; ++i) {
@@ -207,7 +219,7 @@ class Particles {
 
   template<typename Callable>
   void sort(Callable c) {
-
+    // recaulcates the cell
     for (int i = 0; i < size; ++i) {
       cell[i] = c(i);
     }

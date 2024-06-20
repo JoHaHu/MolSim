@@ -50,6 +50,9 @@ class Index {
     //    diagonal = distance(, widths);
   }
 
+  /**
+   * For now this accepts all cell in the radius, but this can be improved with a proper calculation
+   * */
   auto in_cutoff_distance(std::array<size_t, DIMENSIONS> dim1, std::array<size_t, DIMENSIONS> dim2) -> bool {
 
     return true;
