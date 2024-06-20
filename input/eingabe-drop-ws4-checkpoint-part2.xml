@@ -6,7 +6,6 @@
             output_frequency="100"
             t_end="40" seed="1337"
             delta_t="0.0005"/>
-    <thermostat t_init="0.5" frequency="1000" brownian_motion="0"/>
     <checkpoints>
         <checkpoint>../../output/checkpoint.xml</checkpoint>
     </checkpoints>
