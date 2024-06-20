@@ -21,7 +21,6 @@ class LennardJonesPotentialTest : public ::testing::Test {
  */
 TEST_F(LennardJonesPotentialTest, lennard_jones_forces_simple) {
 
-
   // velocity and mass do not matter in this calculation, therefore set to zero an 1.0
 
   // Particle i
@@ -89,7 +88,6 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_small_forces) {
 
   // velocity and mass do not matter in this calculation, therefore set to zero an 1.0
 
-
   // Particle i
   const std::array<double_v, 3> x_i = {2.1, 3.5, 1.4};
   const std::array<double_v, 3> velocity_i = {0.0, 0.0, 0.0};
@@ -123,7 +121,7 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_small_forces) {
   // Lennard-Jones potential U(x_i, x_j) = -0.0033750273618335614
   // Lennard-Jones force F_ij = [-0.00234524 -0.00385084 -0.00152485]
 
-  std::array<double_v, 3> actual_forces = {0.0, 0.0, 0.0}; // using cutoff so the forces are too small
+  std::array<double_v, 3> actual_forces = {0.0, 0.0, 0.0};// using cutoff so the forces are too small
 
   // computing forces with method
   std::array<double_v, 3> calculated_forces{};
@@ -141,7 +139,6 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_small_forces) {
   EXPECT_TRUE(stdx::all_of(calculated_forces[2] - actual_forces[2] < 0.000001));
 }
 
-
 /**
  * Test: lennard_jones_same_particle_not_zero
  *
@@ -149,7 +146,7 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_small_forces) {
  *
  * Ensures that the calculated forces result in NaN values, as the displacement should be zero.
  */
-TEST_F(LennardJonesPotentialTest, lennard_jones_same_particle_not_zero) {
+TEST_F(LennardJonesPotentialTest, lennard_jones_same_particle) {
 
   // velocity and mass do not matter in this calculation, therefore set to zero an 1.0
 
@@ -175,7 +172,7 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_same_particle_not_zero) {
       {0, 0, 0},
       double_v(1.0), long_v(0), double_mask(true));
 
-  std::array<double_v, 3> actual_forces = {NAN, NAN, NAN}; // using cutoff so the forces are too small
+  std::array<double_v, 3> actual_forces = {-NAN, -NAN, -NAN};// using cutoff so the forces are too small
 
   // computing forces with method
   std::array<double_v, 3> calculated_forces{};
@@ -188,7 +185,6 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_same_particle_not_zero) {
       correction);
 
   // check if each result of the force vector is accurate enough
-
-  // TODO: add according EXPECT or ASSERT
-
+  double_mask mask = stdx::isnan(calculated_forces[0]);
+  EXPECT_TRUE(stdx::all_of(mask));
 }
