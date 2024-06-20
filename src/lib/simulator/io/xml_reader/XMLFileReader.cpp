@@ -3,7 +3,6 @@
 #include "container/boundary.h"
 #include <iostream>
 #include <memory>
-#include <ranges>
 #include <spdlog/spdlog.h>
 #include <vector>
 #include <xercesc/dom/DOM.hpp>

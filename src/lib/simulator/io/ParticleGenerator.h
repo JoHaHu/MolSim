@@ -2,6 +2,7 @@
 
 #include "config/Config.h"
 #include "range/v3/view/enumerate.hpp"
+#include "range/v3/view/iota.hpp"
 #include "simulator/physics/ForceModel.h"
 #include <memory>
 #include <optional>
@@ -53,7 +54,7 @@ class ParticleGenerator {
           type);
       particles.push_back(particle);
     } else {
-      for (size_t z : std::views::iota(0, cuboid.particles[depth - 1])) {
+      for (size_t z : ranges::iota_view(0, cuboid.particles[depth - 1])) {
         offset[depth - 1] = z;
         _generate_cuboids(depth - 1, offset, particles, cuboid, type);
       }

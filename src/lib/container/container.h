@@ -3,7 +3,6 @@
 #include "Particle.h"
 #include "container/linked_cell.h"
 #include "utils/variants.h"
-#include <ranges>
 #include <vector>
 namespace container {
 

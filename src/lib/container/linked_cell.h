@@ -7,7 +7,6 @@
 #include <array>
 #include <concepts>
 #include <memory>
-#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -15,7 +14,9 @@
 #include "index.h"
 #include "spdlog/spdlog.h"
 
+#include "range/v3/algorithm/any_of.hpp"
 #include "range/v3/view/enumerate.hpp"
+#include "range/v3/view/iota.hpp"
 
 namespace container {
 
@@ -152,9 +153,9 @@ class LinkedCell {
     if (depth == 0) {
       auto cell_idx = index.dimension_to_index(idx);
 
-      if (std::ranges::any_of(offset, [](auto a) { return a != 0; })) {
+      if (ranges::any_of(offset, [](auto a) { return a != 0; })) {
 
-        if (std::ranges::any_of(std::views::iota(0UL, DIMENSIONS), [&](auto i) {
+        if (ranges::any_of(ranges::iota_view(0UL, DIMENSIONS), [&](auto i) {
               bool condition = offset[i] > 0;
 
               for (int j = i + 1; j < DIMENSIONS; ++j) {
