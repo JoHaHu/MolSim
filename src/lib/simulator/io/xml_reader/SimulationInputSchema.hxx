@@ -629,6 +629,7 @@ class positive_int;
 class positive_double;
 class scenario;
 class header;
+class checkpoints;
 class thermostat;
 class container;
 class forces;
@@ -3891,6 +3892,82 @@ class scenario: public ::xml_schema::type
   //@}
 
   /**
+   * @name checkpoints
+   *
+   * @brief Accessor and modifier functions for the %checkpoints
+   * optional element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::checkpoints checkpoints_type;
+
+  /**
+   * @brief Element optional container type.
+   */
+  typedef ::xsd::cxx::tree::optional< checkpoints_type > checkpoints_optional;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< checkpoints_type, char > checkpoints_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element
+   * container.
+   *
+   * @return A constant reference to the optional container.
+   */
+  const checkpoints_optional&
+  checkpoints () const;
+
+  /**
+   * @brief Return a read-write reference to the element container.
+   *
+   * @return A reference to the optional container.
+   */
+  checkpoints_optional&
+  checkpoints ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  checkpoints (const checkpoints_type& x);
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x An optional container with the new value to set.
+   *
+   * If the value is present in @a x then this function makes a copy 
+   * of this value and sets it as the new value of the element.
+   * Otherwise the element container is set the 'not present' state.
+   */
+  void
+  checkpoints (const checkpoints_optional& x);
+
+  /**
+   * @brief Set the element value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly instead
+   * of making a copy.
+   */
+  void
+  checkpoints (::std::unique_ptr< checkpoints_type > p);
+
+  //@}
+
+  /**
    * @name thermostat
    *
    * @brief Accessor and modifier functions for the %thermostat
@@ -4178,6 +4255,7 @@ class scenario: public ::xml_schema::type
 
   protected:
   ::xsd::cxx::tree::one< header_type > header_;
+  checkpoints_optional checkpoints_;
   thermostat_optional thermostat_;
   ::xsd::cxx::tree::one< container_type > container_;
   ::xsd::cxx::tree::one< forces_type > forces_;
@@ -4688,6 +4766,223 @@ class header: public ::xml_schema::type
   ::xsd::cxx::tree::one< output_frequency_type > output_frequency_;
   ::xsd::cxx::tree::one< output_file_type > output_file_;
   ::xsd::cxx::tree::one< seed_type > seed_;
+
+  //@endcond
+};
+
+/**
+ * @brief Class corresponding to the %checkpoints schema type.
+ *
+ * @nosubgrouping
+ */
+class checkpoints: public ::xml_schema::type
+{
+  public:
+  /**
+   * @name checkpoint
+   *
+   * @brief Accessor and modifier functions for the %checkpoint
+   * sequence element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::string checkpoint_type;
+
+  /**
+   * @brief Element sequence container type.
+   */
+  typedef ::xsd::cxx::tree::sequence< checkpoint_type > checkpoint_sequence;
+
+  /**
+   * @brief Element iterator type.
+   */
+  typedef checkpoint_sequence::iterator checkpoint_iterator;
+
+  /**
+   * @brief Element constant iterator type.
+   */
+  typedef checkpoint_sequence::const_iterator checkpoint_const_iterator;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< checkpoint_type, char > checkpoint_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element
+   * sequence.
+   *
+   * @return A constant reference to the sequence container.
+   */
+  const checkpoint_sequence&
+  checkpoint () const;
+
+  /**
+   * @brief Return a read-write reference to the element sequence.
+   *
+   * @return A reference to the sequence container.
+   */
+  checkpoint_sequence&
+  checkpoint ();
+
+  /**
+   * @brief Copy elements from a given sequence.
+   *
+   * @param s A sequence to copy elements from.
+   *
+   * For each element in @a s this function makes a copy and adds it 
+   * to the sequence. Note that this operation completely changes the 
+   * sequence and all old elements will be lost.
+   */
+  void
+  checkpoint (const checkpoint_sequence& s);
+
+  //@}
+
+  /**
+   * @name path
+   *
+   * @brief Accessor and modifier functions for the %path
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::string path_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< path_type, char > path_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const path_type&
+  path () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  path_type&
+  path ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  path (const path_type& x);
+
+  /**
+   * @brief Set the attribute value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  path (::std::unique_ptr< path_type > p);
+
+  //@}
+
+  /**
+   * @name Constructors
+   */
+  //@{
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes.
+   */
+  checkpoints (const path_type&);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  checkpoints (const ::xercesc::DOMElement& e,
+               ::xml_schema::flags f = 0,
+               ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  checkpoints (const checkpoints& x,
+               ::xml_schema::flags f = 0,
+               ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual checkpoints*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  /**
+   * @brief Copy assignment operator.
+   *
+   * @param x An instance to make a copy of.
+   * @return A reference to itself.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  checkpoints&
+  operator= (const checkpoints& x);
+
+  //@}
+
+  /**
+   * @brief Destructor.
+   */
+  virtual 
+  ~checkpoints ();
+
+  // Implementation.
+  //
+
+  //@cond
+
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  checkpoint_sequence checkpoint_;
+  ::xsd::cxx::tree::one< path_type > path_;
 
   //@endcond
 };
@@ -8054,6 +8349,9 @@ operator<< (::xercesc::DOMElement&, const scenario&);
 
 void
 operator<< (::xercesc::DOMElement&, const header&);
+
+void
+operator<< (::xercesc::DOMElement&, const checkpoints&);
 
 void
 operator<< (::xercesc::DOMElement&, const thermostat&);

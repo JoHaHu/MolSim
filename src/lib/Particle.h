@@ -45,6 +45,13 @@ class Particle {
    */
   int type;
 
+  Particle(const std::array<double, DIMENSIONS> &position,
+           const std::array<double, DIMENSIONS> &velocity,
+           const std::array<double, DIMENSIONS> &force,
+           const std::array<double, DIMENSIONS> &old_force,
+           double mass,
+           int type) : position(position), velocity(velocity), force(force), old_force(old_force), mass(mass), type(type) {}
+
   Particle(
       // for visualization, we need always 3 coordinates
       // -> in case of 2d, we use only the first and the second

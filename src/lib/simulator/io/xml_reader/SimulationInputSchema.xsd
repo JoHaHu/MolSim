@@ -17,7 +17,14 @@
                         <xs:attribute name="seed" type="xs:int" use="required"/>
                     </xs:complexType>
                 </xs:element>
-
+                <xs:element minOccurs="0" name="checkpoints">
+                    <xs:complexType>
+                        <xs:sequence maxOccurs="unbounded">
+                            <xs:element name="checkpoint" type="xs:string"/>
+                        </xs:sequence>
+                        <xs:attribute name="path" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="thermostat" minOccurs="0">
                     <xs:complexType>
                         <xs:attribute name="t_init" type="xs:double" use="required"/>

@@ -237,6 +237,17 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       config.thermo_step = 0;
     }
 
+    if (scenario->checkpoints().present()) {
+      auto input_checkpoints = std::vector<std::string>();
+      config.output_checkpoint = scenario->checkpoints()->path();
+
+      auto cps = *scenario->checkpoints();
+      for (auto cp : cps.checkpoint()) {
+        input_checkpoints.push_back(cp);
+      }
+      config.input_checkpoints = input_checkpoints;
+    }
+
     return std::make_shared<config::Config>(config);
 
   } catch (const xml_schema::exception &exception) {

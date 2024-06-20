@@ -10,6 +10,7 @@
 #include "simulator/physics/LennardJones.h"
 #include "simulator/physics/Thermostat.h"
 
+#include "simulator/io/checkpoint/Checkpointer.h"
 #include "utils/ArrayUtils.h"
 #include "utils/variants.h"
 #include <cmath>
@@ -32,6 +33,7 @@ class Simulator {
   std::unique_ptr<io::Plotter<DIMENSIONS>> plotter;
   std::shared_ptr<config::Config> config;
   Thermostat<DIMENSIONS> thermostat;
+  Checkpointer<DIMENSIONS> checkpoint;
 
   double end_time;
   double delta_t;
@@ -44,19 +46,16 @@ class Simulator {
    * \param plotter An instance plotter.
    * \param config the runtime configuration
    * */
-  explicit Simulator(
-      container::ParticleContainer<DIMENSIONS> &&particles,
-      physics::ForceModel physics,
-      std::unique_ptr<io::Plotter<DIMENSIONS>> &&plotter,
-      const std::shared_ptr<config::Config> &config)
+  explicit Simulator(container::ParticleContainer<DIMENSIONS> &&particles, physics::ForceModel physics, std::unique_ptr<io::Plotter<DIMENSIONS>> &&plotter, const std::shared_ptr<config::Config> &config, Checkpointer<DIMENSIONS> checkpoint)
       : particles(std::move(particles)),
         physics(physics),
         plotter(std::move(plotter)),
         config(config),
         thermostat(config->temp_init, config->temp_target, config->max_temp_diff, config->seed),
+        checkpoint(checkpoint),
         end_time(config->end_time),
         delta_t(config->delta_t),
-        gravity(config->ljf_gravity) {};
+        gravity(config->ljf_gravity){};
 
   auto inline calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
@@ -196,6 +195,11 @@ class Simulator {
 
       current_time += delta_t;
     }
+
+    if (config->output_checkpoint.has_value()) {
+      checkpoint.save_checkppoint(*config->output_checkpoint, particles);
+    }
+
     SPDLOG_INFO("Output written. Terminating...");
   }
 };

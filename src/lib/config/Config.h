@@ -139,6 +139,16 @@ class Config {
   double cutoff_radius{};
 
   /**
+   * path where the checkpoint is stored
+   * */
+  std::optional<std::string> output_checkpoint;
+
+  /**
+   * Input checkpoints
+   * */
+  std::vector<std::string> input_checkpoints;
+
+  /**
    * a vector that can store multiple celestial bodies for simulation defined in the CelestialBody class
    */
   std::vector<CelestialBody> celestial_bodies;

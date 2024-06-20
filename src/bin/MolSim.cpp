@@ -19,6 +19,8 @@ auto setup(std::shared_ptr<config::Config> config) -> auto {
 
   auto plotter = std::make_unique<simulator::io::VTKPlotter<DIMENSIONS>>(config);
 
+  auto checkpointer = Checkpointer<DIMENSIONS>();
+
   simulator::physics::ForceModel physics = config->simulation_type;
   switch (config->simulation_type) {
     case simulator::physics::ForceModel::Gravity:
@@ -58,9 +60,16 @@ auto setup(std::shared_ptr<config::Config> config) -> auto {
     pc.insert(p);
   }
 
+  for (auto &cp_file : config->input_checkpoints) {
+    auto cp = checkpointer.load_checkpoint(cp_file);
+    for (auto p : cp) {
+      pc.insert(p);
+    }
+  }
+
   pc.refresh();
 
-  auto simulator = simulator::Simulator<DIMENSIONS>(std::move(pc), physics, std::move(plotter), config);
+  auto simulator = simulator::Simulator<DIMENSIONS>(std::move(pc), physics, std::move(plotter), config, checkpointer);
   return simulator;
 }
 

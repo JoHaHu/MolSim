@@ -909,6 +909,36 @@ header (::std::unique_ptr< header_type > x)
   this->header_.set (std::move (x));
 }
 
+const scenario::checkpoints_optional& scenario::
+checkpoints () const
+{
+  return this->checkpoints_;
+}
+
+scenario::checkpoints_optional& scenario::
+checkpoints ()
+{
+  return this->checkpoints_;
+}
+
+void scenario::
+checkpoints (const checkpoints_type& x)
+{
+  this->checkpoints_.set (x);
+}
+
+void scenario::
+checkpoints (const checkpoints_optional& x)
+{
+  this->checkpoints_ = x;
+}
+
+void scenario::
+checkpoints (::std::unique_ptr< checkpoints_type > x)
+{
+  this->checkpoints_.set (std::move (x));
+}
+
 const scenario::thermostat_optional& scenario::
 thermostat () const
 {
@@ -1151,6 +1181,52 @@ void header::
 seed (const seed_type& x)
 {
   this->seed_.set (x);
+}
+
+
+// checkpoints
+//
+
+const checkpoints::checkpoint_sequence& checkpoints::
+checkpoint () const
+{
+  return this->checkpoint_;
+}
+
+checkpoints::checkpoint_sequence& checkpoints::
+checkpoint ()
+{
+  return this->checkpoint_;
+}
+
+void checkpoints::
+checkpoint (const checkpoint_sequence& s)
+{
+  this->checkpoint_ = s;
+}
+
+const checkpoints::path_type& checkpoints::
+path () const
+{
+  return this->path_.get ();
+}
+
+checkpoints::path_type& checkpoints::
+path ()
+{
+  return this->path_.get ();
+}
+
+void checkpoints::
+path (const path_type& x)
+{
+  this->path_.set (x);
+}
+
+void checkpoints::
+path (::std::unique_ptr< path_type > x)
+{
+  this->path_.set (std::move (x));
 }
 
 
@@ -3461,6 +3537,7 @@ scenario (const header_type& header,
           const forces_type& forces)
 : ::xml_schema::type (),
   header_ (header, this),
+  checkpoints_ (this),
   thermostat_ (this),
   container_ (container, this),
   forces_ (forces, this)
@@ -3473,6 +3550,7 @@ scenario (::std::unique_ptr< header_type > header,
           ::std::unique_ptr< forces_type > forces)
 : ::xml_schema::type (),
   header_ (std::move (header), this),
+  checkpoints_ (this),
   thermostat_ (this),
   container_ (std::move (container), this),
   forces_ (std::move (forces), this)
@@ -3485,6 +3563,7 @@ scenario (const scenario& x,
           ::xml_schema::container* c)
 : ::xml_schema::type (x, f, c),
   header_ (x.header_, f, this),
+  checkpoints_ (x.checkpoints_, f, this),
   thermostat_ (x.thermostat_, f, this),
   container_ (x.container_, f, this),
   forces_ (x.forces_, f, this)
@@ -3497,6 +3576,7 @@ scenario (const ::xercesc::DOMElement& e,
           ::xml_schema::container* c)
 : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
   header_ (this),
+  checkpoints_ (this),
   thermostat_ (this),
   container_ (this),
   forces_ (this)
@@ -3528,6 +3608,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       if (!header_.present ())
       {
         this->header_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    // checkpoints
+    //
+    if (n.name () == "checkpoints" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< checkpoints_type > r (
+        checkpoints_traits::create (i, f, this));
+
+      if (!this->checkpoints_)
+      {
+        this->checkpoints_.set (::std::move (r));
         continue;
       }
     }
@@ -3613,6 +3707,7 @@ operator= (const scenario& x)
   {
     static_cast< ::xml_schema::type& > (*this) = x;
     this->header_ = x.header_;
+    this->checkpoints_ = x.checkpoints_;
     this->thermostat_ = x.thermostat_;
     this->container_ = x.container_;
     this->forces_ = x.forces_;
@@ -3805,6 +3900,112 @@ operator= (const header& x)
 
 header::
 ~header ()
+{
+}
+
+// checkpoints
+//
+
+checkpoints::
+checkpoints (const path_type& path)
+: ::xml_schema::type (),
+  checkpoint_ (this),
+  path_ (path, this)
+{
+}
+
+checkpoints::
+checkpoints (const checkpoints& x,
+             ::xml_schema::flags f,
+             ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  checkpoint_ (x.checkpoint_, f, this),
+  path_ (x.path_, f, this)
+{
+}
+
+checkpoints::
+checkpoints (const ::xercesc::DOMElement& e,
+             ::xml_schema::flags f,
+             ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  checkpoint_ (this),
+  path_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+    this->parse (p, f);
+  }
+}
+
+void checkpoints::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  for (; p.more_content (); p.next_content (false))
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // checkpoint
+    //
+    if (n.name () == "checkpoint" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< checkpoint_type > r (
+        checkpoint_traits::create (i, f, this));
+
+      this->checkpoint_.push_back (::std::move (r));
+      continue;
+    }
+
+    break;
+  }
+
+  while (p.more_attributes ())
+  {
+    const ::xercesc::DOMAttr& i (p.next_attribute ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    if (n.name () == "path" && n.namespace_ ().empty ())
+    {
+      this->path_.set (path_traits::create (i, f, this));
+      continue;
+    }
+  }
+
+  if (!path_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "path",
+      "");
+  }
+}
+
+checkpoints* checkpoints::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class checkpoints (*this, f, c);
+}
+
+checkpoints& checkpoints::
+operator= (const checkpoints& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->checkpoint_ = x.checkpoint_;
+    this->path_ = x.path_;
+  }
+
+  return *this;
+}
+
+checkpoints::
+~checkpoints ()
 {
 }
 
@@ -6005,6 +6206,18 @@ operator<< (::xercesc::DOMElement& e, const scenario& i)
     s << i.header ();
   }
 
+  // checkpoints
+  //
+  if (i.checkpoints ())
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "checkpoints",
+        e));
+
+    s << *i.checkpoints ();
+  }
+
   // thermostat
   //
   if (i.thermostat ())
@@ -6121,6 +6334,39 @@ operator<< (::xercesc::DOMElement& e, const header& i)
         e));
 
     a << i.seed ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const checkpoints& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // checkpoint
+  //
+  for (checkpoints::checkpoint_const_iterator
+       b (i.checkpoint ().begin ()), n (i.checkpoint ().end ());
+       b != n; ++b)
+  {
+    const checkpoints::checkpoint_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "checkpoint",
+        e));
+
+    s << x;
+  }
+
+  // path
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "path",
+        e));
+
+    a << i.path ();
   }
 }
 
