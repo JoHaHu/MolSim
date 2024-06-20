@@ -26,7 +26,7 @@ class Checkpointer {
       SPDLOG_INFO(message);
       exit(1);
     }
-    std::unique_ptr<checkpoint> cp = checkpoint_(filename, 0);
+    std::unique_ptr<checkpoint> cp = checkpoint_(filename, xml_schema::flags::dont_validate);
 
     auto particles = std::vector<Particle<DIMENSIONS>>();
 
@@ -41,13 +41,12 @@ class Checkpointer {
         switch (i) {
           case 0: {
             force[i] = p.force().x();
-            old_force[i] = p.force().x();
-            position[i] = p.force().x();
-            velocity[i] = p.force().x();
+            old_force[i] = p.old_force().x();
+            position[i] = p.position().x();
+            velocity[i] = p.velocity().x();
             break;
           }
           case 1: {
-
             force[i] = p.force().y();
             old_force[i] = p.old_force().y();
             position[i] = p.position().y();
@@ -74,8 +73,8 @@ class Checkpointer {
             exit(1);
           }
         }
-        particles.emplace_back(position, velocity, force, old_force, p.mass(), p.type());
       }
+      particles.emplace_back(position, velocity, force, old_force, p.mass(), p.type());
     }
 
     return particles;

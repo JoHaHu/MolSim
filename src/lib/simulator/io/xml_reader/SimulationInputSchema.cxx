@@ -403,6 +403,24 @@ radius (::std::unique_ptr< radius_type > x)
   this->radius_.set (std::move (x));
 }
 
+const sphere::mesh_width_type& sphere::
+mesh_width () const
+{
+  return this->mesh_width_.get ();
+}
+
+sphere::mesh_width_type& sphere::
+mesh_width ()
+{
+  return this->mesh_width_.get ();
+}
+
+void sphere::
+mesh_width (const mesh_width_type& x)
+{
+  this->mesh_width_.set (x);
+}
+
 const sphere::particleTypeId_type& sphere::
 particleTypeId () const
 {
@@ -1205,22 +1223,28 @@ checkpoint (const checkpoint_sequence& s)
   this->checkpoint_ = s;
 }
 
-const checkpoints::path_type& checkpoints::
+const checkpoints::path_optional& checkpoints::
 path () const
 {
-  return this->path_.get ();
+  return this->path_;
 }
 
-checkpoints::path_type& checkpoints::
+checkpoints::path_optional& checkpoints::
 path ()
 {
-  return this->path_.get ();
+  return this->path_;
 }
 
 void checkpoints::
 path (const path_type& x)
 {
   this->path_.set (x);
+}
+
+void checkpoints::
+path (const path_optional& x)
+{
+  this->path_ = x;
 }
 
 void checkpoints::
@@ -2467,11 +2491,13 @@ sphere::
 sphere (const coordinate_type& coordinate,
         const velocity_type& velocity,
         const radius_type& radius,
+        const mesh_width_type& mesh_width,
         const particleTypeId_type& particleTypeId)
 : ::xml_schema::type (),
   coordinate_ (coordinate, this),
   velocity_ (velocity, this),
   radius_ (radius, this),
+  mesh_width_ (mesh_width, this),
   particleTypeId_ (particleTypeId, this)
 {
 }
@@ -2480,11 +2506,13 @@ sphere::
 sphere (::std::unique_ptr< coordinate_type > coordinate,
         ::std::unique_ptr< velocity_type > velocity,
         const radius_type& radius,
+        const mesh_width_type& mesh_width,
         const particleTypeId_type& particleTypeId)
 : ::xml_schema::type (),
   coordinate_ (std::move (coordinate), this),
   velocity_ (std::move (velocity), this),
   radius_ (radius, this),
+  mesh_width_ (mesh_width, this),
   particleTypeId_ (particleTypeId, this)
 {
 }
@@ -2497,6 +2525,7 @@ sphere (const sphere& x,
   coordinate_ (x.coordinate_, f, this),
   velocity_ (x.velocity_, f, this),
   radius_ (x.radius_, f, this),
+  mesh_width_ (x.mesh_width_, f, this),
   particleTypeId_ (x.particleTypeId_, f, this)
 {
 }
@@ -2509,6 +2538,7 @@ sphere (const ::xercesc::DOMElement& e,
   coordinate_ (this),
   velocity_ (this),
   radius_ (this),
+  mesh_width_ (this),
   particleTypeId_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
@@ -2600,11 +2630,24 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
     const ::xsd::cxx::xml::qualified_name< char > n (
       ::xsd::cxx::xml::dom::name< char > (i));
 
+    if (n.name () == "mesh_width" && n.namespace_ ().empty ())
+    {
+      this->mesh_width_.set (mesh_width_traits::create (i, f, this));
+      continue;
+    }
+
     if (n.name () == "particleTypeId" && n.namespace_ ().empty ())
     {
       this->particleTypeId_.set (particleTypeId_traits::create (i, f, this));
       continue;
     }
+  }
+
+  if (!mesh_width_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "mesh_width",
+      "");
   }
 
   if (!particleTypeId_.present ())
@@ -2631,6 +2674,7 @@ operator= (const sphere& x)
     this->coordinate_ = x.coordinate_;
     this->velocity_ = x.velocity_;
     this->radius_ = x.radius_;
+    this->mesh_width_ = x.mesh_width_;
     this->particleTypeId_ = x.particleTypeId_;
   }
 
@@ -3907,10 +3951,10 @@ header::
 //
 
 checkpoints::
-checkpoints (const path_type& path)
+checkpoints ()
 : ::xml_schema::type (),
   checkpoint_ (this),
-  path_ (path, this)
+  path_ (this)
 {
 }
 
@@ -3974,13 +4018,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       this->path_.set (path_traits::create (i, f, this));
       continue;
     }
-  }
-
-  if (!path_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_attribute< char > (
-      "path",
-      "");
   }
 }
 
@@ -5887,6 +5924,17 @@ operator<< (::xercesc::DOMElement& e, const sphere& i)
     s << i.radius ();
   }
 
+  // mesh_width
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "mesh_width",
+        e));
+
+    a << ::xml_schema::as_double(i.mesh_width ());
+  }
+
   // particleTypeId
   //
   {
@@ -6360,13 +6408,14 @@ operator<< (::xercesc::DOMElement& e, const checkpoints& i)
 
   // path
   //
+  if (i.path ())
   {
     ::xercesc::DOMAttr& a (
       ::xsd::cxx::xml::dom::create_attribute (
         "path",
         e));
 
-    a << i.path ();
+    a << *i.path ();
   }
 }
 

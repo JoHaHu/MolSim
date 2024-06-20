@@ -27,13 +27,14 @@ class ParticleGenerator {
   using cuboid_t = std::tuple<std::array<double, DIMENSIONS>, std::array<double, DIMENSIONS>, std::array<int, DIMENSIONS>, double, double, double>;
 
  public:
-  explicit ParticleGenerator(const std::shared_ptr<config::Config> &config) : config(config) {};
+  explicit ParticleGenerator(const std::shared_ptr<config::Config> &config) : config(config){};
   /**
    * Load particles based on a input file and returns a particle container and the used force model
    * */
   auto load_particles() -> std::vector<Particle<DIMENSIONS>> {
     auto particles = std::vector<Particle<DIMENSIONS>>();
     generate_cuboids(config->cuboids, particles);
+    generate_disk_particles(config->spheres, particles);
     return particles;
   };
 
@@ -110,24 +111,33 @@ class ParticleGenerator {
             * @return std::vector<Particle> A vector containing the generated particles.
             */
 
-  auto generate_disk_particles(double centerX, double centerY, double initialVx, double initialVy,
-                               int radiusMolecules, double meshwidth) -> std::vector<Particle<DIMENSIONS>> {
-    std::vector<Particle<DIMENSIONS>> particles;
-    double radius = radiusMolecules * meshwidth;
+  auto generate_disk_particles(std::vector<Sphere> &spheres, std::vector<Particle<DIMENSIONS>> &particles) {
 
-    for (int i = -radiusMolecules; i <= radiusMolecules; ++i) {
-      for (int j = -radiusMolecules; j <= radiusMolecules; ++j) {
-        double x = i * meshwidth;
-        double y = j * meshwidth;
-        if (x * x + y * y <= radius * radius) {
-          std::array<double, DIMENSIONS> position = {centerX + x, centerY + y, 0.0};
-          std::array<double, DIMENSIONS> velocity;
+    for (auto &sphere : spheres) {
 
-          for (int k = 0; k < DIMENSIONS; ++k) {
-            velocity[k] = 0.0;
+      double radius = sphere.radius * sphere.mesh_width;
+
+      for (int i = -sphere.radius; i <= sphere.radius; ++i) {
+        for (int j = -sphere.radius; j <= sphere.radius; ++j) {
+          double x = i * sphere.mesh_width;
+          double y = j * sphere.mesh_width;
+          if (x * x + y * y <= radius * radius) {
+
+            std::array<double, DIMENSIONS> position;
+            if constexpr (DIMENSIONS == 2) {
+              position = {sphere.coordinates[0] + x, sphere.coordinates[1] + y};
+            } else {
+              position = {sphere.coordinates[0] + x, sphere.coordinates[1] + y, 0.0};
+            }
+
+            std::array<double, DIMENSIONS> velocity;
+
+            for (int k = 0; k < DIMENSIONS; ++k) {
+              velocity[k] = 0.0;
+            }
+
+            particles.emplace_back(position, velocity, 1.0, 0);
           }
-
-          particles.emplace_back(position, velocity, 1.0, 0);
         }
       }
     }

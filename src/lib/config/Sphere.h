@@ -15,8 +15,10 @@ class Sphere {
   std::vector<double> coordinates;
   std::vector<double> velocity;
   int radius;
+  double mesh_width;
 
-  Sphere(const std::vector<double> &coordinates, const std::vector<double> &velocity, int radius) : coordinates(coordinates), velocity(velocity), radius(radius) {}
+  Sphere(const std::vector<double> &coordinates, const std::vector<double> &velocity, int radius, double mesh_width)
+      : coordinates(coordinates), velocity(velocity), radius(radius), mesh_width(mesh_width) {}
 
   std::string toString() {
     std::string output;

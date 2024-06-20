@@ -1857,6 +1857,53 @@ class sphere: public ::xml_schema::type
   //@}
 
   /**
+   * @name mesh_width
+   *
+   * @brief Accessor and modifier functions for the %mesh_width
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::double_ mesh_width_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< mesh_width_type, char, ::xsd::cxx::tree::schema_type::double_ > mesh_width_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const mesh_width_type&
+  mesh_width () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  mesh_width_type&
+  mesh_width ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  mesh_width (const mesh_width_type& x);
+
+  //@}
+
+  /**
    * @name particleTypeId
    *
    * @brief Accessor and modifier functions for the %particleTypeId
@@ -1915,6 +1962,7 @@ class sphere: public ::xml_schema::type
   sphere (const coordinate_type&,
           const velocity_type&,
           const radius_type&,
+          const mesh_width_type&,
           const particleTypeId_type&);
 
   /**
@@ -1928,6 +1976,7 @@ class sphere: public ::xml_schema::type
   sphere (::std::unique_ptr< coordinate_type >,
           ::std::unique_ptr< velocity_type >,
           const radius_type&,
+          const mesh_width_type&,
           const particleTypeId_type&);
 
   /**
@@ -2003,6 +2052,7 @@ class sphere: public ::xml_schema::type
   ::xsd::cxx::tree::one< coordinate_type > coordinate_;
   ::xsd::cxx::tree::one< velocity_type > velocity_;
   ::xsd::cxx::tree::one< radius_type > radius_;
+  ::xsd::cxx::tree::one< mesh_width_type > mesh_width_;
   ::xsd::cxx::tree::one< particleTypeId_type > particleTypeId_;
 
   //@endcond
@@ -4846,7 +4896,7 @@ class checkpoints: public ::xml_schema::type
    * @name path
    *
    * @brief Accessor and modifier functions for the %path
-   * required attribute.
+   * optional attribute.
    */
   //@{
 
@@ -4856,24 +4906,30 @@ class checkpoints: public ::xml_schema::type
   typedef ::xml_schema::string path_type;
 
   /**
+   * @brief Attribute optional container type.
+   */
+  typedef ::xsd::cxx::tree::optional< path_type > path_optional;
+
+  /**
    * @brief Attribute traits type.
    */
   typedef ::xsd::cxx::tree::traits< path_type, char > path_traits;
 
   /**
-   * @brief Return a read-only (constant) reference to the attribute.
+   * @brief Return a read-only (constant) reference to the attribute
+   * container.
    *
-   * @return A constant reference to the attribute.
+   * @return A constant reference to the optional container.
    */
-  const path_type&
+  const path_optional&
   path () const;
 
   /**
-   * @brief Return a read-write reference to the attribute.
+   * @brief Return a read-write reference to the attribute container.
    *
-   * @return A reference to the attribute.
+   * @return A reference to the optional container.
    */
-  path_type&
+  path_optional&
   path ();
 
   /**
@@ -4888,12 +4944,24 @@ class checkpoints: public ::xml_schema::type
   path (const path_type& x);
 
   /**
+   * @brief Set the attribute value.
+   *
+   * @param x An optional container with the new value to set.
+   *
+   * If the value is present in @a x then this function makes a copy 
+   * of this value and sets it as the new value of the attribute.
+   * Otherwise the attribute container is set the 'not present' state.
+   */
+  void
+  path (const path_optional& x);
+
+  /**
    * @brief Set the attribute value without copying.
    *
    * @param p A new value to use.
    *
-   * This function will try to use the passed value directly
-   * instead of making a copy.
+   * This function will try to use the passed value directly instead
+   * of making a copy.
    */
   void
   path (::std::unique_ptr< path_type > p);
@@ -4909,7 +4977,7 @@ class checkpoints: public ::xml_schema::type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  checkpoints (const path_type&);
+  checkpoints ();
 
   /**
    * @brief Create an instance from a DOM element.
@@ -4982,7 +5050,7 @@ class checkpoints: public ::xml_schema::type
 
   protected:
   checkpoint_sequence checkpoint_;
-  ::xsd::cxx::tree::one< path_type > path_;
+  path_optional path_;
 
   //@endcond
 };

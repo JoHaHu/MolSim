@@ -189,7 +189,7 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
         std::vector<double> velocity = {sphere.velocity().x(), sphere.velocity().y(), *sphere.velocity().z()};
         int radius = sphere.radius();
 
-        auto temp_sphere = Sphere(coordinate, velocity, radius);
+        auto temp_sphere = Sphere(coordinate, velocity, radius, sphere.mesh_width());
         temp_spheres.emplace_back(temp_sphere);
       }
 
@@ -239,7 +239,9 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
 
     if (scenario->checkpoints().present()) {
       auto input_checkpoints = std::vector<std::string>();
-      config.output_checkpoint = scenario->checkpoints()->path();
+      if (scenario->checkpoints()->path().present()) {
+        config.output_checkpoint = *scenario->checkpoints()->path();
+      }
 
       auto cps = *scenario->checkpoints();
       for (auto cp : cps.checkpoint()) {
