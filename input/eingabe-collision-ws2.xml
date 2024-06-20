@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <scenario xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
           xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
 <header base_name="Collision of two bodies"

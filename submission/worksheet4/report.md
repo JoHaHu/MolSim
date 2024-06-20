@@ -57,5 +57,5 @@ for them
 On the cluster only g++ build, because we used very recent features of the c++ standard and g++ was the only compiler
 that we could get to work
 
-- MUPS/s with g++
+- 262,11 MUPS/s with g++
 
