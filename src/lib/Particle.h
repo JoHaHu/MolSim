@@ -1,5 +1,7 @@
 #pragma once
 
+#include "range/v3/algorithm.hpp"
+#include "range/v3/view/zip.hpp"
 #include "utils/types.h"
 #include <array>
 #include <execution>
@@ -208,21 +210,21 @@ class Particles {
       return std::apply([&](auto &...vs) {
         return std::apply([&](auto &...fs) {
           return std::apply([&](auto &...ofs) {
-            std::ranges::sort(std::ranges::zip_view(
-                                  cell,
-                                  ps...,
-                                  vs...,
-                                  fs...,
-                                  ofs...,
-                                  mass, type, active
+            ranges::sort(ranges::zip_view(
+                             cell,
+                             ps...,
+                             vs...,
+                             fs...,
+                             ofs...,
+                             mass, type, active
 #if DEBUG
-                                  ,
-                                  ids
+                             ,
+                             ids
 #endif
-                                  ),
-                              [](auto tuple1, auto tuple2) {
-                                return std::get<0>(tuple1) < std::get<0>(tuple2);
-                              });
+                             ),
+                         [](auto tuple1, auto tuple2) {
+                           return std::get<0>(tuple1) < std::get<0>(tuple2);
+                         });
           },
                             old_forces);
         },

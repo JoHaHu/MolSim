@@ -11,9 +11,9 @@
 #include <array>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-
 /**
  * definition of an enum class that gives information about the desired ParticleLoader
  */

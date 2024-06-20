@@ -1,12 +1,12 @@
 #pragma once
 
 #include "config/Config.h"
+#include "range/v3/view/enumerate.hpp"
 #include "simulator/physics/ForceModel.h"
 #include <memory>
 #include <optional>
 
 #include <fstream>
-#include <ranges>
 #include <sstream>
 
 #include "Particle.h"
@@ -70,9 +70,8 @@ class ParticleGenerator {
     * @param seed The seed used for random number generation.
     * @return std::vector<Particle> The generated particles.
     */
-  auto generate_cuboids(const std::vector<Cuboid> &cuboids, std::vector<Particle<DIMENSIONS>> &particles) {
-    for (auto const [index, cuboid] : std::views::enumerate(cuboids)) {
-
+  auto generate_cuboids(std::vector<Cuboid> &cuboids, std::vector<Particle<DIMENSIONS>> &particles) {
+    for (auto cuboid : cuboids) {
       for (double pos : cuboid.coordinates) {
         if (std::isnan(pos)) {
           SPDLOG_ERROR("Invalid cuboid data: NaN value encountered in position.");

@@ -44,12 +44,13 @@ target_link_libraries(simulator
         #        asan
         spdlog::spdlog
         XercesC::XercesC
+        range-v3::range-v3
 
 )
 
 target_compile_features(simulator
         PRIVATE
-        cxx_std_23
+        cxx_std_20
 )
 
 
@@ -73,7 +74,7 @@ add_executable(MolSim src/bin/MolSim.cpp)
 # set cxx standard. You may raise this if you want.
 target_compile_features(MolSim
         PRIVATE
-        cxx_std_23
+        cxx_std_20
 )
 
 target_include_directories(MolSim

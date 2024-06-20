@@ -15,6 +15,8 @@
 #include "index.h"
 #include "spdlog/spdlog.h"
 
+#include "range/v3/view/enumerate.hpp"
+
 namespace container {
 
 /**
@@ -114,12 +116,17 @@ class LinkedCell {
   explicit LinkedCell(const std::array<double, DIMENSIONS> &domain, double cutoff, std::array<BoundaryCondition, 2 * DIMENSIONS> bc, std::vector<double> sigma)
       : particles(Particles<DIMENSIONS>()),
         index(container::index::Index<DIMENSIONS>(domain, bc, cutoff)),
-        sigma(sigma),
-        reflecting_distance(sigma
-                            | std::views::transform([](auto sigma) { return std::pow(2, 1 / 6.0) * sigma; })
-                            | std::ranges::to<std::vector<double>>()) {
+        sigma(std::move(sigma)) {
 
-    cells.reserve(std::ranges::fold_left(index.dim, 1.0, std::multiplies<>()));
+    size_t temp_size = 1.0;
+    for (int i = 0; i < DIMENSIONS; ++i) {
+      temp_size *= index.dim[i];
+    }
+
+    reflecting_distance = std::vector<double>();
+    for (int i = 0; i < sigma.size(); ++i) {
+      reflecting_distance.emplace_back(std::pow(2, 1 / 6.0) * sigma[i]);
+    }
 
     std::array<size_t, DIMENSIONS> temp{};
     recursive_fill(temp, DIMENSIONS);
@@ -205,7 +212,9 @@ class LinkedCell {
         const auto cell_idx = particles.cell[idx];
         const auto &cell = cells[cell_idx];
         if (cell.is_boundary()) {
-          for (auto [side, bc] : std::ranges::enumerate_view(cell.boundary)) {
+          for (size_t i = 0; i < DIMENSIONS * 2; ++i) {
+            auto side = i;
+            auto bc = cell.boundary[i];
 
             size_t axis = side % DIMENSIONS;
             bool start_of_axis = side / DIMENSIONS == 0;
@@ -409,7 +418,7 @@ class LinkedCell {
    * */
   container::index::Index<DIMENSIONS> index;
   /**
-   * a vector (AVX) with stepwise incremented
+   * a vector (AVX) with stepwise incremented number
    * */
   size_v index_vector = init_index_vector();
   std::vector<double> sigma;

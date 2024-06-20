@@ -2,6 +2,8 @@
 
 #include "Particle.h"
 #include "container/container.h"
+#include "range/v3/algorithm.hpp"
+#include "range/v3/view/iota.hpp"
 #include "spdlog/spdlog.h"
 #include "utils/MaxwellBoltzmannDistribution.h"
 #include <bits/random.h>
@@ -92,7 +94,7 @@ class Thermostat {
   auto calculateKineticEnergy(container::ParticleContainer<DIMENSIONS> &particles) -> double {
     double e_kin = 0;
     particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
-      e_kin += 0.5 * particles.mass[index] * std::ranges::fold_left(std::views::iota(0UL, DIMENSIONS), 0.0, [&](double acc, size_t i) {
+      e_kin += 0.5 * particles.mass[index] * ranges::fold_left(ranges::iota_view(0UL, DIMENSIONS), 0.0, [&](double acc, size_t i) {
                  return particles.velocities[i][index] * particles.velocities[i][index];
                });
       SPDLOG_TRACE("Particle kinetic energy contribution: {}", e_kin);
