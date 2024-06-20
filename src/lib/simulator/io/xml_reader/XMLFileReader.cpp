@@ -152,76 +152,79 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       // parsing settings of Lennard Jones force simulation model
       config.simulation_type = simulator::physics::ForceModel::LennardJones;
 
-      // Cuboids
-      std::vector<Cuboid> temp_cuboids;
-      // Iterate through all cuboid elements
-      for (const auto &cuboid : ljf.particles().cuboid()) {
-        std::vector<double> coordinate{cuboid.coordinate().x(), cuboid.coordinate().y(), *cuboid.coordinate().z()};
-        std::vector<double> dimensions{cuboid.dimensions().x(), cuboid.dimensions().y(), *cuboid.dimensions().z()};
-        std::vector<double> velocity{cuboid.velocity().x(), cuboid.velocity().y(), *cuboid.velocity().z()};
+      if (ljf.particles().present()) {
 
-        auto temp_cuboid = Cuboid(coordinate, dimensions, velocity,
-                                  mass[cuboid.particleTypeId()], *cuboid.spacing(), static_cast<int>(cuboid.particleTypeId()));
-        temp_cuboids.emplace_back(temp_cuboid);
+        // Cuboids
+        std::vector<Cuboid> temp_cuboids;
+        // Iterate through all cuboid elements
+        for (const auto &cuboid : ljf.particles()->cuboid()) {
+          std::vector<double> coordinate{cuboid.coordinate().x(), cuboid.coordinate().y(), *cuboid.coordinate().z()};
+          std::vector<double> dimensions{cuboid.dimensions().x(), cuboid.dimensions().y(), *cuboid.dimensions().z()};
+          std::vector<double> velocity{cuboid.velocity().x(), cuboid.velocity().y(), *cuboid.velocity().z()};
+
+          auto temp_cuboid = Cuboid(coordinate, dimensions, velocity,
+                                    mass[cuboid.particleTypeId()], *cuboid.spacing(), static_cast<int>(cuboid.particleTypeId()));
+          temp_cuboids.emplace_back(temp_cuboid);
+        }
+        config.cuboids = temp_cuboids;
+
+        // Discs
+        std::vector<Disc> temp_discs;
+
+        // Iterate through all disc elements
+        for (const auto &disc : ljf.particles()->disc()) {
+          std::vector<double> coordinate = {disc.coordinate().x(), disc.coordinate().y(), *disc.coordinate().z()};
+          std::vector<double> velocity = {disc.velocity().x(), disc.velocity().y(), *disc.velocity().z()};
+          int radius = disc.radius();
+          auto temp_disc = Disc(coordinate, velocity, radius);
+          temp_discs.emplace_back(temp_disc);
+        }
+        config.discs = temp_discs;
+
+        // Spheres
+
+        std::vector<Sphere> temp_spheres;
+        // Iterate through all disc elements
+        for (const auto &sphere : ljf.particles()->sphere()) {
+
+          std::vector<double> coordinate = {sphere.coordinate().x(), sphere.coordinate().y(), *sphere.coordinate().z()};
+          std::vector<double> velocity = {sphere.velocity().x(), sphere.velocity().y(), *sphere.velocity().z()};
+          int radius = sphere.radius();
+
+          auto temp_sphere = Sphere(coordinate, velocity, radius, sphere.mesh_width());
+          temp_spheres.emplace_back(temp_sphere);
+        }
+
+        config.spheres = temp_spheres;
+
+        std::vector<Torus> temp_tori;
+        // Iterate through all disc elements
+        for (const auto &torus : ljf.particles()->torus()) {
+
+          std::vector<double> coordinate = {torus.coordinate().x(), torus.coordinate().y(), *torus.coordinate().z()};
+          std::vector<double> velocity = {torus.velocity().x(), torus.velocity().y(), *torus.velocity().z()};
+
+          double major_radius = torus.major_radius();
+          double minor_radius = torus.minor_radius();
+          auto temp_torus = Torus(coordinate, velocity, major_radius, minor_radius);
+          temp_tori.emplace_back(temp_torus);
+        }
+        config.tori = temp_tori;
+
+        std::vector<DoubleHelix> temp_helices;
+        // Iterate through all disc elements
+        for (const auto &helix : ljf.particles()->doubleHelix()) {
+
+          std::vector<double> coordinate = {helix.coordinate().x(), helix.coordinate().y(), *helix.coordinate().z()};
+          std::vector<double> velocity = {helix.velocity().x(), helix.velocity().y(), *helix.velocity().z()};
+          double radius = helix.radius();
+          double pitch = helix.pitch();
+          double height = helix.height();
+          auto temp_helice = DoubleHelix(coordinate, velocity, radius, pitch, height);
+          temp_helices.emplace_back(temp_helice);
+        }
+        config.double_helices = temp_helices;
       }
-      config.cuboids = temp_cuboids;
-
-      // Discs
-      std::vector<Disc> temp_discs;
-
-      // Iterate through all disc elements
-      for (const auto &disc : ljf.particles().disc()) {
-        std::vector<double> coordinate = {disc.coordinate().x(), disc.coordinate().y(), *disc.coordinate().z()};
-        std::vector<double> velocity = {disc.velocity().x(), disc.velocity().y(), *disc.velocity().z()};
-        int radius = disc.radius();
-        auto temp_disc = Disc(coordinate, velocity, radius);
-        temp_discs.emplace_back(temp_disc);
-      }
-      config.discs = temp_discs;
-
-      // Spheres
-
-      std::vector<Sphere> temp_spheres;
-      // Iterate through all disc elements
-      for (const auto &sphere : ljf.particles().sphere()) {
-
-        std::vector<double> coordinate = {sphere.coordinate().x(), sphere.coordinate().y(), *sphere.coordinate().z()};
-        std::vector<double> velocity = {sphere.velocity().x(), sphere.velocity().y(), *sphere.velocity().z()};
-        int radius = sphere.radius();
-
-        auto temp_sphere = Sphere(coordinate, velocity, radius, sphere.mesh_width());
-        temp_spheres.emplace_back(temp_sphere);
-      }
-
-      config.spheres = temp_spheres;
-
-      std::vector<Torus> temp_tori;
-      // Iterate through all disc elements
-      for (const auto &torus : ljf.particles().torus()) {
-
-        std::vector<double> coordinate = {torus.coordinate().x(), torus.coordinate().y(), *torus.coordinate().z()};
-        std::vector<double> velocity = {torus.velocity().x(), torus.velocity().y(), *torus.velocity().z()};
-
-        double major_radius = torus.major_radius();
-        double minor_radius = torus.minor_radius();
-        auto temp_torus = Torus(coordinate, velocity, major_radius, minor_radius);
-        temp_tori.emplace_back(temp_torus);
-      }
-      config.tori = temp_tori;
-
-      std::vector<DoubleHelix> temp_helices;
-      // Iterate through all disc elements
-      for (const auto &helix : ljf.particles().doubleHelix()) {
-
-        std::vector<double> coordinate = {helix.coordinate().x(), helix.coordinate().y(), *helix.coordinate().z()};
-        std::vector<double> velocity = {helix.velocity().x(), helix.velocity().y(), *helix.velocity().z()};
-        double radius = helix.radius();
-        double pitch = helix.pitch();
-        double height = helix.height();
-        auto temp_helice = DoubleHelix(coordinate, velocity, radius, pitch, height);
-        temp_helices.emplace_back(temp_helice);
-      }
-      config.double_helices = temp_helices;
     }
 
     if (scenario->thermostat().present()) {

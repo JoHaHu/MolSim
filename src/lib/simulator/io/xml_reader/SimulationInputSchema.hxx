@@ -6355,7 +6355,7 @@ class lennard_jones: public ::xml_schema::type
    * @name particles
    *
    * @brief Accessor and modifier functions for the %particles
-   * required element.
+   * optional element.
    */
   //@{
 
@@ -6365,24 +6365,30 @@ class lennard_jones: public ::xml_schema::type
   typedef ::particles particles_type;
 
   /**
+   * @brief Element optional container type.
+   */
+  typedef ::xsd::cxx::tree::optional< particles_type > particles_optional;
+
+  /**
    * @brief Element traits type.
    */
   typedef ::xsd::cxx::tree::traits< particles_type, char > particles_traits;
 
   /**
-   * @brief Return a read-only (constant) reference to the element.
+   * @brief Return a read-only (constant) reference to the element
+   * container.
    *
-   * @return A constant reference to the element.
+   * @return A constant reference to the optional container.
    */
-  const particles_type&
+  const particles_optional&
   particles () const;
 
   /**
-   * @brief Return a read-write reference to the element.
+   * @brief Return a read-write reference to the element container.
    *
-   * @return A reference to the element.
+   * @return A reference to the optional container.
    */
-  particles_type&
+  particles_optional&
   particles ();
 
   /**
@@ -6397,12 +6403,24 @@ class lennard_jones: public ::xml_schema::type
   particles (const particles_type& x);
 
   /**
+   * @brief Set the element value.
+   *
+   * @param x An optional container with the new value to set.
+   *
+   * If the value is present in @a x then this function makes a copy 
+   * of this value and sets it as the new value of the element.
+   * Otherwise the element container is set the 'not present' state.
+   */
+  void
+  particles (const particles_optional& x);
+
+  /**
    * @brief Set the element value without copying.
    *
    * @param p A new value to use.
    *
-   * This function will try to use the passed value directly
-   * instead of making a copy.
+   * This function will try to use the passed value directly instead
+   * of making a copy.
    */
   void
   particles (::std::unique_ptr< particles_type > p);
@@ -6418,8 +6436,7 @@ class lennard_jones: public ::xml_schema::type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  lennard_jones (const particleTypes_type&,
-                 const particles_type&);
+  lennard_jones (const particleTypes_type&);
 
   /**
    * @brief Create an instance from the ultimate base and
@@ -6429,8 +6446,7 @@ class lennard_jones: public ::xml_schema::type
    * This constructor will try to use the passed values directly
    * instead of making copies.
    */
-  lennard_jones (::std::unique_ptr< particleTypes_type >,
-                 ::std::unique_ptr< particles_type >);
+  lennard_jones (::std::unique_ptr< particleTypes_type >);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -6504,7 +6520,7 @@ class lennard_jones: public ::xml_schema::type
   protected:
   ::xsd::cxx::tree::one< particleTypes_type > particleTypes_;
   gravity_optional gravity_;
-  ::xsd::cxx::tree::one< particles_type > particles_;
+  particles_optional particles_;
 
   //@endcond
 };

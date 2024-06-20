@@ -95,7 +95,7 @@
                                         </xs:element>
                                         <xs:element name="gravity" minOccurs="0" type="xs:double">
                                         </xs:element>
-                                        <xs:element name="particles">
+                                        <xs:element name="particles" minOccurs="0">
                                             <xs:complexType>
                                                 <xs:sequence>
                                                     <xs:choice>

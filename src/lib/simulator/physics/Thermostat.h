@@ -82,7 +82,7 @@ class Thermostat {
      */
   auto calculateCurrentTemperature(container::ParticleContainer<DIMENSIONS> &particles) -> double {
     double kineticEnergy = calculateKineticEnergy(particles);
-    double currentTemperature = (2.0 * kineticEnergy) / (particles.size() * 3);
+    double currentTemperature = (kineticEnergy) / (particles.size() * DIMENSIONS);
     SPDLOG_TRACE("Current temperature calculated: {}", currentTemperature);
     return currentTemperature;
   };
@@ -96,8 +96,8 @@ class Thermostat {
   auto calculateKineticEnergy(container::ParticleContainer<DIMENSIONS> &particles) -> double {
     double e_kin = 0;
     particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
-      e_kin += 0.5 * particles.mass[index] * ranges::fold_left(ranges::iota_view(0UL, DIMENSIONS), 0.0, [&](double acc, size_t i) {
-                 return particles.velocities[i][index] * particles.velocities[i][index];
+      e_kin += particles.mass[index] * ranges::fold_left(ranges::iota_view(0UL, DIMENSIONS), 0.0, [&](double acc, size_t i) {
+                 return acc + particles.velocities[i][index] * particles.velocities[i][index];
                });
       SPDLOG_TRACE("Particle kinetic energy contribution: {}", e_kin);
     });

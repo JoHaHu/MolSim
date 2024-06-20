@@ -3,14 +3,14 @@
           xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
     <header base_name="Rayleigh-Taylor instability"
             output_file="../../output/falling_drop2"
-            output_frequency="100"
+            output_frequency="1000"
             t_end="40" seed="1337"
-            delta_t="0.0005"/>
-    <checkpoints>
+            delta_t="0.00005"/>
+    <checkpoints path="../../output/checkpoint_debug.xml">
         <checkpoint>../../output/checkpoint.xml</checkpoint>
     </checkpoints>
     <container>
-        <linked_cells cutoff_radius="2.5">
+        <linked_cells cutoff_radius="3.0">
             <domain_size x="303" y="180"/>
             <boundary_conditions>
                 <boundary_condition type="periodic"/>

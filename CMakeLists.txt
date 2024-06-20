@@ -41,7 +41,7 @@ target_include_directories(simulator
 
 target_link_libraries(simulator
         PUBLIC
-        #        asan
+        asan
         spdlog::spdlog
         XercesC::XercesC
         range-v3::range-v3

@@ -1621,22 +1621,28 @@ gravity (const gravity_optional& x)
   this->gravity_ = x;
 }
 
-const lennard_jones::particles_type& lennard_jones::
+const lennard_jones::particles_optional& lennard_jones::
 particles () const
 {
-  return this->particles_.get ();
+  return this->particles_;
 }
 
-lennard_jones::particles_type& lennard_jones::
+lennard_jones::particles_optional& lennard_jones::
 particles ()
 {
-  return this->particles_.get ();
+  return this->particles_;
 }
 
 void lennard_jones::
 particles (const particles_type& x)
 {
   this->particles_.set (x);
+}
+
+void lennard_jones::
+particles (const particles_optional& x)
+{
+  this->particles_ = x;
 }
 
 void lennard_jones::
@@ -4540,22 +4546,20 @@ linked_cells::
 //
 
 lennard_jones::
-lennard_jones (const particleTypes_type& particleTypes,
-               const particles_type& particles)
+lennard_jones (const particleTypes_type& particleTypes)
 : ::xml_schema::type (),
   particleTypes_ (particleTypes, this),
   gravity_ (this),
-  particles_ (particles, this)
+  particles_ (this)
 {
 }
 
 lennard_jones::
-lennard_jones (::std::unique_ptr< particleTypes_type > particleTypes,
-               ::std::unique_ptr< particles_type > particles)
+lennard_jones (::std::unique_ptr< particleTypes_type > particleTypes)
 : ::xml_schema::type (),
   particleTypes_ (std::move (particleTypes), this),
   gravity_ (this),
-  particles_ (std::move (particles), this)
+  particles_ (this)
 {
 }
 
@@ -4628,7 +4632,7 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       ::std::unique_ptr< particles_type > r (
         particles_traits::create (i, f, this));
 
-      if (!particles_.present ())
+      if (!this->particles_)
       {
         this->particles_.set (::std::move (r));
         continue;
@@ -4642,13 +4646,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   {
     throw ::xsd::cxx::tree::expected_element< char > (
       "particleTypes",
-      "");
-  }
-
-  if (!particles_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "particles",
       "");
   }
 }
@@ -6612,13 +6609,14 @@ operator<< (::xercesc::DOMElement& e, const lennard_jones& i)
 
   // particles
   //
+  if (i.particles ())
   {
     ::xercesc::DOMElement& s (
       ::xsd::cxx::xml::dom::create_element (
         "particles",
         e));
 
-    s << i.particles ();
+    s << *i.particles ();
   }
 }
 
