@@ -1,7 +1,7 @@
 ---
 Group: D
 Members: Julius Kramer, Tim Scholl, Johannes Hupe
-PR: https://github.com/JoHaHu/MolSim/pull/50
+PR: https://github.com/JoHaHu/MolSim/pull/70
 ---
 
 # Report Group-D
