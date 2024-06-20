@@ -5,7 +5,10 @@
 class LennardJonesPotentialTest : public ::testing::Test {
  public:
   void SetUp() override {
-    simulator::physics::lennard_jones::initialize_constants(5.0, 1.0, 3.0);
+    const std::vector<double> epsilons = {5.0};
+    const std::vector<double> sigmas = {1.0};
+    const double cutoff = 3.0;
+    simulator::physics::lennard_jones::initialize_constants(epsilons, sigmas, cutoff);
   }
 };
 
@@ -37,14 +40,14 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_forces_simple) {
       velocity_i,
       {double_v(0.0), double_v(0.0), double_v(0.0)},
       {double_v(0.0), double_v(0.0), double_v(0.0)},
-      double_v(0.0), int_v(0), double_mask(true));
+      double_v(0.0), long_v(0), double_mask(true));
 
   VectorizedParticle particle_j = VectorizedParticle(
       x_j,
       velocity_j,
       {0, 0, 0},
       {0, 0, 0},
-      double_v(1.0), int_v(0), double_mask(true));
+      double_v(1.0), long_v(0), double_mask(true));
 
   // r_ij = displacement of vectors = || x_i - x_j ||
   // manual computation of forces
@@ -57,10 +60,10 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_forces_simple) {
   // Lennard-Jones potential U(x_i, x_j) = -0.7133058984910836
   // Lennard-Jones force F_ij = [-1.37174211, 1.37174211, 1.37174211]
 
-  std::array<double_v, 3> actual_forces = {-1.37174211, 1.37174211, 1.37174211};
+  const std::array<double_v, 3> actual_forces = {-1.37174211, 1.37174211, 1.37174211};
 
   // computing forces with method
-  std::array<double_v, 3> calculated_forces;
+  std::array<double_v, 3> calculated_forces{};
   std::array<double_v, 3> correction = {double_v(0), double_v(0), double_v(0)};
   simulator::physics::lennard_jones::calculate_force_vectorized(
       particle_i,

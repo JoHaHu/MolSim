@@ -29,6 +29,8 @@ class Thermostat {
     SPDLOG_DEBUG("Thermostat initialized with Tinit={}, Ttarget={}, deltaT={},  seed={}", t_init, *t_target, *delta_t, seed);
   };
 
+  Thermostat() = default;
+
   /**
      * @brief Applies the thermostat to adjust particle velocities.
      * @param particles Container of particles to apply the thermostat to.
@@ -59,13 +61,13 @@ class Thermostat {
       SPDLOG_INFO("Initializing velocities with Brownian motion");
 
       particles.linear([this, brownianMotion](Particles<DIMENSIONS> &particles, size_t index) {
-        double average_mortion;
+        double average_motion = 0;
         if (brownianMotion == 0) {
-          average_mortion = std::sqrt(t_init / particles.mass[index]);
+          average_motion = std::sqrt(t_init / particles.mass[index]);
         } else {
-          average_mortion = brownianMotion;
+          average_motion = brownianMotion;
         }
-        std::array<double, DIMENSIONS> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(average_mortion, seed);
+        std::array<double, DIMENSIONS> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(average_motion, seed);
         for (int i = 0; i < DIMENSIONS; ++i) {
           particles.velocities[i][index] += velocity[i];
         }
@@ -73,7 +75,6 @@ class Thermostat {
     }
   };
 
- private:
   /**
      * @brief Calculates the current temperature of the system.
      * @param particles Container of particles.
@@ -86,6 +87,7 @@ class Thermostat {
     return currentTemperature;
   };
 
+ private:
   /**
      * @brief Calculates the total kinetic energy of the system.
      * @param particles Container of particles.
