@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 
 <scenario xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
@@ -6,17 +5,17 @@
 <header base_name="Collision of two bodies"
         output_file="collision_simulation_cuboids"
         output_frequency="0"
-        t_end="5" seed="1337" delta_t="0.0002"/>
+        t_end="20" seed="1337" delta_t="0.0002"/>
 <container>
     <linked_cells cutoff_radius="3.0">
         <domain_size x="70" y="70" z="30"/>
         <boundary_conditions>
-            <boundary_condition type="periodic"/>
             <boundary_condition type="reflecting"/>
-            <boundary_condition type="periodic"/>
             <boundary_condition type="reflecting"/>
-            <boundary_condition type="periodic"/>
-            <boundary_condition type="periodic"/>
+            <boundary_condition type="reflecting"/>
+            <boundary_condition type="reflecting"/>
+            <boundary_condition type="reflecting"/>
+            <boundary_condition type="reflecting"/>
         </boundary_conditions>
     </linked_cells>
     <!--        <vector/>-->
@@ -28,12 +27,12 @@
         </particleTypes>
         <particles>
             <cuboid spacing="1.1225" particleTypeId="0">
-                <coordinate x="10" y="10" z="5"/>
+                <coordinate x="1" y="1" z="0"/>
                 <dimensions x="40" y="8" z="1"/>
                 <velocity x="0" y="0" z="0"/>
             </cuboid>
             <cuboid spacing="1.1225" particleTypeId="0">
-                <coordinate x="25" y="25" z="15"/>
+                <coordinate x="15" y="15" z="0"/>
                 <dimensions x="8" y="8" z="1"/>
                 <velocity x="0" y="-10" z="0"/>
             </cuboid>

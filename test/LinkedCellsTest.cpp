@@ -6,10 +6,9 @@
 //class LinkedCellsTest : public ::testing::Test {
 //
 // public:
-//  container::ParticleContainer outflow_pc;
-//  container::ParticleContainer reflecting_pc;
-//  LinkedCellsTest() : outflow_pc(container::ParticleContainer(std::vector<Particle>())),
-//                      reflecting_pc(container::ParticleContainer(std::vector<Particle>())) {};
+//  container::ParticleContainer<3> outflow_pc;
+//  container::ParticleContainer<3> reflecting_pc;
+//  LinkedCellsTest() = default;
 //
 // protected:
 //  void SetUp() override {

@@ -10,7 +10,8 @@ PR: https://github.com/JoHaHu/MolSim/pull/50
 
 ### Task 1 - Thermostats
 
-implemented as specified on the worksheet
+- implemented as specified on the worksheet
+- five functions to integrate the functionality
 
 ### Task 2 - Simulation of the Rayleigh-Taylor instability
 
