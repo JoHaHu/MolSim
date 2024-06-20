@@ -1,30 +1,25 @@
-//
-// Created by TimSc on 06.06.2024.
-//
+#pragma once
 
 #include <array>
 #include <iostream>
 #include <sstream>
 #include <string>
 
-#ifndef PSEMOLDYN_GROUPD_DOUBLEHELIX_H
-#define PSEMOLDYN_GROUPD_DOUBLEHELIX_H
-
-/**
-* @class DoubleHelix can store the information that defines a Double Helix, namely the coordinates, its initial velocity, its radius, pitch and height.
-   * Also contains a string returning function to enable the printing of cuboid specifications for testing and debugging.
-   *
-   * */
+/*
+ * @class DoubleHelix can store the information that defines a Double Helix, namely the coordinates, its initial velocity, its radius, pitch and height.
+ * Also contains a string returning function to enable the printing of cuboid specifications for testing and debugging.
+ *
+ * */
 
 class DoubleHelix {
  public:
-  std::array<double, 3> coordinates;
-  std::array<double, 3> velocity;
+  std::vector<double> coordinates;
+  std::vector<double> velocity;
   double radius;
   double pitch;
   double height;
 
-  DoubleHelix(const std::array<double, 3> &coordinates, const std::array<double, 3> &velocity, double radius, double pitch, double height)
+  DoubleHelix(std::vector<double> &coordinates, std::vector<double> &velocity, double radius, double pitch, double height)
       : coordinates(coordinates),
         velocity(velocity),
         radius(radius),
@@ -41,8 +36,7 @@ class DoubleHelix {
     return output;
   }
 
-  template<std::size_t N>
-  auto arrayToString(const std::array<double, N> &array) -> std::string {
+  auto arrayToString(const std::vector<double> &array) -> std::string {
     std::ostringstream oss;
     oss << "[";
     for (std::size_t i = 0; i < array.size(); ++i) {
@@ -55,5 +49,3 @@ class DoubleHelix {
     return oss.str();
   }
 };
-
-#endif//PSEMOLDYN_GROUPD_DOUBLEHELIX_H

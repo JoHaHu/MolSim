@@ -1,14 +1,8 @@
-//
-// Created by TimSc on 06.06.2024.
-//
-
+#pragma once
 #include <array>
 #include <iostream>
 #include <sstream>
 #include <string>
-
-#ifndef PSEMOLDYN_GROUPD_SPHERE_H
-#define PSEMOLDYN_GROUPD_SPHERE_H
 
 /**
 * @class Sphere can store the information that defines a sphere, namely the coordinates, its initial velocity and radius.
@@ -18,11 +12,13 @@
 
 class Sphere {
  public:
-  std::array<double, 3> coordinates;
-  std::array<double, 3> velocity;
+  std::vector<double> coordinates;
+  std::vector<double> velocity;
   int radius;
+  double mesh_width;
 
-  Sphere(const std::array<double, 3> &coordinates, const std::array<double, 3> &velocity, int radius) : coordinates(coordinates), velocity(velocity), radius(radius) {}
+  Sphere(const std::vector<double> &coordinates, const std::vector<double> &velocity, int radius, double mesh_width)
+      : coordinates(coordinates), velocity(velocity), radius(radius), mesh_width(mesh_width) {}
 
   std::string toString() {
     std::string output;
@@ -32,8 +28,7 @@ class Sphere {
     return output;
   }
 
-  template<std::size_t N>
-  auto arrayToString(const std::array<double, N> &array) -> std::string {
+  auto arrayToString(const std::vector<double> &array) -> std::string {
     std::ostringstream oss;
     oss << "[";
     for (std::size_t i = 0; i < array.size(); ++i) {
@@ -46,5 +41,3 @@ class Sphere {
     return oss.str();
   }
 };
-
-#endif//PSEMOLDYN_GROUPD_SPHERE_H

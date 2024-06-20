@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+          xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
+    <header base_name="Rayleigh-Taylor instability"
+            output_file="../../output/collision_simulation"
+            output_frequency="0"
+            t_end="0.5" seed="1337"
+            delta_t="0.0005"/>
+    <thermostat t_init="40" frequency="1000" brownian_motion="0"/>
+    <container>
+        <linked_cells cutoff_radius="3">
+            <domain_size x="300" y="54"/>
+            <boundary_conditions>
+                <boundary_condition type="periodic"/>
+                <boundary_condition type="reflecting"/>
+                <boundary_condition type="periodic"/>
+                <boundary_condition type="reflecting"/>
+            </boundary_conditions>
+        </linked_cells>
+        <!--        <vector/>-->
+    </container>
+    <forces>
+        <lennard_jones>
+            <gravity>-12.44</gravity>
+            <particleTypes>
+                <particleType id="0" sigma="1.2" epsilon="1" mass="1"/>
+                <particleType id="1" sigma="1.1" epsilon="1" mass="2"/>
+            </particleTypes>
+            <particles>
+                <cuboid spacing="1.2" particleTypeId="0">
+                    <coordinate x="0.6" y="2"/>
+                    <dimensions x="250" y="20"/>
+                    <velocity x="0" y="0"/>
+                </cuboid>
+                <cuboid spacing="1.2" particleTypeId="1">
+                    <coordinate x="0.6" y="27"/>
+                    <dimensions x="250" y="20"/>
+                    <velocity x="0" y="0"/>
+                </cuboid>
+            </particles>
+        </lennard_jones>
+    </forces>
+</scenario>

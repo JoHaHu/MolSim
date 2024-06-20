@@ -11,9 +11,10 @@ namespace simulator::io {
 /*!
  * plotting vtk files
  */
-class VTKPlotter final : public Plotter {
+template<const size_t DIMENSIONS>
+class VTKPlotter final : public Plotter<DIMENSIONS> {
  private:
-  VTKWriter vtk_writer;
+  VTKWriter<DIMENSIONS> vtk_writer;
   std::shared_ptr<config::Config> config;
 
  public:
@@ -25,12 +26,11 @@ class VTKPlotter final : public Plotter {
   * @param particle_container The container holding the particles to be plotted.
   * @param iteration The current iteration number, used in the output file name.
   */
-  auto plotParticles(container::particle_container &container, int iteration) -> void override {
+  auto plotParticles(container::ParticleContainer<DIMENSIONS> &particles, int iteration) -> void override {
 
-    std::string out_name(config->output_filename);
-
-    vtk_writer.initializeOutput(container.size());
-    container.linear([this](auto &p) { vtk_writer.plotParticle(p); });
+    std::string out_name(config->output_file);
+    vtk_writer.initializeOutput(particles.size());
+    particles.linear([this](Particles<DIMENSIONS> &particles, size_t index) { vtk_writer.plotParticle(particles, index); });
     vtk_writer.writeFile(out_name, iteration);
   };
 

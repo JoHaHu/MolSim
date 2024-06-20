@@ -1,14 +1,8 @@
-//
-// Created by TimSc on 06.06.2024.
-//
-
+#pragma once
 #include <array>
 #include <iostream>
 #include <sstream>
 #include <string>
-
-#ifndef PSEMOLDYN_GROUPD_TORUS_H
-#define PSEMOLDYN_GROUPD_TORUS_H
 
 /**
 * @class can store the information that defines a torus, namely the coordinates, its initial velocity and major and minor radius.
@@ -18,12 +12,12 @@
 
 class Torus {
  public:
-  std::array<double, 3> coordinates;
-  std::array<double, 3> velocity;
+  std::vector<double> coordinates;
+  std::vector<double> velocity;
   double major_radius;
   double minor_radius;
 
-  Torus(const std::array<double, 3> &coordinates, const std::array<double, 3> &velocity, double major_radius, double minor_radius)
+  Torus(std::vector<double> &coordinates, std::vector<double> &velocity, double major_radius, double minor_radius)
       : coordinates(coordinates),
         velocity(velocity),
         major_radius(major_radius),
@@ -38,8 +32,7 @@ class Torus {
     return output;
   }
 
-  template<std::size_t N>
-  auto arrayToString(const std::array<double, N> &array) -> std::string {
+  auto arrayToString(std::vector<double> &array) -> std::string {
     std::ostringstream oss;
     oss << "[";
     for (std::size_t i = 0; i < array.size(); ++i) {
@@ -52,5 +45,3 @@ class Torus {
     return oss.str();
   }
 };
-
-#endif//PSEMOLDYN_GROUPD_TORUS_H

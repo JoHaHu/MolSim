@@ -1,13 +1,4 @@
 <?xml version="1.0"?>
-
-<!--
-
-file      : examples/cxx/tree/hello/hello.xsd
-author    : Boris Kolpackov <boris@codesynthesis.com>
-copyright : not copyrighted - public domain
-
--->
-
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
 <!-- Definition of the DataArray (see "vtk file formats", page 15.
