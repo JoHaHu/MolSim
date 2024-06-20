@@ -1,69 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Data xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
-      xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
-
-    <header base_name="Halley's Comet" output_file_name="sonne_simulation" output_frequency="100" t_end="5"
-            seed="1234"/>
-
-    <vector>
-        true
-    </vector>
-
+<scenario xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+          xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
+<header base_name="Halley's Comet"
+        output_file="halleys_simulation"
+        output_frequency="0"
+        t_end="5" seed="1234" delta_t="0.0005"/>
+<container>
+    <vector>true</vector>
+</container>
+<forces>
     <gravity>
-        <total_bodies>4</total_bodies>
-        <cutoff_radius>0</cutoff_radius>
-        <celestial_body>
-            <coordinate>
-                <value>0</value>
-                <value>0</value>
-                <value>0</value>
-            </coordinate>
-            <velocity>
-                <value>0</value>
-                <value>0</value>
-                <value>0</value>
-            </velocity>
-            <mass>1</mass>
-        </celestial_body>
-        <celestial_body>
-            <coordinate>
-                <value>0</value>
-                <value>1</value>
-                <value>0</value>
-            </coordinate>
-            <velocity>
-                <value>-1</value>
-                <value>0</value>
-                <value>0</value>
-            </velocity>
-            <mass>3.0e-6</mass>
-        </celestial_body>
-        <celestial_body>
-            <coordinate>
-                <value>0</value>
-                <value>5.36</value>
-                <value>0</value>
-            </coordinate>
-            <velocity>
-                <value>-0.425</value>
-                <value>0</value>
-                <value>0</value>
-            </velocity>
-            <mass>9.55e-4</mass>
-        </celestial_body>
-        <celestial_body>
-            <coordinate>
-                <value>34.75</value>
-                <value>0</value>
-                <value>0</value>
-            </coordinate>
-            <velocity>
-                <value>0</value>
-                <value>0.0296</value>
-                <value>0</value>
-            </velocity>
-            <mass>1.0e-14</mass>
-        </celestial_body>
+
     </gravity>
-</Data>
+</forces>
+</scenario>
