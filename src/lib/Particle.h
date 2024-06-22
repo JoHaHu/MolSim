@@ -103,6 +103,8 @@ class Particles {
   std::vector<long> type{};
   std::vector<uint8_t> active{};
   std::vector<size_t> cell{};
+  std::vector<size_t> block{};
+  std::vector<size_t> color{};
 
 #if DEBUG
   /**
@@ -210,6 +212,8 @@ class Particles {
     type.emplace_back(p.type);
     active.emplace_back(true);
     cell.emplace_back(0);
+    block.emplace_back(0);
+    color.emplace_back(0);
 #if DEBUG
     ids.emplace_back(size);
 #endif
@@ -230,6 +234,8 @@ class Particles {
           return std::apply([&](auto &...ofs) {
             ranges::sort(ranges::zip_view(
                              cell,
+                             block,
+                             color,
                              ps...,
                              vs...,
                              fs...,
@@ -241,6 +247,12 @@ class Particles {
 #endif
                              ),
                          [](auto tuple1, auto tuple2) {
+                           if (std::get<2>(tuple1) != std::get<2>(tuple2)) {
+                             return std::get<2>(tuple1) != std::get<2>(tuple2);
+                           }
+                           if (std::get<1>(tuple1) != std::get<1>(tuple2)) {
+                             return std::get<1>(tuple1) != std::get<1>(tuple2);
+                           }
                            return std::get<0>(tuple1) < std::get<0>(tuple2);
                          });
           },

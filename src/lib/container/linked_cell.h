@@ -94,6 +94,15 @@ class Cell {
   std::array<size_t, DIMENSIONS> idx{};
   std::array<BoundaryCondition, 2 * DIMENSIONS> boundary = initialize_boundary();
 
+  /**
+   * The color of the cell, representing in which partition of the parralellization it runs
+   * */
+  size_t cell_color = 0;
+  /**
+   * the block id with neighbouring cells with same color
+   * */
+  size_t block = 0;
+
   static auto initialize_boundary() -> std::array<BoundaryCondition, 2 * DIMENSIONS> {
     std::array<BoundaryCondition, 2 * DIMENSIONS> bc;
     for (int i = 0; i < 2 * DIMENSIONS; ++i) {
@@ -152,6 +161,8 @@ class LinkedCell {
           c.boundary[i + DIMENSIONS] = bc[i + DIMENSIONS];
         }
       }
+      c.cell_color = index.color(c.idx);
+      c.block = index.block_id(c.idx);
 
       c.neighbours = create_neighbours(c.idx);
     }
@@ -314,7 +325,7 @@ class LinkedCell {
    *
    * */
   template<typename Callable>
-  constexpr auto pairwise(Callable c) {
+  auto pairwise(Callable c) {
     for (size_t idx = 0; idx < particles.size; ++idx) {
       if (particles.active[idx]) [[likely]] {
         const auto temp = particles.cell[idx];
@@ -359,7 +370,7 @@ class LinkedCell {
       } else [[unlikely]] {
         // Stop on first inactive encountered particle
         SPDLOG_WARN("Particle crossed boundary not handled before next loop");
-        break;
+        //        break;
       }
     }
   }
@@ -383,7 +394,7 @@ class LinkedCell {
    * After that all cell ranges get reconstructed.
    *
    * */
-  constexpr auto fix_positions() {
+  auto fix_positions() {
 
     for (auto &cell : cells) {
       cell.start_index = 0;

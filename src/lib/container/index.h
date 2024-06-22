@@ -51,6 +51,19 @@ class Index {
   }
 
   /**
+   * The color of the block in the domain. Non overlapping partitioning of the domain in 4 colors to parallelize lockless
+   * */
+  auto color(std::array<size_t, DIMENSIONS> idx) -> size_t {
+    return 0;
+  }
+  /**
+   * the partition id of a block in the domain. A block contains 1x2x3 cells
+   * */
+  auto block_id(std::array<size_t, DIMENSIONS> idx) -> size_t {
+    return 0;
+  }
+
+  /**
    * For now this accepts all cell in the radius, but this can be improved with a proper calculation
    * */
   auto in_cutoff_distance(std::array<size_t, DIMENSIONS> dim1, std::array<size_t, DIMENSIONS> dim2) -> bool {

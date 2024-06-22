@@ -85,19 +85,23 @@ class Checkpointer {
 
     particles.linear([&](Particles<DIMENSIONS> &p, size_t index) {
       if constexpr (DIMENSIONS == 2) {
-        const auto f = particle::force_type(p.forces[0][index], p.forces[1][index]);
-        const auto of = particle::old_force_type(p.old_forces[0][index], p.old_forces[1][index]);
-        const auto v = particle::velocity_type(p.velocities[0][index], p.velocities[1][index]);
-        const auto pos = particle::position_type(p.positions[0][index], p.positions[1][index]);
-        const auto m = particle::mass_type(p.mass[index]);
-        const auto type = particle::type_type(p.type[index]);
+        auto f = particle::force_type(p.forces[0][index], p.forces[1][index]);
+        auto of = particle::old_force_type(p.old_forces[0][index], p.old_forces[1][index]);
+        auto v = particle::velocity_type(p.velocities[0][index], p.velocities[1][index]);
+        auto pos = particle::position_type(p.positions[0][index], p.positions[1][index]);
+        auto m = particle::mass_type(p.mass[index]);
+        auto type = particle::type_type(p.type[index]);
         particle pa = particle(v, f, of, pos, m, type);
         cp.particle().push_back(pa);
       } else {
-        auto f = particle::force_type(p.forces[0][index], p.forces[1][index], p.forces[2][index]);
-        auto of = particle::old_force_type(p.old_forces[0][index], p.old_forces[1][index], p.old_forces[2][index]);
-        auto v = particle::velocity_type(p.velocities[0][index], p.velocities[1][index], p.velocities[2][index]);
-        auto pos = particle::position_type(p.positions[0][index], p.positions[1][index], p.positions[2][index]);
+        auto f = particle::force_type(p.forces[0][index], p.forces[1][index]);
+        f.z(p.forces[2][index]);
+        auto of = particle::old_force_type(p.old_forces[0][index], p.old_forces[1][index]);
+        of.z(p.old_forces[2][index]);
+        auto v = particle::velocity_type(p.velocities[0][index], p.velocities[1][index]);
+        v.z(p.velocities[2][index]);
+        auto pos = particle::position_type(p.positions[0][index], p.positions[1][index]);
+        pos.z(p.positions[2][index]);
         auto m = particle::mass_type(p.mass[index]);
         auto type = particle::type_type(p.type[index]);
         particle pa = particle(v, f, of, pos, m, type);

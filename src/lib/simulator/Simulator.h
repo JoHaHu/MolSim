@@ -14,6 +14,7 @@
 #include "utils/ArrayUtils.h"
 #include "utils/variants.h"
 #include <cmath>
+#include <omp.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -159,48 +160,52 @@ class Simulator {
     */
   template<bool IO>
   auto run() -> void {
-    spdlog::info("Running simulation...");
-    double current_time = 0;
-    iteration = 0;
-    auto interval = config->output_frequency;
-    auto temp_interval = config->thermo_step;
-    thermostat.initializeVelocities(particles, config->use_brownian_motion, config->brownian_motion);
-    calculate_force();
-    // calculate twice to initialize old_force and force to have proper simulation and output
-    particles.swap_force();
-    calculate_force();
 
-    // Plot initial position and forces
-    if (IO) {
-      plotter->plotParticles(particles, iteration);
-      SPDLOG_DEBUG("Iteration {} plotted.", iteration);
-    }
+    {
 
-    while (current_time < end_time) {
-      calculate_position();
+      spdlog::info("Running simulation...");
+      double current_time = 0;
+      iteration = 0;
+      auto interval = config->output_frequency;
+      auto temp_interval = config->thermo_step;
+      thermostat.initializeVelocities(particles, config->use_brownian_motion, config->brownian_motion);
+      calculate_force();
+      // calculate twice to initialize old_force and force to have proper simulation and output
       particles.swap_force();
       calculate_force();
-      if (temp_interval != 0 && iteration % temp_interval == 0) {
-        thermostat.apply(particles);
-      }
-      calculate_velocity();
 
-      iteration++;
-      if (IO && iteration % interval == 0) {
+      // Plot initial position and forces
+      if (IO) {
         plotter->plotParticles(particles, iteration);
         SPDLOG_DEBUG("Iteration {} plotted.", iteration);
       }
 
-      SPDLOG_DEBUG("Iteration {} finished.", iteration);
+      while (current_time < end_time) {
+        calculate_position();
+        particles.swap_force();
+        calculate_force();
+        if (temp_interval != 0 && iteration % temp_interval == 0) {
+          thermostat.apply(particles);
+        }
+        calculate_velocity();
 
-      current_time += delta_t;
+        iteration++;
+        if (IO && iteration % interval == 0) {
+          plotter->plotParticles(particles, iteration);
+          SPDLOG_DEBUG("Iteration {} plotted.", iteration);
+        }
+
+        SPDLOG_DEBUG("Iteration {} finished.", iteration);
+
+        current_time += delta_t;
+      }
+
+      if (config->output_checkpoint.has_value()) {
+        checkpoint.save_checkppoint(*config->output_checkpoint, particles);
+      }
+
+      SPDLOG_INFO("Output written. Terminating...");
     }
-
-    if (config->output_checkpoint.has_value()) {
-      checkpoint.save_checkppoint(*config->output_checkpoint, particles);
-    }
-
-    SPDLOG_INFO("Output written. Terminating...");
   }
 };
 

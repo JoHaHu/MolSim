@@ -61,7 +61,7 @@ class Thermostat {
       SPDLOG_INFO("Initializing velocities with Brownian motion");
 
       particles.linear([this, brownianMotion](Particles<DIMENSIONS> &particles, size_t index) {
-        double average_motion = 0;
+        double average_motion;
         if (brownianMotion == 0) {
           average_motion = std::sqrt(t_init / particles.mass[index]);
         } else {

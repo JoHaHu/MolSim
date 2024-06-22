@@ -45,7 +45,6 @@ target_link_libraries(simulator
         spdlog::spdlog
         XercesC::XercesC
         range-v3::range-v3
-
 )
 
 target_compile_features(simulator
@@ -59,7 +58,7 @@ target_compile_options(simulator
         $<$<CXX_COMPILER_ID:GNU>:-Wall -march=native>
         # disable some spam warnings for icpc...
         $<$<CXX_COMPILER_ID:Intel>:-w3 -march=native -Xhost -wd383,981,1418,1572,2259>
-        $<$<CXX_COMPILER_ID:Clang>:-Wall -g -march=native >
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -g -march=native -fno-omit-frame-pointer -fdebug-info-for-profiling >
 )
 get_target_property(SIMULATOR_INCLUDES simulator INCLUDE_DIRECTORIES)
 
@@ -99,7 +98,7 @@ target_compile_options(MolSim
         $<$<CXX_COMPILER_ID:GNU>:-Wall -march=native>
         # disable some spam warnings for icpc...
         $<$<CXX_COMPILER_ID:Intel>:-w3 -march=native -Xhost -xCORE-AVX512 -wd383,981,1418,1572,2259>
-        $<$<CXX_COMPILER_ID:Clang>:-Wall -march=native   #[[ -fsanitize=address,leak]] >
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -g -march=native  #[[ -fsanitize=address,leak]] -fno-omit-frame-pointer -fdebug-info-for-profiling >
 )
 
 
@@ -108,11 +107,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling #[[-fsanitize=address]] >
+            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling >
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling #[[-fsanitize=address]] >
+            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling >
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
     target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
@@ -121,27 +120,27 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Intel>: -O3 -ipo -fast -mprefer-vector-width=512 -fvectorize -fprof-use=../profiles/default.profdata>
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -mprefer-vector-width=512 #[[-fsanitize=address]] -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize >
-            $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize -mprefer-vector-width=512>
+            $<$<CXX_COMPILER_ID:Intel>: -O3 -ipo -fast -mprefer-vector-width=512 -fvectorize -qopenmp -fprof-use=../profiles/default.profdata>
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -g -mprefer-vector-width=512 -fopenmp=libomp -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize >
+            $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize -mprefer-vector-width=512 -fopenmp>
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Intel>: -O3 -ipo -fast -mprefer-vector-width=512 -fvectorize -fprof-use=../profiles/default.profdata>
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -mprefer-vector-width=512  #[[-fsanitize=address]]  -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize >
-            $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize -mprefer-vector-width=512>
+            $<$<CXX_COMPILER_ID:Intel>: -O3 -ipo -fast -mprefer-vector-width=512 -fvectorize -qopenmp -fprof-use=../profiles/default.profdata>
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -g -mprefer-vector-width=512 -fopenmp=libomp -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize >
+            $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize -mprefer-vector-width=512 -fopenmp>
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
     target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
 
     target_link_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -Wl -fprofile-use=../profiles/default.profdata>
+            $<$<CXX_COMPILER_ID:Clang>: -Wl -g -fopenmp=libomp -latomic -fprofile-use=../profiles/default.profdata>
 
     )
     target_link_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -Wl -fprofile-use=../profiles/default.profdata >
+            $<$<CXX_COMPILER_ID:Clang>: -Wl -g -fopenmp=libomp -latomic -fprofile-use=../profiles/default.profdata >
 
     )
 
