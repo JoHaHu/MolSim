@@ -100,7 +100,21 @@ target_compile_options(MolSim
         $<$<CXX_COMPILER_ID:Intel>:-w3 -march=native -Xhost -xCORE-AVX512 -wd383,981,1418,1572,2259>
         $<$<CXX_COMPILER_ID:Clang>:-Wall -g -march=native  #[[ -fsanitize=address,leak]] -fno-omit-frame-pointer -fdebug-info-for-profiling >
 )
+target_link_options(MolSim
+        PUBLIC
+        $<$<CXX_COMPILER_ID:GNU>: -fopenmp >
+        $<$<CXX_COMPILER_ID:Clang>: -fopenmp=libomp >
+)
 
+target_link_options(simulator
+        PUBLIC
+        $<$<CXX_COMPILER_ID:GNU>: -fopenmp >
+        $<$<CXX_COMPILER_ID:Clang>: -fopenmp=libomp >
+)
+
+
+target_compile_definitions(MolSim PUBLIC DEBUG=true)
+target_compile_definitions(simulator PUBLIC DEBUG=true)
 
 # Configure Debug and Release specific options
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -135,11 +149,13 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
 
     target_link_options(simulator
             PRIVATE
+            $<$<CXX_COMPILER_ID:GNU>: -fopenmp >
             $<$<CXX_COMPILER_ID:Clang>: -Wl -g -fopenmp=libomp -latomic -fprofile-use=../profiles/default.profdata>
 
     )
     target_link_options(MolSim
             PRIVATE
+            $<$<CXX_COMPILER_ID:GNU>: -fopenmp >
             $<$<CXX_COMPILER_ID:Clang>: -Wl -g -fopenmp=libomp -latomic -fprofile-use=../profiles/default.profdata >
 
     )

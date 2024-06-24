@@ -9,6 +9,8 @@
 
 namespace container::index {
 
+constexpr const size_t block_size = 3;
+
 template<const size_t DIMENSIONS>
 class Index {
 
@@ -18,7 +20,6 @@ class Index {
   std::array<size_t, DIMENSIONS> dim{};
   std::array<double, DIMENSIONS> widths{};
   std::array<long, DIMENSIONS> radius{};
-  //  double diagonal;
 
   Index() = default;
 
@@ -46,28 +47,30 @@ class Index {
           }
           return temp;
         }()) {
-
-    //    diagonal = distance(, widths);
   }
 
   /**
    * The color of the block in the domain. Non overlapping partitioning of the domain in 4 colors to parallelize lockless
    * */
   auto color(std::array<size_t, DIMENSIONS> idx) -> size_t {
-    return 0;
+    auto color = 0;
+    color += ((idx[0] / (radius[0] * block_size) + 3 * (idx[1] / (radius[1] * block_size) % 2)) % 6) / 2;
+    return color;
   }
   /**
    * the partition id of a block in the domain. A block contains 1x2x3 cells
    * */
   auto block_id(std::array<size_t, DIMENSIONS> idx) -> size_t {
-    return 0;
+    auto y_index = 3 * (idx[1] / (radius[1] * 2 * block_size));
+    auto x_index = ((idx[0] / (radius[0] * block_size) + y_index) / 6) / 2;
+    return x_index + dim[0] * y_index;
   }
 
   /**
    * For now this accepts all cell in the radius, but this can be improved with a proper calculation
    * */
   auto in_cutoff_distance(std::array<size_t, DIMENSIONS> dim1, std::array<size_t, DIMENSIONS> dim2) -> bool {
-
+    // TODO
     return true;
   }
 

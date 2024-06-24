@@ -42,7 +42,11 @@ class VTKWriter {
     pointData.DataArray().push_back(type);
 #if DEBUG
     DataArray_t id(type::Int32, "id", 1);
+    DataArray_t color(type::Int32, "color", 1);
+    DataArray_t block(type::Int32, "block", 1);
     pointData.DataArray().push_back(id);
+    pointData.DataArray().push_back(color);
+    pointData.DataArray().push_back(block);
 #endif
     CellData cellData;// we don't have cell data => leave it empty
 
@@ -114,6 +118,12 @@ class VTKWriter {
 #if DEBUG
     dataIterator++;
     dataIterator->push_back(p.ids[index]);
+
+    dataIterator++;
+    dataIterator->push_back(p.color[index]);
+
+    dataIterator++;
+    dataIterator->push_back(p.block[index]);
 #endif
 
     Points::DataArray_sequence &pointsSequence =

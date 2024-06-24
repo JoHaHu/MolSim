@@ -87,7 +87,7 @@ auto main(int argc, char *argv[]) -> int {
   auto config = config::Config::parse_config(argc, argv);
   LoggerManager::setup_logger(*config);
 
-  auto simulator = setup<3>(config);
+  auto simulator = setup<2>(config);
 
   const auto startTime = std::chrono::high_resolution_clock::now();
 

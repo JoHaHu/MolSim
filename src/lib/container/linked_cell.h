@@ -7,6 +7,7 @@
 #include <array>
 #include <concepts>
 #include <memory>
+#include <omp.h>
 #include <utility>
 #include <vector>
 
@@ -14,9 +15,8 @@
 #include "index.h"
 #include "spdlog/spdlog.h"
 
-#include "range/v3/algorithm/any_of.hpp"
-#include "range/v3/view/enumerate.hpp"
-#include "range/v3/view/iota.hpp"
+#include "range/v3/algorithm.hpp"
+#include "range/v3/view.hpp"
 
 namespace container {
 
@@ -57,6 +57,15 @@ struct Neighbour {
 };
 
 /**
+ * A block referencing the start and end index of the particles of it's cells
+ * */
+struct Block {
+  size_t start_index;
+  size_t end_index;
+  Block(size_t start_index, size_t end_index) : start_index(start_index), end_index(end_index) {}
+};
+
+/**
    * @brief A cell in the linked cell data structure.
    *
    * Holds particles and supports operations on them.
@@ -66,7 +75,7 @@ class Cell {
 
  private:
  public:
-  explicit Cell(cell_type type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx) {};
+  explicit Cell(cell_type type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx){};
 
   constexpr auto is_boundary() const -> bool {
     return type == cell_type::boundary;
@@ -326,51 +335,58 @@ class LinkedCell {
    * */
   template<typename Callable>
   auto pairwise(Callable c) {
-    for (size_t idx = 0; idx < particles.size; ++idx) {
-      if (particles.active[idx]) [[likely]] {
-        const auto temp = particles.cell[idx];
-        auto &cell = cells[temp];
-        auto p1 = particles.load_vectorized_single(idx);
 
-        // Same cell particles
-        size_t i = 0;
-        const size_t end_index = cell.end_index;
-        while (idx + 1 + (i * double_v::size()) < end_index) {
-          auto active_mask = idx + 1 + index_vector + (i * double_v::size()) < (end_index);
-          auto p2 = particles.load_vectorized(idx + 1 + (i * double_v::size()));
-          auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
-          c(p1, p2, mask, empty_correction);
-          particles.store_force_vector(p2, idx + 1 + (i * double_v::size()));
-          i++;
-        }
+    for (auto &blocks : colored_blocks) {
+#pragma omp parallel for
+      for (auto &block : blocks) {
+        for (size_t idx = block.start_index; idx < block.end_index; ++idx) {
+          if (particles.active[idx]) [[likely]] {
+            const auto temp = particles.cell[idx];
+            auto &cell = cells[temp];
+            auto p1 = particles.load_vectorized_single(idx);
 
-        // Neighbour cells
-        std::array<double_v, DIMENSIONS> correction;
-        for (auto &neighbour : cell.neighbours) {
+            // Same cell particles
+            size_t i = 0;
+            const size_t end_index = cell.end_index;
 
-          Cell<DIMENSIONS> &neighbour_cell = cells[neighbour.cell];
-          size_t n_start = neighbour_cell.start_index;
-          size_t n_end = neighbour_cell.end_index;
+            while (idx + 1 + (i * double_v::size()) < end_index) {
+              auto active_mask = idx + 1 + index_vector + (i * double_v::size()) < (end_index);
+              auto p2 = particles.load_vectorized(idx + 1 + (i * double_v::size()));
+              auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
+              c(p1, p2, mask, empty_correction);
+              particles.store_force_vector(p2, idx + 1 + (i * double_v::size()));
+              i++;
+            }
 
-          for (int i = 0; i < DIMENSIONS; ++i) {
-            correction[i] = double_v(neighbour.correction[i]);
+            // Neighbour cells
+            std::array<double_v, DIMENSIONS> correction;
+            for (auto &neighbour : cell.neighbours) {
+
+              Cell<DIMENSIONS> &neighbour_cell = cells[neighbour.cell];
+              size_t n_start = neighbour_cell.start_index;
+              size_t n_end = neighbour_cell.end_index;
+
+              for (int i = 0; i < DIMENSIONS; ++i) {
+                correction[i] = double_v(neighbour.correction[i]);
+              }
+
+              size_t i = 0;
+              while (n_start + (i * double_v::size()) < n_end) {
+                auto active_mask = index_vector + (i * double_v::size()) < (neighbour_cell.size());
+                auto p2 = particles.load_vectorized(n_start + (i * double_v::size()));
+                auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
+                c(p1, p2, mask, correction);
+                particles.store_force_vector(p2, n_start + (i * double_v::size()));
+                i++;
+              }
+            }
+            particles.store_force_single(p1, idx);
+          } else [[unlikely]] {
+            // Stop on first inactive encountered particle
+            SPDLOG_WARN("Particle crossed boundary not handled before next loop");
+            //        break;
           }
-
-          size_t i = 0;
-          while (n_start + (i * double_v::size()) < n_end) {
-            auto active_mask = index_vector + (i * double_v::size()) < (neighbour_cell.size());
-            auto p2 = particles.load_vectorized(n_start + (i * double_v::size()));
-            auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
-            c(p1, p2, mask, correction);
-            particles.store_force_vector(p2, n_start + (i * double_v::size()));
-            i++;
-          }
         }
-        particles.store_force_single(p1, idx);
-      } else [[unlikely]] {
-        // Stop on first inactive encountered particle
-        SPDLOG_WARN("Particle crossed boundary not handled before next loop");
-        //        break;
       }
     }
   }
@@ -400,13 +416,20 @@ class LinkedCell {
       cell.start_index = 0;
       cell.end_index = 0;
     }
+    for (auto &block : colored_blocks) {
+      block.clear();
+    }
 
-    particles.sort([this](size_t idx) -> size_t {
+    particles.sort([this](size_t idx) -> std::tuple<size_t, size_t, size_t> {
       std::array<double, DIMENSIONS> temp;
       for (int i = 0; i < DIMENSIONS; ++i) {
         temp[i] = particles.positions[i][idx];
       }
-      return index.position_to_index(temp);
+      auto cell = index.position_to_index(temp);
+      return std::tuple(
+          cells[cell].cell_color,
+          cells[cell].block,
+          cell);
     });
 
     size_t start = 0;
@@ -430,6 +453,20 @@ class LinkedCell {
     }
     cells[cell].start_index = start;
     cells[cell].end_index = particle_size;
+
+    /*
+     * Rebuilds blocks
+     * */
+    auto r = ranges::zip_view(particles.color, particles.block, ranges::views::iota(0UL, particle_size))
+        | ranges::views::chunk_by([](auto a, auto b) {
+               return std::get<0>(a) == std::get<0>(b) && std::get<1>(a) == std::get<1>(b);
+             });
+    ranges::for_each(r, [this](auto chunk) {
+      auto color = std::get<0>(chunk[0]);
+      size_t start = std::get<2>(chunk[0]);
+      size_t end = start + static_cast<size_t>(chunk.size());
+      colored_blocks[color].emplace_back(start, end);
+    });
 
     SPDLOG_TRACE("fixed positions");
   }
@@ -459,6 +496,10 @@ class LinkedCell {
   size_v index_vector = init_index_vector();
   std::vector<double> sigma;
   std::vector<double> reflecting_distance;
+  /**
+   * A vector of blocks for 4 different colors
+   * */
+  std::array<std::vector<Block>, 4> colored_blocks{};
 
   constexpr static auto init_empty_correction() -> std::array<double_v, DIMENSIONS> {
     std::array<double_v, DIMENSIONS> temp{};

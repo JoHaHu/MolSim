@@ -225,7 +225,10 @@ class Particles {
   void sort(Callable c) {
     // recaulcates the cell
     for (int i = 0; i < size; ++i) {
-      cell[i] = c(i);
+      auto [_color, _block, _cell] = c(i);
+      color[i] = _color;
+      block[i] = _block;
+      cell[i] = _cell;
     }
     // This is ugly but i haven't found a better way
     std::apply([&](auto &...ps) {
@@ -248,10 +251,10 @@ class Particles {
                              ),
                          [](auto tuple1, auto tuple2) {
                            if (std::get<2>(tuple1) != std::get<2>(tuple2)) {
-                             return std::get<2>(tuple1) != std::get<2>(tuple2);
+                             return std::get<2>(tuple1) < std::get<2>(tuple2);
                            }
                            if (std::get<1>(tuple1) != std::get<1>(tuple2)) {
-                             return std::get<1>(tuple1) != std::get<1>(tuple2);
+                             return std::get<1>(tuple1) < std::get<1>(tuple2);
                            }
                            return std::get<0>(tuple1) < std::get<0>(tuple2);
                          });
