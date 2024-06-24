@@ -37,7 +37,7 @@ class Checkpointer {
       std::array<double, DIMENSIONS> position;
       std::array<double, DIMENSIONS> velocity;
 
-      for (int i = 0; i < DIMENSIONS; ++i) {
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
         switch (i) {
           case 0: {
             force[i] = p.force().x();

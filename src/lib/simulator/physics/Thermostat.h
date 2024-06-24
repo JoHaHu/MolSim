@@ -68,7 +68,7 @@ class Thermostat {
           average_motion = brownianMotion;
         }
         std::array<double, DIMENSIONS> velocity = maxwellBoltzmannDistributedVelocity<DIMENSIONS>(average_motion, seed);
-        for (int i = 0; i < DIMENSIONS; ++i) {
+        for (size_t i = 0; i < DIMENSIONS; ++i) {
           particles.velocities[i][index] += velocity[i];
         }
       });
@@ -112,7 +112,7 @@ class Thermostat {
      */
   void scaleVelocities(container::ParticleContainer<DIMENSIONS> &particles, double scalingFactor) {
     particles.linear([scalingFactor](Particles<DIMENSIONS> &particles, size_t index) {
-      for (int i = 0; i < DIMENSIONS; ++i) {
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
         particles.velocities[i][index] *= scalingFactor;
       }
     });

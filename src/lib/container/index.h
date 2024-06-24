@@ -28,21 +28,21 @@ class Index {
         bc(bc),
         dim([this, cutoff] {
           std::array<size_t, DIMENSIONS> temp = {};
-          for (int i = 0; i < DIMENSIONS; ++i) {
+          for (size_t i = 0; i < DIMENSIONS; ++i) {
             temp[i] = ((size_t) std::floor(domain[i] / cutoff));
           }
           return temp;
         }()),
         widths([this] {
           std::array<double, DIMENSIONS> temp = {};
-          for (int i = 0; i < DIMENSIONS; ++i) {
+          for (size_t i = 0; i < DIMENSIONS; ++i) {
             temp[i] = domain[i] / dim[i];
           }
           return temp;
         }()),
         radius([this, cutoff] {
           std::array<long, DIMENSIONS> temp = {};
-          for (int i = 0; i < DIMENSIONS; ++i) {
+          for (size_t i = 0; i < DIMENSIONS; ++i) {
             temp[i] = (size_t) std::ceil(cutoff / widths[i]);
           }
           return temp;
@@ -81,7 +81,7 @@ class Index {
 
   auto calculate_correction(std::array<size_t, DIMENSIONS> from, std::array<long, DIMENSIONS> offset) -> std::array<double, DIMENSIONS> {
     std::array<double, DIMENSIONS> correction;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       correction[i] = 0.0;
       if (bc[i] == BoundaryCondition::periodic) {
         long diff = static_cast<long>(from[i]) + offset[i];
@@ -97,7 +97,7 @@ class Index {
 
   constexpr auto position_to_index(std::array<double, DIMENSIONS> position) -> size_t {
     std::array<size_t, DIMENSIONS> dimension;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       dimension[i] = (size_t) std::floor(position[i] / widths[i]);
     }
     return dimension_to_index(dimension);
@@ -105,7 +105,7 @@ class Index {
 
   auto dimension_to_index(std::array<size_t, DIMENSIONS> dimension) -> size_t {
     size_t result = 0;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       if (bc[i] == BoundaryCondition::periodic) {
         dimension[i] = dimension[i] - (dimension[i] / dim[i]) * dim[i];
       }
@@ -120,7 +120,7 @@ class Index {
   auto offset(std::array<size_t, DIMENSIONS> index, std::array<long, DIMENSIONS> off) -> size_t {
 
     std::array<size_t, DIMENSIONS> temp;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       temp[i] = 0;
       if (bc[i] == BoundaryCondition::periodic) {
         temp[i] += dim[i];

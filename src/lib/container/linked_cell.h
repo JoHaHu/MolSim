@@ -114,7 +114,7 @@ class Cell {
 
   static auto initialize_boundary() -> std::array<BoundaryCondition, 2 * DIMENSIONS> {
     std::array<BoundaryCondition, 2 * DIMENSIONS> bc;
-    for (int i = 0; i < 2 * DIMENSIONS; ++i) {
+    for (size_t i = 0; i < 2 * DIMENSIONS; ++i) {
       bc[i] = BoundaryCondition::none;
     }
     return bc;
@@ -147,12 +147,12 @@ class LinkedCell {
         sigma(sigma) {
 
     size_t temp_size = 1.0;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       temp_size *= index.dim[i];
     }
 
     reflecting_distance = std::vector<double>();
-    for (int i = 0; i < sigma.size(); ++i) {
+    for (size_t i = 0; i < sigma.size(); ++i) {
       reflecting_distance.emplace_back(std::pow(2, 1 / 6.0) * sigma[i]);
     }
 
@@ -160,7 +160,7 @@ class LinkedCell {
     recursive_fill(temp, DIMENSIONS);
 
     for (auto &c : cells) {
-      for (int i = 0; i < DIMENSIONS; ++i) {
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
         if (c.idx[i] == 0) {
           c.type = cell_type::boundary;
           c.boundary[i] = bc[i];
@@ -193,7 +193,7 @@ class LinkedCell {
         if (ranges::any_of(ranges::iota_view(0UL, DIMENSIONS), [&](auto i) {
               bool condition = offset[i] > 0;
 
-              for (int j = i + 1; j < DIMENSIONS; ++j) {
+              for (size_t j = i + 1; j < DIMENSIONS; ++j) {
                 condition &= offset[j] >= 0;
               }
               return condition;
@@ -366,7 +366,7 @@ class LinkedCell {
               size_t n_start = neighbour_cell.start_index;
               size_t n_end = neighbour_cell.end_index;
 
-              for (int i = 0; i < DIMENSIONS; ++i) {
+              for (size_t i = 0; i < DIMENSIONS; ++i) {
                 correction[i] = double_v(neighbour.correction[i]);
               }
 
@@ -422,7 +422,7 @@ class LinkedCell {
 
     particles.sort([this](size_t idx) -> std::tuple<size_t, size_t, size_t> {
       std::array<double, DIMENSIONS> temp;
-      for (int i = 0; i < DIMENSIONS; ++i) {
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
         temp[i] = particles.positions[i][idx];
       }
       auto cell = index.position_to_index(temp);
@@ -503,7 +503,7 @@ class LinkedCell {
 
   constexpr static auto init_empty_correction() -> std::array<double_v, DIMENSIONS> {
     std::array<double_v, DIMENSIONS> temp{};
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       temp[i] = double_v(0.0);
     }
     return temp;

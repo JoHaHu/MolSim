@@ -86,28 +86,28 @@ class VTKWriter {
     // cout << "Appended mass data in: " << dataIterator->Name();
 
     dataIterator++;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       dataIterator->push_back(p.velocities[i][index]);
     }
-    for (int i = DIMENSIONS; i < 3; ++i) {
+    for (size_t i = DIMENSIONS; i < 3; ++i) {
       dataIterator->push_back(0);
     }
 
     // cout << "Appended velocity data in: " << dataIterator->Name();
 
     dataIterator++;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       dataIterator->push_back(p.forces[i][index]);
     }
-    for (int i = DIMENSIONS; i < 3; ++i) {
+    for (size_t i = DIMENSIONS; i < 3; ++i) {
       dataIterator->push_back(0);
     }
 
     dataIterator++;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       dataIterator->push_back(p.old_forces[i][index]);
     }
-    for (int i = DIMENSIONS; i < 3; ++i) {
+    for (size_t i = DIMENSIONS; i < 3; ++i) {
       dataIterator->push_back(0);
     }
     // cout << "Appended force data in: " << dataIterator->Name();
@@ -129,10 +129,10 @@ class VTKWriter {
     Points::DataArray_sequence &pointsSequence =
         vtkFile->UnstructuredGrid()->Piece().Points().DataArray();
     Points::DataArray_iterator pointsIterator = pointsSequence.begin();
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       pointsIterator->push_back(p.positions[i][index]);
     }
-    for (int i = DIMENSIONS; i < 3; ++i) {
+    for (size_t i = DIMENSIONS; i < 3; ++i) {
       pointsIterator->push_back(0);
     }
   }

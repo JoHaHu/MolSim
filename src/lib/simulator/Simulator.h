@@ -61,7 +61,7 @@ class Simulator {
   auto inline calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
     const auto temp = pow(delta_t, 2) * (1 / (2 * p.mass[index]));
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       p.positions[i][index] += delta_t * p.velocities[i][index] + temp * p.old_forces[i][index];
     }
   }
@@ -69,7 +69,7 @@ class Simulator {
 
     const auto temp = delta_t * (1 / (2 * p.mass[index]));
 
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       p.velocities[i][index] += temp * (p.old_forces[i][index] + p.forces[i][index]);
     }
   }
@@ -80,11 +80,11 @@ class Simulator {
     std::array<double_v, DIMENSIONS> force{};
     f(p1, p2, mask, force, correction);
 
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       where(mask, p2.force[i]) = p2.force[i] - force[i];
     }
 
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       p1.force[i] += stdx::reduce(where(mask, force[i]), std::plus<>());
     }
   }

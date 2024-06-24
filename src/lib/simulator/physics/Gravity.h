@@ -12,7 +12,8 @@ namespace simulator::physics::gravity {
  *
  * */
 template<const size_t DIMENSIONS>
-__attribute__((__always_inline__)) auto static calculate_force_vectorized(VectorizedParticle<DIMENSIONS> &p1,
+__attribute__((__always_inline__))
+inline auto static calculate_force_vectorized(VectorizedParticle<DIMENSIONS> &p1,
                                                                           VectorizedParticle<DIMENSIONS> &p2,
                                                                           double_mask mask,
                                                                           std::array<double_v, DIMENSIONS> &force,
@@ -32,7 +33,7 @@ __attribute__((__always_inline__)) auto static calculate_force_vectorized(Vector
   SPDLOG_TRACE("Exiting Gravity calculate_force_vectorized");
 
   auto norm_mask = norm == 0;
-  for (int i = 0; i < DIMENSIONS; ++i) {
+  for (size_t i = 0; i < DIMENSIONS; ++i) {
     stdx::where(norm_mask, force[i]) = 0;
   }
 };

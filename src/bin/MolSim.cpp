@@ -40,7 +40,7 @@ auto setup(std::shared_ptr<config::Config> config) -> auto {
       std::array<double, DIMENSIONS> domain;
       std::array<BoundaryCondition, 2 * DIMENSIONS> boundary;
 
-      for (int i = 0; i < DIMENSIONS; ++i) {
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
         domain[i] = config->domain_size[i];
         boundary[i] = config->boundary_conditions[i];
         boundary[DIMENSIONS + i] = config->boundary_conditions[DIMENSIONS + i];

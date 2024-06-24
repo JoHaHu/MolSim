@@ -22,8 +22,8 @@ auto static inline initialize_constants(std::vector<double> epsilons, std::vecto
 
   cutoff = c * c;
 
-  for (int i = 0; i < epsilons.size(); ++i) {
-    for (int j = 0; j < epsilons.size(); ++j) {
+  for (size_t i = 0; i < epsilons.size(); ++i) {
+    for (size_t j = 0; j < epsilons.size(); ++j) {
       auto sigma = (sigmas[i] + sigmas[j]) / 2;
       auto sigma3 = sigma * sigma * sigma;
       auto sigma6 = sigma3 * sigma3;
@@ -54,7 +54,7 @@ __attribute__((__always_inline__)) auto static inline calculate_force_vectorized
   double_v epsilon48 = double_v(0);
 
   // Faster than vgatherpd
-  for (int i = 0; i < long_v::size(); ++i) {
+  for (size_t i = 0; i < long_v::size(); ++i) {
     auto helper = vindex[i];
     epsilon24[i] = epsilons_24[helper];
     epsilon48[i] = epsilons_48[helper];
@@ -69,7 +69,7 @@ __attribute__((__always_inline__)) auto static inline calculate_force_vectorized
 
   auto norm_mask = norm_2 > cutoff;
 
-  for (int i = 0; i < DIMENSIONS; ++i) {
+  for (size_t i = 0; i < DIMENSIONS; ++i) {
     stdx::where(norm_mask, force[i]) = 0;
   }
   SPDLOG_TRACE("Exiting LennardJones calculate_force_vectorized");

@@ -41,12 +41,12 @@ class ParticleGenerator {
   void _generate_cuboids(size_t depth, std::array<double, DIMENSIONS> &offset, std::vector<Particle<DIMENSIONS>> &particles, const Cuboid &cuboid, int type) {
     if (depth == 0) {
       std::array<double, DIMENSIONS> new_coords;
-      for (int i = 0; i < DIMENSIONS; ++i) {
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
         new_coords[i] = cuboid.coordinates[i] + cuboid.spacing * static_cast<double>(offset[i]);
       }
 
       std::array<double, DIMENSIONS> velocity;
-      for (int i = 0; i < DIMENSIONS; ++i) {
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
         velocity[i] = cuboid.velocity[i];
       }
 
@@ -132,7 +132,7 @@ class ParticleGenerator {
 
             std::array<double, DIMENSIONS> velocity;
 
-            for (int k = 0; k < DIMENSIONS; ++k) {
+            for (size_t k = 0; k < DIMENSIONS; ++k) {
               velocity[k] = 0.0;
             }
 

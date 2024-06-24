@@ -59,7 +59,7 @@ class Particle {
       int type = 0) : position(x_arg), velocity(v_arg), mass(m_arg), type(type)
 
   {
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       force[i] = 0.0;
       old_force[i] = 0.0;
     }
@@ -114,13 +114,13 @@ class Particles {
 #endif
 
   auto store_force_single(VectorizedParticle<DIMENSIONS> &p1, size_t index) {
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       forces[i][index] = p1.force[i][0];
     }
   }
 
   auto store_force_vector(VectorizedParticle<DIMENSIONS> &p, size_t index) {
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       p.force[i].copy_to(&forces[i][index], stdx::element_aligned);
     }
   }
@@ -130,19 +130,19 @@ class Particles {
   auto load_vectorized_single(size_t index) -> VectorizedParticle<DIMENSIONS> {
 
     std::array<double_v, DIMENSIONS> position;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       position[i] = double_v(positions[i][index]);
     }
     std::array<double_v, DIMENSIONS> velocity;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       velocity[i] = double_v(velocities[i][index]);
     }
     std::array<double_v, DIMENSIONS> force;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       force[i] = double_v(forces[i][index]);
     }
     std::array<double_v, DIMENSIONS> old_force;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       old_force[i] = double_v(old_forces[i][index]);
     }
 
@@ -161,19 +161,19 @@ class Particles {
    * */
   auto load_vectorized(size_t index) -> VectorizedParticle<DIMENSIONS> {
     std::array<double_v, DIMENSIONS> position_vector;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       position_vector[i] = double_v(&positions[i][index], stdx::element_aligned);
     }
     std::array<double_v, DIMENSIONS> velocity_vector;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       velocity_vector[i] = double_v(&velocities[i][index], stdx::element_aligned);
     }
     std::array<double_v, DIMENSIONS> force_vector;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       force_vector[i] = double_v(&forces[i][index], stdx::element_aligned);
     }
     std::array<double_v, DIMENSIONS> old_force_vector;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       old_force_vector[i] = double_v(&old_forces[i][index], stdx::element_aligned);
     }
 
@@ -195,16 +195,16 @@ class Particles {
 
   auto insert_particle(Particle<DIMENSIONS> p) {
 
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       positions[i].emplace_back(p.position[i]);
     }
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       velocities[i].emplace_back(p.velocity[i]);
     }
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       forces[i].emplace_back(p.force[i]);
     }
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       old_forces[i].emplace_back(p.old_force[i]);
     }
 
@@ -224,7 +224,7 @@ class Particles {
   template<typename Callable>
   void sort(Callable c) {
     // recaulcates the cell
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
       auto [_color, _block, _cell] = c(i);
       color[i] = _color;
       block[i] = _block;
@@ -273,7 +273,7 @@ class Particles {
 
     std::swap(old_forces, forces);
 
-    for (int d = 0; d < DIMENSIONS; ++d) {
+    for (size_t d = 0; d < DIMENSIONS; ++d) {
       for (size_t i = 0; i < size; i++) {
         forces[d][i] = 0;
       }

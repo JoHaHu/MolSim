@@ -73,7 +73,7 @@ struct ParticleContainer {
                          auto p2 = p.load_vectorized(index + 1 + (i * double_v::size()));
                          auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
                          std::array<double_v, DIMENSIONS> correction;
-                         for (int j = 0; j < DIMENSIONS; ++j) {
+                         for (size_t j = 0; j < DIMENSIONS; ++j) {
                            correction[i] = double_v(0.0);
                          }
                          f(p1, p2, mask, correction);
