@@ -2,9 +2,9 @@
 <scenario xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
           xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
     <header base_name="Rayleigh-Taylor instability"
-            output_file="../../output/instability-3D"
+            output_file="../../output/collision_simulation"
             output_frequency="0"
-            t_end="0.5" seed="1337"
+            t_end="100" seed="1337"
             delta_t="0.0005"/>
     <thermostat t_init="40" frequency="1000" brownian_motion="0"/>
     <container>

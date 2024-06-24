@@ -337,8 +337,8 @@ class LinkedCell {
   auto pairwise(Callable c) {
 
     for (auto &blocks : colored_blocks) {
-#pragma omp parallel for
-      for (auto &block : blocks) {
+#pragma omp parallel for schedule(static, 1)
+      for (auto block : blocks) {
         for (size_t idx = block.start_index; idx < block.end_index; ++idx) {
           if (particles.active[idx]) [[likely]] {
             const auto temp = particles.cell[idx];
@@ -350,7 +350,7 @@ class LinkedCell {
             const size_t end_index = cell.end_index;
 
             while (idx + 1 + (i * double_v::size()) < end_index) {
-              auto active_mask = idx + 1 + index_vector + (i * double_v::size()) < (end_index);
+              auto active_mask = idx + 1 + index_vector + (i * double_v::size()) < end_index;
               auto p2 = particles.load_vectorized(idx + 1 + (i * double_v::size()));
               auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
               c(p1, p2, mask, empty_correction);

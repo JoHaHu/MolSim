@@ -9,7 +9,9 @@
 
 namespace container::index {
 
-constexpr const size_t block_size = 3;
+constexpr const size_t block_size_x = 2;
+constexpr const size_t block_size_y = 1;
+constexpr const size_t block_size_z = 1;
 
 template<const size_t DIMENSIONS>
 class Index {
@@ -54,16 +56,42 @@ class Index {
    * */
   auto color(std::array<size_t, DIMENSIONS> idx) -> size_t {
     auto color = 0;
-    color += ((idx[0] / (radius[0] * block_size) + 3 * (idx[1] / (radius[1] * block_size) % 2)) % 6) / 2;
+
+    if constexpr (DIMENSIONS == 2) {
+      auto y_shift = 3 * (idx[1] / (radius[1] * block_size_y) % 2);
+      color += ((idx[0] / (radius[0] * block_size_x) + y_shift) % 6) / 2;
+    } else {
+      // shifts by 3 periodicity 2
+      auto z_shift = 3 * (idx[2] / (radius[2] * block_size_y) % 2);
+      // Shifts by 8 periodicity of 3
+      auto y_shift = 8 * (((idx[1] / (radius[1] * block_size_y) + z_shift) % 6) / 2);
+      color += (idx[0] / (radius[0] * block_size_x) + y_shift) % 12 / 3;
+    }
     return color;
   }
   /**
    * the partition id of a block in the domain. A block contains 1x2x3 cells
    * */
   auto block_id(std::array<size_t, DIMENSIONS> idx) -> size_t {
-    auto y_index = 3 * (idx[1] / (radius[1] * 2 * block_size));
-    auto x_index = ((idx[0] / (radius[0] * block_size) + y_index) / 6) / 2;
-    return x_index + dim[0] * y_index;
+    auto block_id = 0;
+
+    if constexpr (DIMENSIONS == 2) {
+      auto y_shift = 3 * (idx[1] / (radius[1] * block_size_y) % 2);
+      auto y_index = 3 * (idx[1] / (radius[1] * block_size_y) / 2);
+      auto x_index = ((idx[0] / (radius[0] * block_size_x) + y_shift) / 6) / 2;
+      block_id = x_index + y_index * dim[0];
+    } else {
+      // shifts by 3 periodicity 2
+      auto z_shift = 3 * (idx[2] / (radius[2] * block_size_z) % 2);
+      auto z_index = 3 * (idx[2] / (radius[2] * block_size_z) / 2);
+      // Shifts by 8 periodicity of 3
+      auto y_shift = 8 * (((idx[1] / (radius[1] * block_size_y) + z_shift) % 6) / 2);
+      auto y_index = 8 * (((idx[1] / (radius[1] * block_size_y) + z_shift) / 6) / 2);
+      auto x_index = (idx[0] / (radius[0] * block_size_x) + y_shift) / 12 / 3;
+      block_id = x_index + y_index * dim[0] + z_index * dim[0] * dim[1];
+    }
+
+    return block_id;
   }
 
   /**

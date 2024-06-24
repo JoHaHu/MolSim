@@ -250,9 +250,9 @@ class Particles {
 #endif
                              ),
                          [](auto tuple1, auto tuple2) {
-                           if (std::get<2>(tuple1) != std::get<2>(tuple2)) {
-                             return std::get<2>(tuple1) < std::get<2>(tuple2);
-                           }
+//                           if (std::get<2>(tuple1) != std::get<2>(tuple2)) {
+//                             return std::get<2>(tuple1) < std::get<2>(tuple2);
+//                           }
                            if (std::get<1>(tuple1) != std::get<1>(tuple2)) {
                              return std::get<1>(tuple1) < std::get<1>(tuple2);
                            }
