@@ -31,7 +31,7 @@
             <particles>
                 <cuboid spacing="1.2" particleTypeId="0">
                     <coordinate x="0.6" y="0.6" z="0.6"/>
-                    <dimensions x="50" y="20" z="50" />
+                    <dimensions x="50" y="20" z="50"/>
                     <velocity x="0" y="0" z="0"/>
                 </cuboid>
                 <cuboid spacing="1.2" particleTypeId="1">
