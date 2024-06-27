@@ -71,7 +71,9 @@ class VTKWriter {
    *
    * @note: initializeOutput() must have been called before.
    */
+
   void plotParticle(Particles<DIMENSIONS> &p, size_t index) {
+
     if (vtkFile->UnstructuredGrid().present()) {
       SPDLOG_TRACE("UnstructuredGrid is present");
     } else {
@@ -144,7 +146,9 @@ class VTKWriter {
    * @param iteration the number of the current iteration,
    *        which is used to generate an unique filename
    */
-  void writeFile(const std::string &filename, int iteration) {
+  void
+  writeFile(const std::string &filename, int iteration) {
+
     std::stringstream strstr;
     strstr << filename << "_" << std::setfill('0') << std::setw(4) << iteration << ".vtu";
     std::ofstream file(strstr.str().c_str());
@@ -155,6 +159,6 @@ class VTKWriter {
 
  private:
   std::unique_ptr<VTKFile_t> vtkFile = std::make_unique<VTKFile_t>(VTKFile_t("UnstructuredGrid"));
-};
+};// namespace simulator::io
 
 }// namespace simulator::io
