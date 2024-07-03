@@ -1,45 +1,53 @@
 #pragma once
 
+#include "Force.h"
 #include "Particle.h"
 #include "experimental/simd"
 #include "spdlog/spdlog.h"
 #include "utils/ArrayUtils.h"
 
-namespace simulator::physics::gravity {
+namespace simulator::physics {
 
+template<const size_t DIMENSIONS>
+class Gravity final : public Force<DIMENSIONS> {
+
+ public:
 /**
  * Implements physics for simulations using gravity as force Model
  *
  * */
-template<const size_t DIMENSIONS>
-__attribute__((__always_inline__))
-inline auto static calculate_force_vectorized(VectorizedParticle<DIMENSIONS> &p1,
-                                                                          VectorizedParticle<DIMENSIONS> &p2,
-                                                                          double_mask mask,
-                                                                          std::array<double_v, DIMENSIONS> &force,
-                                                                          std::array<double_v, DIMENSIONS> &corrections) {
-  SPDLOG_TRACE("Entering Gravity calculate_force_vectorized");
+#pragma omp declare simd inbranch uniform(this, position1, mass1, type1) linear(ref(position2, mass2, type2))
+  void inline calculateForce(
+      std::array<double, DIMENSIONS> position1,
+      double mass1,
+      long type1,
+      std::array<double, DIMENSIONS> position2,
+      double &mass2,
+      long &type2,
+      std::array<double, DIMENSIONS> &force,
+      std::array<double, DIMENSIONS> &correction) override {
 
-  const auto diff = (p2.position - corrections) - p1.position;
+    SPDLOG_TRACE("Entering Gravity calculate_force_vectorized");
 
-  const auto norm = ArrayUtils::L2Norm(diff);
+    const auto diff = (position2 - correction) - position2;
 
-  //  if (norm == 0) {
-  //    SPDLOG_DEBUG("Zero distance between particles encountered");
-  //  }
+    const auto norm = ArrayUtils::L2Norm(diff);
 
-  const auto temp = (p1.mass * p2.mass) / (norm * norm * norm);
-  force = temp * diff;
-  SPDLOG_TRACE("Exiting Gravity calculate_force_vectorized");
+    const auto temp = (mass1 * mass2) / (norm * norm * norm);
+    force = temp * diff;
+    SPDLOG_TRACE("Exiting Gravity calculate_force_vectorized");
+  };
 
-  auto norm_mask = norm == 0;
-  for (size_t i = 0; i < DIMENSIONS; ++i) {
-    stdx::where(norm_mask, force[i]) = 0;
+  double calculate_boundary_force(double diff, int type) override {
+    return 0;
   }
 };
 
-auto static calculate_force(double mass, double constant) {
+/**
+ * use for apply constant gravity
+ * */
+auto static constant_gravity(double mass, double constant) {
   return mass * constant;
 }
 
-}// namespace simulator::physics::gravity
+}// namespace simulator::physics

@@ -1,7 +1,8 @@
 
 #include "simulator/physics/Thermostat.h"
 #include "Particle.h"
-#include "container/container.h"
+#include "ParticleContainer.h"
+#include "container/Container.h"
 #include <array>
 #include <gtest/gtest.h>
 #include <memory>// Required for std::construct_at
