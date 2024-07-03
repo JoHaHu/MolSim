@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Particle.h"
-#include "container/container.h"
+#include "container/Container.h"
 #include "range/v3/algorithm.hpp"
 #include "range/v3/view/iota.hpp"
 #include "spdlog/spdlog.h"
@@ -35,7 +35,7 @@ class Thermostat {
      * @brief Applies the thermostat to adjust particle velocities.
      * @param particles Container of particles to apply the thermostat to.
      */
-  void inline apply(container::ParticleContainer<DIMENSIONS> &particles) {
+  void inline apply(container::Container<DIMENSIONS> &particles) {
     double current_temperature = calculateCurrentTemperature(particles);
     SPDLOG_DEBUG("Current temperature calculated: {}", current_temperature);
 
@@ -56,12 +56,12 @@ class Thermostat {
     * @param useBrownianMotion Whether to initialize using Brownian motion.
     * @param brownianMotion Specifies the Brownian motion constant.
     */
-  void initializeVelocities(container::ParticleContainer<DIMENSIONS> &particles, bool useBrownianMotion, double brownianMotion) {
+  void initializeVelocities(container::Container<DIMENSIONS> &particles, bool useBrownianMotion, double brownianMotion) {
     if (useBrownianMotion) {
       SPDLOG_INFO("Initializing velocities with Brownian motion");
 
       particles.linear([this, brownianMotion](Particles<DIMENSIONS> &particles, size_t index) {
-        double average_motion;
+        double average_motion = 0;
         if (brownianMotion == 0) {
           average_motion = std::sqrt(t_init / particles.mass[index]);
         } else {
@@ -80,7 +80,7 @@ class Thermostat {
      * @param particles Container of particles.
      * @return The current temperature.
      */
-  auto calculateCurrentTemperature(container::ParticleContainer<DIMENSIONS> &particles) -> double {
+  auto calculateCurrentTemperature(container::Container<DIMENSIONS> &particles) -> double {
     double kineticEnergy = calculateKineticEnergy(particles);
     double currentTemperature = (kineticEnergy) / (particles.size() * DIMENSIONS);
     SPDLOG_TRACE("Current temperature calculated: {}", currentTemperature);
@@ -93,7 +93,7 @@ class Thermostat {
      * @param particles Container of particles.
      * @return The total kinetic energy.
      */
-  auto calculateKineticEnergy(container::ParticleContainer<DIMENSIONS> &particles) -> double {
+  auto calculateKineticEnergy(container::Container<DIMENSIONS> &particles) -> double {
     double e_kin = 0;
     particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
       e_kin += particles.mass[index] * ranges::fold_left(ranges::iota_view(0UL, DIMENSIONS), 0.0, [&](double acc, size_t i) {
@@ -110,7 +110,7 @@ class Thermostat {
      * @param particles Container of particles.
      * @param scalingFactor The factor by which to scale the velocities.
      */
-  void scaleVelocities(container::ParticleContainer<DIMENSIONS> &particles, double scalingFactor) {
+  void scaleVelocities(container::Container<DIMENSIONS> &particles, double scalingFactor) {
     particles.linear([scalingFactor](Particles<DIMENSIONS> &particles, size_t index) {
       for (size_t i = 0; i < DIMENSIONS; ++i) {
         particles.velocities[i][index] *= scalingFactor;

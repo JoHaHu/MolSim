@@ -2,7 +2,6 @@
 
 #include "range/v3/algorithm.hpp"
 #include "range/v3/view/zip.hpp"
-#include "utils/types.h"
 #include <array>
 #include <execution>
 #include <experimental/simd>
@@ -66,23 +65,6 @@ class Particle {
   }
 };
 
-template<const size_t DIMENSIONS>
-struct VectorizedParticle {
-  std::array<double_v, DIMENSIONS> position{};
-  std::array<double_v, DIMENSIONS> force{};
-  double_v mass{};
-  long_v type;
-  double_mask active;
-
-  VectorizedParticle(
-      const std::array<double_v, DIMENSIONS> &position,
-      const std::array<double_v, DIMENSIONS> &velocity,
-      const std::array<double_v, DIMENSIONS> &force,
-      const std::array<double_v, DIMENSIONS> &oldForce,
-      const double_v &mass, const long_v &type,
-      const double_mask &active) : position(position), force(force), mass(mass), type(type), active(active) {}
-};
-
 /***
  * A structure of Arrays for the particles
  *
@@ -112,86 +94,6 @@ class Particles {
    * */
   std::vector<size_t> ids{};
 #endif
-
-  auto store_force_single(VectorizedParticle<DIMENSIONS> &p1, size_t index) {
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      forces[i][index] = p1.force[i][0];
-    }
-  }
-
-  auto store_force_vector(VectorizedParticle<DIMENSIONS> &p, size_t index) {
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      p.force[i].copy_to(&forces[i][index], stdx::element_aligned);
-    }
-  }
-  /**
-    * loads a single particle in all slots of a simd vector
-    * */
-  auto load_vectorized_single(size_t index) -> VectorizedParticle<DIMENSIONS> {
-
-    std::array<double_v, DIMENSIONS> position;
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      position[i] = double_v(positions[i][index]);
-    }
-    std::array<double_v, DIMENSIONS> velocity;
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      velocity[i] = double_v(velocities[i][index]);
-    }
-    std::array<double_v, DIMENSIONS> force;
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      force[i] = double_v(forces[i][index]);
-    }
-    std::array<double_v, DIMENSIONS> old_force;
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      old_force[i] = double_v(old_forces[i][index]);
-    }
-
-    return VectorizedParticle(
-        position,
-        velocity,
-        force,
-        old_force,
-        double_v(mass[index]),
-        long_v(type[index]),
-        double_mask(static_cast<bool>(active[index])));
-  }
-
-  /**
-   * loads different particel in all slots of the simd vector
-   * */
-  auto load_vectorized(size_t index) -> VectorizedParticle<DIMENSIONS> {
-    std::array<double_v, DIMENSIONS> position_vector;
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      position_vector[i] = double_v(&positions[i][index], stdx::element_aligned);
-    }
-    std::array<double_v, DIMENSIONS> velocity_vector;
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      velocity_vector[i] = double_v(&velocities[i][index], stdx::element_aligned);
-    }
-    std::array<double_v, DIMENSIONS> force_vector;
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      force_vector[i] = double_v(&forces[i][index], stdx::element_aligned);
-    }
-    std::array<double_v, DIMENSIONS> old_force_vector;
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      old_force_vector[i] = double_v(&old_forces[i][index], stdx::element_aligned);
-    }
-
-    auto mass_vector = double_v();
-    mass_vector.copy_from(&mass[index], stdx::element_aligned);
-
-    auto type_vector = long_v(&type[index], stdx::element_aligned);
-
-    auto active_vector = stdx::static_simd_cast<double_mask>(size_v(&active[index], stdx::element_aligned) > 0);
-
-    return VectorizedParticle(position_vector,
-                              velocity_vector,
-                              force_vector,
-                              old_force_vector,
-                              mass_vector,
-                              type_vector,
-                              active_vector);
-  }
 
   auto insert_particle(Particle<DIMENSIONS> p) {
 
@@ -250,9 +152,10 @@ class Particles {
 #endif
                              ),
                          [](auto tuple1, auto tuple2) {
-//                           if (std::get<2>(tuple1) != std::get<2>(tuple2)) {
-//                             return std::get<2>(tuple1) < std::get<2>(tuple2);
-//                           }
+                           // Do not sort by color for better cache behaviour
+                           //                           if (std::get<2>(tuple1) != std::get<2>(tuple2)) {
+                           //                             return std::get<2>(tuple1) < std::get<2>(tuple2);
+                           //                           }
                            if (std::get<1>(tuple1) != std::get<1>(tuple2)) {
                              return std::get<1>(tuple1) < std::get<1>(tuple2);
                            }

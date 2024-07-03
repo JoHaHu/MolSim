@@ -3,6 +3,7 @@
 #include "Plotter.h"
 #include "VTKWriter.h"
 #include "config/Config.h"
+#include "container/Container.h"
 #include <utility>
 #include <variant>
 
@@ -26,7 +27,7 @@ class VTKPlotter final : public Plotter<DIMENSIONS> {
   * @param particle_container The container holding the particles to be plotted.
   * @param iteration The current iteration number, used in the output file name.
   */
-  auto plotParticles(container::ParticleContainer<DIMENSIONS> &particles, int iteration) -> void override {
+  auto plotParticles(container::Container<DIMENSIONS> &particles, int iteration) -> void override {
 
     std::string out_name(config->output_file);
     vtk_writer.initializeOutput(particles.size());

@@ -2,7 +2,7 @@
 
 #include "Checkpoint.hxx"
 #include "Particle.h"
-#include "container/container.h"
+#include "container/Container.h"
 #include "fstream"
 #include "iostream"
 #include "spdlog/spdlog.h"
@@ -80,7 +80,7 @@ class Checkpointer {
     return particles;
   }
 
-  auto save_checkppoint(std::string &filename, container::ParticleContainer<DIMENSIONS> &particles) {
+  auto save_checkppoint(std::string &filename, container::Container<DIMENSIONS> &particles) {
     checkpoint cp = checkpoint();
 
     particles.linear([&](Particles<DIMENSIONS> &p, size_t index) {

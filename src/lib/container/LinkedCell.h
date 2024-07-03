@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Particle.h"
+#include "simulator/physics/Force.h"
 #include "utils/ArrayUtils.h"
 
 #include <algorithm>
@@ -15,15 +16,17 @@
 #include "index.h"
 #include "spdlog/spdlog.h"
 
+#include "Container.h"
 #include "range/v3/algorithm.hpp"
 #include "range/v3/view.hpp"
+#include "simulator/physics/Force.h"
 
 namespace container {
 
 /**
  * @brief Enum for defining different types of cells.
  */
-enum class cell_type : std::uint8_t {
+enum class CellType : std::uint8_t {
   /**
    * inner cells without boundaries
    * */
@@ -39,6 +42,7 @@ enum class cell_type : std::uint8_t {
  * */
 template<const size_t DIMENSIONS>
 struct Neighbour {
+ public:
   /**
    * index of the represented neighbour cell
    * */
@@ -75,10 +79,10 @@ class Cell {
 
  private:
  public:
-  explicit Cell(cell_type type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx){};
+  explicit Cell(CellType type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx) {};
 
   constexpr auto is_boundary() const -> bool {
-    return type == cell_type::boundary;
+    return type == CellType::boundary;
   }
 
   auto size() const -> size_t {
@@ -95,7 +99,7 @@ class Cell {
    * */
   size_t end_index;
 
-  cell_type type = cell_type::inner;
+  CellType type = CellType::inner;
   /**
    * All enighbours
    * */
@@ -124,15 +128,16 @@ class Cell {
 /**
  * The linked cell container class
  * */
-template<const size_t DIMENSIONS>
-class LinkedCell {
+template<class F, const size_t DIMENSIONS>
+  requires(std::derived_from<F, simulator::physics::Force<DIMENSIONS>>)
+class LinkedCell final : public Container<DIMENSIONS> {
 
  public:
   LinkedCell() = delete;
 
   constexpr void recursive_fill(std::array<size_t, DIMENSIONS> &coords, size_t depth) {
     if (depth == 0) {
-      this->cells.emplace_back(cell_type::inner, std::array<size_t, DIMENSIONS>(coords));
+      this->cells.emplace_back(CellType::inner, std::array<size_t, DIMENSIONS>(coords));
     } else {
       for (size_t i = 0; i < index.dim[depth - 1]; ++i) {
         coords[depth - 1] = i;
@@ -141,8 +146,14 @@ class LinkedCell {
     }
   }
 
-  explicit LinkedCell(const std::array<double, DIMENSIONS> &domain, double cutoff, std::array<BoundaryCondition, 2 * DIMENSIONS> bc, std::vector<double> &sigma)
+  explicit LinkedCell(
+      F &&force,
+      const std::array<double, DIMENSIONS> &domain,
+      double cutoff,
+      std::array<BoundaryCondition, 2 * DIMENSIONS> bc,
+      std::vector<double> &sigma)
       : particles(Particles<DIMENSIONS>()),
+        force(std::move(force)),
         index(container::index::Index<DIMENSIONS>(domain, bc, cutoff)),
         sigma(sigma) {
 
@@ -162,11 +173,11 @@ class LinkedCell {
     for (auto &c : cells) {
       for (size_t i = 0; i < DIMENSIONS; ++i) {
         if (c.idx[i] == 0) {
-          c.type = cell_type::boundary;
+          c.type = CellType::boundary;
           c.boundary[i] = bc[i];
         }
         if (c.idx[i] == index.dim[i] - 1) {
-          c.type = cell_type::boundary;
+          c.type = CellType::boundary;
           c.boundary[i + DIMENSIONS] = bc[i + DIMENSIONS];
         }
       }
@@ -238,8 +249,7 @@ class LinkedCell {
   /**
    * a applies the boundary conditions
    * */
-  template<typename Callable>
-  constexpr auto boundary(Callable f) -> auto {
+  void boundary() override {
 
     // Keep the particle size outside the loop to improve performance and to ensure that when deleting particles, still all particles are interated
     const size_t particle_size = particles.size;
@@ -259,7 +269,7 @@ class LinkedCell {
                 outflow(idx, axis, start_of_axis);
                 break;
               case BoundaryCondition::reflecting:
-                reflecting(idx, axis, start_of_axis, f);
+                reflecting(idx, axis, start_of_axis);
                 break;
               case BoundaryCondition::periodic:
                 periodic(idx, axis);
@@ -306,18 +316,17 @@ class LinkedCell {
   /**
    * function to apply reflecting boundary condition
    * */
-  template<typename Callable>
-  constexpr void reflecting(size_t idx, size_t axis, bool start_of_axis, Callable f) {
+  constexpr void reflecting(size_t idx, size_t axis, bool start_of_axis) {
     const auto pos = particles.positions[axis][idx];
     double bound = index.domain[axis];
     auto diff = bound - pos;
     if (start_of_axis) {
       if (2 * pos < reflecting_distance[particles.type[idx]] && pos > 0) {
-        particles.forces[axis][idx] -= f(2 * pos, particles.type[idx]);
+        particles.forces[axis][idx] -= force.calculate_boundary_force(2 * pos, particles.type[idx]);
       }
     } else {
       if (2 * diff < reflecting_distance[particles.type[idx]] && diff > 0) {
-        particles.forces[axis][idx] += f(2 * diff, particles.type[idx]);
+        particles.forces[axis][idx] += force.calculate_boundary_force(2 * diff, particles.type[idx]);
       }
     }
   }
@@ -333,54 +342,76 @@ class LinkedCell {
    * Prerequisite for this is that all particles are sorted by cell.
    *
    * */
-  template<typename Callable>
-  auto pairwise(Callable c) {
+
+  void pairwise() override {
 
     for (auto &blocks : colored_blocks) {
-#pragma omp parallel for schedule(static, 1)
+      //#pragma omp parallel for default(none) shared(blocks) schedule(static)
       for (auto block : blocks) {
         for (size_t idx = block.start_index; idx < block.end_index; ++idx) {
           if (particles.active[idx]) [[likely]] {
             const auto temp = particles.cell[idx];
             auto &cell = cells[temp];
-            auto p1 = particles.load_vectorized_single(idx);
 
-            // Same cell particles
-            size_t i = 0;
             const size_t end_index = cell.end_index;
 
-            while (idx + 1 + (i * double_v::size()) < end_index) {
-              auto active_mask = idx + 1 + index_vector + (i * double_v::size()) < end_index;
-              auto p2 = particles.load_vectorized(idx + 1 + (i * double_v::size()));
-              auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
-              c(p1, p2, mask, empty_correction);
-              particles.store_force_vector(p2, idx + 1 + (i * double_v::size()));
-              i++;
+            auto position1 = std::array<double, DIMENSIONS>();
+            for (int d = 0; d < DIMENSIONS; ++d) {
+              position1[d] = particles.positions[d][idx];
+            }
+            double mass1 = particles.mass[idx];
+            long type1 = particles.type[idx];
+
+            // Has to be a c style array becaue reductions
+
+            size_t other_idx = idx + 1;
+            // Same cell particles
+            //#pragma omp simd linear(other_idx) simdlen(4)
+            for (other_idx = idx + 1; other_idx < end_index; ++other_idx) {
+              if (particles.active[other_idx]) {
+                std::array<double, DIMENSIONS> result;
+
+                auto position2 = std::array<double, DIMENSIONS>();
+                for (int d = 0; d < DIMENSIONS; ++d) {
+                  position2[d] = particles.positions[d][other_idx];
+                }
+
+                force.calculateForce(position1, mass1, type1, position2, particles.mass[other_idx], particles.type[other_idx], result, empty_correction);
+
+                for (size_t d = 0; d < DIMENSIONS; ++d) {
+                  particles.forces[d][other_idx] += result[d];
+                  particles.forces[d][idx] -= result[d];
+                }
+              }
             }
 
             // Neighbour cells
-            std::array<double_v, DIMENSIONS> correction;
-            for (auto &neighbour : cell.neighbours) {
+            for (Neighbour<DIMENSIONS> &neighbour : cell.neighbours) {
 
               Cell<DIMENSIONS> &neighbour_cell = cells[neighbour.cell];
               size_t n_start = neighbour_cell.start_index;
               size_t n_end = neighbour_cell.end_index;
 
-              for (size_t i = 0; i < DIMENSIONS; ++i) {
-                correction[i] = double_v(neighbour.correction[i]);
-              }
+              //#pragma omp simd linear(other_idx) simdlen(4)
+              for (other_idx = n_start; other_idx < n_end; ++other_idx) {
+                if (particles.active[other_idx]) {
+                  std::array<double, DIMENSIONS> result;
 
-              size_t i = 0;
-              while (n_start + (i * double_v::size()) < n_end) {
-                auto active_mask = index_vector + (i * double_v::size()) < (neighbour_cell.size());
-                auto p2 = particles.load_vectorized(n_start + (i * double_v::size()));
-                auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
-                c(p1, p2, mask, correction);
-                particles.store_force_vector(p2, n_start + (i * double_v::size()));
-                i++;
+                  auto position2 = std::array<double, DIMENSIONS>();
+                  for (int d = 0; d < DIMENSIONS; ++d) {
+                    position2[d] = particles.positions[d][other_idx];
+                  }
+
+                  force.calculateForce(position1, mass1, type1, position2, particles.mass[other_idx], particles.type[other_idx], result, neighbour.correction);
+
+                  for (size_t d = 0; d < DIMENSIONS; ++d) {
+                    particles.forces[d][other_idx] += result[d];
+                    particles.forces[d][idx] -= result[d];
+                  }
+                }
               }
             }
-            particles.store_force_single(p1, idx);
+
           } else [[unlikely]] {
             // Stop on first inactive encountered particle
             SPDLOG_WARN("Particle crossed boundary not handled before next loop");
@@ -394,15 +425,25 @@ class LinkedCell {
   /**
    * inserts a new particle into the arena and the into the cells
    * */
-  constexpr auto insert(Particle<DIMENSIONS> particle) {
+  void insert(Particle<DIMENSIONS> particle) override {
     particles.insert_particle(particle);
   }
 
   /**
    * Returns the number of particles in the arena. O(n), because it gets counted each time
    * */
-  constexpr auto size() {
+  size_t size() override {
     return particles.size;
+  }
+
+  void linear(std::function<void(Particles<DIMENSIONS> &, size_t)> function) override {
+    for (size_t i = 0; i < particles.size; ++i) {
+      function(particles, i);
+    }
+  }
+
+  void swap_force() override {
+    particles.swap_force();
   }
 
   /**
@@ -410,7 +451,7 @@ class LinkedCell {
    * After that all cell ranges get reconstructed.
    *
    * */
-  auto fix_positions() {
+  void refresh() override {
 
     for (auto &cell : cells) {
       cell.start_index = 0;
@@ -471,17 +512,10 @@ class LinkedCell {
     SPDLOG_TRACE("fixed positions");
   }
 
-  constexpr static auto init_index_vector() noexcept -> size_v {
-    size_v index_vector_tmp = 0;
-    for (size_t i = 0; i < size_v::size(); ++i) {
-      index_vector_tmp[i] = i;
-    }
-    return index_vector_tmp;
-  }
-
-  Particles<DIMENSIONS> particles;
-
  private:
+  Particles<DIMENSIONS> particles;
+  F force;
+
   /**
    * Cells with start and end offset of particles and the neighbour cells
    * */
@@ -490,10 +524,7 @@ class LinkedCell {
    * an index helper
    * */
   container::index::Index<DIMENSIONS> index;
-  /**
-   * a vector (AVX) with stepwise incremented number
-   * */
-  size_v index_vector = init_index_vector();
+
   std::vector<double> sigma;
   std::vector<double> reflecting_distance;
   /**
@@ -501,15 +532,7 @@ class LinkedCell {
    * */
   std::array<std::vector<Block>, 4> colored_blocks{};
 
-  constexpr static auto init_empty_correction() -> std::array<double_v, DIMENSIONS> {
-    std::array<double_v, DIMENSIONS> temp{};
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      temp[i] = double_v(0.0);
-    }
-    return temp;
-  }
-
-  std::array<double_v, DIMENSIONS> empty_correction = init_empty_correction();
+  std::array<double, DIMENSIONS> empty_correction{};
 };
 
 }// namespace container

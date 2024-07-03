@@ -2,16 +2,15 @@
 
 #include "boundary.h"
 #include "utils/ArrayUtils.h"
-#include "utils/types.h"
 #include <climits>
 #include <cmath>
 #include <span>
 
 namespace container::index {
 
-constexpr const size_t block_size_x = 2;
-constexpr const size_t block_size_y = 2;
-constexpr const size_t block_size_z = 2;
+constexpr const size_t block_size_x = 1;
+constexpr const size_t block_size_y = 1;
+constexpr const size_t block_size_z = 1;
 
 template<const size_t DIMENSIONS>
 class Index {
@@ -91,7 +90,7 @@ class Index {
       block_id = x_index + y_index * dim[0] + z_index * dim[0] * dim[1];
     }
 
-    return block_id;
+    return block_id + color(idx);
   }
 
   /**
