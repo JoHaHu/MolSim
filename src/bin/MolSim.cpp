@@ -30,6 +30,9 @@ auto setup(std::shared_ptr<config::Config> config) -> auto {
       break;
   }
 
+    int maxThreads = omp_get_max_threads();
+    std::cout << "Threads max: " << maxThreads << std::endl;
+
   container::ParticleContainer pc = container::ParticleContainer<DIMENSIONS>(Particles<DIMENSIONS>());
 
   switch (config->particle_container_type) {

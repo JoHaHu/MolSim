@@ -80,7 +80,7 @@ class Checkpointer {
     return particles;
   }
 
-  auto save_checkppoint(std::string &filename, container::ParticleContainer<DIMENSIONS> &particles) {
+  auto save_checkpoint(std::string &filename, container::ParticleContainer<DIMENSIONS> &particles) {
     checkpoint cp = checkpoint();
 
     particles.linear([&](Particles<DIMENSIONS> &p, size_t index) {

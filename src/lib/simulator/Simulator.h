@@ -203,7 +203,7 @@ class Simulator {
     }
 
     if (config->output_checkpoint.has_value()) {
-      checkpoint.save_checkppoint(*config->output_checkpoint, particles);
+        checkpoint.save_checkpoint(*config->output_checkpoint, particles);
     }
 
     SPDLOG_INFO("Output written. Terminating...");
