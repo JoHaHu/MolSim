@@ -25,17 +25,17 @@
         <lennard_jones>
             <gravity>-0.8</gravity>
             <particleTypes>
-                <particleType id="0" sigma="1.1" epsilon="2.0" mass="1.0"/> <!-- left wall -->
-                <particleType id="1" sigma="1.1" epsilon="2.0" mass="1.0"/> <!-- right wall -->
+                <particleType id="0" sigma="1.1" epsilon="2.0" mass="1.0" /> <!-- left wall -->
+                <particleType id="1" sigma="1.1" epsilon="2.0" mass="1.0" /> <!-- right wall -->
                 <particleType id="2" sigma="1.0" epsilon="1.0" mass="1.0"/> <!-- fluid -->
             </particleTypes>
             <particles>
-                <cuboid spacing="1" particleTypeId="0">
+                <cuboid spacing="1" particleTypeId="0" fixed="1">
                     <coordinate x="1.0" y="0.5" z="0.5"/>
                     <dimensions x="2" y="30" z="12"/>
                     <velocity x="0" y="0" z="0"/>
                 </cuboid>
-                <cuboid spacing="1" particleTypeId="1">
+                <cuboid spacing="1" particleTypeId="1" fixed="1">
                     <coordinate x="27.2" y="0.5" z="0.5"/>
                     <dimensions x="2" y="30" z="12"/>
                     <velocity x="0" y="0" z="0"/>

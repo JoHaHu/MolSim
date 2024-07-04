@@ -171,6 +171,7 @@
         </xs:all>
         <xs:attribute name="particleTypeId" type="xs:integer" use="required"/>
         <xs:attribute name="spacing" type="xs:double"/>
+        <xs:attribute name="fixed" type="xs:int"/>
     </xs:complexType>
 
     <!-- Definition of disc described by 2 integer arrays and 1 double -->
