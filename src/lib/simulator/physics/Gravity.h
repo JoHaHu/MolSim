@@ -17,15 +17,16 @@ class Gravity final : public Force {
  * */
 #pragma omp declare simd inbranch simdlen(8) uniform(this, x1, y1, mass1, type1) linear(ref(x2, y2, mass2, type2))
   inline void calculateForce_2D(
-      double x1,
-      double y1,
-      double mass1,
-      long type1,
+      double const &x1,
+      double const &y1,
+      double const &mass1,
+      long const &type1,
       double &x2,
       double &y2,
       double &mass2,
       long &type2,
-      std::array<double, 2> &force,
+      double &result_x,
+      double &result_y,
       std::array<double, 2> &correction) override {
 
     SPDLOG_TRACE("Entering Gravity calculate_force_vectorized");
@@ -35,23 +36,26 @@ class Gravity final : public Force {
     const auto norm = ArrayUtils::L2Norm(diff);
 
     const auto temp = (mass1 * mass2) / (norm * norm * norm);
-    force = temp * diff;
+    auto force = temp * diff;
+    result_x = force[0];
+    result_y = force[1];
     SPDLOG_TRACE("Exiting Gravity calculate_force_vectorized");
   };
 
 #pragma omp declare simd inbranch simdlen(8) uniform(this, x1, y1, z1, mass1, type1) linear(ref(x2, y2, z2, mass2, type2))
   inline void calculateForce_3D(
-      double x1,
-      double y1,
-      double z1,
-      double mass1,
-      long type1,
+      double const &x1,
+      double const &y1,
+      double const &z1,
+      double const &mass1,
+      long const &type1,
       double &x2,
       double &y2,
       double &z2,
       double &mass2,
-      long &type2,
-      std::array<double, 3> &force,
+      long &type2, double &result_x,
+      double &result_y,
+      double &result_z,
       std::array<double, 3> &correction) override {
 
     SPDLOG_TRACE("Entering Gravity calculate_force_vectorized");
@@ -60,7 +64,10 @@ class Gravity final : public Force {
     const auto norm = ArrayUtils::L2Norm(diff);
 
     const auto temp = (mass1 * mass2) / (norm * norm * norm);
-    force = temp * diff;
+    auto force = temp * diff;
+    result_x = force[0];
+    result_y = force[1];
+    result_z = force[2];
     SPDLOG_TRACE("Exiting Gravity calculate_force_vectorized");
   };
 

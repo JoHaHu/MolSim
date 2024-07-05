@@ -28,17 +28,19 @@ class LennardJonesForce final : public Force {
     initialize_constants(epsilons, sigmas, cutoff);
   }
 
-#pragma omp declare simd inbranch simdlen(8) uniform(this, x1, y1, mass1, type1, correction) linear(ref(x2, y2, mass2, type2))
+#pragma omp declare simd simdlen(4) uniform(this, x1, y1, mass1, type1, correction) linear(ref(x2, y2, mass2, type2))
+#pragma omp declare simd simdlen(8) uniform(this, x1, y1, mass1, type1, correction) linear(ref(x2, y2, mass2, type2))
   inline void calculateForce_2D(
-      double x1,
-      double y1,
-      double mass1,
-      long type1,
+      double const &x1,
+      double const &y1,
+      double const &mass1,
+      long const &type1,
       double &x2,
       double &y2,
       double &mass2,
       long &type2,
-      std::array<double, 2> &force,
+      double &result_x,
+      double &result_y,
       std::array<double, 2> &correction) override {
 
     const auto diff = (std::array<double, 2>({x2, y2}) + correction) - std::array<double, 2>({x1, y1});
@@ -50,22 +52,27 @@ class LennardJonesForce final : public Force {
     if (norm_2 > cutoff) {
       return;
     }
-    force = temp * diff;
+    auto force = temp * diff;
+    result_x = force[0];
+    result_y = force[1];
   }
 
-#pragma omp declare simd inbranch simdlen(8) uniform(this, x1, y1, z1, mass1, type1, correction) linear(ref(x2, y2, z2, mass2, type2))
+#pragma omp declare simd simdlen(4) uniform(this, x1, y1, z1, mass1, type1, correction) linear(ref(x2, y2, z2, mass2, type2))
+#pragma omp declare simd simdlen(8) uniform(this, x1, y1, z1, mass1, type1, correction) linear(ref(x2, y2, z2, mass2, type2))
   inline void calculateForce_3D(
-      double x1,
-      double y1,
-      double z1,
-      double mass1,
-      long type1,
+      double const &x1,
+      double const &y1,
+      double const &z1,
+      double const &mass1,
+      long const &type1,
       double &x2,
       double &y2,
       double &z2,
       double &mass2,
       long &type2,
-      std::array<double, 3> &force,
+      double &result_x,
+      double &result_y,
+      double &result_z,
       std::array<double, 3> &correction) override {
 
     const auto diff = (std::array<double, 3>({x2, y2, z2}) + correction) - std::array<double, 3>({x1, y1, z1});
@@ -77,7 +84,10 @@ class LennardJonesForce final : public Force {
     if (norm_2 > cutoff) {
       return;
     }
-    force = temp * diff;
+    auto force = temp * diff;
+    result_x = force[0];
+    result_y = force[1];
+    result_z = force[2];
   }
 
   /**

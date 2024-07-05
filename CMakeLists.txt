@@ -118,11 +118,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling >
+            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fvectorize -mprefer-vector-width=512 -fno-omit-frame-pointer -fdebug-info-for-profiling >
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling >
+            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fvectorize -mprefer-vector-width=512 -fno-omit-frame-pointer -fdebug-info-for-profiling >
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
     target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
@@ -132,13 +132,13 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(simulator
             PRIVATE
             $<$<CXX_COMPILER_ID:Intel>: -O3 -ipo -fast -mprefer-vector-width=512 -fvectorize -fprof-use=../profiles/default.profdata>
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -g #[[-mprefer-vector-width=512]] -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize -Rpass-missed=vectorize -Rpass-analysis=vectorize >
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -g -mprefer-vector-width=512 -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize -Rpass-missed=vectorize -Rpass-analysis=vectorize >
             $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize -mprefer-vector-width=512 >
     )
     target_compile_options(MolSim
             PRIVATE
             $<$<CXX_COMPILER_ID:Intel>: -O3 -ipo -fast -mprefer-vector-width=512 -fvectorize -fprof-use=../profiles/default.profdata>
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -g #[[-mprefer-vector-width=512]] -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize >
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -g -mprefer-vector-width=512 -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize >
             $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize -mprefer-vector-width=512 >
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
