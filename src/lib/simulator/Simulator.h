@@ -113,7 +113,7 @@ class Simulator {
     SPDLOG_DEBUG("Starting force calculation");
     particles->boundary();
     particles->refresh();
-    particles->pairwise();
+    particles->pairwise(true, false);
 
     SPDLOG_TRACE("Force calculation completed.");
   };

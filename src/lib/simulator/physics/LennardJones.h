@@ -49,12 +49,11 @@ class LennardJonesForce final : public Force {
     auto epsilon24 = epsilons_24[8 * type1 + type2];
     auto epsilon48 = epsilons_48[8 * type1 + type2];
     const auto temp = (norm_6 * epsilon24 - epsilon48) / (norm_6 * norm_6 * norm_2);
-    if (norm_2 > cutoff) {
-      return;
-    }
     auto force = temp * diff;
-    result_x = force[0];
-    result_y = force[1];
+    if (norm_2 <= cutoff) {
+      result_x = force[0];
+      result_y = force[1];
+    }
   }
 
 #pragma omp declare simd simdlen(4) uniform(this, x1, y1, z1, mass1, type1, correction) linear(ref(x2, y2, z2, mass2, type2))
@@ -81,13 +80,13 @@ class LennardJonesForce final : public Force {
     auto epsilon24 = epsilons_24[8 * type1 + type2];
     auto epsilon48 = epsilons_48[8 * type1 + type2];
     const auto temp = (norm_6 * epsilon24 - epsilon48) / (norm_6 * norm_6 * norm_2);
-    if (norm_2 > cutoff) {
-      return;
-    }
     auto force = temp * diff;
-    result_x = force[0];
-    result_y = force[1];
-    result_z = force[2];
+
+    if (norm_2 <= cutoff) {
+      result_x = force[0];
+      result_y = force[1];
+      result_z = force[2];
+    }
   }
 
   /**

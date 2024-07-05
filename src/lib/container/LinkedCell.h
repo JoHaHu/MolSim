@@ -343,10 +343,10 @@ class LinkedCell final : public Container<DIMENSIONS> {
    *
    * */
 
-  void pairwise() override {
+  void pairwise(bool parallel, bool vectorize) override {
 
     for (auto &blocks : colored_blocks) {
-#pragma omp parallel for default(none) shared(blocks) schedule(static)
+#pragma omp parallel for default(none) shared(blocks, vectorize) schedule(dynamic) if (parallel)
       for (auto block : blocks) {
         for (size_t idx = block.start_index; idx < block.end_index; ++idx) {
           if (particles.active[idx] == 1) [[likely]] {
@@ -368,7 +368,7 @@ class LinkedCell final : public Container<DIMENSIONS> {
 
             size_t other_idx = idx + 1;
 // Same cell particles
-#pragma omp simd linear(other_idx) simdlen(8) reduction(+ : force_sum[ : DIMENSIONS])
+#pragma omp simd linear(other_idx) simdlen(8) reduction(+ : force_sum[ : DIMENSIONS]) if (vectorize)
             for (other_idx = idx + 1; other_idx < end_index; ++other_idx) {
 
               if (particles.active[other_idx] == 1) {
@@ -403,11 +403,12 @@ class LinkedCell final : public Container<DIMENSIONS> {
                 }
                 particles.forces[0][other_idx] -= result_x;
                 particles.forces[1][other_idx] -= result_y;
-                particles.forces[2][other_idx] -= result_z;
-
                 force_sum[0] += result_x;
                 force_sum[1] += result_y;
-                force_sum[2] += result_z;
+                if constexpr (DIMENSIONS > 2) {
+                  particles.forces[2][other_idx] -= result_z;
+                  force_sum[2] += result_z;
+                }
               }
             }
 
@@ -418,7 +419,7 @@ class LinkedCell final : public Container<DIMENSIONS> {
               size_t n_start = neighbour_cell.start_index;
               size_t n_end = neighbour_cell.end_index;
 
-#pragma omp simd linear(other_idx) simdlen(8) reduction(+ : force_sum[ : DIMENSIONS])
+#pragma omp simd linear(other_idx) simdlen(8) reduction(+ : force_sum[ : DIMENSIONS]) if (vectorize)
               for (other_idx = n_start; other_idx < n_end; ++other_idx) {
                 if (particles.active[other_idx] == 1) {
                   double result_x = 0;
@@ -451,11 +452,13 @@ class LinkedCell final : public Container<DIMENSIONS> {
 
                   particles.forces[0][other_idx] -= result_x;
                   particles.forces[1][other_idx] -= result_y;
-                  particles.forces[2][other_idx] -= result_z;
-
                   force_sum[0] += result_x;
                   force_sum[1] += result_y;
-                  force_sum[2] += result_z;
+
+                  if constexpr (DIMENSIONS > 2) {
+                    particles.forces[2][other_idx] -= result_z;
+                    force_sum[2] += result_z;
+                  }
                 }
               }
             }
