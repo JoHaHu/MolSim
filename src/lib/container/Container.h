@@ -18,7 +18,7 @@ class Container {
   *
   * @param f Function to apply to each pair of particles.
   */
-  virtual void pairwise() = 0;
+  virtual void pairwise(bool parallel, bool vector) = 0;
 
   /**
    * Swap old and new forces

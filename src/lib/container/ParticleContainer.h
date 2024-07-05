@@ -8,7 +8,7 @@ template<const size_t DIMENSIONS>
 struct ParticleContainer final : public container::Container<DIMENSIONS> {
  private:
   Particles<DIMENSIONS> particles;
-  std::unique_ptr<simulator::physics::Force<DIMENSIONS>> force;
+  std::unique_ptr<simulator::physics::Force> force;
 
  public:
   ~ParticleContainer() override = default;
@@ -30,7 +30,7 @@ struct ParticleContainer final : public container::Container<DIMENSIONS> {
   void boundary() override {}
   void refresh() override {}
 
-  auto pairwise() {
+  auto pairwise(bool parallel, bool vector) {
 
     const auto particle_size = particles.size;
     for (size_t index_1 = 0; index_1 < particle_size - 1; ++index_1) {
