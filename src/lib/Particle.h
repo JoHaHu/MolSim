@@ -153,9 +153,6 @@ class Particles {
                              ),
                          [](auto tuple1, auto tuple2) {
                            // Do not sort by color for better cache behaviour
-                           //                           if (std::get<2>(tuple1) != std::get<2>(tuple2)) {
-                           //                             return std::get<2>(tuple1) < std::get<2>(tuple2);
-                           //                           }
                            if (std::get<1>(tuple1) != std::get<1>(tuple2)) {
                              return std::get<1>(tuple1) < std::get<1>(tuple2);
                            }

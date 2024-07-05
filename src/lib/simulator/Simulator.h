@@ -126,11 +126,7 @@ class Simulator {
     */
   template<bool IO>
   auto run() -> void {
-#pragma omp parallel
-#pragma omp single
-    {
-      spdlog::info("threads: {}, teams: {}", omp_get_num_threads(), omp_get_num_teams());
-    }
+
     spdlog::info("Running simulation...");
     double current_time = 0;
     iteration = 0;

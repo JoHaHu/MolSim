@@ -97,7 +97,7 @@ target_compile_options(MolSim
         $<$<CXX_COMPILER_ID:GNU>:-Wall -march=native -fopenmp>
         # disable some spam warnings for icpc...
         $<$<CXX_COMPILER_ID:Intel>:-w3 -march=native -qopenmp -Xhost -xCORE-AVX512 -wd383,981,1418,1572,2259>
-        $<$<CXX_COMPILER_ID:Clang>:-Wall -g -march=native -fopenmp=libomp -fno-omit-frame-pointer -fdebug-info-for-profiling >
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -g -march=native -fopenmp=libomp -fno-omit-frame-pointer -fdebug-info-for-profiling>
 )
 target_link_options(MolSim
         PUBLIC
@@ -132,13 +132,13 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(simulator
             PRIVATE
             $<$<CXX_COMPILER_ID:Intel>: -O3 -ipo -fast -mprefer-vector-width=512 -fvectorize -fprof-use=../profiles/default.profdata>
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -g -mprefer-vector-width=512 -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize -Rpass-missed=vectorize -Rpass-analysis=vectorize >
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -g #[[-mprefer-vector-width=512]] -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize -Rpass-missed=vectorize -Rpass-analysis=vectorize >
             $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize -mprefer-vector-width=512 >
     )
     target_compile_options(MolSim
             PRIVATE
             $<$<CXX_COMPILER_ID:Intel>: -O3 -ipo -fast -mprefer-vector-width=512 -fvectorize -fprof-use=../profiles/default.profdata>
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -g -mprefer-vector-width=512 -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize >
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -g #[[-mprefer-vector-width=512]] -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize >
             $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize -mprefer-vector-width=512 >
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)

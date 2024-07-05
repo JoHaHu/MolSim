@@ -8,28 +8,54 @@
 
 namespace simulator::physics {
 
-template<const size_t DIMENSIONS>
-class Gravity final : public Force<DIMENSIONS> {
+class Gravity final : public Force {
 
  public:
 /**
  * Implements physics for simulations using gravity as force Model
  *
  * */
-#pragma omp declare simd inbranch uniform(this, position1, mass1, type1) linear(ref(position2, mass2, type2))
-  void inline calculateForce(
-      std::array<double, DIMENSIONS> position1,
+#pragma omp declare simd inbranch simdlen(8) uniform(this, x1, y1, mass1, type1) linear(ref(x2, y2, mass2, type2))
+  inline void calculateForce_2D(
+      double x1,
+      double y1,
       double mass1,
       long type1,
-      std::array<double, DIMENSIONS> position2,
+      double &x2,
+      double &y2,
       double &mass2,
       long &type2,
-      std::array<double, DIMENSIONS> &force,
-      std::array<double, DIMENSIONS> &correction) override {
+      std::array<double, 2> &force,
+      std::array<double, 2> &correction) override {
 
     SPDLOG_TRACE("Entering Gravity calculate_force_vectorized");
 
-    const auto diff = (position2 - correction) - position2;
+    const auto diff = (std::array<double, 2>({x2, y2}) + correction) - std::array<double, 2>({x1, y1});
+
+    const auto norm = ArrayUtils::L2Norm(diff);
+
+    const auto temp = (mass1 * mass2) / (norm * norm * norm);
+    force = temp * diff;
+    SPDLOG_TRACE("Exiting Gravity calculate_force_vectorized");
+  };
+
+#pragma omp declare simd inbranch simdlen(8) uniform(this, x1, y1, z1, mass1, type1) linear(ref(x2, y2, z2, mass2, type2))
+  inline void calculateForce_3D(
+      double x1,
+      double y1,
+      double z1,
+      double mass1,
+      long type1,
+      double &x2,
+      double &y2,
+      double &z2,
+      double &mass2,
+      long &type2,
+      std::array<double, 3> &force,
+      std::array<double, 3> &correction) override {
+
+    SPDLOG_TRACE("Entering Gravity calculate_force_vectorized");
+    const auto diff = (std::array<double, 3>({x2, y2, z2}) + correction) - std::array<double, 3>({x1, y1, z1});
 
     const auto norm = ArrayUtils::L2Norm(diff);
 
