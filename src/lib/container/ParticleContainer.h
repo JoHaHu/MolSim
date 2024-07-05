@@ -42,7 +42,7 @@ struct ParticleContainer final : public container::Container<DIMENSIONS> {
           if (particles.active[index_1]) {
 
             std::array<double, DIMENSIONS> result;
-            force->calculateForce(particles, index_1, index_2, result, {0, 0, 0});
+            force->calculateForce_2D(particles, index_1, index_2, result, {0, 0, 0});
 
             for (size_t d = 0; d < DIMENSIONS; ++d) {
               particles.forces[d][index_2] -= result[d];

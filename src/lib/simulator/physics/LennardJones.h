@@ -12,34 +12,63 @@ namespace simulator::physics {
 /**
  * Implements physics for simulations using lennard-jones as force Model
  * */
-template<const size_t DIMENSIONS>
-class LennardJonesForce final : public Force<DIMENSIONS> {
+
+class LennardJonesForce final : public Force {
 
   double cutoff = 3.0;
 
   static const long NUM_TYPES = 8;
   // For now supports up to 8 types, can be increased
 
-  alignas(64) std::array<double, NUM_TYPES * NUM_TYPES> epsilons_24;
-  alignas(64) std::array<double, NUM_TYPES * NUM_TYPES> epsilons_48;
+  alignas(64) std::array<double, NUM_TYPES * NUM_TYPES> epsilons_24 = std::array<double, NUM_TYPES * NUM_TYPES>();
+  alignas(64) std::array<double, NUM_TYPES * NUM_TYPES> epsilons_48 = std::array<double, NUM_TYPES * NUM_TYPES>();
 
  public:
   explicit LennardJonesForce(double cutoff, std::vector<double> epsilons, std::vector<double> sigmas) {
     initialize_constants(epsilons, sigmas, cutoff);
   }
 
-#pragma omp declare simd inbranch simdlen(4) uniform(this, position1, mass1, type1) linear(ref(mass2, type2))
-  inline void calculateForce(
-      std::array<double, DIMENSIONS> position1,
+#pragma omp declare simd inbranch simdlen(8) uniform(this, x1, y1, mass1, type1, correction) linear(ref(x2, y2, mass2, type2))
+  inline void calculateForce_2D(
+      double x1,
+      double y1,
       double mass1,
       long type1,
-      std::array<double, DIMENSIONS> position2,
+      double &x2,
+      double &y2,
       double &mass2,
       long &type2,
-      std::array<double, DIMENSIONS> &force,
-      std::array<double, DIMENSIONS> &correction) override {
+      std::array<double, 2> &force,
+      std::array<double, 2> &correction) override {
 
-    const auto diff = (position2 + correction) - position1;
+    const auto diff = (std::array<double, 2>({x2, y2}) + correction) - std::array<double, 2>({x1, y1});
+    const auto norm_2 = ArrayUtils::L2NormSquared(diff);
+    const auto norm_6 = norm_2 * norm_2 * norm_2;
+    auto epsilon24 = epsilons_24[8 * type1 + type2];
+    auto epsilon48 = epsilons_48[8 * type1 + type2];
+    const auto temp = (norm_6 * epsilon24 - epsilon48) / (norm_6 * norm_6 * norm_2);
+    if (norm_2 > cutoff) {
+      return;
+    }
+    force = temp * diff;
+  }
+
+#pragma omp declare simd inbranch simdlen(8) uniform(this, x1, y1, z1, mass1, type1, correction) linear(ref(x2, y2, z2, mass2, type2))
+  inline void calculateForce_3D(
+      double x1,
+      double y1,
+      double z1,
+      double mass1,
+      long type1,
+      double &x2,
+      double &y2,
+      double &z2,
+      double &mass2,
+      long &type2,
+      std::array<double, 3> &force,
+      std::array<double, 3> &correction) override {
+
+    const auto diff = (std::array<double, 3>({x2, y2, z2}) + correction) - std::array<double, 3>({x1, y1, z1});
     const auto norm_2 = ArrayUtils::L2NormSquared(diff);
     const auto norm_6 = norm_2 * norm_2 * norm_2;
     auto epsilon24 = epsilons_24[8 * type1 + type2];
@@ -62,7 +91,7 @@ class LennardJonesForce final : public Force<DIMENSIONS> {
   }
 
  private:
-  auto initialize_constants(std::vector<double> epsilons, std::vector<double> sigmas, double c) {
+  auto initialize_constants(std::vector<double> epsilons, std::vector<double> sigmas, double c) -> void {
 
     cutoff = c * c;
 

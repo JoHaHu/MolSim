@@ -129,7 +129,7 @@ class Cell {
  * The linked cell container class
  * */
 template<class F, const size_t DIMENSIONS>
-  requires(std::derived_from<F, simulator::physics::Force<DIMENSIONS>>)
+  requires(std::derived_from<F, simulator::physics::Force>)
 class LinkedCell final : public Container<DIMENSIONS> {
 
  public:
@@ -346,7 +346,7 @@ class LinkedCell final : public Container<DIMENSIONS> {
   void pairwise() override {
 
     for (auto &blocks : colored_blocks) {
-      //#pragma omp parallel for default(none) shared(blocks) schedule(static)
+#pragma omp parallel for default(none) shared(blocks) schedule(dynamic)
       for (auto block : blocks) {
         for (size_t idx = block.start_index; idx < block.end_index; ++idx) {
           if (particles.active[idx]) [[likely]] {
@@ -355,32 +355,51 @@ class LinkedCell final : public Container<DIMENSIONS> {
 
             const size_t end_index = cell.end_index;
 
-            auto position1 = std::array<double, DIMENSIONS>();
-            for (int d = 0; d < DIMENSIONS; ++d) {
-              position1[d] = particles.positions[d][idx];
+            const auto x1 = particles.positions[0][idx];
+            const auto y1 = particles.positions[1][idx];
+            double z1 = 0;
+            if constexpr (DIMENSIONS == 3) {
+              z1 = particles.positions[2][idx];
             }
-            double mass1 = particles.mass[idx];
-            long type1 = particles.type[idx];
-
-            // Has to be a c style array becaue reductions
+            const auto mass1 = particles.mass[idx];
+            const auto type1 = particles.type[idx];
 
             size_t other_idx = idx + 1;
-            // Same cell particles
-            //#pragma omp simd linear(other_idx) simdlen(4)
+// Same cell particles
+#pragma omp simd linear(other_idx) simdlen(8))
             for (other_idx = idx + 1; other_idx < end_index; ++other_idx) {
               if (particles.active[other_idx]) {
-                std::array<double, DIMENSIONS> result;
+                auto result = std::array<double, DIMENSIONS>();
 
                 auto position2 = std::array<double, DIMENSIONS>();
                 for (int d = 0; d < DIMENSIONS; ++d) {
                   position2[d] = particles.positions[d][other_idx];
                 }
-
-                force.calculateForce(position1, mass1, type1, position2, particles.mass[other_idx], particles.type[other_idx], result, empty_correction);
-
+                if constexpr (DIMENSIONS == 2) {
+                  auto correction = std::array<double, 2>({0, 0});
+                  force.calculateForce_2D(
+                      x1, y1, mass1, type1,
+                      particles.positions[0][other_idx],
+                      particles.positions[1][other_idx],
+                      particles.mass[other_idx],
+                      particles.type[other_idx],
+                      result,
+                      correction);
+                } else {
+                  auto correction = std::array<double, 3>({0, 0, 0});
+                  force.calculateForce_3D(
+                      x1, y1, z1, mass1, type1,
+                      particles.positions[0][other_idx],
+                      particles.positions[1][other_idx],
+                      particles.positions[2][other_idx],
+                      particles.mass[other_idx],
+                      particles.type[other_idx],
+                      result,
+                      correction);
+                }
                 for (size_t d = 0; d < DIMENSIONS; ++d) {
-                  particles.forces[d][other_idx] += result[d];
-                  particles.forces[d][idx] -= result[d];
+                  particles.forces[d][other_idx] -= result[d];
+                  particles.forces[d][idx] += result[d];
                 }
               }
             }
@@ -392,21 +411,35 @@ class LinkedCell final : public Container<DIMENSIONS> {
               size_t n_start = neighbour_cell.start_index;
               size_t n_end = neighbour_cell.end_index;
 
-              //#pragma omp simd linear(other_idx) simdlen(4)
+#pragma omp simd linear(other_idx) simdlen(8)
               for (other_idx = n_start; other_idx < n_end; ++other_idx) {
                 if (particles.active[other_idx]) {
-                  std::array<double, DIMENSIONS> result;
+                  auto result = std::array<double, DIMENSIONS>();
 
-                  auto position2 = std::array<double, DIMENSIONS>();
-                  for (int d = 0; d < DIMENSIONS; ++d) {
-                    position2[d] = particles.positions[d][other_idx];
+                  if constexpr (DIMENSIONS == 2) {
+                    force.calculateForce_2D(
+                        x1, y1, mass1, type1,
+                        particles.positions[0][other_idx],
+                        particles.positions[1][other_idx],
+                        particles.mass[other_idx],
+                        particles.type[other_idx],
+                        result,
+                        neighbour.correction);
+                  } else {
+                    force.calculateForce_3D(
+                        x1, y1, z1, mass1, type1,
+                        particles.positions[0][other_idx],
+                        particles.positions[1][other_idx],
+                        particles.positions[2][other_idx],
+                        particles.mass[other_idx],
+                        particles.type[other_idx],
+                        result,
+                        neighbour.correction);
                   }
 
-                  force.calculateForce(position1, mass1, type1, position2, particles.mass[other_idx], particles.type[other_idx], result, neighbour.correction);
-
                   for (size_t d = 0; d < DIMENSIONS; ++d) {
-                    particles.forces[d][other_idx] += result[d];
-                    particles.forces[d][idx] -= result[d];
+                    particles.forces[d][other_idx] -= result[d];
+                    particles.forces[d][idx] += result[d];
                   }
                 }
               }
@@ -463,8 +496,8 @@ class LinkedCell final : public Container<DIMENSIONS> {
 
     particles.sort([this](size_t idx) -> std::tuple<size_t, size_t, size_t> {
       std::array<double, DIMENSIONS> temp;
-      for (size_t i = 0; i < DIMENSIONS; ++i) {
-        temp[i] = particles.positions[i][idx];
+      for (size_t d = 0; d < DIMENSIONS; ++d) {
+        temp[d] = particles.positions[d][idx];
       }
       auto cell = index.position_to_index(temp);
       return std::tuple(
@@ -481,6 +514,7 @@ class LinkedCell final : public Container<DIMENSIONS> {
 
       if (particles.cell[i] >= cells.size()) {
         particles.active[i] = false;
+        SPDLOG_WARN("Particle crossed boundary not handled before next loop");
       }
       if (particles.cell[i] != cell) {
         if (cell < cells.size()) {
@@ -506,7 +540,7 @@ class LinkedCell final : public Container<DIMENSIONS> {
       auto color = std::get<0>(chunk[0]);
       size_t start = std::get<2>(chunk[0]);
       size_t end = start + static_cast<size_t>(chunk.size());
-      colored_blocks[color].emplace_back(start, end);
+      colored_blocks[color].emplace_back(Block(start, end));
     });
 
     SPDLOG_TRACE("fixed positions");
@@ -531,8 +565,6 @@ class LinkedCell final : public Container<DIMENSIONS> {
    * A vector of blocks for 4 different colors
    * */
   std::array<std::vector<Block>, 4> colored_blocks{};
-
-  std::array<double, DIMENSIONS> empty_correction{};
 };
 
 }// namespace container

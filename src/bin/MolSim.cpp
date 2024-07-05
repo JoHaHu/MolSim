@@ -41,8 +41,8 @@ auto setup(std::shared_ptr<config::Config> config) -> auto {
 
       switch (config->simulation_type) {
         case simulator::physics::ForceModel::LennardJones: {
-          auto physics = simulator::physics::LennardJonesForce<DIMENSIONS>(config->cutoff_radius, config->epsilon, config->sigma);
-          pc = std::make_unique<container::LinkedCell<simulator::physics::LennardJonesForce<DIMENSIONS>, DIMENSIONS>>(
+          auto physics = simulator::physics::LennardJonesForce(config->cutoff_radius, config->epsilon, config->sigma);
+          pc = std::make_unique<container::LinkedCell<simulator::physics::LennardJonesForce, DIMENSIONS>>(
               std::move(physics),
               domain,
               config->cutoff_radius,
@@ -93,7 +93,7 @@ auto main(int argc, char *argv[]) -> int {
   auto config = config::Config::parse_config(argc, argv);
   LoggerManager::setup_logger(*config);
 
-  auto simulator = setup<2>(config);
+  auto simulator = setup<3>(config);
 
   const auto startTime = std::chrono::high_resolution_clock::now();
 
