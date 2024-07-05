@@ -346,10 +346,10 @@ class LinkedCell final : public Container<DIMENSIONS> {
   void pairwise() override {
 
     for (auto &blocks : colored_blocks) {
-#pragma omp parallel for default(none) shared(blocks) schedule(dynamic)
+#pragma omp parallel for default(none) shared(blocks) schedule(static)
       for (auto block : blocks) {
         for (size_t idx = block.start_index; idx < block.end_index; ++idx) {
-          if (particles.active[idx]) [[likely]] {
+          if (particles.active[idx] == 1) [[likely]] {
             const auto temp = particles.cell[idx];
             auto &cell = cells[temp];
 
@@ -364,17 +364,18 @@ class LinkedCell final : public Container<DIMENSIONS> {
             const auto mass1 = particles.mass[idx];
             const auto type1 = particles.type[idx];
 
+            double force_sum[DIMENSIONS] = {0};
+
             size_t other_idx = idx + 1;
 // Same cell particles
-#pragma omp simd linear(other_idx) simdlen(8))
+#pragma omp simd linear(other_idx) simdlen(8) reduction(+ : force_sum[ : DIMENSIONS])
             for (other_idx = idx + 1; other_idx < end_index; ++other_idx) {
-              if (particles.active[other_idx]) {
-                auto result = std::array<double, DIMENSIONS>();
 
-                auto position2 = std::array<double, DIMENSIONS>();
-                for (int d = 0; d < DIMENSIONS; ++d) {
-                  position2[d] = particles.positions[d][other_idx];
-                }
+              if (particles.active[other_idx] == 1) {
+                double result_x = 0;
+                double result_y = 0;
+                double result_z = 0;
+
                 if constexpr (DIMENSIONS == 2) {
                   auto correction = std::array<double, 2>({0, 0});
                   force.calculateForce_2D(
@@ -383,7 +384,8 @@ class LinkedCell final : public Container<DIMENSIONS> {
                       particles.positions[1][other_idx],
                       particles.mass[other_idx],
                       particles.type[other_idx],
-                      result,
+                      result_x,
+                      result_y,
                       correction);
                 } else {
                   auto correction = std::array<double, 3>({0, 0, 0});
@@ -394,13 +396,18 @@ class LinkedCell final : public Container<DIMENSIONS> {
                       particles.positions[2][other_idx],
                       particles.mass[other_idx],
                       particles.type[other_idx],
-                      result,
+                      result_x,
+                      result_y,
+                      result_z,
                       correction);
                 }
-                for (size_t d = 0; d < DIMENSIONS; ++d) {
-                  particles.forces[d][other_idx] -= result[d];
-                  particles.forces[d][idx] += result[d];
-                }
+                particles.forces[0][other_idx] -= result_x;
+                particles.forces[1][other_idx] -= result_y;
+                particles.forces[2][other_idx] -= result_z;
+
+                force_sum[0] += result_x;
+                force_sum[1] += result_y;
+                force_sum[2] += result_z;
               }
             }
 
@@ -411,10 +418,12 @@ class LinkedCell final : public Container<DIMENSIONS> {
               size_t n_start = neighbour_cell.start_index;
               size_t n_end = neighbour_cell.end_index;
 
-#pragma omp simd linear(other_idx) simdlen(8)
+#pragma omp simd linear(other_idx) simdlen(8) reduction(+ : force_sum[ : DIMENSIONS])
               for (other_idx = n_start; other_idx < n_end; ++other_idx) {
-                if (particles.active[other_idx]) {
-                  auto result = std::array<double, DIMENSIONS>();
+                if (particles.active[other_idx] == 1) {
+                  double result_x = 0;
+                  double result_y = 0;
+                  double result_z = 0;
 
                   if constexpr (DIMENSIONS == 2) {
                     force.calculateForce_2D(
@@ -423,7 +432,8 @@ class LinkedCell final : public Container<DIMENSIONS> {
                         particles.positions[1][other_idx],
                         particles.mass[other_idx],
                         particles.type[other_idx],
-                        result,
+                        result_x,
+                        result_y,
                         neighbour.correction);
                   } else {
                     force.calculateForce_3D(
@@ -433,16 +443,25 @@ class LinkedCell final : public Container<DIMENSIONS> {
                         particles.positions[2][other_idx],
                         particles.mass[other_idx],
                         particles.type[other_idx],
-                        result,
+                        result_x,
+                        result_y,
+                        result_z,
                         neighbour.correction);
                   }
 
-                  for (size_t d = 0; d < DIMENSIONS; ++d) {
-                    particles.forces[d][other_idx] -= result[d];
-                    particles.forces[d][idx] += result[d];
-                  }
+                  particles.forces[0][other_idx] -= result_x;
+                  particles.forces[1][other_idx] -= result_y;
+                  particles.forces[2][other_idx] -= result_z;
+
+                  force_sum[0] += result_x;
+                  force_sum[1] += result_y;
+                  force_sum[2] += result_z;
                 }
               }
+            }
+
+            for (size_t d = 0; d < DIMENSIONS; ++d) {
+              particles.forces[d][idx] += force_sum[d];
             }
 
           } else [[unlikely]] {
