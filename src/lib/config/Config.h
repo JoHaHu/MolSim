@@ -184,6 +184,21 @@ class Config {
   int seed{};
 
   /**
+   * if the code should use vectorization
+   * */
+  bool vectorized = false;
+  /**
+   * if the code should use parallelization
+   * */
+  bool parallelized = true;
+
+  /**
+   *
+   * number of dimensions
+   * */
+  int dimensions = 2;
+
+  /**
    * the input filename
    */
   std::string input_filename;

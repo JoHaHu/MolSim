@@ -137,20 +137,21 @@ class Particles {
       return std::apply([&](auto &...vs) {
         return std::apply([&](auto &...fs) {
           return std::apply([&](auto &...ofs) {
-            ranges::sort(ranges::zip_view(
-                             cell,
-                             block,
-                             color,
-                             ps...,
-                             vs...,
-                             fs...,
-                             ofs...,
-                             mass, type, active
+            auto zip = ranges::zip_view(
+                cell,
+                block,
+                color,
+                ps...,
+                vs...,
+                fs...,
+                ofs...,
+                mass, type, active
 #if DEBUG
-                             ,
-                             ids
+                ,
+                ids
 #endif
-                             ),
+            );
+            ranges::sort(zip,
                          [](auto tuple1, auto tuple2) {
                            // Do not sort by color for better cache behaviour
                            if (std::get<1>(tuple1) != std::get<1>(tuple2)) {

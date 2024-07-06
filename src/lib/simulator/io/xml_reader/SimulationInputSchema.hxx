@@ -4724,6 +4724,147 @@ class header: public ::xml_schema::type
   //@}
 
   /**
+   * @name dimensions
+   *
+   * @brief Accessor and modifier functions for the %dimensions
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::int_ dimensions_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< dimensions_type, char > dimensions_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const dimensions_type&
+  dimensions () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  dimensions_type&
+  dimensions ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  dimensions (const dimensions_type& x);
+
+  //@}
+
+  /**
+   * @name parallelized
+   *
+   * @brief Accessor and modifier functions for the %parallelized
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::boolean parallelized_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< parallelized_type, char > parallelized_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const parallelized_type&
+  parallelized () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  parallelized_type&
+  parallelized ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  parallelized (const parallelized_type& x);
+
+  //@}
+
+  /**
+   * @name vectorized
+   *
+   * @brief Accessor and modifier functions for the %vectorized
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::boolean vectorized_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< vectorized_type, char > vectorized_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const vectorized_type&
+  vectorized () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  vectorized_type&
+  vectorized ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  vectorized (const vectorized_type& x);
+
+  //@}
+
+  /**
    * @name Constructors
    */
   //@{
@@ -4737,7 +4878,10 @@ class header: public ::xml_schema::type
           const delta_t_type&,
           const output_frequency_type&,
           const output_file_type&,
-          const seed_type&);
+          const seed_type&,
+          const dimensions_type&,
+          const parallelized_type&,
+          const vectorized_type&);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -4816,6 +4960,9 @@ class header: public ::xml_schema::type
   ::xsd::cxx::tree::one< output_frequency_type > output_frequency_;
   ::xsd::cxx::tree::one< output_file_type > output_file_;
   ::xsd::cxx::tree::one< seed_type > seed_;
+  ::xsd::cxx::tree::one< dimensions_type > dimensions_;
+  ::xsd::cxx::tree::one< parallelized_type > parallelized_;
+  ::xsd::cxx::tree::one< vectorized_type > vectorized_;
 
   //@endcond
 };

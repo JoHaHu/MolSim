@@ -56,7 +56,7 @@ class Simulator {
         checkpoint(checkpoint),
         end_time(config->end_time),
         delta_t(config->delta_t),
-        gravity(config->ljf_gravity) {};
+        gravity(config->ljf_gravity){};
 
   auto inline calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
@@ -113,7 +113,7 @@ class Simulator {
     SPDLOG_DEBUG("Starting force calculation");
     particles->boundary();
     particles->refresh();
-    particles->pairwise(true, false);
+    particles->pairwise(config->parallelized, config->vectorized);
 
     SPDLOG_TRACE("Force calculation completed.");
   };
