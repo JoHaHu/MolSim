@@ -1225,6 +1225,60 @@ seed (const seed_type& x)
   this->seed_.set (x);
 }
 
+const header::dimensions_type& header::
+dimensions () const
+{
+  return this->dimensions_.get ();
+}
+
+header::dimensions_type& header::
+dimensions ()
+{
+  return this->dimensions_.get ();
+}
+
+void header::
+dimensions (const dimensions_type& x)
+{
+  this->dimensions_.set (x);
+}
+
+const header::parallelized_type& header::
+parallelized () const
+{
+  return this->parallelized_.get ();
+}
+
+header::parallelized_type& header::
+parallelized ()
+{
+  return this->parallelized_.get ();
+}
+
+void header::
+parallelized (const parallelized_type& x)
+{
+  this->parallelized_.set (x);
+}
+
+const header::vectorized_type& header::
+vectorized () const
+{
+  return this->vectorized_.get ();
+}
+
+header::vectorized_type& header::
+vectorized ()
+{
+  return this->vectorized_.get ();
+}
+
+void header::
+vectorized (const vectorized_type& x)
+{
+  this->vectorized_.set (x);
+}
+
 
 // checkpoints
 // 
@@ -3815,7 +3869,10 @@ header (const base_name_type& base_name,
         const delta_t_type& delta_t,
         const output_frequency_type& output_frequency,
         const output_file_type& output_file,
-        const seed_type& seed)
+        const seed_type& seed,
+        const dimensions_type& dimensions,
+        const parallelized_type& parallelized,
+        const vectorized_type& vectorized)
 : ::xml_schema::type (),
   base_name_ (base_name, this),
   t_start_ (this),
@@ -3823,7 +3880,10 @@ header (const base_name_type& base_name,
   delta_t_ (delta_t, this),
   output_frequency_ (output_frequency, this),
   output_file_ (output_file, this),
-  seed_ (seed, this)
+  seed_ (seed, this),
+  dimensions_ (dimensions, this),
+  parallelized_ (parallelized, this),
+  vectorized_ (vectorized, this)
 {
 }
 
@@ -3838,7 +3898,10 @@ header (const header& x,
   delta_t_ (x.delta_t_, f, this),
   output_frequency_ (x.output_frequency_, f, this),
   output_file_ (x.output_file_, f, this),
-  seed_ (x.seed_, f, this)
+  seed_ (x.seed_, f, this),
+  dimensions_ (x.dimensions_, f, this),
+  parallelized_ (x.parallelized_, f, this),
+  vectorized_ (x.vectorized_, f, this)
 {
 }
 
@@ -3853,7 +3916,10 @@ header (const ::xercesc::DOMElement& e,
   delta_t_ (this),
   output_frequency_ (this),
   output_file_ (this),
-  seed_ (this)
+  seed_ (this),
+  dimensions_ (this),
+  parallelized_ (this),
+  vectorized_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -3913,6 +3979,24 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       this->seed_.set (seed_traits::create (i, f, this));
       continue;
     }
+
+    if (n.name () == "dimensions" && n.namespace_ ().empty ())
+    {
+      this->dimensions_.set (dimensions_traits::create (i, f, this));
+      continue;
+    }
+
+    if (n.name () == "parallelized" && n.namespace_ ().empty ())
+    {
+      this->parallelized_.set (parallelized_traits::create (i, f, this));
+      continue;
+    }
+
+    if (n.name () == "vectorized" && n.namespace_ ().empty ())
+    {
+      this->vectorized_.set (vectorized_traits::create (i, f, this));
+      continue;
+    }
   }
 
   if (!base_name_.present ())
@@ -3956,6 +4040,27 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "seed",
       "");
   }
+
+  if (!dimensions_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "dimensions",
+      "");
+  }
+
+  if (!parallelized_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "parallelized",
+      "");
+  }
+
+  if (!vectorized_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "vectorized",
+      "");
+  }
 }
 
 header* header::
@@ -3978,6 +4083,9 @@ operator= (const header& x)
     this->output_frequency_ = x.output_frequency_;
     this->output_file_ = x.output_file_;
     this->seed_ = x.seed_;
+    this->dimensions_ = x.dimensions_;
+    this->parallelized_ = x.parallelized_;
+    this->vectorized_ = x.vectorized_;
   }
 
   return *this;
@@ -6426,6 +6534,39 @@ operator<< (::xercesc::DOMElement& e, const header& i)
         e));
 
     a << i.seed ();
+  }
+
+  // dimensions
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "dimensions",
+        e));
+
+    a << i.dimensions ();
+  }
+
+  // parallelized
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "parallelized",
+        e));
+
+    a << i.parallelized ();
+  }
+
+  // vectorized
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "vectorized",
+        e));
+
+    a << i.vectorized ();
   }
 }
 

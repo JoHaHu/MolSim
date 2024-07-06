@@ -42,13 +42,16 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
 
         config::Config config = config::Config();
 
-        // Header parsing
-        config.base_name = sc.header().base_name();
-        config.end_time = sc.header().t_end();
-        config.output_frequency = sc.header().output_frequency();
-        config.output_file = sc.header().output_file();
-        config.seed = sc.header().seed();
-        config.delta_t = sc.header().delta_t();
+    // Header parsing
+    config.base_name = sc.header().base_name();
+    config.end_time = sc.header().t_end();
+    config.output_frequency = sc.header().output_frequency();
+    config.output_file = sc.header().output_file();
+    config.seed = sc.header().seed();
+    config.delta_t = sc.header().delta_t();
+    config.parallelized = sc.header().parallelized();
+    config.vectorized = sc.header().vectorized();
+    config.dimensions = sc.header().dimensions();
 
         /** Particle Loader choice **/
 

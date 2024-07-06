@@ -93,15 +93,31 @@ auto main(int argc, char *argv[]) -> int {
   auto config = config::Config::parse_config(argc, argv);
   LoggerManager::setup_logger(*config);
 
-  auto simulator = setup<3>(config);
+  // Needs to be initialized and get overwritten
+  std::chrono::high_resolution_clock::time_point startTime;
 
-  const auto startTime = std::chrono::high_resolution_clock::now();
+  if (config->dimensions == 2) {
 
-  if (config->output_frequency == 0) {
-    simulator.run<false>();
+    auto simulator = setup<2>(config);
+    startTime = std::chrono::high_resolution_clock::now();
+    if (config->output_frequency == 0) {
+      simulator.run<false>();
+    } else {
+      simulator.run<true>();
+    }
+  } else if (config->dimensions == 3) {
+
+    auto simulator = setup<3>(config);
+    startTime = std::chrono::high_resolution_clock::now();
+    if (config->output_frequency == 0) {
+      simulator.run<false>();
+    } else {
+      simulator.run<true>();
+    }
   } else {
-    simulator.run<true>();
+    SPDLOG_ERROR("Unsupported dimension");
   }
+
   auto endTime = std::chrono::high_resolution_clock::now();
   auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
   auto rate = (double) durationMs.count() / (config->end_time / config->delta_t);
