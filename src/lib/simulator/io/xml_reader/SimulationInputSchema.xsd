@@ -1,191 +1,249 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
     <!-- Define the root element -->
-    <xs:element name="Data">
+    <xs:element name="scenario">
         <xs:complexType>
-            <xs:sequence>
+            <xs:all>
                 <!-- Header element with attributes globally defined for the whole simulation -->
                 <xs:element name="header">
                     <xs:complexType>
                         <xs:attribute name="base_name" type="xs:string" use="required"/>
+                        <xs:attribute name="t_start" type="positive_double"/>
                         <xs:attribute name="t_end" type="positive_double" use="required"/>
+                        <xs:attribute name="delta_t" type="xs:double" use="required"/>
                         <xs:attribute name="output_frequency" type="positive_int" use="required"/>
-                        <xs:attribute name="output_file_name" type="xs:string" use="required"/>
+                        <xs:attribute name="output_file" type="xs:string" use="required"/>
                         <xs:attribute name="seed" type="xs:int" use="required"/>
                     </xs:complexType>
                 </xs:element>
+                <xs:element minOccurs="0" name="checkpoints">
+                    <xs:complexType>
+                        <xs:sequence maxOccurs="unbounded" minOccurs="0">
+                            <xs:element name="checkpoint" type="xs:string"/>
+                        </xs:sequence>
+                        <xs:attribute name="path" type="xs:string"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="thermostat" minOccurs="0">
+                    <xs:complexType>
+                        <xs:attribute name="t_init" type="xs:double" use="required"/>
+                        <xs:attribute name="t_target" type="xs:double"/>
+                        <xs:attribute name="frequency" type="xs:integer" use="required"/>
+                        <xs:attribute name="max_temp_diff" type="xs:double"/>
+                        <xs:attribute name="brownian_motion" type="xs:double"/>
+                    </xs:complexType>
+                </xs:element>
 
-                <!-- Choice of particle loader -->
-                <xs:choice>
-                    <xs:element name="linked_cells">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:element name="domain_size" type="double_array"/>
-                                <xs:element name="boundary_conditions">
-                                    <xs:complexType>
-                                        <xs:sequence minOccurs="6" maxOccurs="6">
-                                            <xs:element name="boundary_condition">
-                                                <xs:complexType>
-                                                    <xs:attribute name="type" type="xs:string" use="required"/>
-                                                </xs:complexType>
-                                            </xs:element>
-                                        </xs:sequence>
-                                    </xs:complexType>
-                                </xs:element>
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>
-                    <xs:element name="vector" type="xs:boolean"/>
-                </xs:choice>
 
-                <!-- Choice of simulation type -->
-                <xs:choice>
-                    <!-- Gravity simulation -->
-                    <xs:element name="gravity">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:element name="total_bodies" type="positive_double"/>
-                                <xs:element name="cutoff_radius" type="positive_double"/>
-                                <xs:element name="celestial_body" type="celestial_body" maxOccurs="unbounded"/>
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>
+                <xs:element name="container">
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="linked_cells">
+                                <xs:complexType>
+                                    <xs:all>
+                                        <xs:element name="domain_size">
+                                            <xs:complexType>
+                                                <xs:attributeGroup ref="double_array"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="boundary_conditions">
+                                            <xs:complexType>
+                                                <xs:sequence minOccurs="4" maxOccurs="6">
+                                                    <xs:element name="boundary_condition">
+                                                        <xs:complexType>
+                                                            <xs:attribute name="type" type="xs:string" use="required"/>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:all>
+                                    <xs:attribute name="cutoff_radius" type="positive_double" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="vector" type="xs:string" fixed=""/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
 
-                    <!-- Lennard-Jones simulation -->
-                    <xs:element name="lennard_jones">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <!-- Constants that are set globally for the simulation and not specific to any cuboid or disc -->
-                                <xs:element name="settings">
-                                    <xs:complexType>
-                                        <xs:attribute name="delta_t" type="xs:double" use="required"/>
-                                        <xs:attribute name="sigma" type="xs:double" use="required"/>
-                                        <xs:attribute name="epsilon" type="xs:double" use="required"/>
-                                        <xs:attribute name="mass_m" type="xs:double" use="required"/>
-                                        <xs:attribute name="distance_h" type="xs:double" use="required"/>
-                                        <xs:attribute name="brown_motion" type="xs:double" use="required"/>
-                                        <xs:attribute name="cutoff_radius" type="positive_double" use="required"/>
-                                    </xs:complexType>
-                                </xs:element>
 
-                                <!-- Choice between cuboids and discs -->
-                                <xs:choice>
-                                    <xs:element name="cuboids">
-                                        <xs:complexType>
-                                            <xs:sequence>
-                                                <xs:element name="Cuboid" type="cuboid" maxOccurs="unbounded"/>
-                                            </xs:sequence>
-                                        </xs:complexType>
-                                    </xs:element>
-                                    <xs:element name="discs">
-                                        <xs:complexType>
-                                            <xs:sequence>
-                                                <xs:element name="Disc" type="disc" maxOccurs="unbounded"/>
-                                            </xs:sequence>
-                                        </xs:complexType>
-                                    </xs:element>
-                                    <xs:element name="spheres">
-                                        <xs:complexType>
-                                            <xs:sequence>
-                                                <xs:element name="Sphere" type="sphere" maxOccurs="unbounded"/>
-                                            </xs:sequence>
-                                        </xs:complexType>
-                                    </xs:element>
-                                    <xs:element name="tori">
-                                        <xs:complexType>
-                                            <xs:sequence>
-                                                <xs:element name="Torus" type="torus" maxOccurs="unbounded"/>
-                                            </xs:sequence>
-                                        </xs:complexType>
-                                    </xs:element>
-                                    <xs:element name="double_helices">
-                                        <xs:complexType>
-                                            <xs:sequence>
-                                                <xs:element name="double_helix" type="double_helix" maxOccurs="unbounded"/>
-                                            </xs:sequence>
-                                        </xs:complexType>
-                                    </xs:element>
-                                </xs:choice>
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>
-                </xs:choice>
-            </xs:sequence>
+                <xs:element name="forces">
+                    <xs:complexType>
+                        <xs:choice>
+                            <!-- Gravity simulation -->
+                            <xs:element name="gravity" type="xs:double"/>
+                            <!-- Lennard-Jones simulation -->
+                            <xs:element name="lennard_jones">
+                                <xs:complexType>
+                                    <xs:all>
+                                        <xs:element name="particleTypes">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="particleType" maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:attribute name="id" type="xs:integer" use="required"/>
+                                                            <xs:attribute name="sigma" type="xs:double" use="required"/>
+                                                            <xs:attribute name="epsilon" type="xs:double"
+                                                                          use="required"/>
+                                                            <xs:attribute name="mass" type="xs:double" use="required"/>
+                                                        </xs:complexType>
+
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="gravity" minOccurs="0" type="xs:double">
+                                        </xs:element>
+                                        <xs:element name="particles" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:choice>
+                                                        <xs:element name="cuboid" type="cuboid"
+                                                                    maxOccurs="unbounded"/>
+                                                        <xs:element name="disc" type="disc"
+                                                                    maxOccurs="unbounded"/>
+                                                        <xs:element name="sphere" type="sphere"
+                                                                    maxOccurs="unbounded"/>
+                                                        <xs:element name="torus" type="torus"
+                                                                    maxOccurs="unbounded"/>
+                                                        <xs:element name="doubleHelix" type="double_helix"
+                                                                    maxOccurs="unbounded"/>
+                                                    </xs:choice>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:all>
+                                </xs:complexType>
+                                <xs:key name="particleTypeId" id="particleTypeId">
+                                    <xs:selector xpath="particleTypes/particleType"/>
+                                    <xs:field xpath="@id"/>
+                                </xs:key>
+                                <xs:keyref name="cuboid_particleTypeId"
+                                           refer="particleTypeId">
+                                    <xs:selector xpath="particles/cuboid"/>
+                                    <xs:field xpath="@particleTypeId"/>
+                                </xs:keyref>
+                                <xs:keyref name="helix_particleTypeId"
+                                           refer="particleTypeId">
+                                    <xs:selector xpath="particles/doubleHelix"/>
+                                    <xs:field xpath="@particleTypeId"/>
+                                </xs:keyref>
+                                <xs:keyref name="torus_particleTypeId"
+                                           refer="particleTypeId">
+                                    <xs:selector xpath="particles/torus"/>
+                                    <xs:field xpath="@particleTypeId"/>
+                                </xs:keyref>
+                                <xs:keyref name="sphere_particleTypeId"
+                                           refer="particleTypeId">
+                                    <xs:selector xpath="particles/sphere"/>
+                                    <xs:field xpath="@particleTypeId"/>
+                                </xs:keyref>
+                                <xs:keyref name="disc_particleTypeId"
+                                           refer="particleTypeId">
+                                    <xs:selector xpath="particles/disc"/>
+                                    <xs:field xpath="@particleTypeId"/>
+                                </xs:keyref>
+                            </xs:element>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+            </xs:all>
         </xs:complexType>
     </xs:element>
 
     <!-- Definition of celestial body described by 2 integer arrays and 1 double -->
     <xs:complexType name="celestial_body">
-        <xs:sequence>
-            <xs:element name="coordinate" type="double_array"/>
-            <xs:element name="velocity" type="double_array"/>
+        <xs:all>
+            <xs:element name="coordinate" type="coordinate"/>
+            <xs:element name="velocity" type="velocity"/>
             <xs:element name="mass" type="positive_double"/>
-        </xs:sequence>
+        </xs:all>
     </xs:complexType>
 
     <!-- Definition of cuboid described by 3 integer arrays -->
     <xs:complexType name="cuboid">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="coordinate"
-                        type="double_array"/>  <!-- defined as the lower left front particle coordinate -->
-            <xs:element name="particle_counts" type="double_array"/>
-            <xs:element name="velocity" type="double_array"/>
-        </xs:sequence>
+                        type="coordinate"/>  <!-- defined as the lower left front particle coordinate -->
+            <xs:element name="dimensions" type="dimensions"/>
+            <xs:element name="velocity" type="velocity"/>
+        </xs:all>
+        <xs:attribute name="particleTypeId" type="xs:integer" use="required"/>
+        <xs:attribute name="spacing" type="xs:double"/>
     </xs:complexType>
 
     <!-- Definition of disc described by 2 integer arrays and 1 double -->
     <xs:complexType name="disc">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="coordinate"
-                        type="double_array"/>  <!-- defined as the center particle coordinate -->
-            <xs:element name="velocity" type="double_array"/>
+                        type="coordinate"/>  <!-- defined as the center particle coordinate -->
+            <xs:element name="velocity" type="velocity"/>
             <xs:element name="radius"
                         type="positive_int"/>  <!-- defined as the amount of particle along the radius of the disc -->
-        </xs:sequence>
+        </xs:all>
+
+        <xs:attribute name="particleTypeId" type="xs:integer" use="required"/>
     </xs:complexType>
 
     <!-- Definition of sphere described by 2 integer arrays and 2 doubles -->
     <xs:complexType name="sphere">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="coordinate"
-                        type="double_array"/>  <!-- defined as the center particle coordinate -->
-            <xs:element name="velocity" type="double_array"/>
+                        type="coordinate"/>  <!-- defined as the center particle coordinate -->
+            <xs:element name="velocity" type="velocity"/>
             <xs:element name="radius"
                         type="positive_int"/>  <!-- defined as the amount of particle along the radius of the sphere -->
-        </xs:sequence>
+        </xs:all>
+        <xs:attribute name="mesh_width" type="xs:double" use="required"/>
+        <xs:attribute name="particleTypeId" type="xs:integer" use="required"/>
     </xs:complexType>
 
     <!-- Definition of torus described by 2 integer arrays and 2 doubles -->
     <xs:complexType name="torus">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="coordinate"
-                        type="double_array"/>  <!-- coordinate is defined as the center particle coordinate -->
-            <xs:element name="velocity" type="double_array"/>
+                        type="coordinate"/>  <!-- coordinate is defined as the center particle coordinate -->
+            <xs:element name="velocity" type="velocity"/>
             <xs:element name="major_radius" type="positive_double"/>
             <xs:element name="minor_radius" type="positive_double"/>
-        </xs:sequence>
+        </xs:all>
+
+        <xs:attribute name="particleTypeId" type="xs:integer" use="required"/>
     </xs:complexType>
 
     <!-- Definition of a double helix described by 2 integer arrays and 3 doubles -->
     <xs:complexType name="double_helix">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="coordinate"
-                        type="double_array"/>  <!-- coordinate is defined as the center particle coordinate -->
-            <xs:element name="velocity" type="double_array"/>
+                        type="coordinate"/>  <!-- coordinate is defined as the center particle coordinate -->
+            <xs:element name="velocity" type="velocity"/>
             <xs:element name="radius" type="positive_double"/>
             <xs:element name="pitch" type="positive_double"/>
             <xs:element name="height" type="positive_double"/>
-        </xs:sequence>
+        </xs:all>
+
+        <xs:attribute name="particleTypeId" type="xs:integer" use="required"/>
     </xs:complexType>
 
     <!-- Definition of intArray as an array of 3 integers -->
-    <xs:complexType name="double_array">
-        <xs:sequence>
-            <xs:element name="value" type="xs:double" maxOccurs="3" minOccurs="3"/>
-        </xs:sequence>
+
+    <xs:attributeGroup name="double_array">
+        <xs:attribute name="x" type="xs:double" use="required"/>
+        <xs:attribute name="y" type="xs:double" use="required"/>
+        <xs:attribute name="z" type="xs:double"/>
+    </xs:attributeGroup>
+
+    <xs:complexType name="coordinate">
+        <xs:attributeGroup ref="double_array"/>
+    </xs:complexType>
+
+    <xs:complexType name="velocity">
+        <xs:attributeGroup ref="double_array"/>
+    </xs:complexType>
+
+    <xs:complexType name="dimensions">
+        <xs:attributeGroup ref="double_array"/>
     </xs:complexType>
 
     <xs:simpleType name="positive_int">

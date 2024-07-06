@@ -23,7 +23,7 @@ PR: https://github.com/JoHaHu/MolSim/pull/27
 
 #### New implementation - molecular collision
 - New tests for Lennard-Jones forces, also with manually pre-calculated expected results
-- Testing behavior of calculate_force function to confirm proper calculation
+- Testing behavior of calculate_force_vectorized function to confirm proper calculation
 - Used mainly/only expects and not asserts because one non-matching value does not mean that everything else is wrong, too
 - Expects and therefore continuation of testing can give valuable feedback about where exactly a mistake could have happened
 
@@ -49,11 +49,11 @@ PR: https://github.com/JoHaHu/MolSim/pull/27
 
 ### Task 4 - Collision Simulation
 
-- Created a function to generate particles arranged in a 3D grid
+- Created a function to generate particle_pages arranged in a 3D grid
 - Checked for and handled invalid data in the input cuboid parameters
 - Calculated particle positions based on grid dimensions and spacing
 - Initialized particle velocities with a predefined distribution.
-- Stored the generated particles efficiently in a vector
+- Stored the generated particle_pages efficiently in a vector
 
 
 

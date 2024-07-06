@@ -11,26 +11,15 @@
 #include <array>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-
 /**
  * definition of an enum class that gives information about the desired ParticleLoader
  */
 enum class ParticleContainerType {
   LinkedCells,
   Vector
-};
-
-/**
- * definition of an enum class that gives information about the desired simulated body type in Lennard Jones
- */
-enum class BodyType {
-  Cub,
-  Dis,
-  Sph,
-  Tor,
-  Hel
 };
 
 /**
@@ -65,7 +54,7 @@ class Config {
   /**
    * the output file name
    */
-  std::string output_filename;
+  std::string output_file;
 
   /**
    * an enum value that gives information about the desired simulation type
@@ -75,19 +64,14 @@ class Config {
   /**
    * an enum value that gives information about the desired simulation type
    */
-  ParticleContainerType particle_loader_type{};
-
-  /**
-   * an enum value that gives information about the desired simulated body type in Lennard Jones
-   */
-  BodyType body_type{};
+  ParticleContainerType particle_container_type{};
 
   /**
    * an array to store the domain size for the linked-cells algorithm
    */
-  std::array<double, 3> domain_size{};
+  std::vector<double> domain_size{};
 
-  std::array<BoundaryCondition, 6> boundary_conditions;
+  std::vector<BoundaryCondition> boundary_conditions;
 
   /**
    * the total amount of celestial bodies in the gravitational planetary simulation
@@ -102,22 +86,27 @@ class Config {
   /**
    * the sigma value used in the calculation of Lennard-Jones forces
    */
-  double sigma{};
+  std::vector<double> sigma{};
 
   /**
    * the epsilon value used in the calculation of Lennard-Jones forces
    */
-  double epsilon{};
+  std::vector<double> epsilon{};
 
   /**
    * the mass of one particle in a disc or cuboid
    */
-  double mass_m{};
+  std::vector<double> mass{};
 
   /**
-   * the distance h between particles (mesh width of the grid) in cuboid or disc simulation
-   */
-  double distance_h{};
+   * gravity constant used with ljf
+   * */
+  double ljf_gravity;
+
+  /**
+   * If to apply browninan motion
+   * */
+  bool use_brownian_motion{};
 
   /**
    * average brownian motion velocity
@@ -125,9 +114,39 @@ class Config {
   double brownian_motion{};
 
   /**
+   * Initial temperature
+   * */
+  double temp_init;
+
+  /**
+   * target temperature
+   * */
+  std::optional<double> temp_target;
+
+  /**
+   * maximum temperature difference
+   * */
+  std::optional<double> max_temp_diff;
+
+  /**
+   * timestep between aplications of the thermostat
+   * */
+  long thermo_step;
+
+  /**
    * the cutoff radius for the linked-cells algorithm
    */
   double cutoff_radius{};
+
+  /**
+   * path where the checkpoint is stored
+   * */
+  std::optional<std::string> output_checkpoint;
+
+  /**
+   * Input checkpoints
+   * */
+  std::vector<std::string> input_checkpoints;
 
   /**
    * a vector that can store multiple celestial bodies for simulation defined in the CelestialBody class

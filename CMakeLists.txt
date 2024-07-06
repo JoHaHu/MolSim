@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.24.1)
 project(PSEMolDyn_GroupD VERSION 0.0.1 LANGUAGES CXX)
 
 # let ccmake and cmake-gui offer the default build type options
-set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel")
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel;Profile")
 
 cmake_policy(SET CMP0135 NEW)
 
@@ -41,14 +41,16 @@ target_include_directories(simulator
 
 target_link_libraries(simulator
         PUBLIC
+        #        asan
         spdlog::spdlog
+        XercesC::XercesC
         range-v3::range-v3
-        xerces-c
+
 )
 
 target_compile_features(simulator
         PRIVATE
-        cxx_std_23
+        cxx_std_20
 )
 
 
@@ -56,8 +58,8 @@ target_compile_options(simulator
         PRIVATE
         $<$<CXX_COMPILER_ID:GNU>:-Wall -march=native>
         # disable some spam warnings for icpc...
-        $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>
-        $<$<CXX_COMPILER_ID:Clang>:-Wall -march=native>
+        $<$<CXX_COMPILER_ID:Intel>:-w3 -march=native -Xhost -wd383,981,1418,1572,2259>
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -g -march=native >
 )
 get_target_property(SIMULATOR_INCLUDES simulator INCLUDE_DIRECTORIES)
 
@@ -72,7 +74,7 @@ add_executable(MolSim src/bin/MolSim.cpp)
 # set cxx standard. You may raise this if you want.
 target_compile_features(MolSim
         PRIVATE
-        cxx_std_23
+        cxx_std_20
 )
 
 target_include_directories(MolSim
@@ -94,41 +96,84 @@ endif ()
 
 target_compile_options(MolSim
         PRIVATE
-        $<$<CXX_COMPILER_ID:GNU>:-Wall -g -march=native>
+        $<$<CXX_COMPILER_ID:GNU>:-Wall -march=native>
         # disable some spam warnings for icpc...
-        $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>
-        $<$<CXX_COMPILER_ID:Clang>:-Wall -g -march=native>
+        $<$<CXX_COMPILER_ID:Intel>:-w3 -march=native -Xhost -xCORE-AVX512 -wd383,981,1418,1572,2259>
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -march=native   #[[ -fsanitize=address,leak]] >
 )
 
 
 # Configure Debug and Release specific options
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -Wstrict-overflow -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling #[[-fsanitize=address]] >
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -Wstrict-overflow -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:Clang>: -O0 -g -fno-omit-frame-pointer -fdebug-info-for-profiling #[[-fsanitize=address]] >
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
     target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
-
+    target_compile_definitions(MolSim PUBLIC DEBUG=true)
+    target_compile_definitions(simulator PUBLIC DEBUG=true)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(simulator
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
-            $<$<CXX_COMPILER_ID:GNU>: -O3>
+            $<$<CXX_COMPILER_ID:Intel>: -O3 -ipo -fast -mprefer-vector-width=512 -fvectorize -fprof-use=../profiles/default.profdata>
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -mprefer-vector-width=512 #[[-fsanitize=address]] -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize >
+            $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize -mprefer-vector-width=512>
     )
     target_compile_options(MolSim
             PRIVATE
-            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
-            $<$<CXX_COMPILER_ID:GNU>: -O3 >
+            $<$<CXX_COMPILER_ID:Intel>: -O3 -ipo -fast -mprefer-vector-width=512 -fvectorize -fprof-use=../profiles/default.profdata>
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -mprefer-vector-width=512  #[[-fsanitize=address]]  -fprofile-instr-use=../profiles/default.profdata -fvectorize -Rpass=vectorize >
+            $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize -mprefer-vector-width=512>
     )
     target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
     target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
 
+    target_link_options(simulator
+            PRIVATE
+            $<$<CXX_COMPILER_ID:Clang>: -Wl -fprofile-use=../profiles/default.profdata>
 
+    )
+    target_link_options(MolSim
+            PRIVATE
+            $<$<CXX_COMPILER_ID:Clang>: -Wl -fprofile-use=../profiles/default.profdata >
+
+    )
+
+
+elseif (CMAKE_BUILD_TYPE STREQUAL "Profile")
+    target_compile_options(simulator
+            PRIVATE
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -mprefer-vector-width=512 -fcs-profile-generate=../profiles -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:Intel>: -O3 -ipo -fast Rpass=loop-vectorize -mprefer-vector-width=512 -fprof-gen=../profiles -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize -mprefer-vector-width=512>
+    )
+    target_compile_options(MolSim
+            PRIVATE
+            $<$<CXX_COMPILER_ID:Clang>: -O3 -Rpass=loop-vectorize -mprefer-vector-width=512 -fcs-profile-generate=../profiles -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:Intel>: -O3 -ipo -fast -Rpass=loop-vectorize -mprefer-vector-width=512 -fprof-gene=../profiles -fvectorize -Rpass-missed=loop-vectorize -fno-omit-frame-pointer -fdebug-info-for-profiling>
+            $<$<CXX_COMPILER_ID:GNU>: -O3 -ftree-vectorize -mprefer-vector-width=512>
+    )
+    target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+    target_compile_definitions(simulator PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+
+    target_link_options(simulator
+            PRIVATE
+            $<$<CXX_COMPILER_ID:Clang>: -Wl -fcs-profile-generate=../profiles >
+            $<$<CXX_COMPILER_ID:Intel>: -Wl -fprof-gen=../profiles >
+
+    )
+    target_link_options(MolSim
+            PRIVATE
+            $<$<CXX_COMPILER_ID:Clang>: -Wl -fcs-profile-generate=../profiles >
+            $<$<CXX_COMPILER_ID:Intel>: -Wl -fprof-gen=../profiles >
+
+    )
 endif ()
 
 
@@ -136,7 +181,3 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 include(doxygen)
 include(spdlog)
 include(g_test)
-
-# include the ranges-v3 library because std::ranges::concat_view is not available yet
-# and ranges-v3 is the basis for the implementation of the std::ranges library
-include(ranges-v3)

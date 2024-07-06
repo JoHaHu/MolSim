@@ -33,8 +33,8 @@ PR: https://github.com/JoHaHu/MolSim/pull/50
 
 ### Task 2 - Linked-cell algorithm
 
-- Implemented linked cells with a linear array of cells containing references to particles.
-- All particles are stored sequential in a memory arena, that allows to keep static references and mark elements as
+- Implemented linked cells with a linear array of cells containing references to particle_pages.
+- All particle_pages are stored sequential in a memory arena, that allows to keep static references and mark elements as
   iterating and skip while iterating
 - Compared runtime per iteration for naive and linked-cell implementations.
 - Visualized runtime comparisons for different molecule counts (1000, 2000, 4000, 8000) in a plot, embedded in Doxygen
@@ -47,13 +47,13 @@ PR: https://github.com/JoHaHu/MolSim/pull/50
 
 ### Task 3 - Boundary conditions
 
-- Implemented outflow boundary condition: particles are removed when they cross the domain boundary.
-- Implemented reflecting boundary condition: particles reflect off the boundary using "counter"-particles based on the
+- Implemented outflow boundary condition: particle_pages are removed when they cross the domain boundary.
+- Implemented reflecting boundary condition: particle_pages reflect off the boundary using "counter"-particle_pages based on the
   Lennard-Jones potential.
 - Adapted XML input to specify boundary conditions for each domain boundary.
-- Ensured particles remain inside the domain and maintained the qualitative behavior of particles.
+- Ensured particle_pages remain inside the domain and maintained the qualitative behavior of particle_pages.
 - Performed unit tests for each boundary condition to ensure correctness and stability.
-- The time step delta t must be small to ensure stability because larger steps can cause particles to cross boundaries
+- The time step delta t must be small to ensure stability because larger steps can cause particle_pages to cross boundaries
   before the reflecting forces are accurately applied.
 
 ### Task 4 - Simulation of a falling drop - Wall
@@ -63,7 +63,7 @@ PR: https://github.com/JoHaHu/MolSim/pull/50
         - Center coordinates
         - Initial velocity
         - Radius in terms of the number of molecules along the radius
-        - Meshwidth (distance between molecules)
+        - Meshwidth (reflecting_distance between molecules)
 - Adapted the XML input format to include the new disc properties.
 - Conducted the simulation with a disc flying against a reflecting boundary using specified parameters.
     - Parameters: xcenter = {60, 25, 0}, v = {0, −10, 0}, m = 1.0, R = 15, h ≈ 1.1225, ϵ = 5, σ = 1, ∆t = 0.00005,

@@ -39,6 +39,8 @@
 # This rule ignores any folder in the project root that contains "build"
 /*build*/
 
+/profiles/*.profraw
+
 
 # doxygen documentation
 doxys_documentation/

@@ -1,38 +1,53 @@
 #pragma once
 
 #include "Particle.h"
-#include "index.h"
-#include "linked_cell.h"
+#include "container/linked_cell.h"
 #include "utils/variants.h"
-#include <ranges>
 #include <vector>
 namespace container {
 
-using particle_container_variant = std::variant<std::vector<Particle>,
-                                                linked_cell<index::row_major_index>,
-                                                linked_cell<index::half_index>,
-                                                linked_cell<index::morton_index>,
-                                                linked_cell<index::power_index>>;
+template<const size_t DIMENSIONS>
+using ParticleContainerVariant = std::variant<Particles<DIMENSIONS>,
+                                              LinkedCell<DIMENSIONS>>;
 
 /*!
  * @brief A variant-based particle container supporting multiple underlying data structures.
  * @image html submission/worksheet3/media/Benchmark.png
  */
-struct particle_container {
+
+template<const size_t DIMENSIONS>
+struct ParticleContainer {
+
  public:
-  explicit particle_container(particle_container_variant &&var) : var(std::move(var)) {}
+  explicit ParticleContainer(ParticleContainerVariant<DIMENSIONS> &&var) : var(std::move(var)) {
+  }
+
+  auto particles() -> Particles<DIMENSIONS> & {
+    return std::visit(overloaded{
+                          [](Particles<DIMENSIONS> &container) -> auto & {
+                            return container;
+                          },
+                          [](LinkedCell<DIMENSIONS> &c) -> auto & {
+                            return c.particles;
+                          }},
+                      var);
+  }
 
   /**
   * @brief Applies a function to each particle in the container.
   *
   * @param f Function to apply to each particle.
   */
-  auto linear(std::function<void(Particle &)> const &f) {
-    std::visit(overloaded{
-                   [&f](std::vector<Particle> &container) { std::ranges::for_each(container, f); },
-                   [&f](auto &container) { std::ranges::for_each(container.linear(), f); },
-               },
-               var);
+  template<typename C>
+  auto linear(C f) {
+    Particles<DIMENSIONS> &p = particles();
+    for (size_t index = 0; index < p.size; ++index) {
+      f(p, index);
+    };
+  }
+
+  auto swap_force() {
+    particles().swap_force();
   }
 
   /**
@@ -40,10 +55,34 @@ struct particle_container {
   *
   * @param f Function to apply to each pair of particles.
   */
-  auto pairwise(std::function<void(std::tuple<Particle &, Particle &>)> const &f) {
+  template<typename C>
+  auto pairwise(C f) {
     std::visit(overloaded{
-                   [&f](std::vector<Particle> &container) { std::ranges::for_each(container | combination, f); },
-                   [&f](auto &container) { std::ranges::for_each(container.pairwise(), f); }},
+                   [&](LinkedCell<DIMENSIONS> &lc) { lc.pairwise(f); },
+                   [&](Particles<DIMENSIONS> &p) {
+                     for (size_t index = 0; index < p.size - 1; ++index) {
+                       auto p1 = p.load_vectorized_single(index);
+                       size_v index_vector_tmp = 0;
+                       for (size_t i = 0; i < size_v::size(); ++i) {
+                         index_vector_tmp[i] = i;
+                       }
+                       const auto index_vector = index_vector_tmp;
+                       size_t i = 0;
+                       while (index + 1 + (i * double_v::size()) < p.size) {
+                         auto active_mask = index_vector + 1 + (i * double_v::size()) < p.size;
+                         auto p2 = p.load_vectorized(index + 1 + (i * double_v::size()));
+                         auto mask = stdx::static_simd_cast<double_v>(active_mask) && p2.active;
+                         std::array<double_v, DIMENSIONS> correction;
+                         for (int j = 0; j < DIMENSIONS; ++j) {
+                           correction[i] = double_v(0.0);
+                         }
+                         f(p1, p2, mask, correction);
+                         p.store_force_vector(p2, index + 1 + (i * double_v::size()));
+                         i++;
+                       }
+                       p.store_force_single(p1, index);
+                     }
+                   }},
                var);
   }
 
@@ -53,26 +92,7 @@ struct particle_container {
   * @return Size of the container.
   */
   auto size() -> size_t {
-    return std::visit(overloaded{
-                          [](std::vector<Particle> &c) { return c.size(); },
-                          [](auto &c) { return c.size(); },
-                      },
-                      var);
-  }
-
-  /**
-  * @brief Applies boundary conditions to the container.
-  *
-  * @param f Function to apply for boundary conditions.
-  */
-  auto boundary(std::function<void(std::tuple<Particle &, Particle &>)> const &f) {
-    std::visit(overloaded{
-                   [](std::vector<Particle> &container) {},
-                   [&f](auto &container) {
-                     calculate_boundary_condition(container, f);
-                   },
-               },
-               var);
+    return particles().size;
   }
 
   /**
@@ -80,10 +100,22 @@ struct particle_container {
   *
   * @param p Particle to insert.
   */
-  void insert(Particle &&p) {
+  void insert(Particle<DIMENSIONS> p) {
     std::visit(overloaded{
-                   [&p](std::vector<Particle> &container) { container.emplace_back(p); },
-                   [&p](auto &container) { container.insert(std::move(p)); }},
+                   [p](Particles<DIMENSIONS> &container) { container.insert_particle(p); },
+                   [p](LinkedCell<DIMENSIONS> &lc) {
+                     lc.insert(p);
+                   }},
+               var);
+  }
+  /**
+   * @brief applies boundary conditions, only effective when using linked cells
+   * */
+  template<typename Callable>
+  void boundary(Callable f) {
+    std::visit(overloaded{
+                   [](Particles<DIMENSIONS> &container) {},
+                   [&f](LinkedCell<DIMENSIONS> &lc) { lc.boundary(f); }},
                var);
   }
 
@@ -92,13 +124,13 @@ struct particle_container {
   */
   void refresh() {
     std::visit(overloaded{
-                   [](std::vector<Particle> &container) {},
-                   [](auto &container) { container.fix_positions(); }},
+                   [](Particles<DIMENSIONS> &container) {},
+                   [](LinkedCell<DIMENSIONS> &lc) { lc.fix_positions(); }},
                var);
   }
 
  private:
-  particle_container_variant var;
+  ParticleContainerVariant<DIMENSIONS> var;
 };
 
 }// namespace container
