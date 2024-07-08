@@ -93,7 +93,7 @@ class Thermostat {
     return currentTemperature;
   };
 
-private:
+ private:
   double t_init;
   double t_target;
   double delta_t;
@@ -107,9 +107,9 @@ private:
   auto calculateAverageVelocity(container::ParticleContainer<DIMENSIONS> &particles) -> std::array<double, DIMENSIONS> {
     std::array<double, DIMENSIONS> avg_velocity{};
     particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
-        for (size_t i = 0; i < DIMENSIONS; ++i) {
-            avg_velocity[i] += particles.velocities[i][index];
-        }
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
+        avg_velocity[i] += particles.velocities[i][index];
+      }
     });
     for (size_t i = 0; i < DIMENSIONS; ++i) {
       avg_velocity[i] /= particles.size();
@@ -124,9 +124,9 @@ private:
  */
   void adjustVelocities(container::ParticleContainer<DIMENSIONS> &particles, const std::array<double, DIMENSIONS> &avg_velocity) {
     particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
-        for (size_t i = 0; i < DIMENSIONS; ++i) {
-            particles.velocities[i][index] -= avg_velocity[i];
-        }
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
+        particles.velocities[i][index] -= avg_velocity[i];
+      }
     });
   }
 
@@ -137,9 +137,9 @@ private:
  */
   void restoreVelocities(container::ParticleContainer<DIMENSIONS> &particles, const std::array<double, DIMENSIONS> &avg_velocity) {
     particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
-        for (size_t i = 0; i < DIMENSIONS; ++i) {
-            particles.velocities[i][index] += avg_velocity[i];
-        }
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
+        particles.velocities[i][index] += avg_velocity[i];
+      }
     });
   }
 

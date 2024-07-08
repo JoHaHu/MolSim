@@ -66,7 +66,8 @@ get_target_property(SIMULATOR_INCLUDES simulator INCLUDE_DIRECTORIES)
 
 
 # create make target
-add_executable(MolSim src/bin/MolSim.cpp)
+add_executable(MolSim src/bin/MolSim.cpp
+        src/lib/simulator/physics/ProfileCalculator.h)
 
 
 # set cxx standard. You may raise this if you want.

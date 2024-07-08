@@ -13,49 +13,49 @@
  * Also contains a string returning function to enable the printing of cuboid specifications for testing and debugging.
  */
 class Cuboid {
-public:
-    std::vector<double> coordinates;
-    std::vector<double> particles;
-    std::vector<double> velocity;
-    double mass;
-    double spacing;
-    int type;
-    int fixed;
+ public:
+  std::vector<double> coordinates;
+  std::vector<double> particles;
+  std::vector<double> velocity;
+  double mass;
+  double spacing;
+  int type;
+  int fixed;
 
-    // Parameterized constructor
-    Cuboid(std::vector<double> &coordinates,
-           std::vector<double> &particles,
-           std::vector<double> &velocity,
-           double mass, double spacing, int type)
-            : coordinates(coordinates), particles(particles), velocity(velocity), mass(mass), spacing(spacing),
-              type(type), fixed(0) {};
+  // Parameterized constructor
+  Cuboid(std::vector<double> &coordinates,
+         std::vector<double> &particles,
+         std::vector<double> &velocity,
+         double mass, double spacing, int type)
+      : coordinates(coordinates), particles(particles), velocity(velocity), mass(mass), spacing(spacing),
+        type(type), fixed(0){};
 
-    // Constructor for fixed cuboids (additional parameter)
-    Cuboid(std::vector<double> &coordinates,
-           std::vector<double> &particles,
-           std::vector<double> &velocity,
-           double mass, double spacing, int type, int fixed)
-            : coordinates(coordinates), particles(particles), velocity(velocity), mass(mass), spacing(spacing),
-              type(type), fixed(fixed) {};
+  // Constructor for fixed cuboids (additional parameter)
+  Cuboid(std::vector<double> &coordinates,
+         std::vector<double> &particles,
+         std::vector<double> &velocity,
+         double mass, double spacing, int type, int fixed)
+      : coordinates(coordinates), particles(particles), velocity(velocity), mass(mass), spacing(spacing),
+        type(type), fixed(fixed){};
 
-    std::string toString() const {
-        std::string output;
-        output.append("Coordinates: " + arrayToString(coordinates));
-        output.append(" | Particle counts: " + arrayToString(particles));
-        output.append(" | Velocity: " + arrayToString(velocity));
-        return output;
+  std::string toString() const {
+    std::string output;
+    output.append("Coordinates: " + arrayToString(coordinates));
+    output.append(" | Particle counts: " + arrayToString(particles));
+    output.append(" | Velocity: " + arrayToString(velocity));
+    return output;
+  }
+
+  std::string arrayToString(const std::vector<double> &array) const {
+    std::ostringstream oss;
+    oss << "[";
+    for (std::size_t i = 0; i < array.size(); ++i) {
+      oss << array[i];
+      if (i < array.size() - 1) {
+        oss << ", ";
+      }
     }
-
-    std::string arrayToString(const std::vector<double> &array) const {
-        std::ostringstream oss;
-        oss << "[";
-        for (std::size_t i = 0; i < array.size(); ++i) {
-            oss << array[i];
-            if (i < array.size() - 1) {
-                oss << ", ";
-            }
-        }
-        oss << "]";
-        return oss.str();
-    }
+    oss << "]";
+    return oss.str();
+  }
 };
