@@ -32,10 +32,14 @@ class Thermostat {
   Thermostat() = default;
 
   /**
-     * @brief Applies the thermostat to adjust particle velocities.
-     * @param particles Container of particles to apply the thermostat to.
-     */
+   * @brief Applies the thermostat to adjust particle velocities.
+   *        This method adjusts velocities by ignoring the total velocity of the fluid.
+   * @param particles Container of particles to apply the thermostat to.
+   */
   void inline apply(container::ParticleContainer<DIMENSIONS> &particles) {
+    auto average_velocity = calculateAverageVelocity(particles);
+    adjustVelocities(particles, average_velocity);
+
     double current_temperature = calculateCurrentTemperature(particles);
     SPDLOG_DEBUG("Current temperature calculated: {}", current_temperature);
 
@@ -47,7 +51,9 @@ class Thermostat {
     double new_temperature = current_temperature + temp_difference;
     double scaling_factor = std::sqrt(new_temperature / current_temperature);
     SPDLOG_TRACE("Scaling velocities with factor: {}", scaling_factor);
+
     scaleVelocities(particles, scaling_factor);
+    restoreVelocities(particles, average_velocity);
   }
 
   /**
@@ -87,7 +93,56 @@ class Thermostat {
     return currentTemperature;
   };
 
- private:
+private:
+  double t_init;
+  double t_target;
+  double delta_t;
+  unsigned int seed;
+
+  /**
+ * @brief Calculates the average velocity of the particles.
+ * @param particles Container of particles.
+ * @return The average velocity as an array.
+ */
+  auto calculateAverageVelocity(container::ParticleContainer<DIMENSIONS> &particles) -> std::array<double, DIMENSIONS> {
+    std::array<double, DIMENSIONS> avg_velocity{};
+    particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
+        for (size_t i = 0; i < DIMENSIONS; ++i) {
+            avg_velocity[i] += particles.velocities[i][index];
+        }
+    });
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
+      avg_velocity[i] /= particles.size();
+    }
+    return avg_velocity;
+  }
+
+  /**
+ * @brief Adjusts the velocities by subtracting the average velocity.
+ * @param particles Container of particles.
+ * @param avg_velocity The average velocity to subtract.
+ */
+  void adjustVelocities(container::ParticleContainer<DIMENSIONS> &particles, const std::array<double, DIMENSIONS> &avg_velocity) {
+    particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
+        for (size_t i = 0; i < DIMENSIONS; ++i) {
+            particles.velocities[i][index] -= avg_velocity[i];
+        }
+    });
+  }
+
+  /**
+ * @brief Restores the velocities by adding back the average velocity after scaling.
+ * @param particles Container of particles.
+ * @param avg_velocity The average velocity to add back.
+ */
+  void restoreVelocities(container::ParticleContainer<DIMENSIONS> &particles, const std::array<double, DIMENSIONS> &avg_velocity) {
+    particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
+        for (size_t i = 0; i < DIMENSIONS; ++i) {
+            particles.velocities[i][index] += avg_velocity[i];
+        }
+    });
+  }
+
   /**
      * @brief Calculates the total kinetic energy of the system.
      * @param particles Container of particles.
@@ -117,9 +172,4 @@ class Thermostat {
       }
     });
   };
-
-  double t_init;
-  double t_target;
-  double delta_t;
-  unsigned int seed;
 };
