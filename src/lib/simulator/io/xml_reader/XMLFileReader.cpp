@@ -175,13 +175,13 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
                         if (flag == 1) {
                             auto temp_cuboid = Cuboid(coordinate, dimensions, velocity,
                                                       mass[cuboid.particleTypeId()], *cuboid.spacing(),
-                                                      static_cast<int>(cuboid.particleTypeId()), true);
+                                                      static_cast<int>(cuboid.particleTypeId()), 1);
                             temp_cuboids.emplace_back(temp_cuboid);
                         }
                     } else {
                         auto temp_cuboid = Cuboid(coordinate, dimensions, velocity,
                                                   mass[cuboid.particleTypeId()], *cuboid.spacing(),
-                                                  static_cast<int>(cuboid.particleTypeId()), false);
+                                                  static_cast<int>(cuboid.particleTypeId()), 0);
                         temp_cuboids.emplace_back(temp_cuboid);
                     }
                 }

@@ -12,57 +12,63 @@
  * */
 template<const size_t DIMENSIONS>
 class Particle {
- public:
-  /**
-   * Position of the particle
-   */
-  std::array<double, DIMENSIONS> position{};
+public:
+    /**
+     * Position of the particle
+     */
+    std::array<double, DIMENSIONS> position{};
 
-  /**
-   * Velocity of the particle
-   */
-  std::array<double, DIMENSIONS> velocity{};
+    /**
+     * Velocity of the particle
+     */
+    std::array<double, DIMENSIONS> velocity{};
 
-  /**
-   * Force effective on this particle
-   */
-  std::array<double, DIMENSIONS> force{};
+    /**
+     * Force effective on this particle
+     */
+    std::array<double, DIMENSIONS> force{};
 
-  /**
-   * Force which was effective on this particle
-   */
-  std::array<double, DIMENSIONS> old_force{};
+    /**
+     * Force which was effective on this particle
+     */
+    std::array<double, DIMENSIONS> old_force{};
 
-  /**
-   * Mass of this particle
-   */
-  double mass{};
+    /**
+     * Mass of this particle
+     */
+    double mass{};
 
-  /**
-   * Type of the particle. Use it for whatever you want (e.g. to separate
-   * molecules belonging to different bodies, matters, and so on)
-   */
-  int type;
+    /**
+     * Type of the particle. Use it for whatever you want (e.g. to separate
+     * molecules belonging to different bodies, matters, and so on)
+     */
+    int type;
 
-  Particle(const std::array<double, DIMENSIONS> &position,
-           const std::array<double, DIMENSIONS> &velocity,
-           const std::array<double, DIMENSIONS> &force,
-           const std::array<double, DIMENSIONS> &old_force,
-           double mass,
-           int type) : position(position), velocity(velocity), force(force), old_force(old_force), mass(mass), type(type) {}
+    /**
+     * Position flexibility. Specifies, whether the particle is fixed in position,
+     * e.g. being part of a wall like in nano tubes or free moving
+     */
+    uint8_t fixed{};
 
-  Particle(
-      // for visualization, we need always 3 coordinates
-      // -> in case of 2d, we use only the first and the second
-      std::array<double, DIMENSIONS> x_arg, std::array<double, DIMENSIONS> v_arg, double m_arg,
-      int type = 0) : position(x_arg), velocity(v_arg), mass(m_arg), type(type)
+    Particle(const std::array<double, DIMENSIONS> &position,
+             const std::array<double, DIMENSIONS> &velocity,
+             const std::array<double, DIMENSIONS> &force,
+             const std::array<double, DIMENSIONS> &old_force,
+             double mass,
+             int type,
+             int fixed ) : position(position), velocity(velocity), force(force), old_force(old_force), mass(mass),
+                         type(type), fixed(fixed) {}
 
-  {
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      force[i] = 0.0;
-      old_force[i] = 0.0;
+    Particle(
+            // for visualization, we need always 3 coordinates
+            // -> in case of 2d, we use only the first and the second
+            std::array<double, DIMENSIONS> x_arg, std::array<double, DIMENSIONS> v_arg, double m_arg,
+            int type = 0, int fixed = 0) : position(x_arg), velocity(v_arg), mass(m_arg), type(type), fixed(fixed) {
+        for (size_t i = 0; i < DIMENSIONS; ++i) {
+            force[i] = 0.0;
+            old_force[i] = 0.0;
+        }
     }
-  }
 };
 
 /***
@@ -71,57 +77,60 @@ class Particle {
  * */
 template<const size_t DIMENSIONS>
 class Particles {
- public:
-  std::array<std::vector<double>, DIMENSIONS> positions{};
+public:
+    std::array<std::vector<double>, DIMENSIONS> positions{};
 
-  std::array<std::vector<double>, DIMENSIONS> velocities{};
+    std::array<std::vector<double>, DIMENSIONS> velocities{};
 
-  std::array<std::vector<double>, DIMENSIONS> forces{};
+    std::array<std::vector<double>, DIMENSIONS> forces{};
 
-  std::array<std::vector<double>, DIMENSIONS> old_forces{};
+    std::array<std::vector<double>, DIMENSIONS> old_forces{};
 
-  std::vector<double> mass{};
+    std::vector<double> mass{};
 
-  std::vector<long> type{};
-  std::vector<uint8_t> active{};
-  std::vector<size_t> cell{};
-  std::vector<size_t> block{};
-  std::vector<size_t> color{};
+    std::vector<long> type{};
+    std::vector<uint8_t> fixed{};
+    std::vector<uint8_t> active{};
+    std::vector<size_t> cell{};
+    std::vector<size_t> block{};
+    std::vector<size_t> color{};
 
 #if DEBUG
-  /**
-   * particle ids only used with debugging. Helps to set debug points for suspicious particles
-   * */
-  std::vector<size_t> ids{};
+    /**
+     * particle ids only used with debugging. Helps to set debug points for suspicious particles
+     * */
+    std::vector<size_t> ids{};
 #endif
 
   auto insert_particle(Particle<DIMENSIONS> p) {
 
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      positions[i].emplace_back(p.position[i]);
-    }
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      velocities[i].emplace_back(p.velocity[i]);
-    }
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      forces[i].emplace_back(p.force[i]);
-    }
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      old_forces[i].emplace_back(p.old_force[i]);
+        for (size_t i = 0; i < DIMENSIONS; ++i) {
+            positions[i].emplace_back(p.position[i]);
+        }
+        for (size_t i = 0; i < DIMENSIONS; ++i) {
+            velocities[i].emplace_back(p.velocity[i]);
+        }
+        for (size_t i = 0; i < DIMENSIONS; ++i) {
+            forces[i].emplace_back(p.force[i]);
+        }
+        for (size_t i = 0; i < DIMENSIONS; ++i) {
+            old_forces[i].emplace_back(p.old_force[i]);
+        }
+
+        mass.emplace_back(p.mass);
+        type.emplace_back(p.type);
+        fixed.emplace_back(p.fixed);
+        active.emplace_back(true);
+        cell.emplace_back(0);
+        block.emplace_back(0);
+        color.emplace_back(0);
+#if DEBUG
+        ids.emplace_back(size);
+#endif
+        size++;
     }
 
-    mass.emplace_back(p.mass);
-    type.emplace_back(p.type);
-    active.emplace_back(true);
-    cell.emplace_back(0);
-    block.emplace_back(0);
-    color.emplace_back(0);
-#if DEBUG
-    ids.emplace_back(size);
-#endif
-    size++;
-  }
-  size_t size{};
+    size_t size{};
 
   template<typename Callable>
   void sort(Callable c) {
@@ -145,7 +154,7 @@ class Particles {
                 vs...,
                 fs...,
                 ofs...,
-                mass, type, active
+                mass, type, active, fixed
 #if DEBUG
                 ,
                 ids
@@ -169,15 +178,15 @@ class Particles {
                positions);
   }
 
-  void
-  swap_force() {
+    void
+    swap_force() {
 
-    std::swap(old_forces, forces);
+        std::swap(old_forces, forces);
 
-    for (size_t d = 0; d < DIMENSIONS; ++d) {
-      for (size_t i = 0; i < size; i++) {
-        forces[d][i] = 0;
-      }
+        for (size_t d = 0; d < DIMENSIONS; ++d) {
+            for (size_t i = 0; i < size; i++) {
+                forces[d][i] = 0;
+            }
+        }
     }
-  }
 };

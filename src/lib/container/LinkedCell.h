@@ -101,7 +101,7 @@ class Cell {
 
   CellType type = CellType::inner;
   /**
-   * All enighbours
+   * All neighbours
    * */
   std::vector<Neighbour<DIMENSIONS>> neighbours{};
   std::array<size_t, DIMENSIONS> idx{};

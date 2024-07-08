@@ -34,10 +34,10 @@ class Simulator {
   Thermostat<DIMENSIONS> thermostat;
   Checkpointer<DIMENSIONS> checkpoint;
 
-  double end_time;
-  double delta_t;
-  unsigned long iteration = 0;
-  double gravity = 0.0;
+        double end_time;
+        double delta_t;
+        unsigned long iteration = 0;
+        double gravity = 0.0;
 
  public:
   /**
@@ -58,21 +58,23 @@ class Simulator {
         delta_t(config->delta_t),
         gravity(config->ljf_gravity){};
 
-  auto inline calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
+        auto inline calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
+            const auto temp = pow(delta_t, 2) * (1 / (2 * p.mass[index]));
+            if (p.fixed[index] == 0)[[likely]] {
+                for (size_t i = 0; i < DIMENSIONS; ++i) {
+                    p.positions[i][index] += delta_t * p.velocities[i][index] + temp * p.old_forces[i][index];
+                }
+            }
+        }
 
-    const auto temp = pow(delta_t, 2) * (1 / (2 * p.mass[index]));
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      p.positions[i][index] += delta_t * p.velocities[i][index] + temp * p.old_forces[i][index];
-    }
-  }
-  auto inline calculate_velocity_particle(Particles<DIMENSIONS> &p, size_t index) const {
+        auto inline calculate_velocity_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
-    const auto temp = delta_t * (1 / (2 * p.mass[index]));
+            const auto temp = delta_t * (1 / (2 * p.mass[index]));
 
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      p.velocities[i][index] += temp * (p.old_forces[i][index] + p.forces[i][index]);
-    }
-  }
+            for (size_t i = 0; i < DIMENSIONS; ++i) {
+                p.velocities[i][index] += temp * (p.old_forces[i][index] + p.forces[i][index]);
+            }
+        }
 
   /*! <p> Function for position calculation </p>
    *
@@ -85,11 +87,11 @@ class Simulator {
     });
   }
 
-  /*! <p> Function for velocity calculation </p>
-  * calculates the velocity for all particles, takes no arguments and has no return value
-  */
-  auto calculate_velocity() -> void {
-    SPDLOG_DEBUG("Updating velocities");
+        /*! <p> Function for velocity calculation </p>
+        * calculates the velocity for all particles, takes no arguments and has no return value
+        */
+        auto calculate_velocity() -> void {
+            SPDLOG_DEBUG("Updating velocities");
 
     particles->linear([this](Particles<DIMENSIONS> &p, size_t index) {
       calculate_velocity_particle(p, index);
@@ -103,11 +105,11 @@ class Simulator {
     });
   }
 
-  /**
-  * @brief Calculates forces between particles.
-  *
-  * Resets forces for all particles, then calculates and updates forces for each particle pair.
-  */
+        /**
+        * @brief Calculates forces between particles.
+        *
+        * Resets forces for all particles, then calculates and updates forces for each particle pair.
+        */
 
   auto calculate_force() -> void {
     SPDLOG_DEBUG("Starting force calculation");
@@ -115,8 +117,8 @@ class Simulator {
     particles->refresh();
     particles->pairwise(config->parallelized, config->vectorized);
 
-    SPDLOG_TRACE("Force calculation completed.");
-  };
+            SPDLOG_TRACE("Force calculation completed.");
+        };
 
   /**
     * @brief Runs the simulation.
@@ -163,17 +165,17 @@ class Simulator {
         SPDLOG_DEBUG("Iteration {} plotted.", iteration);
       }
 
-      SPDLOG_DEBUG("Iteration {} finished.", iteration);
+                SPDLOG_DEBUG("Iteration {} finished.", iteration);
 
-      current_time += delta_t;
-    }
+                current_time += delta_t;
+            }
 
     if (config->output_checkpoint.has_value()) {
         checkpoint.save_checkpoint(*config->output_checkpoint, particles);
     }
 
-    SPDLOG_INFO("Output written. Terminating...");
-  }
-};
+            SPDLOG_INFO("Output written. Terminating...");
+        }
+    };
 
 }// namespace simulator

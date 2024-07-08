@@ -175,6 +175,24 @@ type (const type_type& x)
   this->type_.set (x);
 }
 
+const particle::fixed_type& particle::
+fixed () const
+{
+  return this->fixed_.get ();
+}
+
+particle::fixed_type& particle::
+fixed ()
+{
+  return this->fixed_.get ();
+}
+
+void particle::
+fixed (const fixed_type& x)
+{
+  this->fixed_.set (x);
+}
+
 
 // vector
 //
@@ -273,14 +291,16 @@ particle (const velocity_type& velocity,
           const old_force_type& old_force,
           const position_type& position,
           const mass_type& mass,
-          const type_type& type)
+          const type_type& type,
+          const fixed_type& fixed)
 : ::xml_schema::type (),
   velocity_ (velocity, this),
   force_ (force, this),
   old_force_ (old_force, this),
   position_ (position, this),
   mass_ (mass, this),
-  type_ (type, this)
+  type_ (type, this),
+  fixed_ (fixed, this)
 {
 }
 
@@ -290,14 +310,16 @@ particle (::std::unique_ptr< velocity_type > velocity,
           ::std::unique_ptr< old_force_type > old_force,
           ::std::unique_ptr< position_type > position,
           const mass_type& mass,
-          const type_type& type)
+          const type_type& type,
+          const fixed_type& fixed)
 : ::xml_schema::type (),
   velocity_ (std::move (velocity), this),
   force_ (std::move (force), this),
   old_force_ (std::move (old_force), this),
   position_ (std::move (position), this),
   mass_ (mass, this),
-  type_ (type, this)
+  type_ (type, this),
+  fixed_ (fixed, this)
 {
 }
 
@@ -311,7 +333,8 @@ particle (const particle& x,
   old_force_ (x.old_force_, f, this),
   position_ (x.position_, f, this),
   mass_ (x.mass_, f, this),
-  type_ (x.type_, f, this)
+  type_ (x.type_, f, this),
+  fixed_ (x.fixed_, f, this)
 {
 }
 
@@ -325,7 +348,8 @@ particle (const ::xercesc::DOMElement& e,
   old_force_ (this),
   position_ (this),
   mass_ (this),
-  type_ (this)
+  type_ (this),
+  fixed_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -448,6 +472,12 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       this->type_.set (type_traits::create (i, f, this));
       continue;
     }
+
+    if (n.name () == "fixed" && n.namespace_ ().empty ())
+    {
+      this->fixed_.set (fixed_traits::create (i, f, this));
+      continue;
+    }
   }
 
   if (!mass_.present ())
@@ -461,6 +491,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   {
     throw ::xsd::cxx::tree::expected_attribute< char > (
       "type",
+      "");
+  }
+
+  if (!fixed_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "fixed",
       "");
   }
 }
@@ -484,6 +521,7 @@ operator= (const particle& x)
     this->position_ = x.position_;
     this->mass_ = x.mass_;
     this->type_ = x.type_;
+    this->fixed_ = x.fixed_;
   }
 
   return *this;
@@ -1177,6 +1215,17 @@ operator<< (::xercesc::DOMElement& e, const particle& i)
         e));
 
     a << i.type ();
+  }
+
+  // fixed
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "fixed",
+        e));
+
+    a << i.fixed ();
   }
 }
 

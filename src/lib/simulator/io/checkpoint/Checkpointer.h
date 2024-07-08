@@ -74,7 +74,7 @@ class Checkpointer {
           }
         }
       }
-      particles.emplace_back(position, velocity, force, old_force, p.mass(), p.type());
+      particles.emplace_back(position, velocity, force, old_force, p.mass(), p.type(), p.fixed());
     }
 
     return particles;
@@ -91,7 +91,8 @@ class Checkpointer {
         auto pos = particle::position_type(p.positions[0][index], p.positions[1][index]);
         auto m = particle::mass_type(p.mass[index]);
         auto type = particle::type_type(p.type[index]);
-        particle pa = particle(v, f, of, pos, m, type);
+        auto fixed = particle::fixed_type(p.fixed[index]);
+        particle pa = particle(v, f, of, pos, m, type, fixed);
         cp.particle().push_back(pa);
       } else {
         auto f = particle::force_type(p.forces[0][index], p.forces[1][index]);
@@ -104,7 +105,8 @@ class Checkpointer {
         pos.z(p.positions[2][index]);
         auto m = particle::mass_type(p.mass[index]);
         auto type = particle::type_type(p.type[index]);
-        particle pa = particle(v, f, of, pos, m, type);
+        auto fixed = particle::fixed_type(p.fixed[index]);
+        particle pa = particle(v, f, of, pos, m, type, fixed);
         cp.particle().push_back(pa);
       }
     });

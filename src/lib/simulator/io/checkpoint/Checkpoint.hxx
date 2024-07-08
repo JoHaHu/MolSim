@@ -969,6 +969,53 @@ class particle: public ::xml_schema::type
   //@}
 
   /**
+   * @name fixed
+   *
+   * @brief Accessor and modifier functions for the %fixed
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::int_ fixed_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< fixed_type, char > fixed_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const fixed_type&
+  fixed () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  fixed_type&
+  fixed ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  fixed (const fixed_type& x);
+
+  //@}
+
+  /**
    * @name Constructors
    */
   //@{
@@ -982,7 +1029,8 @@ class particle: public ::xml_schema::type
             const old_force_type&,
             const position_type&,
             const mass_type&,
-            const type_type&);
+            const type_type&,
+            const fixed_type&);
 
   /**
    * @brief Create an instance from the ultimate base and
@@ -997,7 +1045,8 @@ class particle: public ::xml_schema::type
             ::std::unique_ptr< old_force_type >,
             ::std::unique_ptr< position_type >,
             const mass_type&,
-            const type_type&);
+            const type_type&,
+            const fixed_type&);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -1075,6 +1124,7 @@ class particle: public ::xml_schema::type
   ::xsd::cxx::tree::one< position_type > position_;
   ::xsd::cxx::tree::one< mass_type > mass_;
   ::xsd::cxx::tree::one< type_type > type_;
+  ::xsd::cxx::tree::one< fixed_type > fixed_;
 
   //@endcond
 };
