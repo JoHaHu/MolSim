@@ -3,10 +3,12 @@
 #include <variant>
 
 #include "config/Config.h"
+#include "container/LinkedCell.h"
 #include "simulator/Simulator.h"
 #include "simulator/io/ParticleGenerator.h"
 #include "simulator/io/VTKPlotter.h"
 #include "simulator/io/xml_reader/XMLFileReader.h"
+#include "simulator/physics/Force.h"
 #include "simulator/physics/ForceModel.h"
 #include "simulator/physics/LennardJones.h"
 #include "utils/LoggerManager.h"
@@ -21,22 +23,10 @@ auto setup(std::shared_ptr<config::Config> config) -> auto {
 
   auto checkpointer = Checkpointer<DIMENSIONS>();
 
-  simulator::physics::ForceModel physics = config->simulation_type;
-  switch (config->simulation_type) {
-    case simulator::physics::ForceModel::Gravity:
-      break;
-    case simulator::physics::ForceModel::LennardJones:
-      simulator::physics::lennard_jones::initialize_constants(config->epsilon, config->sigma, config->cutoff_radius);
-      break;
-  }
-
-    int maxThreads = omp_get_max_threads();
-    std::cout << "Threads max: " << maxThreads << std::endl;
-
-  container::ParticleContainer pc = container::ParticleContainer<DIMENSIONS>(Particles<DIMENSIONS>());
-
+  std::unique_ptr<container::Container<DIMENSIONS>> pc;
   switch (config->particle_container_type) {
     case ParticleContainerType::Vector:
+      // TODO
       break;
     case ParticleContainerType::LinkedCells:
 
@@ -49,30 +39,43 @@ auto setup(std::shared_ptr<config::Config> config) -> auto {
         boundary[DIMENSIONS + i] = config->boundary_conditions[DIMENSIONS + i];
       }
 
-      auto lc = container::LinkedCell<DIMENSIONS>(
-          domain,
-          config->cutoff_radius,
-          boundary,
-          config->sigma);
+      switch (config->simulation_type) {
+        case simulator::physics::ForceModel::LennardJones: {
+          auto physics = simulator::physics::LennardJonesForce(config->cutoff_radius, config->epsilon, config->sigma);
+          pc = std::make_unique<container::LinkedCell<simulator::physics::LennardJonesForce, DIMENSIONS>>(
+              std::move(physics),
+              domain,
+              config->cutoff_radius,
+              boundary,
+              config->sigma);
+          break;
+        }
+        default:
+          SPDLOG_ERROR("Unsupported Force with Linked Cells");
+          exit(1);
+      }
 
-      pc = container::ParticleContainer<DIMENSIONS>(std::move(lc));
       break;
   }
 
   for (auto p : particles_vector) {
-    pc.insert(p);
+    pc->insert(p);
   }
 
   for (auto &cp_file : config->input_checkpoints) {
     auto cp = checkpointer.load_checkpoint(cp_file);
     for (auto p : cp) {
-      pc.insert(p);
+      pc->insert(p);
     }
   }
 
-  pc.refresh();
+  pc->refresh();
 
-  auto simulator = simulator::Simulator<DIMENSIONS>(std::move(pc), physics, std::move(plotter), config, checkpointer);
+  auto simulator = simulator::Simulator<DIMENSIONS>(
+      std::move(pc),
+      std::move(plotter),
+      config,
+      checkpointer);
   return simulator;
 }
 
@@ -90,15 +93,31 @@ auto main(int argc, char *argv[]) -> int {
   auto config = config::Config::parse_config(argc, argv);
   LoggerManager::setup_logger(*config);
 
-  auto simulator = setup<3>(config);
+  // Needs to be initialized and get overwritten
+  std::chrono::high_resolution_clock::time_point startTime;
 
-  const auto startTime = std::chrono::high_resolution_clock::now();
+  if (config->dimensions == 2) {
 
-  if (config->output_frequency == 0) {
-    simulator.run<false>();
+    auto simulator = setup<2>(config);
+    startTime = std::chrono::high_resolution_clock::now();
+    if (config->output_frequency == 0) {
+      simulator.run<false>();
+    } else {
+      simulator.run<true>();
+    }
+  } else if (config->dimensions == 3) {
+
+    auto simulator = setup<3>(config);
+    startTime = std::chrono::high_resolution_clock::now();
+    if (config->output_frequency == 0) {
+      simulator.run<false>();
+    } else {
+      simulator.run<true>();
+    }
   } else {
-    simulator.run<true>();
+    SPDLOG_ERROR("Unsupported dimension");
   }
+
   auto endTime = std::chrono::high_resolution_clock::now();
   auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
   auto rate = (double) durationMs.count() / (config->end_time / config->delta_t);

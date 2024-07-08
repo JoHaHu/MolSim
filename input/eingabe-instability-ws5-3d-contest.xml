@@ -5,7 +5,11 @@
             output_file="../../output/instability-3D"
             output_frequency="0"
             t_end="0.5" seed="1337"
-            delta_t="0.0005"/>
+            delta_t="0.0005"
+            dimensions="3"
+            vectorized="false"
+            parallelized="true"
+    />
     <thermostat t_init="40" frequency="1000" brownian_motion="0"/>
     <container>
         <linked_cells cutoff_radius="3.6">
@@ -31,7 +35,7 @@
             <particles>
                 <cuboid spacing="1.2" particleTypeId="0">
                     <coordinate x="0.6" y="0.6" z="0.6"/>
-                    <dimensions x="50" y="20" z="50" />
+                    <dimensions x="50" y="20" z="50"/>
                     <velocity x="0" y="0" z="0"/>
                 </cuboid>
                 <cuboid spacing="1.2" particleTypeId="1">

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Particle.h"
-#include "container/container.h"
+#include "container/Container.h"
 #include "range/v3/algorithm.hpp"
 #include "range/v3/view/iota.hpp"
 #include "spdlog/spdlog.h"
@@ -67,7 +67,7 @@ class Thermostat {
       SPDLOG_INFO("Initializing velocities with Brownian motion");
 
       particles.linear([this, brownianMotion](Particles<DIMENSIONS> &particles, size_t index) {
-        double average_motion;
+        double average_motion = 0;
         if (brownianMotion == 0) {
           average_motion = std::sqrt(t_init / particles.mass[index]);
         } else {

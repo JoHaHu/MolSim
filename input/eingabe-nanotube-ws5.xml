@@ -3,18 +3,23 @@
           xs:noNamespaceSchemaLocation="../src/lib/simulator/io/xml_reader/SimulationInputSchema.xsd">
     <header base_name="Nanoscale flow simulation"
             output_file="../../output/nanoflow_simulation"
-            output_frequency="1000"
-            t_end="3" seed="1337"
-            delta_t="0.0005"/>
-    <thermostat t_init="40" frequency="10" brownian_motion="0"/>
+            output_frequency="100"
+            t_end="500" seed="1337"
+            delta_t="0.0005"
+            dimensions="3"
+            vectorized="false"
+            parallelized="true"
+    />
+    <thermostat t_init="40" frequency="1000" brownian_motion="0"/>
+
     <container>
-        <linked_cells cutoff_radius="2.5">
-            <domain_size x="35" y="35" z="15"/>
+        <linked_cells cutoff_radius="2.75">
+            <domain_size x="30" y="30" z="12"/>
             <boundary_conditions>
+                <boundary_condition type="outflow"/>
                 <boundary_condition type="periodic"/>
                 <boundary_condition type="periodic"/>
-                <boundary_condition type="periodic"/>
-                <boundary_condition type="periodic"/>
+                <boundary_condition type="outflow"/>
                 <boundary_condition type="periodic"/>
                 <boundary_condition type="periodic"/>
             </boundary_conditions>
@@ -25,8 +30,8 @@
         <lennard_jones>
             <gravity>-0.8</gravity>
             <particleTypes>
-                <particleType id="0" sigma="1.1" epsilon="2.0" mass="1.0" /> <!-- left wall -->
-                <particleType id="1" sigma="1.1" epsilon="2.0" mass="1.0" /> <!-- right wall -->
+                <particleType id="0" sigma="1.1" epsilon="2.0" mass="1.0"/> <!-- left wall -->
+                <particleType id="1" sigma="1.1" epsilon="2.0" mass="1.0"/> <!-- right wall -->
                 <particleType id="2" sigma="1.0" epsilon="1.0" mass="1.0"/> <!-- fluid -->
             </particleTypes>
             <particles>

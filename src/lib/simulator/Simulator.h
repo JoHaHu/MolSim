@@ -2,7 +2,7 @@
 
 #include "Particle.h"
 #include "config/Config.h"
-#include "container/container.h"
+#include "container/Container.h"
 #include "experimental/simd"
 #include "simulator/io/Plotter.h"
 #include "simulator/physics/ForceModel.h"
@@ -12,7 +12,6 @@
 
 #include "simulator/io/checkpoint/Checkpointer.h"
 #include "utils/ArrayUtils.h"
-#include "utils/variants.h"
 #include <cmath>
 #include <omp.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -31,18 +30,17 @@ namespace simulator {
 template<const size_t DIMENSIONS>
 class Simulator {
  private:
-  container::ParticleContainer<DIMENSIONS> particles;
-  physics::ForceModel physics;
+  std::unique_ptr<container::Container<DIMENSIONS>> particles;
   std::unique_ptr<io::Plotter<DIMENSIONS>> plotter;
   std::shared_ptr<config::Config> config;
   Thermostat<DIMENSIONS> thermostat;
   Checkpointer<DIMENSIONS> checkpoint;
   ProfileCalculator<DIMENSIONS> profile_calculator;
 
-  double end_time;
-  double delta_t;
-  unsigned long iteration = 0;
-  double gravity = 0.0;
+        double end_time;
+        double delta_t;
+        unsigned long iteration = 0;
+        double gravity = 0.0;
 
  public:
   /**
@@ -50,9 +48,11 @@ class Simulator {
    * \param plotter An instance plotter.
    * \param config the runtime configuration
    * */
-  explicit Simulator(container::ParticleContainer<DIMENSIONS> &&particles, physics::ForceModel physics, std::unique_ptr<io::Plotter<DIMENSIONS>> &&plotter, const std::shared_ptr<config::Config> &config, Checkpointer<DIMENSIONS> checkpoint)
+  explicit Simulator(std::unique_ptr<container::Container<DIMENSIONS>> &&particles,
+                     std::unique_ptr<io::Plotter<DIMENSIONS>> &&plotter,
+                     const std::shared_ptr<config::Config> &config,
+                     Checkpointer<DIMENSIONS> checkpoint)
       : particles(std::move(particles)),
-        physics(physics),
         plotter(std::move(plotter)),
         config(config),
         thermostat(config->temp_init, config->temp_target, config->max_temp_diff, config->seed),
@@ -62,36 +62,23 @@ class Simulator {
         delta_t(config->delta_t),
         gravity(config->ljf_gravity){};
 
-  auto inline calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
+        auto inline calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
+            const auto temp = pow(delta_t, 2) * (1 / (2 * p.mass[index]));
+            if (p.fixed[index] == 0)[[likely]] {
+                for (size_t i = 0; i < DIMENSIONS; ++i) {
+                    p.positions[i][index] += delta_t * p.velocities[i][index] + temp * p.old_forces[i][index];
+                }
+            }
+        }
 
-    const auto temp = pow(delta_t, 2) * (1 / (2 * p.mass[index]));
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      p.positions[i][index] += delta_t * p.velocities[i][index] + temp * p.old_forces[i][index];
-    }
-  }
-  auto inline calculate_velocity_particle(Particles<DIMENSIONS> &p, size_t index) const {
+        auto inline calculate_velocity_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
-    const auto temp = delta_t * (1 / (2 * p.mass[index]));
+            const auto temp = delta_t * (1 / (2 * p.mass[index]));
 
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      p.velocities[i][index] += temp * (p.old_forces[i][index] + p.forces[i][index]);
-    }
-  }
-
-  template<typename F>
-  auto inline calculate_force_particle_pair(F f, VectorizedParticle<DIMENSIONS> &p1, VectorizedParticle<DIMENSIONS> &p2, double_mask mask, std::array<double_v, DIMENSIONS> &correction) {
-
-    std::array<double_v, DIMENSIONS> force{};
-    f(p1, p2, mask, force, correction);
-
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      where(mask, p2.force[i]) = p2.force[i] - force[i];
-    }
-
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      p1.force[i] += stdx::reduce(where(mask, force[i]), std::plus<>());
-    }
-  }
+            for (size_t i = 0; i < DIMENSIONS; ++i) {
+                p.velocities[i][index] += temp * (p.old_forces[i][index] + p.forces[i][index]);
+            }
+        }
 
   /*! <p> Function for position calculation </p>
    *
@@ -99,62 +86,43 @@ class Simulator {
    */
   auto calculate_position() -> void {
     SPDLOG_DEBUG("Updating positions");
-    particles.linear([this](Particles<DIMENSIONS> &p, size_t index) {
+    particles->linear([this](Particles<DIMENSIONS> &p, size_t index) {
       calculate_position_particle(p, index);
     });
   }
 
-  /*! <p> Function for velocity calculation </p>
-  * calculates the velocity for all particles, takes no arguments and has no return value
-  */
-  auto calculate_velocity() -> void {
-    SPDLOG_DEBUG("Updating velocities");
+        /*! <p> Function for velocity calculation </p>
+        * calculates the velocity for all particles, takes no arguments and has no return value
+        */
+        auto calculate_velocity() -> void {
+            SPDLOG_DEBUG("Updating velocities");
 
-    particles.linear([this](Particles<DIMENSIONS> &p, size_t index) {
+    particles->linear([this](Particles<DIMENSIONS> &p, size_t index) {
       calculate_velocity_particle(p, index);
     });
   }
   auto apply_gravity() -> void {
     SPDLOG_DEBUG("Applying gravity");
 
-    particles.linear([this](Particles<DIMENSIONS> &p, size_t index) {
-      p.forces[1][index] += simulator::physics::gravity::calculate_force(p.mass[index], gravity);
+    particles->linear([this](Particles<DIMENSIONS> &p, size_t index) {
+      p.forces[1][index] += simulator::physics::constant_gravity(p.mass[index], gravity);
     });
   }
 
-  /**
-  * @brief Calculates forces between particles.
-  *
-  * Resets forces for all particles, then calculates and updates forces for each particle pair.
-  */
+        /**
+        * @brief Calculates forces between particles.
+        *
+        * Resets forces for all particles, then calculates and updates forces for each particle pair.
+        */
 
   auto calculate_force() -> void {
     SPDLOG_DEBUG("Starting force calculation");
+    particles->boundary();
+    particles->refresh();
+    particles->pairwise(config->parallelized, config->vectorized);
 
-    switch (physics) {
-      case physics::ForceModel::Gravity: {
-        particles.boundary(physics::lennard_jones::calculate_force);
-        particles.refresh();
-        particles.pairwise([this](auto &p1, auto &p2, auto mask, auto &correction) {
-          this->calculate_force_particle_pair(physics::gravity::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask, correction);
-        });
-        break;
-      }
-      case physics::ForceModel::LennardJones: {
-        particles.boundary(physics::lennard_jones::calculate_force);
-        particles.refresh();
-        particles.pairwise([this](auto &p1, auto &p2, auto mask, auto &correction) {
-          this->calculate_force_particle_pair(physics::lennard_jones::calculate_force_vectorized<DIMENSIONS>, p1, p2, mask, correction);
-        });
-        if (gravity != 0) {
-          apply_gravity();
-        }
-        break;
-      }
-    }
-
-    SPDLOG_TRACE("Force calculation completed.");
-  };
+            SPDLOG_TRACE("Force calculation completed.");
+        };
 
   /**
     * @brief Runs the simulation.
@@ -164,34 +132,34 @@ class Simulator {
     */
   template<bool IO>
   auto run() -> void {
-#pragma omp parallel
-#pragma omp single
-    {
-      spdlog::info("threads: {}, teams: {}", omp_get_num_threads(), omp_get_num_teams());
-    }
+
     spdlog::info("Running simulation...");
     double current_time = 0;
     iteration = 0;
     auto interval = config->output_frequency;
     auto temp_interval = config->thermo_step;
-    thermostat.initializeVelocities(particles, config->use_brownian_motion, config->brownian_motion);
+    thermostat.initializeVelocities(*particles, config->use_brownian_motion, config->brownian_motion);
     calculate_force();
     // calculate twice to initialize old_force and force to have proper simulation and output
-    particles.swap_force();
+    particles->swap_force();
     calculate_force();
 
     // Plot initial position and forces
     if (IO) {
-      plotter->plotParticles(particles, iteration);
+      plotter->plotParticles(*particles, iteration);
       SPDLOG_DEBUG("Iteration {} plotted.", iteration);
     }
 
     while (current_time < end_time) {
       calculate_position();
-      particles.swap_force();
+      particles->swap_force();
       calculate_force();
+
+      if (gravity != 0) {
+        apply_gravity();
+      }
       if (temp_interval != 0 && iteration % temp_interval == 0) {
-        thermostat.apply(particles);
+        thermostat.apply(*particles);
       }
       calculate_velocity();
 
@@ -203,21 +171,21 @@ class Simulator {
 
       iteration++;
       if (IO && iteration % interval == 0) {
-        plotter->plotParticles(particles, iteration);
+        plotter->plotParticles(*particles, iteration);
         SPDLOG_DEBUG("Iteration {} plotted.", iteration);
       }
 
-      SPDLOG_DEBUG("Iteration {} finished.", iteration);
+                SPDLOG_DEBUG("Iteration {} finished.", iteration);
 
-      current_time += delta_t;
-    }
+                current_time += delta_t;
+            }
 
     if (config->output_checkpoint.has_value()) {
         checkpoint.save_checkpoint(*config->output_checkpoint, particles);
     }
 
-    SPDLOG_INFO("Output written. Terminating...");
-  }
-};
+            SPDLOG_INFO("Output written. Terminating...");
+        }
+    };
 
 }// namespace simulator

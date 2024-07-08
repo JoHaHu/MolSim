@@ -49,10 +49,10 @@ class ParticleGenerator {
       for (size_t i = 0; i < DIMENSIONS; ++i) {
         velocity[i] = cuboid.velocity[i];
       }
-
+      int fixed = cuboid.fixed;
       const auto particle = Particle<DIMENSIONS>(
           new_coords, velocity, config->mass[type],
-          type);
+          type, fixed);
       particles.push_back(particle);
     } else {
       for (size_t z : ranges::iota_view(0, cuboid.particles[depth - 1])) {

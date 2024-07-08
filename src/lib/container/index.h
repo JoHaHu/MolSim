@@ -2,16 +2,13 @@
 
 #include "boundary.h"
 #include "utils/ArrayUtils.h"
-#include "utils/types.h"
 #include <climits>
 #include <cmath>
 #include <span>
 
 namespace container::index {
 
-constexpr const size_t block_size_x = 2;
-constexpr const size_t block_size_y = 1;
-constexpr const size_t block_size_z = 1;
+constexpr const std::array<size_t, 3> block_size = {2, 1, 1};
 
 template<const size_t DIMENSIONS>
 class Index {
@@ -57,40 +54,52 @@ class Index {
   auto color(std::array<size_t, DIMENSIONS> idx) -> size_t {
     auto color = 0;
 
-    if constexpr (DIMENSIONS == 2) {
-      auto y_shift = 3 * (idx[1] / (radius[1] * block_size_y) % 2);
-      color += ((idx[0] / (radius[0] * block_size_x) + y_shift) % 6) / 2;
-    } else {
-      // shifts by 3 periodicity 2
-      auto z_shift = 3 * (idx[2] / (radius[2] * block_size_y) % 2);
-      // Shifts by 8 periodicity of 3
-      auto y_shift = 8 * (((idx[1] / (radius[1] * block_size_y) + z_shift) % 6) / 2);
-      color += (idx[0] / (radius[0] * block_size_x) + y_shift) % 12 / 3;
+    for (size_t d = DIMENSIONS - 1; d < DIMENSIONS; --d) {
+      // width and modulo together defines the sidelength in one dimension of the block
+      auto width = DIMENSIONS - d;
+      auto modulo = width * (width + 1);
+
+      //the shift distance
+      auto shift = 2 + width;
+      if (d == 0) {
+        shift = 1;
+      }
+      /*
+       * calculates the position in one dimension applies the shift from the previous dimensions
+       * modulo is then applied to to restrict values to the range necessary for one period of the pattern
+       * The division by the width is then used to determine which color it is
+       * */
+      color = shift * ((((idx[d]) / (radius[d] * block_size[d]) + color) % modulo) / width);
     }
     return color;
   }
   /**
-   * the partition id of a block in the domain. A block contains 1x2x3 cells
+   * the partition id of a block in the domain. A block contains 1x2x3 cells (in 3D) or 1x2 cells (in 2D)
    * */
   auto block_id(std::array<size_t, DIMENSIONS> idx) -> size_t {
     auto block_id = 0;
+    auto dim_shift = 0;
 
-    if constexpr (DIMENSIONS == 2) {
-      auto y_shift = 3 * (idx[1] / (radius[1] * block_size_y) % 2);
-      auto y_index = 3 * (idx[1] / (radius[1] * block_size_y) / 2);
-      auto x_index = ((idx[0] / (radius[0] * block_size_x) + y_shift) / 6) / 2;
-      block_id = x_index + y_index * dim[0];
-    } else {
-      // shifts by 3 periodicity 2
-      auto z_shift = 3 * (idx[2] / (radius[2] * block_size_z) % 2);
-      auto z_index = 3 * (idx[2] / (radius[2] * block_size_z) / 2);
-      // Shifts by 8 periodicity of 3
-      auto y_shift = 8 * (((idx[1] / (radius[1] * block_size_y) + z_shift) % 6) / 2);
-      auto y_index = 8 * (((idx[1] / (radius[1] * block_size_y) + z_shift) / 6) / 2);
-      auto x_index = (idx[0] / (radius[0] * block_size_x) + y_shift) / 12 / 3;
-      block_id = x_index + y_index * dim[0] + z_index * dim[0] * dim[1];
+    auto dim_size = 1;
+
+    for (size_t d = 0; d < DIMENSIONS; ++d) {
+      dim_size *= (size_t) std::ceil((double) dim[d] / (radius[d] * block_size[d]) / (DIMENSIONS - d));
     }
 
+    for (size_t d = DIMENSIONS - 1; d < DIMENSIONS; --d) {
+
+      dim_size /= (dim[d] / (radius[d] * block_size[d]) / (DIMENSIONS - d));
+
+      auto width = DIMENSIONS - d;
+      auto modulo = width * (width + 1);
+
+      //the shift distance
+      auto shift = 2 + width;
+
+      auto period = ((idx[d]) / (radius[d] * block_size[d]) + dim_shift) / width;
+      block_id += period * dim_size;
+      dim_shift = shift * (((idx[d]) / (radius[d] * block_size[d]) + dim_shift) % modulo);
+    }
     return block_id;
   }
 

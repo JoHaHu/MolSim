@@ -15,6 +15,9 @@
                         <xs:attribute name="output_frequency" type="positive_int" use="required"/>
                         <xs:attribute name="output_file" type="xs:string" use="required"/>
                         <xs:attribute name="seed" type="xs:int" use="required"/>
+                        <xs:attribute name="dimensions" type="xs:int" use="required"/>
+                        <xs:attribute name="parallelized" type="xs:boolean" use="required"/>
+                        <xs:attribute name="vectorized" type="xs:boolean" use="required"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element minOccurs="0" name="checkpoints">
