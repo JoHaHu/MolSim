@@ -20,6 +20,8 @@
 #include <spdlog/spdlog.h>
 #include <utility>
 
+#include "physics/ProfileCalculator.h"
+
 namespace simulator {
 
 /**
@@ -35,6 +37,7 @@ class Simulator {
   std::shared_ptr<config::Config> config;
   Thermostat<DIMENSIONS> thermostat;
   Checkpointer<DIMENSIONS> checkpoint;
+  ProfileCalculator<DIMENSIONS> profile_calculator;
 
   double end_time;
   double delta_t;
@@ -54,6 +57,7 @@ class Simulator {
         config(config),
         thermostat(config->temp_init, config->temp_target, config->max_temp_diff, config->seed),
         checkpoint(checkpoint),
+        profile_calculator(50), //TODO @TIM 50 als Input möglich durch Config
         end_time(config->end_time),
         delta_t(config->delta_t),
         gravity(config->ljf_gravity){};
@@ -190,6 +194,12 @@ class Simulator {
         thermostat.apply(particles);
       }
       calculate_velocity();
+
+      if (iteration % 10000 == 0) { //TODO @TIM 10000 als Input möglich durch Config
+        profile_calculator.updateProfiles(particles);
+        profile_calculator.writeProfilesToCSV("profiles_" + std::to_string(iteration) + ".csv");
+        SPDLOG_DEBUG("Iteration {} written by ProfileCalculator.", iteration);
+      }
 
       iteration++;
       if (IO && iteration % interval == 0) {
