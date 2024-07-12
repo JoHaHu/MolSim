@@ -51,7 +51,8 @@ class ProfileCalculator {
     particles.linear([this](Particles<DIMENSIONS> &particles, size_t index) {
       double x = particles.positions[0][index];
       size_t bin = static_cast<size_t>((x - x_min) / bin_size);
-      if (bin >= 0 && bin < num_bins) {
+      // Ensure the bin is within valid range
+      if (bin < num_bins) {
         density_profile[bin]++;
         for (size_t d = 0; d < DIMENSIONS; ++d) {
           velocity_profile[bin][d] += particles.velocities[d][index];
@@ -76,10 +77,9 @@ class ProfileCalculator {
      */
   void writeProfilesToCSV(const std::string &filename) const {
     std::ofstream file(filename);
-    file << "Bin,Density,";
+    file << "Bin,Density";
     for (size_t d = 0; d < DIMENSIONS; ++d) {
-      file << "Velocity" << d;
-      if (d < DIMENSIONS - 1) file << ",";
+      file << ",Velocity" << d;
     }
     file << "\n";
 
