@@ -11,6 +11,7 @@
             parallelized="true"
     />
     <thermostat t_init="40" frequency="1000" brownian_motion="0"/>
+    <nanotube n_bins="50" iterations="10000"/>
 
     <container>
         <linked_cells cutoff_radius="2.75">

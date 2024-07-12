@@ -58,7 +58,7 @@ class Simulator {
         config(config),
         thermostat(config->temp_init, config->temp_target, config->max_temp_diff, config->seed),
         checkpoint(checkpoint),
-        profile_calculator(50),//TODO @TIM 50 als Input möglich durch Config
+        profile_calculator(config->profile_bins),
         end_time(config->end_time),
         delta_t(config->delta_t),
         gravity(config->ljf_gravity){};
@@ -151,6 +151,7 @@ class Simulator {
       SPDLOG_DEBUG("Iteration {} plotted.", iteration);
     }
 
+    const auto iteration_input = config->profile_iterations;
     while (current_time < end_time) {
       calculate_position();
       particles->swap_force();
@@ -164,7 +165,7 @@ class Simulator {
       }
       calculate_velocity();
 
-      if (iteration % 10000 == 0) {//TODO @TIM 10000 als Input möglich durch Config
+      if (iteration % iteration_input == 0) {
         profile_calculator.updateProfiles(*particles);
         profile_calculator.writeProfilesToCSV("profiles_" + std::to_string(iteration) + ".csv");
         SPDLOG_DEBUG("Iteration {} written by ProfileCalculator.", iteration);

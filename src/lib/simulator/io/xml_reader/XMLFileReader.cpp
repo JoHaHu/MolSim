@@ -262,6 +262,13 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
       config.thermo_step = 0;
     }
 
+    if (scenario->nanotube().present()) {
+      auto nanotube = *scenario->nanotube();
+
+      config.profile_bins = nanotube.n_bins();
+      config.profile_iterations = nanotube.iterations();
+    }
+
     if (scenario->checkpoints().present()) {
       auto input_checkpoints = std::vector<std::string>();
       if (scenario->checkpoints()->path().present()) {
