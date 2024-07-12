@@ -36,7 +36,7 @@ class Thermostat {
    *        This method adjusts velocities by ignoring the total velocity of the fluid.
    * @param particles Container of particles to apply the thermostat to.
    */
-  void inline apply(container::ParticleContainer<DIMENSIONS> &particles) {
+  void inline apply(container::Container<DIMENSIONS> &particles) {
     auto average_velocity = calculateAverageVelocity(particles);
     adjustVelocities(particles, average_velocity);
 
@@ -62,7 +62,7 @@ class Thermostat {
     * @param useBrownianMotion Whether to initialize using Brownian motion.
     * @param brownianMotion Specifies the Brownian motion constant.
     */
-  void initializeVelocities(container::ParticleContainer<DIMENSIONS> &particles, bool useBrownianMotion, double brownianMotion) {
+  void initializeVelocities(container::Container<DIMENSIONS> &particles, bool useBrownianMotion, double brownianMotion) {
     if (useBrownianMotion) {
       SPDLOG_INFO("Initializing velocities with Brownian motion");
 
@@ -86,7 +86,7 @@ class Thermostat {
      * @param particles Container of particles.
      * @return The current temperature.
      */
-  auto calculateCurrentTemperature(container::ParticleContainer<DIMENSIONS> &particles) -> double {
+  auto calculateCurrentTemperature(container::Container<DIMENSIONS> &particles) -> double {
     double kineticEnergy = calculateKineticEnergy(particles);
     double currentTemperature = (kineticEnergy) / (particles.size() * DIMENSIONS);
     SPDLOG_TRACE("Current temperature calculated: {}", currentTemperature);
@@ -104,7 +104,7 @@ class Thermostat {
  * @param particles Container of particles.
  * @return The average velocity as an array.
  */
-  auto calculateAverageVelocity(container::ParticleContainer<DIMENSIONS> &particles) -> std::array<double, DIMENSIONS> {
+  auto calculateAverageVelocity(container::Container<DIMENSIONS> &particles) -> std::array<double, DIMENSIONS> {
     std::array<double, DIMENSIONS> avg_velocity{};
     particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
       for (size_t i = 0; i < DIMENSIONS; ++i) {
@@ -122,7 +122,7 @@ class Thermostat {
  * @param particles Container of particles.
  * @param avg_velocity The average velocity to subtract.
  */
-  void adjustVelocities(container::ParticleContainer<DIMENSIONS> &particles, const std::array<double, DIMENSIONS> &avg_velocity) {
+  void adjustVelocities(container::Container<DIMENSIONS> &particles, const std::array<double, DIMENSIONS> &avg_velocity) {
     particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
       for (size_t i = 0; i < DIMENSIONS; ++i) {
         particles.velocities[i][index] -= avg_velocity[i];
@@ -135,7 +135,7 @@ class Thermostat {
  * @param particles Container of particles.
  * @param avg_velocity The average velocity to add back.
  */
-  void restoreVelocities(container::ParticleContainer<DIMENSIONS> &particles, const std::array<double, DIMENSIONS> &avg_velocity) {
+  void restoreVelocities(container::Container<DIMENSIONS> &particles, const std::array<double, DIMENSIONS> &avg_velocity) {
     particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
       for (size_t i = 0; i < DIMENSIONS; ++i) {
         particles.velocities[i][index] += avg_velocity[i];
@@ -148,7 +148,7 @@ class Thermostat {
      * @param particles Container of particles.
      * @return The total kinetic energy.
      */
-  auto calculateKineticEnergy(container::ParticleContainer<DIMENSIONS> &particles) -> double {
+  auto calculateKineticEnergy(container::Container<DIMENSIONS> &particles) -> double {
     double e_kin = 0;
     particles.linear([&](Particles<DIMENSIONS> &particles, size_t index) {
       e_kin += particles.mass[index] * ranges::fold_left(ranges::iota_view(0UL, DIMENSIONS), 0.0, [&](double acc, size_t i) {
@@ -165,7 +165,7 @@ class Thermostat {
      * @param particles Container of particles.
      * @param scalingFactor The factor by which to scale the velocities.
      */
-  void scaleVelocities(container::ParticleContainer<DIMENSIONS> &particles, double scalingFactor) {
+  void scaleVelocities(container::Container<DIMENSIONS> &particles, double scalingFactor) {
     particles.linear([scalingFactor](Particles<DIMENSIONS> &particles, size_t index) {
       for (size_t i = 0; i < DIMENSIONS; ++i) {
         particles.velocities[i][index] *= scalingFactor;

@@ -21,7 +21,7 @@ class ProfileCalculator {
   ProfileCalculator(size_t num_bins)
       : num_bins(num_bins), x_min(std::numeric_limits<double>::max()), x_max(std::numeric_limits<double>::lowest()) {
     density_profile.resize(num_bins, 0);
-    velocity_profile.resize(num_bins, {0.0, 0.0, 0.0});
+    velocity_profile.resize(num_bins, std::array<double, DIMENSIONS>{0.0});
     counts.resize(num_bins, 0);
   }
 
@@ -29,7 +29,7 @@ class ProfileCalculator {
      * @brief Updates the profiles based on the current particle data.
      * @param particles Container of particles.
      */
-  void updateProfiles(container::ParticleContainer<DIMENSIONS> &particles) {
+  void updateProfiles(container::Container<DIMENSIONS> &particles) {
     // Reset profiles
     std::fill(density_profile.begin(), density_profile.end(), 0);
     std::fill(velocity_profile.begin(), velocity_profile.end(), std::array<double, DIMENSIONS>{0.0});
@@ -76,12 +76,19 @@ class ProfileCalculator {
      */
   void writeProfilesToCSV(const std::string &filename) const {
     std::ofstream file(filename);
-    file << "Bin,Density,VelocityX,VelocityY,VelocityZ\n";
+    file << "Bin,Density,";
+    for (size_t d = 0; d < DIMENSIONS; ++d) {
+      file << "Velocity" << d;
+      if (d < DIMENSIONS - 1) file << ",";
+    }
+    file << "\n";
+
     for (size_t bin = 0; bin < num_bins; ++bin) {
-      file << bin << "," << density_profile[bin] << ","
-           << velocity_profile[bin][0] << ","
-           << velocity_profile[bin][1] << ","
-           << velocity_profile[bin][2] << "\n";
+      file << bin << "," << density_profile[bin];
+      for (size_t d = 0; d < DIMENSIONS; ++d) {
+        file << "," << velocity_profile[bin][d];
+      }
+      file << "\n";
     }
     file.close();
   }

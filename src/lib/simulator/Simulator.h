@@ -47,6 +47,7 @@ class Simulator {
    * \param particles the particle container
    * \param plotter An instance plotter.
    * \param config the runtime configuration
+   * \param checkpoint the checkpointer instance
    * */
   explicit Simulator(std::unique_ptr<container::Container<DIMENSIONS>> &&particles,
                      std::unique_ptr<io::Plotter<DIMENSIONS>> &&plotter,
@@ -164,7 +165,7 @@ class Simulator {
       calculate_velocity();
 
       if (iteration % 10000 == 0) {//TODO @TIM 10000 als Input möglich durch Config
-        profile_calculator.updateProfiles(particles);
+        profile_calculator.updateProfiles(*particles);
         profile_calculator.writeProfilesToCSV("profiles_" + std::to_string(iteration) + ".csv");
         SPDLOG_DEBUG("Iteration {} written by ProfileCalculator.", iteration);
       }
@@ -181,7 +182,7 @@ class Simulator {
     }
 
     if (config->output_checkpoint.has_value()) {
-      checkpoint.save_checkpoint(*config->output_checkpoint, particles);
+      checkpoint.save_checkpoint(*config->output_checkpoint, *particles);
     }
 
     SPDLOG_INFO("Output written. Terminating...");
