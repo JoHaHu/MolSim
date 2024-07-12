@@ -58,7 +58,7 @@ class Thermostat {
     */
   void initializeVelocities(container::Container<DIMENSIONS> &particles, bool useBrownianMotion, double brownianMotion) {
     if (useBrownianMotion) {
-      SPDLOG_INFO("Initializing velocities with Brownian motion");
+      SPDLOG_DEBUG("Initializing velocities with Brownian motion");
 
       particles.linear([this, brownianMotion](Particles<DIMENSIONS> &particles, size_t index) {
         double average_motion = 0;
