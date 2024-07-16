@@ -61,7 +61,7 @@ class Simulator {
         profile_calculator(config->profile_bins),
         end_time(config->end_time),
         delta_t(config->delta_t),
-        gravity(config->ljf_gravity){};
+        gravity(config->ljf_gravity) {};
 
   auto inline calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
     const auto temp = pow(delta_t, 2) * (1 / (2 * p.mass[index]));

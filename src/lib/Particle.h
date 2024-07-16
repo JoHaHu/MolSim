@@ -154,7 +154,7 @@ class Particles {
                 vs...,
                 fs...,
                 ofs...,
-                mass, type, active,fixed
+                mass, type, active, fixed
 #if DEBUG
                 ,
                 ids
