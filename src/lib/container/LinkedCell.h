@@ -79,7 +79,7 @@ class Cell {
 
  private:
  public:
-  explicit Cell(CellType type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx) {};
+  explicit Cell(CellType type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx){};
 
   constexpr auto is_boundary() const -> bool {
     return type == CellType::boundary;
@@ -128,8 +128,9 @@ class Cell {
 /**
  * The linked cell container class
  * */
-template<const size_t DIMENSIONS>
-class LinkedCell {
+template<class F, const size_t DIMENSIONS>
+  requires(std::derived_from<F, simulator::physics::Force>)
+class LinkedCell final : public Container<DIMENSIONS> {
 
  public:
   LinkedCell() = delete;
