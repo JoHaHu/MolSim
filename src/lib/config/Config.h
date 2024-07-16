@@ -8,8 +8,6 @@
 #include "Torus.h"
 #include "container/boundary.h"
 #include "simulator/physics/ForceModel.h"
-#include <array>
-#include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
@@ -134,6 +132,16 @@ class Config {
   long thermo_step;
 
   /**
+   * the number N of bins for the density/velocity profiling in a nanotube simulation
+   */
+  int profile_bins{};
+
+  /**
+   * the number of iterations for the density/velocity profiling in a nanotube simulation
+   */
+  int profile_iterations{};
+
+  /**
    * the cutoff radius for the linked-cells algorithm
    */
   double cutoff_radius{};
@@ -187,6 +195,7 @@ class Config {
    * if the code should use vectorization
    * */
   bool vectorized = false;
+
   /**
    * if the code should use parallelization
    * */

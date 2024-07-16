@@ -6,6 +6,13 @@ PR: https://github.com/JoHaHu/MolSim/pull/70
 
 # Report Group-D
 
+### Media
+
+All the media is stored in the git repository for this week because the files were too large for moodle even after packing. Images are also packed in the submission
+
+Additionally, here is a OneDrive Link with the video files: https://1drv.ms/f/s!Ar3cyyDhVL_okssq7odwUhiSI0WrTQ?e=BcDDnv
+
+
 ## Tasks - Worksheet 4
 
 ### Task 1 - Thermostats

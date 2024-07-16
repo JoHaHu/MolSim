@@ -27,7 +27,7 @@ class ParticleGenerator {
   using cuboid_t = std::tuple<std::array<double, DIMENSIONS>, std::array<double, DIMENSIONS>, std::array<int, DIMENSIONS>, double, double, double>;
 
  public:
-  explicit ParticleGenerator(const std::shared_ptr<config::Config> &config) : config(config) {};
+  explicit ParticleGenerator(const std::shared_ptr<config::Config> &config) : config(config){};
   /**
    * Load particles based on a input file and returns a particle container and the used force model
    * */
@@ -49,10 +49,10 @@ class ParticleGenerator {
       for (size_t i = 0; i < DIMENSIONS; ++i) {
         velocity[i] = cuboid.velocity[i];
       }
-
+      int fixed = cuboid.fixed;
       const auto particle = Particle<DIMENSIONS>(
           new_coords, velocity, config->mass[type],
-          type);
+          type, fixed);
       particles.push_back(particle);
     } else {
       for (size_t z : ranges::iota_view(0, cuboid.particles[depth - 1])) {

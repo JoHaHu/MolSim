@@ -38,6 +38,13 @@
                     </xs:complexType>
                 </xs:element>
 
+                <xs:element name="nanotube" minOccurs="0">
+                    <xs:complexType>
+                        <xs:attribute name="n_bins" type="positive_int" use="required"/>
+                        <xs:attribute name="iterations" type="positive_int" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+
 
                 <xs:element name="container">
                     <xs:complexType>
@@ -174,6 +181,7 @@
         </xs:all>
         <xs:attribute name="particleTypeId" type="xs:integer" use="required"/>
         <xs:attribute name="spacing" type="xs:double"/>
+        <xs:attribute name="fixed" type="xs:int"/>
     </xs:complexType>
 
     <!-- Definition of disc described by 2 integer arrays and 1 double -->

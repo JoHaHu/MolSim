@@ -101,11 +101,11 @@ class Cell {
 
   CellType type = CellType::inner;
   /**
-   * All enighbours
+   * All neighbours
    * */
   std::vector<Neighbour<DIMENSIONS>> neighbours{};
   std::array<size_t, DIMENSIONS> idx{};
-  std::array<BoundaryCondition, 2 * DIMENSIONS> boundary = initialize_boundary();
+  std::array<BoundaryCondition, 2 *DIMENSIONS> boundary = initialize_boundary();
 
   /**
    * The color of the cell, representing in which partition of the parralellization it runs
@@ -128,9 +128,8 @@ class Cell {
 /**
  * The linked cell container class
  * */
-template<class F, const size_t DIMENSIONS>
-  requires(std::derived_from<F, simulator::physics::Force>)
-class LinkedCell final : public Container<DIMENSIONS> {
+template<const size_t DIMENSIONS>
+class LinkedCell {
 
  public:
   LinkedCell() = delete;

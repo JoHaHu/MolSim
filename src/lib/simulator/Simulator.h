@@ -19,6 +19,8 @@
 #include <spdlog/spdlog.h>
 #include <utility>
 
+#include "physics/ProfileCalculator.h"
+
 namespace simulator {
 
 /**
@@ -33,6 +35,7 @@ class Simulator {
   std::shared_ptr<config::Config> config;
   Thermostat<DIMENSIONS> thermostat;
   Checkpointer<DIMENSIONS> checkpoint;
+  ProfileCalculator<DIMENSIONS> profile_calculator;
 
   double end_time;
   double delta_t;
@@ -44,6 +47,7 @@ class Simulator {
    * \param particles the particle container
    * \param plotter An instance plotter.
    * \param config the runtime configuration
+   * \param checkpoint the checkpointer instance
    * */
   explicit Simulator(std::unique_ptr<container::Container<DIMENSIONS>> &&particles,
                      std::unique_ptr<io::Plotter<DIMENSIONS>> &&plotter,
@@ -54,17 +58,20 @@ class Simulator {
         config(config),
         thermostat(config->temp_init, config->temp_target, config->max_temp_diff, config->seed),
         checkpoint(checkpoint),
+        profile_calculator(config->profile_bins),
         end_time(config->end_time),
         delta_t(config->delta_t),
         gravity(config->ljf_gravity){};
 
   auto inline calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
-
     const auto temp = pow(delta_t, 2) * (1 / (2 * p.mass[index]));
-    for (size_t i = 0; i < DIMENSIONS; ++i) {
-      p.positions[i][index] += delta_t * p.velocities[i][index] + temp * p.old_forces[i][index];
+    if (p.fixed[index] == 0) [[likely]] {
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
+        p.positions[i][index] += delta_t * p.velocities[i][index] + temp * p.old_forces[i][index];
+      }
     }
   }
+
   auto inline calculate_velocity_particle(Particles<DIMENSIONS> &p, size_t index) const {
 
     const auto temp = delta_t * (1 / (2 * p.mass[index]));
@@ -86,8 +93,8 @@ class Simulator {
   }
 
   /*! <p> Function for velocity calculation </p>
-  * calculates the velocity for all particles, takes no arguments and has no return value
-  */
+        * calculates the velocity for all particles, takes no arguments and has no return value
+        */
   auto calculate_velocity() -> void {
     SPDLOG_DEBUG("Updating velocities");
 
@@ -104,10 +111,10 @@ class Simulator {
   }
 
   /**
-  * @brief Calculates forces between particles.
-  *
-  * Resets forces for all particles, then calculates and updates forces for each particle pair.
-  */
+        * @brief Calculates forces between particles.
+        *
+        * Resets forces for all particles, then calculates and updates forces for each particle pair.
+        */
 
   auto calculate_force() -> void {
     SPDLOG_DEBUG("Starting force calculation");
@@ -144,6 +151,7 @@ class Simulator {
       SPDLOG_DEBUG("Iteration {} plotted.", iteration);
     }
 
+    const auto iteration_input = config->profile_iterations;
     while (current_time < end_time) {
       calculate_position();
       particles->swap_force();
@@ -157,6 +165,12 @@ class Simulator {
       }
       calculate_velocity();
 
+      if (iteration % iteration_input == 0) {
+        profile_calculator.updateProfiles(*particles);
+        profile_calculator.writeProfilesToCSV("profiles_" + std::to_string(iteration) + ".csv");
+        SPDLOG_DEBUG("Iteration {} written by ProfileCalculator.", iteration);
+      }
+
       iteration++;
       if (IO && iteration % interval == 0) {
         plotter->plotParticles(*particles, iteration);
@@ -169,7 +183,7 @@ class Simulator {
     }
 
     if (config->output_checkpoint.has_value()) {
-      checkpoint.save_checkppoint(*config->output_checkpoint, *particles);
+      checkpoint.save_checkpoint(*config->output_checkpoint, *particles);
     }
 
     SPDLOG_INFO("Output written. Terminating...");

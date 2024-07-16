@@ -1,5 +1,6 @@
 
 #pragma once
+
 #include <array>
 #include <iostream>
 #include <sstream>
@@ -13,19 +14,29 @@
  */
 class Cuboid {
  public:
-  std::vector<double> coordinates{};
-  std::vector<double> particles{};
-  std::vector<double> velocity{};
+  std::vector<double> coordinates;
+  std::vector<double> particles;
+  std::vector<double> velocity;
   double mass;
   double spacing;
   int type;
+  int fixed;
 
   // Parameterized constructor
   Cuboid(std::vector<double> &coordinates,
          std::vector<double> &particles,
          std::vector<double> &velocity,
          double mass, double spacing, int type)
-      : coordinates(coordinates), particles(particles), velocity(velocity), mass(mass), spacing(spacing), type(type) {}
+      : coordinates(coordinates), particles(particles), velocity(velocity), mass(mass), spacing(spacing),
+        type(type), fixed(0){};
+
+  // Constructor for fixed cuboids (additional parameter)
+  Cuboid(std::vector<double> &coordinates,
+         std::vector<double> &particles,
+         std::vector<double> &velocity,
+         double mass, double spacing, int type, int fixed)
+      : coordinates(coordinates), particles(particles), velocity(velocity), mass(mass), spacing(spacing),
+        type(type), fixed(fixed){};
 
   std::string toString() const {
     std::string output;

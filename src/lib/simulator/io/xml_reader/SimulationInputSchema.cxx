@@ -233,6 +233,30 @@ spacing (const spacing_optional& x)
   this->spacing_ = x;
 }
 
+const cuboid::fixed_optional& cuboid::
+fixed () const
+{
+  return this->fixed_;
+}
+
+cuboid::fixed_optional& cuboid::
+fixed ()
+{
+  return this->fixed_;
+}
+
+void cuboid::
+fixed (const fixed_type& x)
+{
+  this->fixed_.set (x);
+}
+
+void cuboid::
+fixed (const fixed_optional& x)
+{
+  this->fixed_ = x;
+}
+
 
 // disc
 //
@@ -987,6 +1011,36 @@ thermostat (::std::unique_ptr< thermostat_type > x)
   this->thermostat_.set (std::move (x));
 }
 
+const scenario::nanotube_optional& scenario::
+nanotube () const
+{
+  return this->nanotube_;
+}
+
+scenario::nanotube_optional& scenario::
+nanotube ()
+{
+  return this->nanotube_;
+}
+
+void scenario::
+nanotube (const nanotube_type& x)
+{
+  this->nanotube_.set (x);
+}
+
+void scenario::
+nanotube (const nanotube_optional& x)
+{
+  this->nanotube_ = x;
+}
+
+void scenario::
+nanotube (::std::unique_ptr< nanotube_type > x)
+{
+  this->nanotube_.set (std::move (x));
+}
+
 const scenario::container_type& scenario::
 container () const
 {
@@ -1417,6 +1471,58 @@ void thermostat::
 brownian_motion (const brownian_motion_optional& x)
 {
   this->brownian_motion_ = x;
+}
+
+
+// nanotube
+//
+
+const nanotube::n_bins_type& nanotube::
+n_bins () const
+{
+  return this->n_bins_.get ();
+}
+
+nanotube::n_bins_type& nanotube::
+n_bins ()
+{
+  return this->n_bins_.get ();
+}
+
+void nanotube::
+n_bins (const n_bins_type& x)
+{
+  this->n_bins_.set (x);
+}
+
+void nanotube::
+n_bins (::std::unique_ptr< n_bins_type > x)
+{
+  this->n_bins_.set (std::move (x));
+}
+
+const nanotube::iterations_type& nanotube::
+iterations () const
+{
+  return this->iterations_.get ();
+}
+
+nanotube::iterations_type& nanotube::
+iterations ()
+{
+  return this->iterations_.get ();
+}
+
+void nanotube::
+iterations (const iterations_type& x)
+{
+  this->iterations_.set (x);
+}
+
+void nanotube::
+iterations (::std::unique_ptr< iterations_type > x)
+{
+  this->iterations_.set (std::move (x));
 }
 
 
@@ -2182,7 +2288,8 @@ cuboid (const coordinate_type& coordinate,
   dimensions_ (dimensions, this),
   velocity_ (velocity, this),
   particleTypeId_ (particleTypeId, this),
-  spacing_ (this)
+  spacing_ (this),
+  fixed_ (this)
 {
 }
 
@@ -2196,7 +2303,8 @@ cuboid (::std::unique_ptr< coordinate_type > coordinate,
   dimensions_ (std::move (dimensions), this),
   velocity_ (std::move (velocity), this),
   particleTypeId_ (particleTypeId, this),
-  spacing_ (this)
+  spacing_ (this),
+  fixed_ (this)
 {
 }
 
@@ -2209,7 +2317,8 @@ cuboid (const cuboid& x,
   dimensions_ (x.dimensions_, f, this),
   velocity_ (x.velocity_, f, this),
   particleTypeId_ (x.particleTypeId_, f, this),
-  spacing_ (x.spacing_, f, this)
+  spacing_ (x.spacing_, f, this),
+  fixed_ (x.fixed_, f, this)
 {
 }
 
@@ -2222,7 +2331,8 @@ cuboid (const ::xercesc::DOMElement& e,
   dimensions_ (this),
   velocity_ (this),
   particleTypeId_ (this),
-  spacing_ (this)
+  spacing_ (this),
+  fixed_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -2324,6 +2434,12 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       this->spacing_.set (spacing_traits::create (i, f, this));
       continue;
     }
+
+    if (n.name () == "fixed" && n.namespace_ ().empty ())
+    {
+      this->fixed_.set (fixed_traits::create (i, f, this));
+      continue;
+    }
   }
 
   if (!particleTypeId_.present ())
@@ -2352,6 +2468,7 @@ operator= (const cuboid& x)
     this->velocity_ = x.velocity_;
     this->particleTypeId_ = x.particleTypeId_;
     this->spacing_ = x.spacing_;
+    this->fixed_ = x.fixed_;
   }
 
   return *this;
@@ -3643,6 +3760,7 @@ scenario (const header_type& header,
   header_ (header, this),
   checkpoints_ (this),
   thermostat_ (this),
+  nanotube_ (this),
   container_ (container, this),
   forces_ (forces, this)
 {
@@ -3656,6 +3774,7 @@ scenario (::std::unique_ptr< header_type > header,
   header_ (std::move (header), this),
   checkpoints_ (this),
   thermostat_ (this),
+  nanotube_ (this),
   container_ (std::move (container), this),
   forces_ (std::move (forces), this)
 {
@@ -3669,6 +3788,7 @@ scenario (const scenario& x,
   header_ (x.header_, f, this),
   checkpoints_ (x.checkpoints_, f, this),
   thermostat_ (x.thermostat_, f, this),
+  nanotube_ (x.nanotube_, f, this),
   container_ (x.container_, f, this),
   forces_ (x.forces_, f, this)
 {
@@ -3682,6 +3802,7 @@ scenario (const ::xercesc::DOMElement& e,
   header_ (this),
   checkpoints_ (this),
   thermostat_ (this),
+  nanotube_ (this),
   container_ (this),
   forces_ (this)
 {
@@ -3740,6 +3861,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       if (!this->thermostat_)
       {
         this->thermostat_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    // nanotube
+    //
+    if (n.name () == "nanotube" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< nanotube_type > r (
+        nanotube_traits::create (i, f, this));
+
+      if (!this->nanotube_)
+      {
+        this->nanotube_.set (::std::move (r));
         continue;
       }
     }
@@ -3813,6 +3948,7 @@ operator= (const scenario& x)
     this->header_ = x.header_;
     this->checkpoints_ = x.checkpoints_;
     this->thermostat_ = x.thermostat_;
+    this->nanotube_ = x.nanotube_;
     this->container_ = x.container_;
     this->forces_ = x.forces_;
   }
@@ -4287,6 +4423,106 @@ operator= (const thermostat& x)
 
 thermostat::
 ~thermostat ()
+{
+}
+
+// nanotube
+//
+
+nanotube::
+nanotube (const n_bins_type& n_bins,
+          const iterations_type& iterations)
+: ::xml_schema::type (),
+  n_bins_ (n_bins, this),
+  iterations_ (iterations, this)
+{
+}
+
+nanotube::
+nanotube (const nanotube& x,
+          ::xml_schema::flags f,
+          ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  n_bins_ (x.n_bins_, f, this),
+  iterations_ (x.iterations_, f, this)
+{
+}
+
+nanotube::
+nanotube (const ::xercesc::DOMElement& e,
+          ::xml_schema::flags f,
+          ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  n_bins_ (this),
+  iterations_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, false, false, true);
+    this->parse (p, f);
+  }
+}
+
+void nanotube::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  while (p.more_attributes ())
+  {
+    const ::xercesc::DOMAttr& i (p.next_attribute ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    if (n.name () == "n_bins" && n.namespace_ ().empty ())
+    {
+      this->n_bins_.set (n_bins_traits::create (i, f, this));
+      continue;
+    }
+
+    if (n.name () == "iterations" && n.namespace_ ().empty ())
+    {
+      this->iterations_.set (iterations_traits::create (i, f, this));
+      continue;
+    }
+  }
+
+  if (!n_bins_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "n_bins",
+      "");
+  }
+
+  if (!iterations_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "iterations",
+      "");
+  }
+}
+
+nanotube* nanotube::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class nanotube (*this, f, c);
+}
+
+nanotube& nanotube::
+operator= (const nanotube& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->n_bins_ = x.n_bins_;
+    this->iterations_ = x.iterations_;
+  }
+
+  return *this;
+}
+
+nanotube::
+~nanotube ()
 {
 }
 
@@ -5939,6 +6175,18 @@ operator<< (::xercesc::DOMElement& e, const cuboid& i)
 
     a << ::xml_schema::as_double(*i.spacing ());
   }
+
+  // fixed
+  //
+  if (i.fixed ())
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "fixed",
+        e));
+
+    a << *i.fixed ();
+  }
 }
 
 void
@@ -6383,6 +6631,18 @@ operator<< (::xercesc::DOMElement& e, const scenario& i)
     s << *i.thermostat ();
   }
 
+  // nanotube
+  //
+  if (i.nanotube ())
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "nanotube",
+        e));
+
+    s << *i.nanotube ();
+  }
+
   // container
   //
   {
@@ -6618,6 +6878,34 @@ operator<< (::xercesc::DOMElement& e, const thermostat& i)
         e));
 
     a << ::xml_schema::as_double(*i.brownian_motion ());
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const nanotube& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // n_bins
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "n_bins",
+        e));
+
+    a << i.n_bins ();
+  }
+
+  // iterations
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "iterations",
+        e));
+
+    a << i.iterations ();
   }
 }
 

@@ -18,6 +18,7 @@
         </xs:all>
         <xs:attribute name="mass" type="xs:double" use="required"/>
         <xs:attribute name="type" type="xs:int" use="required"/>
+        <xs:attribute name="fixed" type="xs:int" use="required"/>
     </xs:complexType>
 
     <xs:attributeGroup name="double_array">

@@ -8,7 +8,7 @@
 
 namespace container::index {
 
-constexpr const std::array<size_t, 3> block_size = {3, 1, 1};
+constexpr const std::array<size_t, 3> block_size = {2, 1, 1};
 
 template<const size_t DIMENSIONS>
 class Index {

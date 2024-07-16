@@ -631,6 +631,7 @@ class scenario;
 class header;
 class checkpoints;
 class thermostat;
+class nanotube;
 class container;
 class forces;
 class linked_cells;
@@ -1235,6 +1236,71 @@ class cuboid: public ::xml_schema::type
   //@}
 
   /**
+   * @name fixed
+   *
+   * @brief Accessor and modifier functions for the %fixed
+   * optional attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::int_ fixed_type;
+
+  /**
+   * @brief Attribute optional container type.
+   */
+  typedef ::xsd::cxx::tree::optional< fixed_type > fixed_optional;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< fixed_type, char > fixed_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute
+   * container.
+   *
+   * @return A constant reference to the optional container.
+   */
+  const fixed_optional&
+  fixed () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute container.
+   *
+   * @return A reference to the optional container.
+   */
+  fixed_optional&
+  fixed ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  fixed (const fixed_type& x);
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x An optional container with the new value to set.
+   *
+   * If the value is present in @a x then this function makes a copy 
+   * of this value and sets it as the new value of the attribute.
+   * Otherwise the attribute container is set the 'not present' state.
+   */
+  void
+  fixed (const fixed_optional& x);
+
+  //@}
+
+  /**
    * @name Constructors
    */
   //@{
@@ -1336,6 +1402,7 @@ class cuboid: public ::xml_schema::type
   ::xsd::cxx::tree::one< velocity_type > velocity_;
   ::xsd::cxx::tree::one< particleTypeId_type > particleTypeId_;
   spacing_optional spacing_;
+  fixed_optional fixed_;
 
   //@endcond
 };
@@ -4094,6 +4161,82 @@ class scenario: public ::xml_schema::type
   //@}
 
   /**
+   * @name nanotube
+   *
+   * @brief Accessor and modifier functions for the %nanotube
+   * optional element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::nanotube nanotube_type;
+
+  /**
+   * @brief Element optional container type.
+   */
+  typedef ::xsd::cxx::tree::optional< nanotube_type > nanotube_optional;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< nanotube_type, char > nanotube_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element
+   * container.
+   *
+   * @return A constant reference to the optional container.
+   */
+  const nanotube_optional&
+  nanotube () const;
+
+  /**
+   * @brief Return a read-write reference to the element container.
+   *
+   * @return A reference to the optional container.
+   */
+  nanotube_optional&
+  nanotube ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  nanotube (const nanotube_type& x);
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x An optional container with the new value to set.
+   *
+   * If the value is present in @a x then this function makes a copy 
+   * of this value and sets it as the new value of the element.
+   * Otherwise the element container is set the 'not present' state.
+   */
+  void
+  nanotube (const nanotube_optional& x);
+
+  /**
+   * @brief Set the element value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly instead
+   * of making a copy.
+   */
+  void
+  nanotube (::std::unique_ptr< nanotube_type > p);
+
+  //@}
+
+  /**
    * @name container
    *
    * @brief Accessor and modifier functions for the %container
@@ -4307,6 +4450,7 @@ class scenario: public ::xml_schema::type
   ::xsd::cxx::tree::one< header_type > header_;
   checkpoints_optional checkpoints_;
   thermostat_optional thermostat_;
+  nanotube_optional nanotube_;
   ::xsd::cxx::tree::one< container_type > container_;
   ::xsd::cxx::tree::one< forces_type > forces_;
 
@@ -5586,6 +5730,218 @@ class thermostat: public ::xml_schema::type
   ::xsd::cxx::tree::one< frequency_type > frequency_;
   max_temp_diff_optional max_temp_diff_;
   brownian_motion_optional brownian_motion_;
+
+  //@endcond
+};
+
+/**
+ * @brief Class corresponding to the %nanotube schema type.
+ *
+ * @nosubgrouping
+ */
+class nanotube: public ::xml_schema::type
+{
+  public:
+  /**
+   * @name n_bins
+   *
+   * @brief Accessor and modifier functions for the %n_bins
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::positive_int n_bins_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< n_bins_type, char > n_bins_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const n_bins_type&
+  n_bins () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  n_bins_type&
+  n_bins ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  n_bins (const n_bins_type& x);
+
+  /**
+   * @brief Set the attribute value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  n_bins (::std::unique_ptr< n_bins_type > p);
+
+  //@}
+
+  /**
+   * @name iterations
+   *
+   * @brief Accessor and modifier functions for the %iterations
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::positive_int iterations_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< iterations_type, char > iterations_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const iterations_type&
+  iterations () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  iterations_type&
+  iterations ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  iterations (const iterations_type& x);
+
+  /**
+   * @brief Set the attribute value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  iterations (::std::unique_ptr< iterations_type > p);
+
+  //@}
+
+  /**
+   * @name Constructors
+   */
+  //@{
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes.
+   */
+  nanotube (const n_bins_type&,
+            const iterations_type&);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  nanotube (const ::xercesc::DOMElement& e,
+            ::xml_schema::flags f = 0,
+            ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  nanotube (const nanotube& x,
+            ::xml_schema::flags f = 0,
+            ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual nanotube*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  /**
+   * @brief Copy assignment operator.
+   *
+   * @param x An instance to make a copy of.
+   * @return A reference to itself.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  nanotube&
+  operator= (const nanotube& x);
+
+  //@}
+
+  /**
+   * @brief Destructor.
+   */
+  virtual 
+  ~nanotube ();
+
+  // Implementation.
+  //
+
+  //@cond
+
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< n_bins_type > n_bins_;
+  ::xsd::cxx::tree::one< iterations_type > iterations_;
 
   //@endcond
 };
@@ -8586,6 +8942,9 @@ operator<< (::xercesc::DOMElement&, const checkpoints&);
 
 void
 operator<< (::xercesc::DOMElement&, const thermostat&);
+
+void
+operator<< (::xercesc::DOMElement&, const nanotube&);
 
 void
 operator<< (::xercesc::DOMElement&, const container&);
