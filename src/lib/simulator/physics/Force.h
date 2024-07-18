@@ -21,7 +21,7 @@ class Force {
       double &y2,
       double &mass2,
       long &type2,
-      uint8_t  &membrane2,
+      uint8_t &membrane2,
       double &result_x,
       double &result_y,
       std::array<double, 2> &correction) = 0;
@@ -40,7 +40,7 @@ class Force {
       double &z2,
       double &mass2,
       long &type2,
-      uint8_t  &membrane2,
+      uint8_t &membrane2,
       double &result_x,
       double &result_y,
       double &result_z,

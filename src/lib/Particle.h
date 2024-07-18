@@ -52,14 +52,16 @@ class Particle {
      */
   uint8_t fixed{};
 
+  uint8_t is_membrane{};
+
   Particle(const std::array<double, DIMENSIONS> &position,
            const std::array<double, DIMENSIONS> &velocity,
            const std::array<double, DIMENSIONS> &force,
            const std::array<double, DIMENSIONS> &old_force,
            double mass,
            int type,
-           int fixed) : position(position), velocity(velocity), force(force), old_force(old_force), mass(mass),
-                        type(type), fixed(fixed) {}
+           int fixed, int is_membrane) : position(position), velocity(velocity), force(force), old_force(old_force), mass(mass),
+                                         type(type), fixed(fixed), is_membrane(is_membrane) {}
 
   Particle(
       // for visualization, we need always 3 coordinates
@@ -117,7 +119,7 @@ class Particles {
   std::vector<size_t> ids{};
 #endif
 
-  auto insert_particle(Particle<DIMENSIONS> p, bool is_membrane) {
+  auto insert_particle(Particle<DIMENSIONS> p) {
 
     for (size_t i = 0; i < DIMENSIONS; ++i) {
       positions[i].emplace_back(p.position[i]);
@@ -139,12 +141,16 @@ class Particles {
     cell.emplace_back(0);
     block.emplace_back(0);
     color.emplace_back(0);
-    membrane.emplace_back(is_membrane);
+    membrane.emplace_back(p.is_membrane);
     swap_index.emplace_back(0);
 #if DEBUG
     ids.emplace_back(size);
 #endif
     size++;
+  }
+
+  auto insert_membrane_pair(MembranePair p) -> void {
+    membrane_pairs.emplace_back(p);
   }
 
   size_t size{};
@@ -213,9 +219,9 @@ class Particles {
     }
   }
 
-  void apply_membrane(std::function<void(size_t, size_t, bool)> const & f) {
+  void apply_membrane(std::function<void(size_t, size_t, bool)> const &f) {
     for (auto &pair : membrane_pairs) {
-      f( pair.first, pair.second, pair.diagonal);
+      f(pair.first, pair.second, pair.diagonal);
     }
   }
 

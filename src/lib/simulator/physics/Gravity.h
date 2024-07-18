@@ -16,7 +16,7 @@ class Gravity final : public Force {
  *
  * */
 #pragma omp declare simd simdlen(4) uniform(this, x1, y1, mass1, type1, correction, membrane1) linear(ref(x2, y2, mass2, type2, membrane2))
-#pragma omp declare simd simdlen(8) uniform(this, x1, y1, mass1, type1, correction , membrane1) linear(ref(x2, y2, mass2, type2, membrane2))
+#pragma omp declare simd simdlen(8) uniform(this, x1, y1, mass1, type1, correction, membrane1) linear(ref(x2, y2, mass2, type2, membrane2))
   inline void calculateForce_2D(
       double const &x1,
       double const &y1,
@@ -27,7 +27,7 @@ class Gravity final : public Force {
       double &y2,
       double &mass2,
       long &type2,
-      uint8_t  &membrane2,
+      uint8_t &membrane2,
       double &result_x,
       double &result_y,
       std::array<double, 2> &correction) override {
@@ -53,13 +53,13 @@ class Gravity final : public Force {
       double const &z1,
       double const &mass1,
       long const &type1,
-      uint8_t const  &membrane1,
+      uint8_t const &membrane1,
       double &x2,
       double &y2,
       double &z2,
       double &mass2,
       long &type2,
-      uint8_t  &membrane2,
+      uint8_t &membrane2,
       double &result_x,
       double &result_y,
       double &result_z,

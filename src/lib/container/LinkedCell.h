@@ -490,7 +490,11 @@ class LinkedCell final : public Container<DIMENSIONS> {
    * inserts a new particle into the arena and the into the cells
    * */
   void insert(Particle<DIMENSIONS> particle) override {
-    particles.insert_particle(particle, false);
+    particles.insert_particle(particle);
+  }
+
+  void insert_membrane_pair(MembranePair p) override {
+    particles.insert_membrane_pair(p);
   }
 
   /**

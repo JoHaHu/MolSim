@@ -29,6 +29,7 @@ struct ParticleContainer final : public container::Container<DIMENSIONS> {
   void insert(Particle<DIMENSIONS> p) override {
     particles.insert_particle(p);
   }
+  void insert_membrane_pair(MembranePair p) override {}
   void boundary() override {}
   void refresh() override {}
 

@@ -55,6 +55,13 @@ class Container {
   * @param p Particle to insert.
   */
   virtual void insert(Particle<DIMENSIONS> p) = 0;
+
+  /**
+  * @brief Inserts a membrane pair into the container.
+  *
+  * @param p Particle to insert.
+  */
+  virtual void insert_membrane_pair(MembranePair p) = 0;
 };
 
 }// namespace container

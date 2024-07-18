@@ -6,6 +6,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element maxOccurs="unbounded" name="particle" type="particle"/>
+                <xs:element maxOccurs="unbounded" name="membrane_pair" type="membrane_pair"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -19,6 +20,13 @@
         <xs:attribute name="mass" type="xs:double" use="required"/>
         <xs:attribute name="type" type="xs:int" use="required"/>
         <xs:attribute name="fixed" type="xs:int" use="required"/>
+        <xs:attribute name="is_membrane" type="xs:int" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="membrane_pair">
+        <xs:attribute name="first" type="xs:int" use="required"/>
+        <xs:attribute name="second" type="xs:int" use="required"/>
+        <xs:attribute name="diagonal" type="xs:boolean" use="required"/>
     </xs:complexType>
 
     <xs:attributeGroup name="double_array">
