@@ -17,7 +17,8 @@ https://1drv.ms/f/s!Ar3cyyDhVL_oktssXaQhihLO8r66rw?e=dBheet
 
 ## Task 1 - Simulation of a membrane
 
-- Extend Molecule Class: Modified to store neighboring molecules and initialized on a rectangular grid, setting direct and diagonal neighbors.
+- Extend Molecule Class: Modified to store neighboring molecules and initialized on a rectangular grid, setting direct
+  and diagonal neighbors.
 - Harmonic Potential: Implemented interactions for direct and diagonal neighbors using harmonic potential formulas.
 - Self-Penetration Prevention: Applied truncated Lennard-Jones potential to ensure only repulsive forces are active.
 - Ran the simulation with specified parameters.
@@ -28,6 +29,7 @@ https://1drv.ms/f/s!Ar3cyyDhVL_oktssXaQhihLO8r66rw?e=dBheet
 - Implemented two parallelization strategies selectable via the input file.
 - Ensured compatibility without OpenMP using precompiler statements (#ifdef OPENMP).
 - Measured speedup with varying amount of threads.
+- we use domain coloring to divide the domain in partition that can be iterated without locking
 
 ## Task 3 - Rayleigh-Taylor instability in 3D
 
@@ -63,7 +65,8 @@ https://1drv.ms/f/s!Ar3cyyDhVL_oktssXaQhihLO8r66rw?e=dBheet
 
 **Mass:**
 - Higher mass of wall molecules leads to the fluid sticking better to it.
-- Vice-versa, lower mass of wall molecules or higher mass of fluid molecules leads to less interaction effects with the wall molecules.
+- Vice-versa, lower mass of wall molecules or higher mass of fluid molecules leads to less interaction effects with the
+  wall molecules.
 
 **σ or ϵ of the molecules:**
 - Higher σ expands the effective diameter of the particles.
@@ -87,5 +90,5 @@ https://1drv.ms/f/s!Ar3cyyDhVL_oktssXaQhihLO8r66rw?e=dBheet
 
 **Task 4 extra thermostat:**
 - Maintains temperature by scaling only the x- and z-components of velocities and adjusts the y-component for mean flow,
-resulting in realistic flow dynamics without affecting the temperature.
-This approach differs by focusing on directional components and excluding flow speed from temperature calculations.
+  resulting in realistic flow dynamics without affecting the temperature.
+  This approach differs by focusing on directional components and excluding flow speed from temperature calculations.
