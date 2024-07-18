@@ -19,14 +19,14 @@ https://1drv.ms/f/s!Ar3cyyDhVL_oktssXaQhihLO8r66rw?e=dBheet
 ## Task 1 - Simulation of a membrane
 
 - implemented force
-- implemented datastructure
-- missing implementation to fill datastructure with membrane Particles
+- implemented data structure
+- missing implementation to fill data structure with membrane Particles
 
 ## Task 2 - Parallelization
 
-- parallellized only the pairwise computation of forces
+- parallelized only the pairwise computation of forces
 - Other parts are not really significant in our profiles
-- sorting between each iteration is the biggest block er for higher scalability in out approach
+- sorting between each iteration is the biggest blocker for higher scalability in out approach
 - we use domain coloring to divide the domain in partition that can be iterated without locking,
   this is a little bit less optimal compared to our single threaded approach, because the cache locality is worse
 - Peak performance is observed with about 20 threads
@@ -55,7 +55,7 @@ https://1drv.ms/f/s!Ar3cyyDhVL_oktssXaQhihLO8r66rw?e=dBheet
 ## Task 4 - Nano-scale flow simulation
 
 - Fixed Wall Particles: Enabled fixing positions of particles in the outer cuboids, ensuring they do not move but still
-  exert forces on fluid particles. This works by adding an additional attribute for cuboids
+  exert forces on fluid particles. This works by adding an extra attribute for cuboids
 - In the position updating, only particles that are not fixed are considered and their positions updated. Therefore, the
   forces between wall and fluid particles still remain.
 - Thermostat Extension: Extended the thermostat to ignore total fluid velocity, calculating temperature using velocity
