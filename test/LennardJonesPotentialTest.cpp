@@ -30,8 +30,8 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_forces_simple) {
   std::array<double, 3> x_j = {0.0, 1.0, 1.0};
   std::array<double, 3> velocity_j = {0.0, 0.0, 0.0};
 
-  Particle<3> particle_i(x_i, velocity_i, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0, 0, 0);
-  Particle<3> particle_j(x_j, velocity_j, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0, 0, 0);
+  Particle<3> particle_i(x_i, velocity_i, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0, 0, 0, 0);
+  Particle<3> particle_j(x_j, velocity_j, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0, 0, 0, 0);
 
   // Manual computation of forces
   const std::array<double, 3> actual_forces = {-1.37174211, 1.37174211, 1.37174211};
@@ -42,8 +42,8 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_forces_simple) {
   long type_i = particle_i.type;
   long type_j = particle_j.type;
   lennardJonesForce->calculateForce_3D(
-      particle_i.position[0], particle_i.position[1], particle_i.position[2], particle_i.mass, type_i,
-      particle_j.position[0], particle_j.position[1], particle_j.position[2], particle_j.mass, type_j,
+      particle_i.position[0], particle_i.position[1], particle_i.position[2], particle_i.mass, type_i, particle_i.is_membrane,
+      particle_j.position[0], particle_j.position[1], particle_j.position[2], particle_j.mass, type_j, particle_j.is_membrane,
       calculated_forces[0], calculated_forces[1], calculated_forces[2], correction);
 
   // Check if each result of the force vector is accurate enough
@@ -67,8 +67,8 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_small_forces) {
   std::array<double, 3> x_j = {0.004, 0.0584, 0.0372};
   std::array<double, 3> velocity_j = {0.0, 0.0, 0.0};
 
-  Particle<3> particle_i(x_i, velocity_i, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0, 0, 0);
-  Particle<3> particle_j(x_j, velocity_j, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0, 0, 0);
+  Particle<3> particle_i(x_i, velocity_i, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0, 0, 0, 0);
+  Particle<3> particle_j(x_j, velocity_j, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0, 0, 0, 0);
 
   // Using cutoff so the forces are too small
   std::array<double, 3> actual_forces = {0.0, 0.0, 0.0};
@@ -79,8 +79,8 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_small_forces) {
   long type_i = particle_i.type;
   long type_j = particle_j.type;
   lennardJonesForce->calculateForce_3D(
-      particle_i.position[0], particle_i.position[1], particle_i.position[2], particle_i.mass, type_i,
-      particle_j.position[0], particle_j.position[1], particle_j.position[2], particle_j.mass, type_j,
+      particle_i.position[0], particle_i.position[1], particle_i.position[2], particle_i.mass, type_i, particle_i.is_membrane,
+      particle_j.position[0], particle_j.position[1], particle_j.position[2], particle_j.mass, type_j, particle_j.is_membrane,
       calculated_forces[0], calculated_forces[1], calculated_forces[2], correction);
 
   // Check if each result of the force vector is accurate enough
@@ -105,8 +105,8 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_same_particle) {
   std::array<double, 3> x_j = {1.0, 1.0, 0.0};
   std::array<double, 3> velocity_j = {0.0, 0.0, 0.0};
 
-  Particle<3> particle_i(x_i, velocity_i, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0, 0, 0);
-  Particle<3> particle_j(x_j, velocity_j, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0, 0, 0);
+  Particle<3> particle_i(x_i, velocity_i, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0, 0, 0, 0);
+  Particle<3> particle_j(x_j, velocity_j, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0, 0, 0, 0);
 
   std::array<double, 3> actual_forces = {NAN, NAN, NAN};
 
@@ -116,8 +116,8 @@ TEST_F(LennardJonesPotentialTest, lennard_jones_same_particle) {
   long type_i = particle_i.type;
   long type_j = particle_j.type;
   lennardJonesForce->calculateForce_3D(
-      particle_i.position[0], particle_i.position[1], particle_i.position[2], particle_i.mass, type_i,
-      particle_j.position[0], particle_j.position[1], particle_j.position[2], particle_j.mass, type_j,
+      particle_i.position[0], particle_i.position[1], particle_i.position[2], particle_i.mass, type_i, particle_i.is_membrane,
+      particle_j.position[0], particle_j.position[1], particle_j.position[2], particle_j.mass, type_j, particle_j.is_membrane,
       calculated_forces[0], calculated_forces[1], calculated_forces[2], correction);
 
   // Check if each result of the force vector is accurate enough

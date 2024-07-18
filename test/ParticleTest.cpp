@@ -6,7 +6,7 @@
 class ParticleTest : public ::testing::Test {
  public:
   std::vector<Particle<3>> particles{}, particles2{};
-  std::unique_ptr<ParticleContainer<3>> container, container2;
+  std::unique_ptr<container::ParticleContainer<3>> container, container2;
 
   ParticleTest() = default;
 
@@ -44,8 +44,8 @@ class ParticleTest : public ::testing::Test {
     }
 
     // initialise containers
-    container = std::make_unique<ParticleContainer<3>>();
-    container2 = std::make_unique<ParticleContainer<3>>();
+    container = std::make_unique<container::ParticleContainer<3>>(nullptr);
+    container2 = std::make_unique<container::ParticleContainer<3>>(nullptr);
 
     for (const auto &particle : particles) {
       container->insert(particle);

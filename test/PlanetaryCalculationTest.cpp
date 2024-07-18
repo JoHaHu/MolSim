@@ -30,8 +30,8 @@ TEST_F(PlanetaryCalculationTest, force_calculation_simple_norm) {
   std::array<double, 3> correction = {0.0, 0.0, 0.0};
   long type = 0;
 
-  gravity.calculateForce_3D(particleA.position[0], particleA.position[1], particleA.position[2], particleA.mass, type,
-                            particleB.position[0], particleB.position[1], particleB.position[2], particleB.mass, type,
+  gravity.calculateForce_3D(particleA.position[0], particleA.position[1], particleA.position[2], particleA.mass, type, particleA.is_membrane,
+                            particleB.position[0], particleB.position[1], particleB.position[2], particleB.mass, type, particleB.is_membrane,
                             result_force[0], result_force[1], result_force[2], correction);
 
   auto x_difference = 1.0;
@@ -61,8 +61,8 @@ TEST_F(PlanetaryCalculationTest, force_calculation_edge_norm) {
   std::array<double, 3> correction = {0.0, 0.0, 0.0};
   long type = 0;
 
-  gravity.calculateForce_3D(particleA.position[0], particleA.position[1], particleA.position[2], particleA.mass, type,
-                            particleD.position[0], particleD.position[1], particleD.position[2], particleD.mass, type,
+  gravity.calculateForce_3D(particleA.position[0], particleA.position[1], particleA.position[2], particleA.mass, type, particleA.is_membrane,
+                            particleD.position[0], particleD.position[1], particleD.position[2], particleD.mass, type, particleD.is_membrane,
                             result_force[0], result_force[1], result_force[2], correction);
 
   auto x_difference = 219.4;
@@ -92,8 +92,8 @@ TEST_F(PlanetaryCalculationTest, force_calculation_small_difference) {
   std::array<double, 3> correction = {0.0, 0.0, 0.0};
   long type = 0;
 
-  gravity.calculateForce_3D(particleA.position[0], particleA.position[1], particleA.position[2], particleA.mass, type,
-                            particleE.position[0], particleE.position[1], particleE.position[2], particleE.mass, type,
+  gravity.calculateForce_3D(particleA.position[0], particleA.position[1], particleA.position[2], particleA.mass, type, particleA.is_membrane,
+                            particleE.position[0], particleE.position[1], particleE.position[2], particleE.mass, type, particleE.is_membrane,
                             result_force[0], result_force[1], result_force[2], correction);
 
   auto x_difference = 0.1;
@@ -123,8 +123,8 @@ TEST_F(PlanetaryCalculationTest, force_calculation_along_one_axis) {
   std::array<double, 3> correction = {0.0, 0.0, 0.0};
   long type = 0;
 
-  gravity.calculateForce_3D(particleA.position[0], particleA.position[1], particleA.position[2], particleA.mass, type,
-                            particleF.position[0], particleF.position[1], particleF.position[2], particleF.mass, type,
+  gravity.calculateForce_3D(particleA.position[0], particleA.position[1], particleA.position[2], particleA.mass, type, particleA.is_membrane,
+                            particleF.position[0], particleF.position[1], particleF.position[2], particleF.mass, type, particleF.is_membrane,
                             result_force[0], result_force[1], result_force[2], correction);
 
   auto x_difference = 0.0;

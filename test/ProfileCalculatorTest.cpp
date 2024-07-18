@@ -9,14 +9,14 @@
 
 class ProfileCalculatorTest : public ::testing::Test {
  protected:
-  std::unique_ptr<ParticleContainer<3>> particles;
+  std::unique_ptr<container::ParticleContainer<3>> particles;
   ProfileCalculator<3> profileCalculator;
 
   ProfileCalculatorTest()
       : profileCalculator(10) {}
 
   void SetUp() override {
-    particles = std::make_unique<ParticleContainer<3>>();
+    particles = std::make_unique<container::ParticleContainer<3>>(nullptr);
 
     // Initialize particles
     for (int i = 0; i < 100; ++i) {

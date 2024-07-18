@@ -1,5 +1,4 @@
 #include "Particle.h"
-#include "container/boundary.h"
 #include "container/LinkedCell.h"
 #include "container/ParticleContainer.h"
 #include "simulator/physics/LennardJones.h"
@@ -19,8 +18,8 @@ class LinkedCellsTest : public ::testing::Test {
 
     std::vector<double> epsilons = {1.0};
     std::vector<double> sigmas = {1.0};
-    std::vector<double> sigma_outflow = {1.0}; // Local variable for sigma
-    std::vector<double> sigma_reflecting = {1.0}; // Local variable for sigma
+    std::vector<double> sigma_outflow = {1.0};   // Local variable for sigma
+    std::vector<double> sigma_reflecting = {1.0};// Local variable for sigma
 
     auto lc = std::make_unique<container::LinkedCell<simulator::physics::LennardJonesForce, 3>>(
         simulator::physics::LennardJonesForce(1.0, epsilons, sigmas),

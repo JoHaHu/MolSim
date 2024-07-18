@@ -5,6 +5,8 @@
 #include <cmath>
 #include <memory>
 
+namespace container {
+
 template<const size_t DIMENSIONS>
 struct ParticleContainer final : public container::Container<DIMENSIONS> {
  private:
@@ -12,6 +14,8 @@ struct ParticleContainer final : public container::Container<DIMENSIONS> {
   std::unique_ptr<simulator::physics::Force> force;
 
  public:
+  explicit ParticleContainer(std::unique_ptr<simulator::physics::Force> &&force) : force(std::move(force)) {}
+
   ~ParticleContainer() override = default;
 
   void linear(std::function<void(Particles<DIMENSIONS> &, size_t)> function) override {
@@ -41,7 +45,7 @@ struct ParticleContainer final : public container::Container<DIMENSIONS> {
     const auto particle_size = particles.size;
     for (size_t index_1 = 0; index_1 < particle_size - 1; ++index_1) {
       if (particles.active[index_1]) {
-        auto particle_force = std::array<double, DIMENSIONS>();
+        double particle_force[DIMENSIONS] = {0};
 
 #pragma omp simd reduction(+ : particle_force[ : DIMENSIONS])
         for (size_t index_2 = index_1 + 1; index_2 < particle_size; ++index_2) {
@@ -84,3 +88,4 @@ struct ParticleContainer final : public container::Container<DIMENSIONS> {
     }
   }
 };
+}// namespace container

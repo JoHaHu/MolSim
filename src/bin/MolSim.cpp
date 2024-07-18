@@ -4,6 +4,7 @@
 
 #include "config/Config.h"
 #include "container/LinkedCell.h"
+#include "container/ParticleContainer.h"
 #include "simulator/Simulator.h"
 #include "simulator/io/ParticleGenerator.h"
 #include "simulator/io/VTKPlotter.h"
@@ -26,7 +27,24 @@ auto setup(std::shared_ptr<config::Config> config) -> auto {
   std::unique_ptr<container::Container<DIMENSIONS>> pc;
   switch (config->particle_container_type) {
     case ParticleContainerType::Vector:
-      // TODO
+
+      switch (config->simulation_type) {
+        case simulator::physics::ForceModel::LennardJones: {
+          std::unique_ptr<simulator::physics::Force> physics = std::make_unique<simulator::physics::LennardJonesForce>(config->cutoff_radius, config->epsilon, config->sigma);
+
+          pc = std::make_unique<container::ParticleContainer<DIMENSIONS>>(std::move(physics));
+          break;
+        }
+        case simulator::physics::ForceModel::Gravity: {
+          std::unique_ptr<simulator::physics::Force> physics = std::make_unique<simulator::physics::Gravity>();
+
+          pc = std::make_unique<container::ParticleContainer<DIMENSIONS>>(std::move(physics));
+          break;
+        }
+        default:
+          SPDLOG_ERROR("Unsupported Force with Linked Cells");
+          exit(1);
+      }
       break;
     case ParticleContainerType::LinkedCells:
 
@@ -42,6 +60,7 @@ auto setup(std::shared_ptr<config::Config> config) -> auto {
       switch (config->simulation_type) {
         case simulator::physics::ForceModel::LennardJones: {
           auto physics = simulator::physics::LennardJonesForce(config->cutoff_radius, config->epsilon, config->sigma);
+
           pc = std::make_unique<container::LinkedCell<simulator::physics::LennardJonesForce, DIMENSIONS>>(
               std::move(physics),
               domain,

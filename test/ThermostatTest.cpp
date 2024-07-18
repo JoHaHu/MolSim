@@ -7,7 +7,7 @@
 
 class ThermostatTest : public ::testing::Test {
  protected:
-  std::unique_ptr<ParticleContainer<2>> particles;
+  std::unique_ptr<container::ParticleContainer<2>> particles;
   Thermostat<2> thermostat;
   const double tolerance = 0.0001;
 
@@ -18,7 +18,7 @@ class ThermostatTest : public ::testing::Test {
   const unsigned int seed = 12345;
 
   void SetUp() override {
-    particles = std::make_unique<ParticleContainer<2>>();
+    particles = std::make_unique<container::ParticleContainer<2>>(nullptr);
     thermostat = Thermostat<2>();
 
     // Initialize particles
