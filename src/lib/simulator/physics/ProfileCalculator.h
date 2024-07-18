@@ -93,6 +93,26 @@ class ProfileCalculator {
     file.close();
   }
 
+  const std::vector<int>& getDensityProfile() const {
+    return density_profile;
+  }
+
+  const std::vector<std::array<double, DIMENSIONS>>& getVelocityProfile() const {
+    return velocity_profile;
+  }
+
+  double getXMin() const {
+    return x_min;
+  }
+
+  double getXMax() const {
+    return x_max;
+  }
+
+  double getBinSize() const {
+    return bin_size;
+  }
+
  private:
   size_t num_bins;
   double x_min;
