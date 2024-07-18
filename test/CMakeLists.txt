@@ -3,7 +3,6 @@ file(GLOB_RECURSE MY_TESTS
 )
 
 add_executable(Test ${MY_TESTS}
-        ThermostatTest.cpp
 )
 
 include(CheckIPOSupported)

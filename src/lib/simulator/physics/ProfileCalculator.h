@@ -15,9 +15,9 @@ template<const size_t DIMENSIONS>
 class ProfileCalculator {
  public:
   /**
-     * @brief Constructor for the ProfileCalculator class.
-     * @param num_bins Number of bins to divide the x-axis.
-     */
+   * @brief Constructor for the ProfileCalculator class.
+   * @param num_bins Number of bins to divide the x-axis.
+   */
   ProfileCalculator(size_t num_bins)
       : num_bins(num_bins), x_min(std::numeric_limits<double>::max()), x_max(std::numeric_limits<double>::lowest()) {
     density_profile.resize(num_bins, 0);
@@ -26,9 +26,9 @@ class ProfileCalculator {
   }
 
   /**
-     * @brief Updates the profiles based on the current particle data.
-     * @param particles Container of particles.
-     */
+   * @brief Updates the profiles based on the current particle data.
+   * @param particles Container of particles.
+   */
   void updateProfiles(container::Container<DIMENSIONS> &particles) {
     // Reset profiles
     std::fill(density_profile.begin(), density_profile.end(), 0);
@@ -72,9 +72,9 @@ class ProfileCalculator {
   }
 
   /**
-     * @brief Writes the profiles to a CSV file.
-     * @param filename The name of the CSV file.
-     */
+   * @brief Writes the profiles to a CSV file.
+   * @param filename The name of the CSV file.
+   */
   void writeProfilesToCSV(const std::string &filename) const {
     std::ofstream file(filename);
     file << "Bin,Density";
@@ -93,32 +93,52 @@ class ProfileCalculator {
     file.close();
   }
 
+  /**
+   * @brief Returns the density profile.
+   * @return Reference to the density profile vector.
+   */
   const std::vector<int>& getDensityProfile() const {
     return density_profile;
   }
 
+  /**
+   * @brief Returns the velocity profile.
+   * @return Reference to the velocity profile vector.
+   */
   const std::vector<std::array<double, DIMENSIONS>>& getVelocityProfile() const {
     return velocity_profile;
   }
 
+  /**
+   * @brief Returns the minimum x-value.
+   * @return Minimum x-value.
+   */
   double getXMin() const {
     return x_min;
   }
 
+  /**
+   * @brief Returns the maximum x-value.
+   * @return Maximum x-value.
+   */
   double getXMax() const {
     return x_max;
   }
 
+  /**
+   * @brief Returns the bin size.
+   * @return Bin size.
+   */
   double getBinSize() const {
     return bin_size;
   }
 
  private:
-  size_t num_bins;
-  double x_min;
-  double x_max;
-  double bin_size;
-  std::vector<int> density_profile;
-  std::vector<std::array<double, DIMENSIONS>> velocity_profile;
-  std::vector<size_t> counts;
+  size_t num_bins;  ///< Number of bins to divide the x-axis
+  double x_min;     ///< Minimum x value
+  double x_max;     ///< Maximum x value
+  double bin_size;  ///< Size of each bin
+  std::vector<int> density_profile;  ///< Density profile
+  std::vector<std::array<double, DIMENSIONS>> velocity_profile;  ///< Velocity profile
+  std::vector<size_t> counts;  ///< Count of particles in each bin
 };

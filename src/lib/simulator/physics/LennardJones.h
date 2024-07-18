@@ -4,15 +4,14 @@
 #include "experimental/simd"
 #include "spdlog/spdlog.h"
 #include "utils/ArrayUtils.h"
-
 #include "Force.h"
 #include "immintrin.h"
+
 namespace simulator::physics {
 
 /**
- * Implements physics for simulations using lennard-jones as force Model
- * */
-
+ * @brief Implements Lennard-Jones force model for simulations.
+ */
 class LennardJonesForce final : public Force {
 
   double cutoff = 3.0;
@@ -24,10 +23,30 @@ class LennardJonesForce final : public Force {
   alignas(64) std::array<double, NUM_TYPES * NUM_TYPES> epsilons_48 = std::array<double, NUM_TYPES * NUM_TYPES>();
 
  public:
+  /**
+   * @brief Constructor for LennardJonesForce.
+   * @param cutoff Cutoff distance for the force calculation.
+   * @param epsilons Vector of epsilon values for different particle types.
+   * @param sigmas Vector of sigma values for different particle types.
+   */
   explicit LennardJonesForce(double cutoff, std::vector<double> epsilons, std::vector<double> sigmas) {
     initialize_constants(epsilons, sigmas, cutoff);
   }
 
+  /**
+   * @brief Calculates 2D Lennard-Jones force between particles.
+   * @param x1 X-coordinate of the first particle.
+   * @param y1 Y-coordinate of the first particle.
+   * @param mass1 Mass of the first particle.
+   * @param type1 Type of the first particle.
+   * @param x2 X-coordinate of the second particle.
+   * @param y2 Y-coordinate of the second particle.
+   * @param mass2 Mass of the second particle.
+   * @param type2 Type of the second particle.
+   * @param result_x Resultant force in the x-direction.
+   * @param result_y Resultant force in the y-direction.
+   * @param correction Correction factors.
+   */
 #pragma omp declare simd simdlen(4) uniform(this, x1, y1, mass1, type1, correction) linear(ref(x2, y2, mass2, type2))
 #pragma omp declare simd simdlen(8) uniform(this, x1, y1, mass1, type1, correction) linear(ref(x2, y2, mass2, type2))
   inline void calculateForce_2D(
@@ -56,6 +75,23 @@ class LennardJonesForce final : public Force {
     }
   }
 
+  /**
+   * @brief Calculates 3D Lennard-Jones force between particles.
+   * @param x1 X-coordinate of the first particle.
+   * @param y1 Y-coordinate of the first particle.
+   * @param z1 Z-coordinate of the first particle.
+   * @param mass1 Mass of the first particle.
+   * @param type1 Type of the first particle.
+   * @param x2 X-coordinate of the second particle.
+   * @param y2 Y-coordinate of the second particle.
+   * @param z2 Z-coordinate of the second particle.
+   * @param mass2 Mass of the second particle.
+   * @param type2 Type of the second particle.
+   * @param result_x Resultant force in the x-direction.
+   * @param result_y Resultant force in the y-direction.
+   * @param result_z Resultant force in the z-direction.
+   * @param correction Correction factors.
+   */
 #pragma omp declare simd simdlen(4) uniform(this, x1, y1, z1, mass1, type1, correction) linear(ref(x2, y2, z2, mass2, type2))
 #pragma omp declare simd simdlen(8) uniform(this, x1, y1, z1, mass1, type1, correction) linear(ref(x2, y2, z2, mass2, type2))
   inline void calculateForce_3D(
@@ -90,8 +126,11 @@ class LennardJonesForce final : public Force {
   }
 
   /**
- * simplified Lennard-Jones force for boundary particle. since the vector is perpendicular to the boundary plane, only one position component is relevant to calculate the norm
- * */
+   * @brief Calculates Lennard-Jones force for a boundary particle.
+   * @param diff Difference in position.
+   * @param type Type of the particle.
+   * @return Calculated boundary force.
+   */
   double inline calculate_boundary_force(double diff, int type) override {
     const auto norm_2 = diff * diff;
     const auto norm_6 = norm_2 * norm_2 * norm_2;
@@ -100,6 +139,12 @@ class LennardJonesForce final : public Force {
   }
 
  private:
+  /**
+   * @brief Initializes the Lennard-Jones constants.
+   * @param epsilons Vector of epsilon values for different particle types.
+   * @param sigmas Vector of sigma values for different particle types.
+   * @param c Cutoff distance for the force calculation.
+   */
   auto initialize_constants(std::vector<double> epsilons, std::vector<double> sigmas, double c) -> void {
 
     cutoff = c * c;

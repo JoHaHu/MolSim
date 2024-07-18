@@ -9,7 +9,6 @@
 #include "simulator/physics/Gravity.h"
 #include "simulator/physics/LennardJones.h"
 #include "simulator/physics/Thermostat.h"
-
 #include "simulator/io/checkpoint/Checkpointer.h"
 #include "utils/ArrayUtils.h"
 #include <cmath>
@@ -18,15 +17,13 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 #include <utility>
-
 #include "physics/ProfileCalculator.h"
 
 namespace simulator {
 
 /**
- * The main Simulator class. can be configured by providing a config and a plotter. Some methods use a physics model provided at compile time.
- * */
-
+ * The main Simulator class. Can be configured by providing a config and a plotter. Some methods use a physics model provided at compile time.
+ */
 template<const size_t DIMENSIONS>
 class Simulator {
  private:
@@ -48,7 +45,7 @@ class Simulator {
    * \param plotter An instance plotter.
    * \param config the runtime configuration
    * \param checkpoint the checkpointer instance
-   * */
+   */
   explicit Simulator(std::unique_ptr<container::Container<DIMENSIONS>> &&particles,
                      std::unique_ptr<io::Plotter<DIMENSIONS>> &&plotter,
                      const std::shared_ptr<config::Config> &config,
@@ -63,6 +60,11 @@ class Simulator {
         delta_t(config->delta_t),
         gravity(config->ljf_gravity) {};
 
+  /**
+   * \brief Calculates the new position of a particle.
+   * \param p The particle container.
+   * \param index The index of the particle.
+   */
   auto inline calculate_position_particle(Particles<DIMENSIONS> &p, size_t index) const {
     const auto temp = pow(delta_t, 2) * (1 / (2 * p.mass[index]));
     if (p.fixed[index] == 0) [[likely]] {
@@ -72,18 +74,20 @@ class Simulator {
     }
   }
 
+  /**
+   * \brief Calculates the new velocity of a particle.
+   * \param p The particle container.
+   * \param index The index of the particle.
+   */
   auto inline calculate_velocity_particle(Particles<DIMENSIONS> &p, size_t index) const {
-
     const auto temp = delta_t * (1 / (2 * p.mass[index]));
-
     for (size_t i = 0; i < DIMENSIONS; ++i) {
       p.velocities[i][index] += temp * (p.old_forces[i][index] + p.forces[i][index]);
     }
   }
 
-  /*! <p> Function for position calculation </p>
-   *
-   * calculates the position for all particles, takes no arguments and has no return value
+  /**
+   * \brief Calculates the positions of all particles.
    */
   auto calculate_position() -> void {
     SPDLOG_DEBUG("Updating positions");
@@ -92,48 +96,46 @@ class Simulator {
     });
   }
 
-  /*! <p> Function for velocity calculation </p>
-        * calculates the velocity for all particles, takes no arguments and has no return value
-        */
+  /**
+   * \brief Calculates the velocities of all particles.
+   */
   auto calculate_velocity() -> void {
     SPDLOG_DEBUG("Updating velocities");
-
     particles->linear([this](Particles<DIMENSIONS> &p, size_t index) {
       calculate_velocity_particle(p, index);
     });
   }
+
+  /**
+   * \brief Applies gravity to all particles.
+   */
   auto apply_gravity() -> void {
     SPDLOG_DEBUG("Applying gravity");
-
     particles->linear([this](Particles<DIMENSIONS> &p, size_t index) {
       p.forces[1][index] += simulator::physics::constant_gravity(p.mass[index], gravity);
     });
   }
 
   /**
-        * @brief Calculates forces between particles.
-        *
-        * Resets forces for all particles, then calculates and updates forces for each particle pair.
-        */
-
+   * \brief Calculates forces between particles.
+   * Resets forces for all particles, then calculates and updates forces for each particle pair.
+   */
   auto calculate_force() -> void {
     SPDLOG_DEBUG("Starting force calculation");
     particles->boundary();
     particles->refresh();
     particles->pairwise(config->parallelized, config->vectorized);
-
     SPDLOG_TRACE("Force calculation completed.");
   };
 
   /**
-    * @brief Runs the simulation.
-    *
-    * Executes the main simulation loop, updating particle positions, forces, and velocities
-    * until the end time is reached. Periodically plots the particles based on the IO interval.
-    */
+   * \brief Runs the simulation.
+   * Executes the main simulation loop, updating particle positions, forces, and velocities
+   * until the end time is reached. Periodically plots the particles based on the IO interval.
+   * \tparam IO Flag to enable/disable plotting.
+   */
   template<bool IO>
   auto run() -> void {
-
     spdlog::info("Running simulation...");
     double current_time = 0;
     iteration = 0;
@@ -178,7 +180,6 @@ class Simulator {
       }
 
       SPDLOG_DEBUG("Iteration {} finished.", iteration);
-
       current_time += delta_t;
     }
 

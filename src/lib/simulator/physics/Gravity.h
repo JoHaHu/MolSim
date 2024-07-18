@@ -77,7 +77,7 @@ class Gravity final : public Force {
 };
 
 /**
- * use for apply constant gravity
+ * use for applying constant gravity
  * */
 auto static constant_gravity(double mass, double constant) {
   return mass * constant;
