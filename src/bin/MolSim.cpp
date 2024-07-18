@@ -50,6 +50,16 @@ auto setup(std::shared_ptr<config::Config> config) -> auto {
               config->sigma);
           break;
         }
+        case simulator::physics::ForceModel::Gravity: {
+          auto physics = simulator::physics::Gravity();
+          pc = std::make_unique<container::LinkedCell<simulator::physics::Gravity, DIMENSIONS>>(
+              std::move(physics),
+              domain,
+              config->cutoff_radius,
+              boundary,
+              config->sigma);
+          break;
+        }
         default:
           SPDLOG_ERROR("Unsupported Force with Linked Cells");
           exit(1);
