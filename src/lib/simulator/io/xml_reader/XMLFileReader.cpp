@@ -53,6 +53,12 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
 
     /** Particle Loader choice **/
 
+    if (sc.membrane().present()) {
+      config.k = sc.membrane()->k();
+      config.fzup = sc.membrane()->fzup();
+      config.rzero = sc.membrane()->rzero();
+    }
+
     // Linked Cells
     if (sc.container().linked_cells().present()) {
       config.particle_container_type = ParticleContainerType::LinkedCells;

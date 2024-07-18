@@ -79,7 +79,7 @@ class Cell {
 
  private:
  public:
-  explicit Cell(CellType type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx){};
+  explicit Cell(CellType type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx) {};
 
   constexpr auto is_boundary() const -> bool {
     return type == CellType::boundary;
@@ -105,7 +105,7 @@ class Cell {
    * */
   std::vector<Neighbour<DIMENSIONS>> neighbours{};
   std::array<size_t, DIMENSIONS> idx{};
-  std::array<BoundaryCondition, 2 *DIMENSIONS> boundary = initialize_boundary();
+  std::array<BoundaryCondition, 2 * DIMENSIONS> boundary = initialize_boundary();
 
   /**
    * The color of the cell, representing in which partition of the parralellization it runs
@@ -129,7 +129,8 @@ class Cell {
  * The linked cell container class
  * */
 template<class F, const size_t DIMENSIONS>
-requires(std::derived_from<F, simulator::physics::Force>) class LinkedCell final : public Container<DIMENSIONS> {
+  requires(std::derived_from<F, simulator::physics::Force>)
+class LinkedCell final : public Container<DIMENSIONS> {
 
  public:
   LinkedCell() = delete;
@@ -362,13 +363,13 @@ requires(std::derived_from<F, simulator::physics::Force>) class LinkedCell final
             }
             const auto mass1 = particles.mass[idx];
             const auto type1 = particles.type[idx];
+            const auto is_membrane1 = particles.membrane[idx];
 
             double force_sum[DIMENSIONS] = {0};
 
             size_t other_idx = idx + 1;
 // Same cell particles
-#pragma omp simd linear(other_idx) simdlen(8) reduction(+ \
-                                                        : force_sum[:DIMENSIONS]) if (vectorize)
+#pragma omp simd linear(other_idx) simdlen(8) reduction(+ : force_sum[ : DIMENSIONS]) if (vectorize)
             for (other_idx = idx + 1; other_idx < end_index; ++other_idx) {
 
               if (particles.active[other_idx] == 1) {
@@ -380,10 +381,12 @@ requires(std::derived_from<F, simulator::physics::Force>) class LinkedCell final
                   auto correction = std::array<double, 2>({0, 0});
                   force.calculateForce_2D(
                       x1, y1, mass1, type1,
+                      is_membrane1,
                       particles.positions[0][other_idx],
                       particles.positions[1][other_idx],
                       particles.mass[other_idx],
                       particles.type[other_idx],
+                      particles.membrane[other_idx],
                       result_x,
                       result_y,
                       correction);
@@ -391,11 +394,13 @@ requires(std::derived_from<F, simulator::physics::Force>) class LinkedCell final
                   auto correction = std::array<double, 3>({0, 0, 0});
                   force.calculateForce_3D(
                       x1, y1, z1, mass1, type1,
+                      is_membrane1,
                       particles.positions[0][other_idx],
                       particles.positions[1][other_idx],
                       particles.positions[2][other_idx],
                       particles.mass[other_idx],
                       particles.type[other_idx],
+                      particles.membrane[other_idx],
                       result_x,
                       result_y,
                       result_z,
@@ -419,8 +424,7 @@ requires(std::derived_from<F, simulator::physics::Force>) class LinkedCell final
               size_t n_start = neighbour_cell.start_index;
               size_t n_end = neighbour_cell.end_index;
 
-#pragma omp simd linear(other_idx) simdlen(8) reduction(+ \
-                                                        : force_sum[:DIMENSIONS]) if (vectorize)
+#pragma omp simd linear(other_idx) simdlen(8) reduction(+ : force_sum[ : DIMENSIONS]) if (vectorize)
               for (other_idx = n_start; other_idx < n_end; ++other_idx) {
                 if (particles.active[other_idx] == 1) {
                   double result_x = 0;
@@ -430,21 +434,25 @@ requires(std::derived_from<F, simulator::physics::Force>) class LinkedCell final
                   if constexpr (DIMENSIONS == 2) {
                     force.calculateForce_2D(
                         x1, y1, mass1, type1,
+                        is_membrane1,
                         particles.positions[0][other_idx],
                         particles.positions[1][other_idx],
                         particles.mass[other_idx],
                         particles.type[other_idx],
+                        particles.membrane[other_idx],
                         result_x,
                         result_y,
                         neighbour.correction);
                   } else {
                     force.calculateForce_3D(
                         x1, y1, z1, mass1, type1,
+                        is_membrane1,
                         particles.positions[0][other_idx],
                         particles.positions[1][other_idx],
                         particles.positions[2][other_idx],
                         particles.mass[other_idx],
                         particles.type[other_idx],
+                        particles.membrane[other_idx],
                         result_x,
                         result_y,
                         result_z,
@@ -485,6 +493,10 @@ requires(std::derived_from<F, simulator::physics::Force>) class LinkedCell final
     particles.insert_particle(particle);
   }
 
+  void insert_membrane_pair(MembranePair p) override {
+    particles.insert_membrane_pair(p);
+  }
+
   /**
    * Returns the number of particles in the arena. O(n), because it gets counted each time
    * */
@@ -500,6 +512,43 @@ requires(std::derived_from<F, simulator::physics::Force>) class LinkedCell final
 
   void swap_force() override {
     particles.swap_force();
+  }
+
+  void membrane(simulator::physics::MembraneForce &function) override {
+    particles.apply_membrane([&](size_t index1, size_t index2, bool diagonal) {
+      const auto x1 = particles.positions[0][index1];
+      const auto y1 = particles.positions[1][index1];
+      double z1 = 0;
+      if constexpr (DIMENSIONS == 3) {
+        z1 = particles.positions[2][index1];
+      }
+      double force_sum[DIMENSIONS] = {0};
+
+      if constexpr (DIMENSIONS == 2) {
+        auto x2 = particles.positions[0][index2];
+        auto y2 = particles.positions[1][index2];
+
+        auto correction = std::array<double, 2>({0, 0});
+        function.apply_force2D(x1, y1, x2, y2, force_sum[0], force_sum[1], diagonal, correction);
+
+      } else {
+        auto x2 = particles.positions[0][index1];
+        auto y2 = particles.positions[1][index1];
+        double z2 = particles.positions[2][index1];
+        auto correction = std::array<double, 3>({0, 0, 0});
+        function.apply_force3D(x1, y1, z1, x2, y2, z2, force_sum[0], force_sum[1], force_sum[2], diagonal, correction);
+      }
+
+      particles.forces[0][index2] -= force_sum[0];
+      particles.forces[0][index1] += force_sum[0];
+      particles.forces[1][index2] -= force_sum[1];
+      particles.forces[1][index1] += force_sum[1];
+
+      if constexpr (DIMENSIONS > 2) {
+        particles.forces[2][index2] -= force_sum[2];
+        particles.forces[2][index1] += force_sum[2];
+      }
+    });
   }
 
   /**
@@ -538,6 +587,7 @@ requires(std::derived_from<F, simulator::physics::Force>) class LinkedCell final
       if (particles.cell[i] >= cells.size()) {
         particles.active[i] = false;
         SPDLOG_WARN("Particle crossed boundary not handled before next loop");
+        exit(1);
       }
       if (particles.cell[i] != cell) {
         if (cell < cells.size()) {

@@ -258,6 +258,148 @@ fixed (const fixed_optional& x)
 }
 
 
+// membrane
+//
+
+const membrane::coordinate_type& membrane::
+coordinate () const
+{
+  return this->coordinate_.get ();
+}
+
+membrane::coordinate_type& membrane::
+coordinate ()
+{
+  return this->coordinate_.get ();
+}
+
+void membrane::
+coordinate (const coordinate_type& x)
+{
+  this->coordinate_.set (x);
+}
+
+void membrane::
+coordinate (::std::unique_ptr< coordinate_type > x)
+{
+  this->coordinate_.set (std::move (x));
+}
+
+const membrane::dimensions_type& membrane::
+dimensions () const
+{
+  return this->dimensions_.get ();
+}
+
+membrane::dimensions_type& membrane::
+dimensions ()
+{
+  return this->dimensions_.get ();
+}
+
+void membrane::
+dimensions (const dimensions_type& x)
+{
+  this->dimensions_.set (x);
+}
+
+void membrane::
+dimensions (::std::unique_ptr< dimensions_type > x)
+{
+  this->dimensions_.set (std::move (x));
+}
+
+const membrane::velocity_type& membrane::
+velocity () const
+{
+  return this->velocity_.get ();
+}
+
+membrane::velocity_type& membrane::
+velocity ()
+{
+  return this->velocity_.get ();
+}
+
+void membrane::
+velocity (const velocity_type& x)
+{
+  this->velocity_.set (x);
+}
+
+void membrane::
+velocity (::std::unique_ptr< velocity_type > x)
+{
+  this->velocity_.set (std::move (x));
+}
+
+const membrane::particleTypeId_type& membrane::
+particleTypeId () const
+{
+  return this->particleTypeId_.get ();
+}
+
+membrane::particleTypeId_type& membrane::
+particleTypeId ()
+{
+  return this->particleTypeId_.get ();
+}
+
+void membrane::
+particleTypeId (const particleTypeId_type& x)
+{
+  this->particleTypeId_.set (x);
+}
+
+const membrane::spacing_optional& membrane::
+spacing () const
+{
+  return this->spacing_;
+}
+
+membrane::spacing_optional& membrane::
+spacing ()
+{
+  return this->spacing_;
+}
+
+void membrane::
+spacing (const spacing_type& x)
+{
+  this->spacing_.set (x);
+}
+
+void membrane::
+spacing (const spacing_optional& x)
+{
+  this->spacing_ = x;
+}
+
+const membrane::fixed_optional& membrane::
+fixed () const
+{
+  return this->fixed_;
+}
+
+membrane::fixed_optional& membrane::
+fixed ()
+{
+  return this->fixed_;
+}
+
+void membrane::
+fixed (const fixed_type& x)
+{
+  this->fixed_.set (x);
+}
+
+void membrane::
+fixed (const fixed_optional& x)
+{
+  this->fixed_ = x;
+}
+
+
 // disc
 //
 
@@ -981,6 +1123,36 @@ checkpoints (::std::unique_ptr< checkpoints_type > x)
   this->checkpoints_.set (std::move (x));
 }
 
+const scenario::membrane_optional& scenario::
+membrane () const
+{
+  return this->membrane_;
+}
+
+scenario::membrane_optional& scenario::
+membrane ()
+{
+  return this->membrane_;
+}
+
+void scenario::
+membrane (const membrane_type& x)
+{
+  this->membrane_.set (x);
+}
+
+void scenario::
+membrane (const membrane_optional& x)
+{
+  this->membrane_ = x;
+}
+
+void scenario::
+membrane (::std::unique_ptr< membrane_type > x)
+{
+  this->membrane_.set (std::move (x));
+}
+
 const scenario::thermostat_optional& scenario::
 thermostat () const
 {
@@ -1359,6 +1531,64 @@ void checkpoints::
 path (::std::unique_ptr< path_type > x)
 {
   this->path_.set (std::move (x));
+}
+
+
+// membrane1
+//
+
+const membrane1::rzero_type& membrane1::
+rzero () const
+{
+  return this->rzero_.get ();
+}
+
+membrane1::rzero_type& membrane1::
+rzero ()
+{
+  return this->rzero_.get ();
+}
+
+void membrane1::
+rzero (const rzero_type& x)
+{
+  this->rzero_.set (x);
+}
+
+const membrane1::k_type& membrane1::
+k () const
+{
+  return this->k_.get ();
+}
+
+membrane1::k_type& membrane1::
+k ()
+{
+  return this->k_.get ();
+}
+
+void membrane1::
+k (const k_type& x)
+{
+  this->k_.set (x);
+}
+
+const membrane1::fzup_type& membrane1::
+fzup () const
+{
+  return this->fzup_.get ();
+}
+
+membrane1::fzup_type& membrane1::
+fzup ()
+{
+  return this->fzup_.get ();
+}
+
+void membrane1::
+fzup (const fzup_type& x)
+{
+  this->fzup_.set (x);
 }
 
 
@@ -2013,6 +2243,36 @@ doubleHelix (const doubleHelix_sequence& s)
   this->doubleHelix_ = s;
 }
 
+const particles::membrane_optional& particles::
+membrane () const
+{
+  return this->membrane_;
+}
+
+particles::membrane_optional& particles::
+membrane ()
+{
+  return this->membrane_;
+}
+
+void particles::
+membrane (const membrane_type& x)
+{
+  this->membrane_.set (x);
+}
+
+void particles::
+membrane (const membrane_optional& x)
+{
+  this->membrane_ = x;
+}
+
+void particles::
+membrane (::std::unique_ptr< membrane_type > x)
+{
+  this->membrane_.set (std::move (x));
+}
+
 
 // boundary_condition
 //
@@ -2476,6 +2736,210 @@ operator= (const cuboid& x)
 
 cuboid::
 ~cuboid ()
+{
+}
+
+// membrane
+//
+
+membrane::
+membrane (const coordinate_type& coordinate,
+          const dimensions_type& dimensions,
+          const velocity_type& velocity,
+          const particleTypeId_type& particleTypeId)
+: ::xml_schema::type (),
+  coordinate_ (coordinate, this),
+  dimensions_ (dimensions, this),
+  velocity_ (velocity, this),
+  particleTypeId_ (particleTypeId, this),
+  spacing_ (this),
+  fixed_ (this)
+{
+}
+
+membrane::
+membrane (::std::unique_ptr< coordinate_type > coordinate,
+          ::std::unique_ptr< dimensions_type > dimensions,
+          ::std::unique_ptr< velocity_type > velocity,
+          const particleTypeId_type& particleTypeId)
+: ::xml_schema::type (),
+  coordinate_ (std::move (coordinate), this),
+  dimensions_ (std::move (dimensions), this),
+  velocity_ (std::move (velocity), this),
+  particleTypeId_ (particleTypeId, this),
+  spacing_ (this),
+  fixed_ (this)
+{
+}
+
+membrane::
+membrane (const membrane& x,
+          ::xml_schema::flags f,
+          ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  coordinate_ (x.coordinate_, f, this),
+  dimensions_ (x.dimensions_, f, this),
+  velocity_ (x.velocity_, f, this),
+  particleTypeId_ (x.particleTypeId_, f, this),
+  spacing_ (x.spacing_, f, this),
+  fixed_ (x.fixed_, f, this)
+{
+}
+
+membrane::
+membrane (const ::xercesc::DOMElement& e,
+          ::xml_schema::flags f,
+          ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  coordinate_ (this),
+  dimensions_ (this),
+  velocity_ (this),
+  particleTypeId_ (this),
+  spacing_ (this),
+  fixed_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+    this->parse (p, f);
+  }
+}
+
+void membrane::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  for (; p.more_content (); p.next_content (false))
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // coordinate
+    //
+    if (n.name () == "coordinate" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< coordinate_type > r (
+        coordinate_traits::create (i, f, this));
+
+      if (!coordinate_.present ())
+      {
+        this->coordinate_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    // dimensions
+    //
+    if (n.name () == "dimensions" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< dimensions_type > r (
+        dimensions_traits::create (i, f, this));
+
+      if (!dimensions_.present ())
+      {
+        this->dimensions_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    // velocity
+    //
+    if (n.name () == "velocity" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< velocity_type > r (
+        velocity_traits::create (i, f, this));
+
+      if (!velocity_.present ())
+      {
+        this->velocity_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (!coordinate_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "coordinate",
+      "");
+  }
+
+  if (!dimensions_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "dimensions",
+      "");
+  }
+
+  if (!velocity_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "velocity",
+      "");
+  }
+
+  while (p.more_attributes ())
+  {
+    const ::xercesc::DOMAttr& i (p.next_attribute ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    if (n.name () == "particleTypeId" && n.namespace_ ().empty ())
+    {
+      this->particleTypeId_.set (particleTypeId_traits::create (i, f, this));
+      continue;
+    }
+
+    if (n.name () == "spacing" && n.namespace_ ().empty ())
+    {
+      this->spacing_.set (spacing_traits::create (i, f, this));
+      continue;
+    }
+
+    if (n.name () == "fixed" && n.namespace_ ().empty ())
+    {
+      this->fixed_.set (fixed_traits::create (i, f, this));
+      continue;
+    }
+  }
+
+  if (!particleTypeId_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "particleTypeId",
+      "");
+  }
+}
+
+membrane* membrane::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class membrane (*this, f, c);
+}
+
+membrane& membrane::
+operator= (const membrane& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->coordinate_ = x.coordinate_;
+    this->dimensions_ = x.dimensions_;
+    this->velocity_ = x.velocity_;
+    this->particleTypeId_ = x.particleTypeId_;
+    this->spacing_ = x.spacing_;
+    this->fixed_ = x.fixed_;
+  }
+
+  return *this;
+}
+
+membrane::
+~membrane ()
 {
 }
 
@@ -3759,6 +4223,7 @@ scenario (const header_type& header,
 : ::xml_schema::type (),
   header_ (header, this),
   checkpoints_ (this),
+  membrane_ (this),
   thermostat_ (this),
   nanotube_ (this),
   container_ (container, this),
@@ -3773,6 +4238,7 @@ scenario (::std::unique_ptr< header_type > header,
 : ::xml_schema::type (),
   header_ (std::move (header), this),
   checkpoints_ (this),
+  membrane_ (this),
   thermostat_ (this),
   nanotube_ (this),
   container_ (std::move (container), this),
@@ -3787,6 +4253,7 @@ scenario (const scenario& x,
 : ::xml_schema::type (x, f, c),
   header_ (x.header_, f, this),
   checkpoints_ (x.checkpoints_, f, this),
+  membrane_ (x.membrane_, f, this),
   thermostat_ (x.thermostat_, f, this),
   nanotube_ (x.nanotube_, f, this),
   container_ (x.container_, f, this),
@@ -3801,6 +4268,7 @@ scenario (const ::xercesc::DOMElement& e,
 : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
   header_ (this),
   checkpoints_ (this),
+  membrane_ (this),
   thermostat_ (this),
   nanotube_ (this),
   container_ (this),
@@ -3847,6 +4315,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       if (!this->checkpoints_)
       {
         this->checkpoints_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    // membrane
+    //
+    if (n.name () == "membrane" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< membrane_type > r (
+        membrane_traits::create (i, f, this));
+
+      if (!this->membrane_)
+      {
+        this->membrane_.set (::std::move (r));
         continue;
       }
     }
@@ -3947,6 +4429,7 @@ operator= (const scenario& x)
     static_cast< ::xml_schema::type& > (*this) = x;
     this->header_ = x.header_;
     this->checkpoints_ = x.checkpoints_;
+    this->membrane_ = x.membrane_;
     this->thermostat_ = x.thermostat_;
     this->nanotube_ = x.nanotube_;
     this->container_ = x.container_;
@@ -4293,6 +4776,124 @@ operator= (const checkpoints& x)
 
 checkpoints::
 ~checkpoints ()
+{
+}
+
+// membrane1
+//
+
+membrane1::
+membrane1 (const rzero_type& rzero,
+           const k_type& k,
+           const fzup_type& fzup)
+: ::xml_schema::type (),
+  rzero_ (rzero, this),
+  k_ (k, this),
+  fzup_ (fzup, this)
+{
+}
+
+membrane1::
+membrane1 (const membrane1& x,
+           ::xml_schema::flags f,
+           ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  rzero_ (x.rzero_, f, this),
+  k_ (x.k_, f, this),
+  fzup_ (x.fzup_, f, this)
+{
+}
+
+membrane1::
+membrane1 (const ::xercesc::DOMElement& e,
+           ::xml_schema::flags f,
+           ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  rzero_ (this),
+  k_ (this),
+  fzup_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, false, false, true);
+    this->parse (p, f);
+  }
+}
+
+void membrane1::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  while (p.more_attributes ())
+  {
+    const ::xercesc::DOMAttr& i (p.next_attribute ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    if (n.name () == "rzero" && n.namespace_ ().empty ())
+    {
+      this->rzero_.set (rzero_traits::create (i, f, this));
+      continue;
+    }
+
+    if (n.name () == "k" && n.namespace_ ().empty ())
+    {
+      this->k_.set (k_traits::create (i, f, this));
+      continue;
+    }
+
+    if (n.name () == "fzup" && n.namespace_ ().empty ())
+    {
+      this->fzup_.set (fzup_traits::create (i, f, this));
+      continue;
+    }
+  }
+
+  if (!rzero_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "rzero",
+      "");
+  }
+
+  if (!k_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "k",
+      "");
+  }
+
+  if (!fzup_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "fzup",
+      "");
+  }
+}
+
+membrane1* membrane1::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class membrane1 (*this, f, c);
+}
+
+membrane1& membrane1::
+operator= (const membrane1& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->rzero_ = x.rzero_;
+    this->k_ = x.k_;
+    this->fzup_ = x.fzup_;
+  }
+
+  return *this;
+}
+
+membrane1::
+~membrane1 ()
 {
 }
 
@@ -5304,7 +5905,8 @@ particles ()
   disc_ (this),
   sphere_ (this),
   torus_ (this),
-  doubleHelix_ (this)
+  doubleHelix_ (this),
+  membrane_ (this)
 {
 }
 
@@ -5317,7 +5919,8 @@ particles (const particles& x,
   disc_ (x.disc_, f, this),
   sphere_ (x.sphere_, f, this),
   torus_ (x.torus_, f, this),
-  doubleHelix_ (x.doubleHelix_, f, this)
+  doubleHelix_ (x.doubleHelix_, f, this),
+  membrane_ (x.membrane_, f, this)
 {
 }
 
@@ -5330,7 +5933,8 @@ particles (const ::xercesc::DOMElement& e,
   disc_ (this),
   sphere_ (this),
   torus_ (this),
-  doubleHelix_ (this)
+  doubleHelix_ (this),
+  membrane_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -5404,6 +6008,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       continue;
     }
 
+    // membrane
+    //
+    if (n.name () == "membrane" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< membrane_type > r (
+        membrane_traits::create (i, f, this));
+
+      if (!this->membrane_)
+      {
+        this->membrane_.set (::std::move (r));
+        continue;
+      }
+    }
+
     break;
   }
 }
@@ -5426,6 +6044,7 @@ operator= (const particles& x)
     this->sphere_ = x.sphere_;
     this->torus_ = x.torus_;
     this->doubleHelix_ = x.doubleHelix_;
+    this->membrane_ = x.membrane_;
   }
 
   return *this;
@@ -6190,6 +6809,80 @@ operator<< (::xercesc::DOMElement& e, const cuboid& i)
 }
 
 void
+operator<< (::xercesc::DOMElement& e, const membrane& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // coordinate
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "coordinate",
+        e));
+
+    s << i.coordinate ();
+  }
+
+  // dimensions
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "dimensions",
+        e));
+
+    s << i.dimensions ();
+  }
+
+  // velocity
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "velocity",
+        e));
+
+    s << i.velocity ();
+  }
+
+  // particleTypeId
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "particleTypeId",
+        e));
+
+    a << i.particleTypeId ();
+  }
+
+  // spacing
+  //
+  if (i.spacing ())
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "spacing",
+        e));
+
+    a << ::xml_schema::as_double(*i.spacing ());
+  }
+
+  // fixed
+  //
+  if (i.fixed ())
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "fixed",
+        e));
+
+    a << *i.fixed ();
+  }
+}
+
+void
 operator<< (::xercesc::DOMElement& e, const disc& i)
 {
   e << static_cast< const ::xml_schema::type& > (i);
@@ -6619,6 +7312,18 @@ operator<< (::xercesc::DOMElement& e, const scenario& i)
     s << *i.checkpoints ();
   }
 
+  // membrane
+  //
+  if (i.membrane ())
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "membrane",
+        e));
+
+    s << *i.membrane ();
+  }
+
   // thermostat
   //
   if (i.thermostat ())
@@ -6814,6 +7519,45 @@ operator<< (::xercesc::DOMElement& e, const checkpoints& i)
         e));
 
     a << *i.path ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const membrane1& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // rzero
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "rzero",
+        e));
+
+    a << ::xml_schema::as_double(i.rzero ());
+  }
+
+  // k
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "k",
+        e));
+
+    a << ::xml_schema::as_double(i.k ());
+  }
+
+  // fzup
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "fzup",
+        e));
+
+    a << ::xml_schema::as_double(i.fzup ());
   }
 }
 
@@ -7216,6 +7960,18 @@ operator<< (::xercesc::DOMElement& e, const particles& i)
         e));
 
     s << x;
+  }
+
+  // membrane
+  //
+  if (i.membrane ())
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "membrane",
+        e));
+
+    s << *i.membrane ();
   }
 }
 

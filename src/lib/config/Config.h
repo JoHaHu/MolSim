@@ -167,6 +167,10 @@ class Config {
   std::vector<Cuboid> cuboids;
 
   /**
+   * a vector that can store multiple cuboids for simulation defined in the Cuboid class
+   */
+  std::vector<Cuboid> membrane;
+  /**
    * a vector that can store multiple discs for simulation defined in the Disc class
    */
   std::vector<Disc> discs;
@@ -211,6 +215,10 @@ class Config {
    * the input filename
    */
   std::string input_filename;
+
+  double k = 0;
+  double rzero = 0;
+  double fzup = 0;
 
   /**
    * prints the help message

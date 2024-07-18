@@ -74,7 +74,7 @@ class Checkpointer {
           }
         }
       }
-      particles.emplace_back(position, velocity, force, old_force, p.mass(), p.type(), p.fixed());
+      particles.emplace_back(position, velocity, force, old_force, p.mass(), p.type(), p.fixed(), p.is_membrane());
     }
 
     return particles;
@@ -92,7 +92,8 @@ class Checkpointer {
         auto m = particle::mass_type(p.mass[index]);
         auto type = particle::type_type(p.type[index]);
         auto fixed = particle::fixed_type(p.fixed[index]);
-        particle pa = particle(v, f, of, pos, m, type, fixed);
+        auto membrane = particle::is_membrane_type(p.membrane[index]);
+        particle pa = particle(v, f, of, pos, m, type, fixed, membrane);
         cp.particle().push_back(pa);
       } else {
         auto f = particle::force_type(p.forces[0][index], p.forces[1][index]);
@@ -106,7 +107,8 @@ class Checkpointer {
         auto m = particle::mass_type(p.mass[index]);
         auto type = particle::type_type(p.type[index]);
         auto fixed = particle::fixed_type(p.fixed[index]);
-        particle pa = particle(v, f, of, pos, m, type, fixed);
+        auto membrane = particle::is_membrane_type(p.membrane[index]);
+        particle pa = particle(v, f, of, pos, m, type, fixed, membrane);
         cp.particle().push_back(pa);
       }
     });

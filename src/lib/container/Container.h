@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Particle.h"
+#include "simulator/physics/MembraneForce.h"
 namespace container {
 
 template<const size_t DIMENSIONS>
@@ -13,6 +14,13 @@ class Container {
   * @param f Function to apply to each particle.
   */
   virtual void linear(std::function<void(Particles<DIMENSIONS> &, size_t)>) = 0;
+
+  /**
+  * @brief Applies a function to each particle in the container.
+  * @param f Function to apply to each particle.
+  */
+  virtual void membrane(simulator::physics::MembraneForce &) = 0;
+
   /**
   * @brief Applies a force to each pair of particles in the container.
   *
@@ -47,6 +55,13 @@ class Container {
   * @param p Particle to insert.
   */
   virtual void insert(Particle<DIMENSIONS> p) = 0;
+
+  /**
+  * @brief Inserts a membrane pair into the container.
+  *
+  * @param p Particle to insert.
+  */
+  virtual void insert_membrane_pair(MembranePair p) = 0;
 };
 
 }// namespace container
