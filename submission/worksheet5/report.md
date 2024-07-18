@@ -8,21 +8,21 @@ PR: https://github.com/JoHaHu/MolSim/pull/71
 
 ## Tasks - Worksheet 5
 
-### Task 1 - Simulation of a membrane
+## Task 1 - Simulation of a membrane
 
 - Extend Molecule Class: Modified to store neighboring molecules and initialized on a rectangular grid, setting direct and diagonal neighbors.
 - Harmonic Potential: Implemented interactions for direct and diagonal neighbors using harmonic potential formulas.
 - Self-Penetration Prevention: Applied truncated Lennard-Jones potential to ensure only repulsive forces are active.
 - Ran the simulation with specified parameters.
 
-### Task 2 - Parallelization
+## Task 2 - Parallelization
 
 - Parallelized the most time-consuming parts of the algorithm using OpenMP.
 - Implemented two parallelization strategies selectable via the input file.
 - Ensured compatibility without OpenMP using precompiler statements (#ifdef OPENMP).
 - Measured speedup with varying amount of threads.
 
-### Task 3 - Rayleigh-Taylor instability in 3D
+## Task 3 - Rayleigh-Taylor instability in 3D
 
 - Extended the 2D Rayleigh-Taylor instability simulation to a 3D scenario.
 - Applied periodic boundaries on the additional third dimension.
@@ -32,14 +32,16 @@ PR: https://github.com/JoHaHu/MolSim/pull/71
 
 - 
 
-### Task 4 - Nano-scale flow simulation
+## Task 4 - Nano-scale flow simulation
 
 - Fixed Wall Particles: Enabled fixing positions of particles in the outer cuboids, ensuring they do not move but still exert forces on fluid particles.
 - Thermostat Extension: Extended the thermostat to ignore total fluid velocity, calculating temperature using velocity deviations from the mean.
 - Velocity Adjustment: For each particle, subtracted the average velocity, scaled the deviation, and then added back the average velocity to obtain new velocities.
 - Profile Computation: Implemented a component to compute density and velocity profiles along the x-axis by subdividing it into bins and calculating averages per bin.
+- ddd
 
-We studied various influences on simulation profiles:
+### We studied various influences on simulation profiles:
+
 =====================================================
 
 Gravity factor:
