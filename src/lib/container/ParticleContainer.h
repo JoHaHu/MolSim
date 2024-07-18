@@ -42,7 +42,8 @@ struct ParticleContainer final : public container::Container<DIMENSIONS> {
       if (particles.active[index_1]) {
         auto particle_force = std::array<double, DIMENSIONS>();
 
-#pragma omp simd reduction(+ : particle_force[:DIMENSIONS])
+#pragma omp simd reduction(+ \
+                           : particle_force[:DIMENSIONS])
         for (size_t index_2 = index_1 + 1; index_2 < particle_size; ++index_2) {
           if (particles.active[index_2]) {
             std::array<double, DIMENSIONS> result = {0.0};

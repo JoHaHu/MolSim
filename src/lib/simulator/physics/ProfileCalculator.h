@@ -97,7 +97,7 @@ class ProfileCalculator {
    * @brief Returns the density profile.
    * @return Reference to the density profile vector.
    */
-  const std::vector<int>& getDensityProfile() const {
+  const std::vector<int> &getDensityProfile() const {
     return density_profile;
   }
 
@@ -105,7 +105,7 @@ class ProfileCalculator {
    * @brief Returns the velocity profile.
    * @return Reference to the velocity profile vector.
    */
-  const std::vector<std::array<double, DIMENSIONS>>& getVelocityProfile() const {
+  const std::vector<std::array<double, DIMENSIONS>> &getVelocityProfile() const {
     return velocity_profile;
   }
 
@@ -134,11 +134,11 @@ class ProfileCalculator {
   }
 
  private:
-  size_t num_bins;  ///< Number of bins to divide the x-axis
-  double x_min;     ///< Minimum x value
-  double x_max;     ///< Maximum x value
-  double bin_size;  ///< Size of each bin
-  std::vector<int> density_profile;  ///< Density profile
-  std::vector<std::array<double, DIMENSIONS>> velocity_profile;  ///< Velocity profile
-  std::vector<size_t> counts;  ///< Count of particles in each bin
+  size_t num_bins;                                             ///< Number of bins to divide the x-axis
+  double x_min;                                                ///< Minimum x value
+  double x_max;                                                ///< Maximum x value
+  double bin_size;                                             ///< Size of each bin
+  std::vector<int> density_profile;                            ///< Density profile
+  std::vector<std::array<double, DIMENSIONS>> velocity_profile;///< Velocity profile
+  std::vector<size_t> counts;                                  ///< Count of particles in each bin
 };

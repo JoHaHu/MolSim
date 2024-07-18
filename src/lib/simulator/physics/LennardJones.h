@@ -1,11 +1,11 @@
 #pragma once
 
+#include "Force.h"
 #include "Particle.h"
 #include "experimental/simd"
+#include "immintrin.h"
 #include "spdlog/spdlog.h"
 #include "utils/ArrayUtils.h"
-#include "Force.h"
-#include "immintrin.h"
 
 namespace simulator::physics {
 
@@ -19,8 +19,8 @@ class LennardJonesForce final : public Force {
   static const long NUM_TYPES = 8;
   // For now supports up to 8 types, can be increased
 
-  alignas(64) std::array<double, NUM_TYPES * NUM_TYPES> epsilons_24 = std::array<double, NUM_TYPES * NUM_TYPES>();
-  alignas(64) std::array<double, NUM_TYPES * NUM_TYPES> epsilons_48 = std::array<double, NUM_TYPES * NUM_TYPES>();
+  alignas(64) std::array<double, NUM_TYPES *NUM_TYPES> epsilons_24 = std::array<double, NUM_TYPES * NUM_TYPES>();
+  alignas(64) std::array<double, NUM_TYPES *NUM_TYPES> epsilons_48 = std::array<double, NUM_TYPES * NUM_TYPES>();
 
  public:
   /**

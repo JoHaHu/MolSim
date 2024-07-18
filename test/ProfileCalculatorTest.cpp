@@ -2,8 +2,8 @@
 #include "Particle.h"
 #include "container/ParticleContainer.h"
 #include <array>
-#include <gtest/gtest.h>
 #include <fstream>
+#include <gtest/gtest.h>
 #include <sstream>
 #include <vector>
 

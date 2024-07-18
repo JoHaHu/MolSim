@@ -105,7 +105,7 @@ class Cell {
    * */
   std::vector<Neighbour<DIMENSIONS>> neighbours{};
   std::array<size_t, DIMENSIONS> idx{};
-  std::array<BoundaryCondition, 2 * DIMENSIONS> boundary = initialize_boundary();
+  std::array<BoundaryCondition, 2 *DIMENSIONS> boundary = initialize_boundary();
 
   /**
    * The color of the cell, representing in which partition of the parralellization it runs
@@ -129,8 +129,7 @@ class Cell {
  * The linked cell container class
  * */
 template<class F, const size_t DIMENSIONS>
-  requires(std::derived_from<F, simulator::physics::Force>)
-class LinkedCell final : public Container<DIMENSIONS> {
+requires(std::derived_from<F, simulator::physics::Force>) class LinkedCell final : public Container<DIMENSIONS> {
 
  public:
   LinkedCell() = delete;
@@ -368,7 +367,8 @@ class LinkedCell final : public Container<DIMENSIONS> {
 
             size_t other_idx = idx + 1;
 // Same cell particles
-#pragma omp simd linear(other_idx) simdlen(8) reduction(+ : force_sum[ : DIMENSIONS]) if (vectorize)
+#pragma omp simd linear(other_idx) simdlen(8) reduction(+ \
+                                                        : force_sum[:DIMENSIONS]) if (vectorize)
             for (other_idx = idx + 1; other_idx < end_index; ++other_idx) {
 
               if (particles.active[other_idx] == 1) {
@@ -419,7 +419,8 @@ class LinkedCell final : public Container<DIMENSIONS> {
               size_t n_start = neighbour_cell.start_index;
               size_t n_end = neighbour_cell.end_index;
 
-#pragma omp simd linear(other_idx) simdlen(8) reduction(+ : force_sum[ : DIMENSIONS]) if (vectorize)
+#pragma omp simd linear(other_idx) simdlen(8) reduction(+ \
+                                                        : force_sum[:DIMENSIONS]) if (vectorize)
               for (other_idx = n_start; other_idx < n_end; ++other_idx) {
                 if (particles.active[other_idx] == 1) {
                   double result_x = 0;

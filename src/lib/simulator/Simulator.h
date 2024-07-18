@@ -4,12 +4,13 @@
 #include "config/Config.h"
 #include "container/Container.h"
 #include "experimental/simd"
+#include "physics/ProfileCalculator.h"
 #include "simulator/io/Plotter.h"
+#include "simulator/io/checkpoint/Checkpointer.h"
 #include "simulator/physics/ForceModel.h"
 #include "simulator/physics/Gravity.h"
 #include "simulator/physics/LennardJones.h"
 #include "simulator/physics/Thermostat.h"
-#include "simulator/io/checkpoint/Checkpointer.h"
 #include "utils/ArrayUtils.h"
 #include <cmath>
 #include <omp.h>
@@ -17,7 +18,6 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 #include <utility>
-#include "physics/ProfileCalculator.h"
 
 namespace simulator {
 
@@ -58,7 +58,7 @@ class Simulator {
         profile_calculator(config->profile_bins),
         end_time(config->end_time),
         delta_t(config->delta_t),
-        gravity(config->ljf_gravity) {};
+        gravity(config->ljf_gravity){};
 
   /**
    * \brief Calculates the new position of a particle.

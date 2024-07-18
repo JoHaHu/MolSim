@@ -1,9 +1,9 @@
 #include "simulator/physics/Thermostat.h"
 #include "Particle.h"
+#include "container/ParticleContainer.h"
 #include <array>
 #include <gtest/gtest.h>
-#include <memory> // Required for std::construct_at
-#include "container/ParticleContainer.h"
+#include <memory>// Required for std::construct_at
 
 class ThermostatTest : public ::testing::Test {
  protected:

@@ -1,5 +1,5 @@
-#include "simulator/physics/Gravity.h"
 #include "Particle.h"
+#include "simulator/physics/Gravity.h"
 #include "utils/ArrayUtils.h"
 #include <array>
 #include <gtest/gtest.h>
