@@ -30,7 +30,7 @@ struct ParticleContainer final : public container::Container<DIMENSIONS> {
   void boundary() override {}
   void refresh() override {}
 
-  auto pairwise(bool parallel, bool vector) {
+  void pairwise(bool parallel, bool vector) override {
 
     const auto particle_size = particles.size;
     for (size_t index_1 = 0; index_1 < particle_size - 1; ++index_1) {
