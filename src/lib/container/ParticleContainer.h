@@ -54,15 +54,19 @@ struct ParticleContainer final : public container::Container<DIMENSIONS> {
               force->calculateForce_2D(
                   particles.positions[0][index_1], particles.positions[1][index_1],
                   particles.mass[index_1], particles.type[index_1],
+                  particles.membrane[index_1],
                   particles.positions[0][index_2], particles.positions[1][index_2],
                   particles.mass[index_2], particles.type[index_2],
+                  particles.membrane[index_2],
                   result[0], result[1], correction_2d);
             } else if (DIMENSIONS == 3) {
               force->calculateForce_3D(
                   particles.positions[0][index_1], particles.positions[1][index_1], particles.positions[2][index_1],
                   particles.mass[index_1], particles.type[index_1],
+                  particles.membrane[index_1],
                   particles.positions[0][index_2], particles.positions[1][index_2], particles.positions[2][index_2],
                   particles.mass[index_2], particles.type[index_2],
+                  particles.membrane[index_2],
                   result[0], result[1], result[2], correction_3d);
             }
 
