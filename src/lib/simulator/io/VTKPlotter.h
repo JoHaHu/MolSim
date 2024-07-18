@@ -40,7 +40,7 @@ class VTKPlotter final : public Plotter<DIMENSIONS> {
 
   VTKPlotter(VTKPlotter &plotter) = delete;
   VTKPlotter(VTKPlotter &&plotter) = delete;
-  explicit VTKPlotter(std::shared_ptr<config::Config> config) : config(std::move(config)){};
+  explicit VTKPlotter(std::shared_ptr<config::Config> config) : config(std::move(config)) {};
 
   auto operator=(VTKPlotter &plotter) = delete;
   auto operator=(VTKPlotter &&plotter) -> VTKPlotter & = delete;

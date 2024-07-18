@@ -62,7 +62,7 @@ class Simulator {
         membrane_force(membrane_force),
         end_time(config->end_time),
         delta_t(config->delta_t),
-        gravity(config->ljf_gravity){};
+        gravity(config->ljf_gravity) {};
 
   /**
    * \brief Calculates the new position of a particle.
