@@ -10,6 +10,7 @@
 #include "simulator/physics/ForceModel.h"
 #include "simulator/physics/Gravity.h"
 #include "simulator/physics/LennardJones.h"
+#include "simulator/physics/MembraneForce.h"
 #include "simulator/physics/Thermostat.h"
 #include "utils/ArrayUtils.h"
 #include <cmath>
@@ -33,6 +34,7 @@ class Simulator {
   Thermostat<DIMENSIONS> thermostat;
   Checkpointer<DIMENSIONS> checkpoint;
   ProfileCalculator<DIMENSIONS> profile_calculator;
+  std::optional<simulator::physics::MembraneForce> membrane_force;
 
   double end_time;
   double delta_t;
@@ -49,13 +51,15 @@ class Simulator {
   explicit Simulator(std::unique_ptr<container::Container<DIMENSIONS>> &&particles,
                      std::unique_ptr<io::Plotter<DIMENSIONS>> &&plotter,
                      const std::shared_ptr<config::Config> &config,
-                     Checkpointer<DIMENSIONS> checkpoint)
+                     Checkpointer<DIMENSIONS> checkpoint,
+                     std::optional<simulator::physics::MembraneForce> membrane_force)
       : particles(std::move(particles)),
         plotter(std::move(plotter)),
         config(config),
         thermostat(config->temp_init, config->temp_target, config->max_temp_diff, config->seed),
         checkpoint(checkpoint),
         profile_calculator(config->profile_bins),
+        membrane_force(membrane_force),
         end_time(config->end_time),
         delta_t(config->delta_t),
         gravity(config->ljf_gravity){};
@@ -125,6 +129,10 @@ class Simulator {
     particles->boundary();
     particles->refresh();
     particles->pairwise(config->parallelized, config->vectorized);
+
+    if (membrane_force.has_value()) {
+      particles->membrane(*membrane_force);
+    }
     SPDLOG_TRACE("Force calculation completed.");
   };
 
@@ -162,12 +170,13 @@ class Simulator {
       if (gravity != 0) {
         apply_gravity();
       }
+
       if (temp_interval != 0 && iteration % temp_interval == 0) {
         thermostat.apply(*particles);
       }
       calculate_velocity();
 
-      if (iteration % iteration_input == 0) {
+      if (iteration_input > 0 && iteration % iteration_input == 0) {
         profile_calculator.updateProfiles(*particles);
         profile_calculator.writeProfilesToCSV("profiles_" + std::to_string(iteration) + ".csv");
         SPDLOG_DEBUG("Iteration {} written by ProfileCalculator.", iteration);

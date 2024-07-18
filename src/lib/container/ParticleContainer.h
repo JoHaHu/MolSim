@@ -19,7 +19,8 @@ struct ParticleContainer final : public container::Container<DIMENSIONS> {
       function(particles, i);
     }
   }
-
+  void membrane(simulator::physics::MembraneForce &) override {
+  }
   void swap_force() override {
     particles.swap_force();
   }
@@ -31,7 +32,7 @@ struct ParticleContainer final : public container::Container<DIMENSIONS> {
   void insert(Particle<DIMENSIONS> p) override {
     particles.insert_particle(p);
   }
-
+  void insert_membrane_pair(MembranePair p) override {}
   void boundary() override {}
 
   void refresh() override {}

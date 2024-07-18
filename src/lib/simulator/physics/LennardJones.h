@@ -17,6 +17,8 @@ class LennardJonesForce final : public Force {
   double cutoff = 3.0;
 
   static const long NUM_TYPES = 8;
+
+  std::array<double, NUM_TYPES> membrane_cutoff;
   // For now supports up to 8 types, can be increased
 
   alignas(64) std::array<double, NUM_TYPES *NUM_TYPES> epsilons_24 = std::array<double, NUM_TYPES * NUM_TYPES>();
@@ -47,17 +49,19 @@ class LennardJonesForce final : public Force {
    * @param result_y Resultant force in the y-direction.
    * @param correction Correction factors.
    */
-#pragma omp declare simd simdlen(4) uniform(this, x1, y1, mass1, type1, correction) linear(ref(x2, y2, mass2, type2))
-#pragma omp declare simd simdlen(8) uniform(this, x1, y1, mass1, type1, correction) linear(ref(x2, y2, mass2, type2))
+#pragma omp declare simd simdlen(4) uniform(this, x1, y1, mass1, type1, correction, membrane1) linear(ref(x2, y2, mass2, type2, membrane2))
+#pragma omp declare simd simdlen(8) uniform(this, x1, y1, mass1, type1, correction, membrane1) linear(ref(x2, y2, mass2, type2, membrane2))
   inline void calculateForce_2D(
       double const &x1,
       double const &y1,
       double const &mass1,
       long const &type1,
+      uint8_t const &membrane1,
       double &x2,
       double &y2,
       double &mass2,
       long &type2,
+      uint8_t &membrane2,
       double &result_x,
       double &result_y,
       std::array<double, 2> &correction) override {
@@ -69,7 +73,7 @@ class LennardJonesForce final : public Force {
     auto epsilon48 = epsilons_48[8 * type1 + type2];
     const auto temp = (norm_6 * epsilon24 - epsilon48) / (norm_6 * norm_6 * norm_2);
     auto force = temp * diff;
-    if (norm_2 <= cutoff) {
+    if (norm_2 <= cutoff && ((membrane1 > 0 && membrane2 > 0 && norm_2 <= membrane_cutoff[type1]) || membrane1 <= 0 || membrane2 <= 0)) {
       result_x = force[0];
       result_y = force[1];
     }
@@ -92,19 +96,21 @@ class LennardJonesForce final : public Force {
    * @param result_z Resultant force in the z-direction.
    * @param correction Correction factors.
    */
-#pragma omp declare simd simdlen(4) uniform(this, x1, y1, z1, mass1, type1, correction) linear(ref(x2, y2, z2, mass2, type2))
-#pragma omp declare simd simdlen(8) uniform(this, x1, y1, z1, mass1, type1, correction) linear(ref(x2, y2, z2, mass2, type2))
+#pragma omp declare simd simdlen(4) uniform(this, x1, y1, mass1, type1, correction, membrane1) linear(ref(x2, y2, mass2, type2, membrane2))
+#pragma omp declare simd simdlen(8) uniform(this, x1, y1, mass1, type1, correction, membrane1) linear(ref(x2, y2, mass2, type2, membrane2))
   inline void calculateForce_3D(
       double const &x1,
       double const &y1,
       double const &z1,
       double const &mass1,
       long const &type1,
+      uint8_t const &membrane1,
       double &x2,
       double &y2,
       double &z2,
       double &mass2,
       long &type2,
+      uint8_t &membrane2,
       double &result_x,
       double &result_y,
       double &result_z,
@@ -118,7 +124,7 @@ class LennardJonesForce final : public Force {
     const auto temp = (norm_6 * epsilon24 - epsilon48) / (norm_6 * norm_6 * norm_2);
     auto force = temp * diff;
 
-    if (norm_2 <= cutoff) {
+    if (norm_2 <= cutoff && ((membrane1 > 0 && membrane2 > 0 && norm_2 <= membrane_cutoff[type1]) || membrane1 <= 0 || membrane2 <= 0)) {
       result_x = force[0];
       result_y = force[1];
       result_z = force[2];
@@ -148,6 +154,9 @@ class LennardJonesForce final : public Force {
   auto initialize_constants(std::vector<double> epsilons, std::vector<double> sigmas, double c) -> void {
 
     cutoff = c * c;
+    for (int i = 0; i < sigmas.size(); ++i) {
+      membrane_cutoff[i] = pow(2, 1 / 6) * sigmas[i] * pow(2, 1 / 6) * sigmas[i];
+    }
 
     for (size_t i = 0; i < epsilons.size(); ++i) {
       for (size_t j = 0; j < epsilons.size(); ++j) {

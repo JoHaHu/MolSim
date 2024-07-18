@@ -34,6 +34,7 @@ class ParticleGenerator {
   auto load_particles() -> std::vector<Particle<DIMENSIONS>> {
     auto particles = std::vector<Particle<DIMENSIONS>>();
     generate_cuboids(config->cuboids, particles);
+    generate_cuboids(config->membrane, particles);
     generate_disk_particles(config->spheres, particles);
     return particles;
   };
