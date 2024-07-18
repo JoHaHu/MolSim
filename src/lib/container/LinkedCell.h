@@ -79,7 +79,7 @@ class Cell {
 
  private:
  public:
-  explicit Cell(CellType type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx){};
+  explicit Cell(CellType type, std::array<size_t, DIMENSIONS> idx) : type(type), idx(idx) {};
 
   constexpr auto is_boundary() const -> bool {
     return type == CellType::boundary;
@@ -363,6 +363,7 @@ class LinkedCell final : public Container<DIMENSIONS> {
             }
             const auto mass1 = particles.mass[idx];
             const auto type1 = particles.type[idx];
+            const auto is_membrane1 = particles.membrane[idx];
 
             double force_sum[DIMENSIONS] = {0};
 
@@ -380,10 +381,12 @@ class LinkedCell final : public Container<DIMENSIONS> {
                   auto correction = std::array<double, 2>({0, 0});
                   force.calculateForce_2D(
                       x1, y1, mass1, type1,
+                      is_membrane1,
                       particles.positions[0][other_idx],
                       particles.positions[1][other_idx],
                       particles.mass[other_idx],
                       particles.type[other_idx],
+                      particles.membrane[other_idx],
                       result_x,
                       result_y,
                       correction);
@@ -391,11 +394,13 @@ class LinkedCell final : public Container<DIMENSIONS> {
                   auto correction = std::array<double, 3>({0, 0, 0});
                   force.calculateForce_3D(
                       x1, y1, z1, mass1, type1,
+                      is_membrane1,
                       particles.positions[0][other_idx],
                       particles.positions[1][other_idx],
                       particles.positions[2][other_idx],
                       particles.mass[other_idx],
                       particles.type[other_idx],
+                      particles.membrane[other_idx],
                       result_x,
                       result_y,
                       result_z,
@@ -429,21 +434,25 @@ class LinkedCell final : public Container<DIMENSIONS> {
                   if constexpr (DIMENSIONS == 2) {
                     force.calculateForce_2D(
                         x1, y1, mass1, type1,
+                        is_membrane1,
                         particles.positions[0][other_idx],
                         particles.positions[1][other_idx],
                         particles.mass[other_idx],
                         particles.type[other_idx],
+                        particles.membrane[other_idx],
                         result_x,
                         result_y,
                         neighbour.correction);
                   } else {
                     force.calculateForce_3D(
                         x1, y1, z1, mass1, type1,
+                        is_membrane1,
                         particles.positions[0][other_idx],
                         particles.positions[1][other_idx],
                         particles.positions[2][other_idx],
                         particles.mass[other_idx],
                         particles.type[other_idx],
+                        particles.membrane[other_idx],
                         result_x,
                         result_y,
                         result_z,
@@ -481,7 +490,7 @@ class LinkedCell final : public Container<DIMENSIONS> {
    * inserts a new particle into the arena and the into the cells
    * */
   void insert(Particle<DIMENSIONS> particle) override {
-    particles.insert_particle(particle);
+    particles.insert_particle(particle, false);
   }
 
   /**
@@ -499,6 +508,43 @@ class LinkedCell final : public Container<DIMENSIONS> {
 
   void swap_force() override {
     particles.swap_force();
+  }
+
+  void membrane(simulator::physics::MembraneForce &function) override {
+    particles.apply_membrane([&](size_t index1, size_t index2, bool diagonal) {
+      const auto x1 = particles.positions[0][index1];
+      const auto y1 = particles.positions[1][index1];
+      double z1 = 0;
+      if constexpr (DIMENSIONS == 3) {
+        z1 = particles.positions[2][index1];
+      }
+      double force_sum[DIMENSIONS] = {0};
+
+      if constexpr (DIMENSIONS == 2) {
+        auto x2 = particles.positions[0][index2];
+        auto y2 = particles.positions[1][index2];
+
+        auto correction = std::array<double, 2>({0, 0});
+        function.apply_force2D(x1, y1, x2, y2, force_sum[0], force_sum[1], diagonal, correction);
+
+      } else {
+        auto x2 = particles.positions[0][index1];
+        auto y2 = particles.positions[1][index1];
+        double z2 = particles.positions[2][index1];
+        auto correction = std::array<double, 3>({0, 0, 0});
+        function.apply_force3D(x1, y1, z1, x2, y2, z2, force_sum[0], force_sum[1], force_sum[2], diagonal, correction);
+      }
+
+      particles.forces[0][index2] -= force_sum[0];
+      particles.forces[0][index1] += force_sum[0];
+      particles.forces[1][index2] -= force_sum[1];
+      particles.forces[1][index1] += force_sum[1];
+
+      if constexpr (DIMENSIONS > 2) {
+        particles.forces[2][index2] -= force_sum[2];
+        particles.forces[2][index1] += force_sum[2];
+      }
+    });
   }
 
   /**
@@ -537,6 +583,7 @@ class LinkedCell final : public Container<DIMENSIONS> {
       if (particles.cell[i] >= cells.size()) {
         particles.active[i] = false;
         SPDLOG_WARN("Particle crossed boundary not handled before next loop");
+        exit(1);
       }
       if (particles.cell[i] != cell) {
         if (cell < cells.size()) {

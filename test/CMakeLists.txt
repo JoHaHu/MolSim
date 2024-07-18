@@ -15,7 +15,7 @@ endif ()
 
 target_compile_features(Test
         PRIVATE
-        cxx_std_23
+        cxx_std_20
 )
 
 target_link_options(

@@ -1,10 +1,12 @@
 #pragma once
 
 #include "range/v3/algorithm.hpp"
+#include "range/v3/view/iota.hpp"
 #include "range/v3/view/zip.hpp"
 #include <array>
 #include <execution>
 #include <experimental/simd>
+#include <range/v3/range/conversion.hpp>
 #include <vector>
 
 /**
@@ -71,6 +73,13 @@ class Particle {
   }
 };
 
+struct MembranePair {
+ public:
+  size_t first;
+  size_t second;
+  bool diagonal;
+};
+
 /***
  * A structure of Arrays for the particles
  *
@@ -94,6 +103,12 @@ class Particles {
   std::vector<size_t> cell{};
   std::vector<size_t> block{};
   std::vector<size_t> color{};
+  std::vector<uint8_t> membrane{};
+  std::vector<MembranePair> membrane_pairs{};
+  /**
+   * Used to detect swapped particles
+   * */
+  std::vector<size_t> swap_index{};
 
 #if DEBUG
   /**
@@ -102,7 +117,7 @@ class Particles {
   std::vector<size_t> ids{};
 #endif
 
-  auto insert_particle(Particle<DIMENSIONS> p) {
+  auto insert_particle(Particle<DIMENSIONS> p, bool is_membrane) {
 
     for (size_t i = 0; i < DIMENSIONS; ++i) {
       positions[i].emplace_back(p.position[i]);
@@ -124,6 +139,8 @@ class Particles {
     cell.emplace_back(0);
     block.emplace_back(0);
     color.emplace_back(0);
+    membrane.emplace_back(is_membrane);
+    swap_index.emplace_back(0);
 #if DEBUG
     ids.emplace_back(size);
 #endif
@@ -134,12 +151,13 @@ class Particles {
 
   template<typename Callable>
   void sort(Callable c) {
-    // recaulcates the cell
+    // recalculates the cell
     for (size_t i = 0; i < size; ++i) {
       auto [_color, _block, _cell] = c(i);
       color[i] = _color;
       block[i] = _block;
       cell[i] = _cell;
+      swap_index[i] = i;
     }
     // This is ugly but i haven't found a better way
     std::apply([&](auto &...ps) {
@@ -154,7 +172,7 @@ class Particles {
                 vs...,
                 fs...,
                 ofs...,
-                mass, type, active, fixed
+                mass, type, active, fixed, membrane, swap_index
 #if DEBUG
                 ,
                 ids
@@ -176,6 +194,11 @@ class Particles {
                         velocities);
     },
                positions);
+
+    for (auto &pair : membrane_pairs) {
+      pair.first = swap_index[pair.first];
+      pair.second = swap_index[pair.second];
+    }
   }
 
   void
@@ -188,5 +211,21 @@ class Particles {
         forces[d][i] = 0;
       }
     }
+  }
+
+  void apply_membrane(std::function<void(size_t, size_t, bool)> const & f) {
+    for (auto &pair : membrane_pairs) {
+      f( pair.first, pair.second, pair.diagonal);
+    }
+  }
+
+ private:
+  template<typename T>
+  void reorder_vec(std::vector<T> &input, const std::vector<size_t> &permutation) {
+    auto result = std::vector<T>(permutation.size());
+    for (size_t i = 0; i < permutation.size(); ++i) {
+      result[permutation[i]] = input[i];
+    }
+    std::swap(input, result);
   }
 };

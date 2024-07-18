@@ -18,6 +18,8 @@ struct ParticleContainer final : public container::Container<DIMENSIONS> {
       function(particles, i);
     }
   }
+  void membrane(simulator::physics::MembraneForce &) override {
+  }
   void swap_force() override {
     particles.swap_force();
   }

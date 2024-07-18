@@ -70,12 +70,18 @@ auto setup(std::shared_ptr<config::Config> config) -> auto {
   }
 
   pc->refresh();
+  auto membrane_force = std::optional<simulator::physics::MembraneForce>();
+
+  if (config->k != 0) {
+    membrane_force = std::optional(simulator::physics::MembraneForce(config->k, config->rzero));
+  }
 
   auto simulator = simulator::Simulator<DIMENSIONS>(
       std::move(pc),
       std::move(plotter),
       config,
-      checkpointer);
+      checkpointer,
+      std::move(membrane_force));
   return simulator;
 }
 

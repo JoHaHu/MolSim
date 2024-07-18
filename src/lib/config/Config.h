@@ -212,6 +212,10 @@ class Config {
    */
   std::string input_filename;
 
+  double k = 0;
+  double rzero = 0;
+  double fzup = 0;
+
   /**
    * prints the help message
    */
