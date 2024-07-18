@@ -4,7 +4,7 @@
     <header base_name="Collision of two bodies"
             output_file="../../output/collision_simulation"
             output_frequency="100"
-            t_end="20" seed="1234" delta_t="0.0005"/>
+            t_end="20" seed="1234" delta_t="0.0005" dimensions="2" parallelized="false" vectorized="false"/>
     <container>
         <linked_cells cutoff_radius="3.0">
             <domain_size x="150" y="90" z="4"/>
