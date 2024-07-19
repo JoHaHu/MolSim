@@ -5,7 +5,7 @@
             output_file="../../output/collision_simulation"
             output_frequency="0"
             t_end="0.5" seed="1337"
-            delta_t="0.0005"/>
+            delta_t="0.0005" dimensions="2" parallelized="false" vectorized="false"/>
     <thermostat t_init="40" frequency="1000" brownian_motion="0"/>
     <container>
         <linked_cells cutoff_radius="3">

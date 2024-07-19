@@ -617,6 +617,7 @@ namespace xml_schema
 // Forward declarations.
 //
 class particle;
+class membrane_pair;
 class vector;
 class checkpoint;
 
@@ -969,6 +970,100 @@ class particle: public ::xml_schema::type
   //@}
 
   /**
+   * @name fixed
+   *
+   * @brief Accessor and modifier functions for the %fixed
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::int_ fixed_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< fixed_type, char > fixed_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const fixed_type&
+  fixed () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  fixed_type&
+  fixed ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  fixed (const fixed_type& x);
+
+  //@}
+
+  /**
+   * @name is_membrane
+   *
+   * @brief Accessor and modifier functions for the %is_membrane
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::int_ is_membrane_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< is_membrane_type, char > is_membrane_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const is_membrane_type&
+  is_membrane () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  is_membrane_type&
+  is_membrane ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  is_membrane (const is_membrane_type& x);
+
+  //@}
+
+  /**
    * @name Constructors
    */
   //@{
@@ -982,7 +1077,9 @@ class particle: public ::xml_schema::type
             const old_force_type&,
             const position_type&,
             const mass_type&,
-            const type_type&);
+            const type_type&,
+            const fixed_type&,
+            const is_membrane_type&);
 
   /**
    * @brief Create an instance from the ultimate base and
@@ -997,7 +1094,9 @@ class particle: public ::xml_schema::type
             ::std::unique_ptr< old_force_type >,
             ::std::unique_ptr< position_type >,
             const mass_type&,
-            const type_type&);
+            const type_type&,
+            const fixed_type&,
+            const is_membrane_type&);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -1075,6 +1174,247 @@ class particle: public ::xml_schema::type
   ::xsd::cxx::tree::one< position_type > position_;
   ::xsd::cxx::tree::one< mass_type > mass_;
   ::xsd::cxx::tree::one< type_type > type_;
+  ::xsd::cxx::tree::one< fixed_type > fixed_;
+  ::xsd::cxx::tree::one< is_membrane_type > is_membrane_;
+
+  //@endcond
+};
+
+/**
+ * @brief Class corresponding to the %membrane_pair schema type.
+ *
+ * @nosubgrouping
+ */
+class membrane_pair: public ::xml_schema::type
+{
+  public:
+  /**
+   * @name first
+   *
+   * @brief Accessor and modifier functions for the %first
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::int_ first_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< first_type, char > first_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const first_type&
+  first () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  first_type&
+  first ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  first (const first_type& x);
+
+  //@}
+
+  /**
+   * @name second
+   *
+   * @brief Accessor and modifier functions for the %second
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::int_ second_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< second_type, char > second_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const second_type&
+  second () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  second_type&
+  second ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  second (const second_type& x);
+
+  //@}
+
+  /**
+   * @name diagonal
+   *
+   * @brief Accessor and modifier functions for the %diagonal
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::boolean diagonal_type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< diagonal_type, char > diagonal_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const diagonal_type&
+  diagonal () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  diagonal_type&
+  diagonal ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  diagonal (const diagonal_type& x);
+
+  //@}
+
+  /**
+   * @name Constructors
+   */
+  //@{
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes.
+   */
+  membrane_pair (const first_type&,
+                 const second_type&,
+                 const diagonal_type&);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  membrane_pair (const ::xercesc::DOMElement& e,
+                 ::xml_schema::flags f = 0,
+                 ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  membrane_pair (const membrane_pair& x,
+                 ::xml_schema::flags f = 0,
+                 ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual membrane_pair*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  /**
+   * @brief Copy assignment operator.
+   *
+   * @param x An instance to make a copy of.
+   * @return A reference to itself.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  membrane_pair&
+  operator= (const membrane_pair& x);
+
+  //@}
+
+  /**
+   * @brief Destructor.
+   */
+  virtual 
+  ~membrane_pair ();
+
+  // Implementation.
+  //
+
+  //@cond
+
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< first_type > first_;
+  ::xsd::cxx::tree::one< second_type > second_;
+  ::xsd::cxx::tree::one< diagonal_type > diagonal_;
 
   //@endcond
 };
@@ -1408,6 +1748,70 @@ class checkpoint: public ::xml_schema::type
   //@}
 
   /**
+   * @name membrane_pair
+   *
+   * @brief Accessor and modifier functions for the %membrane_pair
+   * sequence element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::membrane_pair membrane_pair_type;
+
+  /**
+   * @brief Element sequence container type.
+   */
+  typedef ::xsd::cxx::tree::sequence< membrane_pair_type > membrane_pair_sequence;
+
+  /**
+   * @brief Element iterator type.
+   */
+  typedef membrane_pair_sequence::iterator membrane_pair_iterator;
+
+  /**
+   * @brief Element constant iterator type.
+   */
+  typedef membrane_pair_sequence::const_iterator membrane_pair_const_iterator;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< membrane_pair_type, char > membrane_pair_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element
+   * sequence.
+   *
+   * @return A constant reference to the sequence container.
+   */
+  const membrane_pair_sequence&
+  membrane_pair () const;
+
+  /**
+   * @brief Return a read-write reference to the element sequence.
+   *
+   * @return A reference to the sequence container.
+   */
+  membrane_pair_sequence&
+  membrane_pair ();
+
+  /**
+   * @brief Copy elements from a given sequence.
+   *
+   * @param s A sequence to copy elements from.
+   *
+   * For each element in @a s this function makes a copy and adds it 
+   * to the sequence. Note that this operation completely changes the 
+   * sequence and all old elements will be lost.
+   */
+  void
+  membrane_pair (const membrane_pair_sequence& s);
+
+  //@}
+
+  /**
    * @name Constructors
    */
   //@{
@@ -1489,6 +1893,7 @@ class checkpoint: public ::xml_schema::type
 
   protected:
   particle_sequence particle_;
+  membrane_pair_sequence membrane_pair_;
 
   //@endcond
 };
@@ -1921,6 +2326,9 @@ checkpoint_ (const ::checkpoint& x,
 
 void
 operator<< (::xercesc::DOMElement&, const particle&);
+
+void
+operator<< (::xercesc::DOMElement&, const membrane_pair&);
 
 void
 operator<< (::xercesc::DOMElement&, const vector&);

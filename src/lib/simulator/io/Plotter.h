@@ -19,7 +19,7 @@ class Plotter {
    * \param iteration an integer argument that sets the number of iterations
    * */
 
-  virtual auto plotParticles(container::ParticleContainer<DIMENSIONS> &particles, int) -> void = 0;
+  virtual auto plotParticles(container::Container<DIMENSIONS> &particles, int) -> void = 0;
 };
 
 }// namespace simulator::io

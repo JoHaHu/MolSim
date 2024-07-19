@@ -8,8 +8,6 @@
 #include "Torus.h"
 #include "container/boundary.h"
 #include "simulator/physics/ForceModel.h"
-#include <array>
-#include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
@@ -134,6 +132,16 @@ class Config {
   long thermo_step;
 
   /**
+   * the number N of bins for the density/velocity profiling in a nanotube simulation
+   */
+  int profile_bins{};
+
+  /**
+   * the number of iterations for the density/velocity profiling in a nanotube simulation
+   */
+  int profile_iterations{};
+
+  /**
    * the cutoff radius for the linked-cells algorithm
    */
   double cutoff_radius{};
@@ -158,6 +166,10 @@ class Config {
    */
   std::vector<Cuboid> cuboids;
 
+  /**
+   * a vector that can store multiple cuboids for simulation defined in the Cuboid class
+   */
+  std::vector<Cuboid> membrane;
   /**
    * a vector that can store multiple discs for simulation defined in the Disc class
    */
@@ -184,9 +196,29 @@ class Config {
   int seed{};
 
   /**
+   * if the code should use vectorization
+   * */
+  bool vectorized = false;
+
+  /**
+   * if the code should use parallelization
+   * */
+  bool parallelized = true;
+
+  /**
+   *
+   * number of dimensions
+   * */
+  int dimensions = 2;
+
+  /**
    * the input filename
    */
   std::string input_filename;
+
+  double k = 0;
+  double rzero = 0;
+  double fzup = 0;
 
   /**
    * prints the help message

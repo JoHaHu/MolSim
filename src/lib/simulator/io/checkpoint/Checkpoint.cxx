@@ -175,6 +175,100 @@ type (const type_type& x)
   this->type_.set (x);
 }
 
+const particle::fixed_type& particle::
+fixed () const
+{
+  return this->fixed_.get ();
+}
+
+particle::fixed_type& particle::
+fixed ()
+{
+  return this->fixed_.get ();
+}
+
+void particle::
+fixed (const fixed_type& x)
+{
+  this->fixed_.set (x);
+}
+
+const particle::is_membrane_type& particle::
+is_membrane () const
+{
+  return this->is_membrane_.get ();
+}
+
+particle::is_membrane_type& particle::
+is_membrane ()
+{
+  return this->is_membrane_.get ();
+}
+
+void particle::
+is_membrane (const is_membrane_type& x)
+{
+  this->is_membrane_.set (x);
+}
+
+
+// membrane_pair
+//
+
+const membrane_pair::first_type& membrane_pair::
+first () const
+{
+  return this->first_.get ();
+}
+
+membrane_pair::first_type& membrane_pair::
+first ()
+{
+  return this->first_.get ();
+}
+
+void membrane_pair::
+first (const first_type& x)
+{
+  this->first_.set (x);
+}
+
+const membrane_pair::second_type& membrane_pair::
+second () const
+{
+  return this->second_.get ();
+}
+
+membrane_pair::second_type& membrane_pair::
+second ()
+{
+  return this->second_.get ();
+}
+
+void membrane_pair::
+second (const second_type& x)
+{
+  this->second_.set (x);
+}
+
+const membrane_pair::diagonal_type& membrane_pair::
+diagonal () const
+{
+  return this->diagonal_.get ();
+}
+
+membrane_pair::diagonal_type& membrane_pair::
+diagonal ()
+{
+  return this->diagonal_.get ();
+}
+
+void membrane_pair::
+diagonal (const diagonal_type& x)
+{
+  this->diagonal_.set (x);
+}
+
 
 // vector
 //
@@ -261,6 +355,24 @@ particle (const particle_sequence& s)
   this->particle_ = s;
 }
 
+const checkpoint::membrane_pair_sequence& checkpoint::
+membrane_pair () const
+{
+  return this->membrane_pair_;
+}
+
+checkpoint::membrane_pair_sequence& checkpoint::
+membrane_pair ()
+{
+  return this->membrane_pair_;
+}
+
+void checkpoint::
+membrane_pair (const membrane_pair_sequence& s)
+{
+  this->membrane_pair_ = s;
+}
+
 
 #include <xsd/cxx/xml/dom/parsing-source.hxx>
 
@@ -273,14 +385,18 @@ particle (const velocity_type& velocity,
           const old_force_type& old_force,
           const position_type& position,
           const mass_type& mass,
-          const type_type& type)
+          const type_type& type,
+          const fixed_type& fixed,
+          const is_membrane_type& is_membrane)
 : ::xml_schema::type (),
   velocity_ (velocity, this),
   force_ (force, this),
   old_force_ (old_force, this),
   position_ (position, this),
   mass_ (mass, this),
-  type_ (type, this)
+  type_ (type, this),
+  fixed_ (fixed, this),
+  is_membrane_ (is_membrane, this)
 {
 }
 
@@ -290,14 +406,18 @@ particle (::std::unique_ptr< velocity_type > velocity,
           ::std::unique_ptr< old_force_type > old_force,
           ::std::unique_ptr< position_type > position,
           const mass_type& mass,
-          const type_type& type)
+          const type_type& type,
+          const fixed_type& fixed,
+          const is_membrane_type& is_membrane)
 : ::xml_schema::type (),
   velocity_ (std::move (velocity), this),
   force_ (std::move (force), this),
   old_force_ (std::move (old_force), this),
   position_ (std::move (position), this),
   mass_ (mass, this),
-  type_ (type, this)
+  type_ (type, this),
+  fixed_ (fixed, this),
+  is_membrane_ (is_membrane, this)
 {
 }
 
@@ -311,7 +431,9 @@ particle (const particle& x,
   old_force_ (x.old_force_, f, this),
   position_ (x.position_, f, this),
   mass_ (x.mass_, f, this),
-  type_ (x.type_, f, this)
+  type_ (x.type_, f, this),
+  fixed_ (x.fixed_, f, this),
+  is_membrane_ (x.is_membrane_, f, this)
 {
 }
 
@@ -325,7 +447,9 @@ particle (const ::xercesc::DOMElement& e,
   old_force_ (this),
   position_ (this),
   mass_ (this),
-  type_ (this)
+  type_ (this),
+  fixed_ (this),
+  is_membrane_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -448,6 +572,18 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       this->type_.set (type_traits::create (i, f, this));
       continue;
     }
+
+    if (n.name () == "fixed" && n.namespace_ ().empty ())
+    {
+      this->fixed_.set (fixed_traits::create (i, f, this));
+      continue;
+    }
+
+    if (n.name () == "is_membrane" && n.namespace_ ().empty ())
+    {
+      this->is_membrane_.set (is_membrane_traits::create (i, f, this));
+      continue;
+    }
   }
 
   if (!mass_.present ())
@@ -461,6 +597,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   {
     throw ::xsd::cxx::tree::expected_attribute< char > (
       "type",
+      "");
+  }
+
+  if (!fixed_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "fixed",
+      "");
+  }
+
+  if (!is_membrane_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "is_membrane",
       "");
   }
 }
@@ -484,6 +634,8 @@ operator= (const particle& x)
     this->position_ = x.position_;
     this->mass_ = x.mass_;
     this->type_ = x.type_;
+    this->fixed_ = x.fixed_;
+    this->is_membrane_ = x.is_membrane_;
   }
 
   return *this;
@@ -491,6 +643,124 @@ operator= (const particle& x)
 
 particle::
 ~particle ()
+{
+}
+
+// membrane_pair
+//
+
+membrane_pair::
+membrane_pair (const first_type& first,
+               const second_type& second,
+               const diagonal_type& diagonal)
+: ::xml_schema::type (),
+  first_ (first, this),
+  second_ (second, this),
+  diagonal_ (diagonal, this)
+{
+}
+
+membrane_pair::
+membrane_pair (const membrane_pair& x,
+               ::xml_schema::flags f,
+               ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  first_ (x.first_, f, this),
+  second_ (x.second_, f, this),
+  diagonal_ (x.diagonal_, f, this)
+{
+}
+
+membrane_pair::
+membrane_pair (const ::xercesc::DOMElement& e,
+               ::xml_schema::flags f,
+               ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  first_ (this),
+  second_ (this),
+  diagonal_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, false, false, true);
+    this->parse (p, f);
+  }
+}
+
+void membrane_pair::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  while (p.more_attributes ())
+  {
+    const ::xercesc::DOMAttr& i (p.next_attribute ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    if (n.name () == "first" && n.namespace_ ().empty ())
+    {
+      this->first_.set (first_traits::create (i, f, this));
+      continue;
+    }
+
+    if (n.name () == "second" && n.namespace_ ().empty ())
+    {
+      this->second_.set (second_traits::create (i, f, this));
+      continue;
+    }
+
+    if (n.name () == "diagonal" && n.namespace_ ().empty ())
+    {
+      this->diagonal_.set (diagonal_traits::create (i, f, this));
+      continue;
+    }
+  }
+
+  if (!first_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "first",
+      "");
+  }
+
+  if (!second_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "second",
+      "");
+  }
+
+  if (!diagonal_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "diagonal",
+      "");
+  }
+}
+
+membrane_pair* membrane_pair::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class membrane_pair (*this, f, c);
+}
+
+membrane_pair& membrane_pair::
+operator= (const membrane_pair& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->first_ = x.first_;
+    this->second_ = x.second_;
+    this->diagonal_ = x.diagonal_;
+  }
+
+  return *this;
+}
+
+membrane_pair::
+~membrane_pair ()
 {
 }
 
@@ -610,7 +880,8 @@ vector::
 checkpoint::
 checkpoint ()
 : ::xml_schema::type (),
-  particle_ (this)
+  particle_ (this),
+  membrane_pair_ (this)
 {
 }
 
@@ -619,7 +890,8 @@ checkpoint (const checkpoint& x,
             ::xml_schema::flags f,
             ::xml_schema::container* c)
 : ::xml_schema::type (x, f, c),
-  particle_ (x.particle_, f, this)
+  particle_ (x.particle_, f, this),
+  membrane_pair_ (x.membrane_pair_, f, this)
 {
 }
 
@@ -628,7 +900,8 @@ checkpoint (const ::xercesc::DOMElement& e,
             ::xml_schema::flags f,
             ::xml_schema::container* c)
 : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
-  particle_ (this)
+  particle_ (this),
+  membrane_pair_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -658,6 +931,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       continue;
     }
 
+    // membrane_pair
+    //
+    if (n.name () == "membrane_pair" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< membrane_pair_type > r (
+        membrane_pair_traits::create (i, f, this));
+
+      this->membrane_pair_.push_back (::std::move (r));
+      continue;
+    }
+
     break;
   }
 }
@@ -676,6 +960,7 @@ operator= (const checkpoint& x)
   {
     static_cast< ::xml_schema::type& > (*this) = x;
     this->particle_ = x.particle_;
+    this->membrane_pair_ = x.membrane_pair_;
   }
 
   return *this;
@@ -1178,6 +1463,67 @@ operator<< (::xercesc::DOMElement& e, const particle& i)
 
     a << i.type ();
   }
+
+  // fixed
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "fixed",
+        e));
+
+    a << i.fixed ();
+  }
+
+  // is_membrane
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "is_membrane",
+        e));
+
+    a << i.is_membrane ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const membrane_pair& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // first
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "first",
+        e));
+
+    a << i.first ();
+  }
+
+  // second
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "second",
+        e));
+
+    a << i.second ();
+  }
+
+  // diagonal
+  //
+  {
+    ::xercesc::DOMAttr& a (
+      ::xsd::cxx::xml::dom::create_attribute (
+        "diagonal",
+        e));
+
+    a << i.diagonal ();
+  }
 }
 
 void
@@ -1236,6 +1582,22 @@ operator<< (::xercesc::DOMElement& e, const checkpoint& i)
     ::xercesc::DOMElement& s (
       ::xsd::cxx::xml::dom::create_element (
         "particle",
+        e));
+
+    s << x;
+  }
+
+  // membrane_pair
+  //
+  for (checkpoint::membrane_pair_const_iterator
+       b (i.membrane_pair ().begin ()), n (i.membrane_pair ().end ());
+       b != n; ++b)
+  {
+    const checkpoint::membrane_pair_type& x (*b);
+
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "membrane_pair",
         e));
 
     s << x;

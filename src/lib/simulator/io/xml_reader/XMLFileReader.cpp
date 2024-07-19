@@ -47,8 +47,17 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
     config.output_file = sc.header().output_file();
     config.seed = sc.header().seed();
     config.delta_t = sc.header().delta_t();
+    config.parallelized = sc.header().parallelized();
+    config.vectorized = sc.header().vectorized();
+    config.dimensions = sc.header().dimensions();
 
     /** Particle Loader choice **/
+
+    if (sc.membrane().present()) {
+      config.k = sc.membrane()->k();
+      config.fzup = sc.membrane()->fzup();
+      config.rzero = sc.membrane()->rzero();
+    }
 
     // Linked Cells
     if (sc.container().linked_cells().present()) {
@@ -158,13 +167,26 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
         std::vector<Cuboid> temp_cuboids;
         // Iterate through all cuboid elements
         for (const auto &cuboid : ljf.particles()->cuboid()) {
-          std::vector<double> coordinate{cuboid.coordinate().x(), cuboid.coordinate().y(), *cuboid.coordinate().z()};
-          std::vector<double> dimensions{cuboid.dimensions().x(), cuboid.dimensions().y(), *cuboid.dimensions().z()};
+          std::vector<double> coordinate{cuboid.coordinate().x(), cuboid.coordinate().y(),
+                                         *cuboid.coordinate().z()};
+          std::vector<double> dimensions{cuboid.dimensions().x(), cuboid.dimensions().y(),
+                                         *cuboid.dimensions().z()};
           std::vector<double> velocity{cuboid.velocity().x(), cuboid.velocity().y(), *cuboid.velocity().z()};
 
-          auto temp_cuboid = Cuboid(coordinate, dimensions, velocity,
-                                    mass[cuboid.particleTypeId()], *cuboid.spacing(), static_cast<int>(cuboid.particleTypeId()));
-          temp_cuboids.emplace_back(temp_cuboid);
+          if (cuboid.fixed().present()) {
+            int flag = *cuboid.fixed();
+            if (flag == 1) {
+              auto temp_cuboid = Cuboid(coordinate, dimensions, velocity,
+                                        mass[cuboid.particleTypeId()], *cuboid.spacing(),
+                                        static_cast<int>(cuboid.particleTypeId()), 1);
+              temp_cuboids.emplace_back(temp_cuboid);
+            }
+          } else {
+            auto temp_cuboid = Cuboid(coordinate, dimensions, velocity,
+                                      mass[cuboid.particleTypeId()], *cuboid.spacing(),
+                                      static_cast<int>(cuboid.particleTypeId()), 0);
+            temp_cuboids.emplace_back(temp_cuboid);
+          }
         }
         config.cuboids = temp_cuboids;
 
@@ -173,7 +195,8 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
 
         // Iterate through all disc elements
         for (const auto &disc : ljf.particles()->disc()) {
-          std::vector<double> coordinate = {disc.coordinate().x(), disc.coordinate().y(), *disc.coordinate().z()};
+          std::vector<double> coordinate = {disc.coordinate().x(), disc.coordinate().y(),
+                                            *disc.coordinate().z()};
           std::vector<double> velocity = {disc.velocity().x(), disc.velocity().y(), *disc.velocity().z()};
           int radius = disc.radius();
           auto temp_disc = Disc(coordinate, velocity, radius);
@@ -187,8 +210,10 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
         // Iterate through all disc elements
         for (const auto &sphere : ljf.particles()->sphere()) {
 
-          std::vector<double> coordinate = {sphere.coordinate().x(), sphere.coordinate().y(), *sphere.coordinate().z()};
-          std::vector<double> velocity = {sphere.velocity().x(), sphere.velocity().y(), *sphere.velocity().z()};
+          std::vector<double> coordinate = {sphere.coordinate().x(), sphere.coordinate().y(),
+                                            *sphere.coordinate().z()};
+          std::vector<double> velocity = {sphere.velocity().x(), sphere.velocity().y(),
+                                          *sphere.velocity().z()};
           int radius = sphere.radius();
 
           auto temp_sphere = Sphere(coordinate, velocity, radius, sphere.mesh_width());
@@ -201,7 +226,8 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
         // Iterate through all disc elements
         for (const auto &torus : ljf.particles()->torus()) {
 
-          std::vector<double> coordinate = {torus.coordinate().x(), torus.coordinate().y(), *torus.coordinate().z()};
+          std::vector<double> coordinate = {torus.coordinate().x(), torus.coordinate().y(),
+                                            *torus.coordinate().z()};
           std::vector<double> velocity = {torus.velocity().x(), torus.velocity().y(), *torus.velocity().z()};
 
           double major_radius = torus.major_radius();
@@ -215,7 +241,8 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
         // Iterate through all disc elements
         for (const auto &helix : ljf.particles()->doubleHelix()) {
 
-          std::vector<double> coordinate = {helix.coordinate().x(), helix.coordinate().y(), *helix.coordinate().z()};
+          std::vector<double> coordinate = {helix.coordinate().x(), helix.coordinate().y(),
+                                            *helix.coordinate().z()};
           std::vector<double> velocity = {helix.velocity().x(), helix.velocity().y(), *helix.velocity().z()};
           double radius = helix.radius();
           double pitch = helix.pitch();
@@ -232,12 +259,20 @@ auto XMLFileReader::parseXMLData(const std::string &xmlFilePath) -> std::shared_
 
       config.temp_init = thermostat.t_init();
       config.temp_target = thermostat.t_target().present() ? *thermostat.t_target() : std::optional<double>();
-      config.max_temp_diff = thermostat.max_temp_diff().present() ? *thermostat.max_temp_diff() : std::optional<double>();
+      config.max_temp_diff = thermostat.max_temp_diff().present() ? *thermostat.max_temp_diff()
+                                                                  : std::optional<double>();
       config.thermo_step = thermostat.frequency();
       config.use_brownian_motion = thermostat.brownian_motion().present();
       config.brownian_motion = *thermostat.brownian_motion();
     } else {
       config.thermo_step = 0;
+    }
+
+    if (scenario->nanotube().present()) {
+      auto nanotube = *scenario->nanotube();
+
+      config.profile_bins = nanotube.n_bins();
+      config.profile_iterations = nanotube.iterations();
     }
 
     if (scenario->checkpoints().present()) {

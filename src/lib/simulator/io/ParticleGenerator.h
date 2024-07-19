@@ -34,6 +34,7 @@ class ParticleGenerator {
   auto load_particles() -> std::vector<Particle<DIMENSIONS>> {
     auto particles = std::vector<Particle<DIMENSIONS>>();
     generate_cuboids(config->cuboids, particles);
+    generate_cuboids(config->membrane, particles);
     generate_disk_particles(config->spheres, particles);
     return particles;
   };
@@ -41,18 +42,18 @@ class ParticleGenerator {
   void _generate_cuboids(size_t depth, std::array<double, DIMENSIONS> &offset, std::vector<Particle<DIMENSIONS>> &particles, const Cuboid &cuboid, int type) {
     if (depth == 0) {
       std::array<double, DIMENSIONS> new_coords;
-      for (int i = 0; i < DIMENSIONS; ++i) {
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
         new_coords[i] = cuboid.coordinates[i] + cuboid.spacing * static_cast<double>(offset[i]);
       }
 
       std::array<double, DIMENSIONS> velocity;
-      for (int i = 0; i < DIMENSIONS; ++i) {
+      for (size_t i = 0; i < DIMENSIONS; ++i) {
         velocity[i] = cuboid.velocity[i];
       }
-
+      int fixed = cuboid.fixed;
       const auto particle = Particle<DIMENSIONS>(
           new_coords, velocity, config->mass[type],
-          type);
+          type, fixed);
       particles.push_back(particle);
     } else {
       for (size_t z : ranges::iota_view(0, cuboid.particles[depth - 1])) {
@@ -132,7 +133,7 @@ class ParticleGenerator {
 
             std::array<double, DIMENSIONS> velocity;
 
-            for (int k = 0; k < DIMENSIONS; ++k) {
+            for (size_t k = 0; k < DIMENSIONS; ++k) {
               velocity[k] = 0.0;
             }
 

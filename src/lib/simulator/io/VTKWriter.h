@@ -42,7 +42,11 @@ class VTKWriter {
     pointData.DataArray().push_back(type);
 #if DEBUG
     DataArray_t id(type::Int32, "id", 1);
+    DataArray_t color(type::Int32, "color", 1);
+    DataArray_t block(type::Int32, "block", 1);
     pointData.DataArray().push_back(id);
+    pointData.DataArray().push_back(color);
+    pointData.DataArray().push_back(block);
 #endif
     CellData cellData;// we don't have cell data => leave it empty
 
@@ -67,7 +71,9 @@ class VTKWriter {
    *
    * @note: initializeOutput() must have been called before.
    */
+
   void plotParticle(Particles<DIMENSIONS> &p, size_t index) {
+
     if (vtkFile->UnstructuredGrid().present()) {
       SPDLOG_TRACE("UnstructuredGrid is present");
     } else {
@@ -82,28 +88,28 @@ class VTKWriter {
     // cout << "Appended mass data in: " << dataIterator->Name();
 
     dataIterator++;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       dataIterator->push_back(p.velocities[i][index]);
     }
-    for (int i = DIMENSIONS; i < 3; ++i) {
+    for (size_t i = DIMENSIONS; i < 3; ++i) {
       dataIterator->push_back(0);
     }
 
     // cout << "Appended velocity data in: " << dataIterator->Name();
 
     dataIterator++;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       dataIterator->push_back(p.forces[i][index]);
     }
-    for (int i = DIMENSIONS; i < 3; ++i) {
+    for (size_t i = DIMENSIONS; i < 3; ++i) {
       dataIterator->push_back(0);
     }
 
     dataIterator++;
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       dataIterator->push_back(p.old_forces[i][index]);
     }
-    for (int i = DIMENSIONS; i < 3; ++i) {
+    for (size_t i = DIMENSIONS; i < 3; ++i) {
       dataIterator->push_back(0);
     }
     // cout << "Appended force data in: " << dataIterator->Name();
@@ -114,15 +120,21 @@ class VTKWriter {
 #if DEBUG
     dataIterator++;
     dataIterator->push_back(p.ids[index]);
+
+    dataIterator++;
+    dataIterator->push_back(p.color[index]);
+
+    dataIterator++;
+    dataIterator->push_back(p.block[index]);
 #endif
 
     Points::DataArray_sequence &pointsSequence =
         vtkFile->UnstructuredGrid()->Piece().Points().DataArray();
     Points::DataArray_iterator pointsIterator = pointsSequence.begin();
-    for (int i = 0; i < DIMENSIONS; ++i) {
+    for (size_t i = 0; i < DIMENSIONS; ++i) {
       pointsIterator->push_back(p.positions[i][index]);
     }
-    for (int i = DIMENSIONS; i < 3; ++i) {
+    for (size_t i = DIMENSIONS; i < 3; ++i) {
       pointsIterator->push_back(0);
     }
   }
@@ -134,7 +146,9 @@ class VTKWriter {
    * @param iteration the number of the current iteration,
    *        which is used to generate an unique filename
    */
-  void writeFile(const std::string &filename, int iteration) {
+  void
+  writeFile(const std::string &filename, int iteration) {
+
     std::stringstream strstr;
     strstr << filename << "_" << std::setfill('0') << std::setw(4) << iteration << ".vtu";
     std::ofstream file(strstr.str().c_str());
@@ -145,6 +159,6 @@ class VTKWriter {
 
  private:
   std::unique_ptr<VTKFile_t> vtkFile = std::make_unique<VTKFile_t>(VTKFile_t("UnstructuredGrid"));
-};
+};// namespace simulator::io
 
 }// namespace simulator::io

@@ -6,6 +6,13 @@ PR: https://github.com/JoHaHu/MolSim/pull/70
 
 # Report Group-D
 
+### Media
+
+All the media is stored in the git repository for this week because the files were too large for moodle even after packing. Images are also packed in the submission
+
+Additionally, here is a OneDrive Link with the video files: https://1drv.ms/f/s!Ar3cyyDhVL_okssq7odwUhiSI0WrTQ?e=BcDDnv
+
+
 ## Tasks - Worksheet 4
 
 ### Task 1 - Thermostats
@@ -26,16 +33,17 @@ PR: https://github.com/JoHaHu/MolSim/pull/70
 
 ### Task 4 & 5 - Performance Measurement and Profiling
 
-- We completely rewrote the linked-cells algorithm, the first working version already contained all the optimizations we could think
-of.
-We now use SoA.
+- We completely rewrote the linked-cells algorithm, the first working version already contained all the optimizations we
+  could think
+  of.
+  We now use SoA.
 - Core operations are vectorized with std::experimental::simd.
-optimized LJF to not use sqrt for norm, because it's squared afterward.
+  optimized LJF to not use sqrt for norm, because it's squared afterward.
 - Added precomputation for constant factors.
 - Checked that all function in the core part are inlined.
 - Switched to 2D calculations, because all tasks are 2D this week.
 
-- The profiler showed that most of the time was spent in calculate_force.
+- The profiler showed that most of the time was spent in calculate_boundary_force.
 - Intel advisor showed almost no suggestions.
 - One advice about unaligned memory access is not problematic and correcting the alignment decreased performance.
 - Intel VTune reported no frontend issues and only backend issues, which means we utilize the hardware very much.

@@ -15,6 +15,9 @@
                         <xs:attribute name="output_frequency" type="positive_int" use="required"/>
                         <xs:attribute name="output_file" type="xs:string" use="required"/>
                         <xs:attribute name="seed" type="xs:int" use="required"/>
+                        <xs:attribute name="dimensions" type="xs:int" use="required"/>
+                        <xs:attribute name="parallelized" type="xs:boolean" use="required"/>
+                        <xs:attribute name="vectorized" type="xs:boolean" use="required"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element minOccurs="0" name="checkpoints">
@@ -25,6 +28,13 @@
                         <xs:attribute name="path" type="xs:string"/>
                     </xs:complexType>
                 </xs:element>
+                <xs:element minOccurs="0" name="membrane">
+                    <xs:complexType>
+                        <xs:attribute name="rzero" type="xs:double" use="required"/>
+                        <xs:attribute name="k" type="xs:double" use="required"/>
+                        <xs:attribute name="fzup" type="xs:double" use="required"/>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="thermostat" minOccurs="0">
                     <xs:complexType>
                         <xs:attribute name="t_init" type="xs:double" use="required"/>
@@ -32,6 +42,13 @@
                         <xs:attribute name="frequency" type="xs:integer" use="required"/>
                         <xs:attribute name="max_temp_diff" type="xs:double"/>
                         <xs:attribute name="brownian_motion" type="xs:double"/>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="nanotube" minOccurs="0">
+                    <xs:complexType>
+                        <xs:attribute name="n_bins" type="positive_int" use="required"/>
+                        <xs:attribute name="iterations" type="positive_int" use="required"/>
                     </xs:complexType>
                 </xs:element>
 
@@ -109,6 +126,8 @@
                                                                     maxOccurs="unbounded"/>
                                                         <xs:element name="doubleHelix" type="double_helix"
                                                                     maxOccurs="unbounded"/>
+                                                        <xs:element name="membrane" type="membrane"
+                                                                    maxOccurs="1"/>
                                                     </xs:choice>
                                                 </xs:sequence>
                                             </xs:complexType>
@@ -144,6 +163,11 @@
                                     <xs:selector xpath="particles/disc"/>
                                     <xs:field xpath="@particleTypeId"/>
                                 </xs:keyref>
+                                <xs:keyref name="membrane_particleTypeId"
+                                           refer="particleTypeId">
+                                    <xs:selector xpath="particles/membrane"/>
+                                    <xs:field xpath="@particleTypeId"/>
+                                </xs:keyref>
                             </xs:element>
                         </xs:choice>
                     </xs:complexType>
@@ -171,6 +195,19 @@
         </xs:all>
         <xs:attribute name="particleTypeId" type="xs:integer" use="required"/>
         <xs:attribute name="spacing" type="xs:double"/>
+        <xs:attribute name="fixed" type="xs:int"/>
+    </xs:complexType>
+
+    <xs:complexType name="membrane">
+        <xs:all>
+            <xs:element name="coordinate"
+                        type="coordinate"/>  <!-- defined as the lower left front particle coordinate -->
+            <xs:element name="dimensions" type="dimensions"/>
+            <xs:element name="velocity" type="velocity"/>
+        </xs:all>
+        <xs:attribute name="particleTypeId" type="xs:integer" use="required"/>
+        <xs:attribute name="spacing" type="xs:double"/>
+        <xs:attribute name="fixed" type="xs:int"/>
     </xs:complexType>
 
     <!-- Definition of disc described by 2 integer arrays and 1 double -->

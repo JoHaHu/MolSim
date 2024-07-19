@@ -3,7 +3,6 @@ file(GLOB_RECURSE MY_TESTS
 )
 
 add_executable(Test ${MY_TESTS}
-        ThermostatTest.cpp
 )
 
 include(CheckIPOSupported)
@@ -15,7 +14,7 @@ endif ()
 
 target_compile_features(Test
         PRIVATE
-        cxx_std_23
+        cxx_std_20
 )
 
 target_link_options(
